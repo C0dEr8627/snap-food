@@ -409,9 +409,9 @@ class _SplashDoodlesPainter extends CustomPainter {
     final w = size.width;
     final h = size.height;
 
-    canvas.drawCircle(40, 90, 14, paint);
-    canvas.drawCircle(w - 42, h * 0.67, 6, fill);
-    canvas.drawCircle(w - 40, h - 34, 16, paint);
+    canvas.drawCircle(const Offset(40, 90), 14, paint);
+    canvas.drawCircle(Offset(w - 42, h * 0.67), 6, fill);
+    canvas.drawCircle(Offset(w - 40, h - 34), 16, paint);
 
     final wave = Path()
       ..moveTo(24, h * 0.35)
