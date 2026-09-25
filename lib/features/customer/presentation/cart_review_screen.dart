@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
@@ -108,7 +109,7 @@ class _CartReviewScreenState extends State<CartReviewScreen> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
           child: FilledButton(
-            onPressed: items.isEmpty ? null : () {},
+            onPressed: items.isEmpty ? null : () => context.push('/checkout'),
             style: FilledButton.styleFrom(
               backgroundColor: SnapFoodColors.secondary,
               foregroundColor: Colors.white,
@@ -254,7 +255,7 @@ class _BillCard extends StatelessWidget {
       const SizedBox(height: 8),
       _BillRow('Delivery fee', deliveryFee == 0 ? 'FREE' : '₹' + deliveryFee.toString(), accent: deliveryFee == 0),
       const SizedBox(height: 8),
-      const _BillRow('Taxes & charges', '5%'),
+      _BillRow('Taxes & charges', '₹' + taxes.toString()),
       const Padding(padding: EdgeInsets.symmetric(vertical: 11), child: Divider(color: SnapFoodColors.softBorder, height: 1)),
       _BillRow('To pay', '₹' + total.toString(), strong: true),
     ]),

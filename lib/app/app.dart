@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../design_system/theme/app_theme.dart';
 import '../features/customer/presentation/cart_review_screen.dart';
+import '../features/customer/presentation/checkout_screen.dart';
 import '../features/customer/presentation/food_item_details_screen.dart';
 import '../features/customer/presentation/home_feed_screen.dart';
 import '../features/customer/presentation/restaurant_menu_screen.dart';
@@ -16,6 +17,7 @@ final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
     GoRoute(path: '/home', name: 'customer-home', builder: (context, state) => const HomeFeedScreen()),
     GoRoute(path: '/restaurant', name: 'restaurant-menu', builder: (context, state) => const RestaurantMenuScreen()),
     GoRoute(path: '/cart', name: 'cart-review', builder: (context, state) => const CartReviewScreen()),
+    GoRoute(path: '/checkout', name: 'checkout', builder: (context, state) => const CheckoutScreen()),
     GoRoute(
       path: '/food/:itemId',
       name: 'food-item-details',
