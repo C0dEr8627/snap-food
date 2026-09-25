@@ -3,15 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design_system/theme/app_theme.dart';
-import '../features/foundation/presentation/foundation_preview_screen.dart';
+import '../features/customer/presentation/splash_welcome_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
   initialLocation: '/',
-  routes: [GoRoute(
-    path: '/',
-    name: 'foundation',
-    builder: (context, state) => const FoundationPreviewScreen(),
-  )],
+  routes: [
+    GoRoute(
+      path: '/',
+      name: 'splash-welcome',
+      builder: (context, state) => const SplashWelcomeScreen(),
+    ),
+  ],
 ));
 
 class SnapFoodApp extends ConsumerWidget {
