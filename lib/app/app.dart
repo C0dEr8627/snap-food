@@ -12,6 +12,7 @@ import '../features/customer/presentation/customer_profile_screen.dart';
 import '../features/customer/presentation/restaurant_menu_screen.dart';
 import '../features/customer/presentation/splash_welcome_screen.dart';
 import '../features/restaurant/presentation/restaurant_dashboard_screen.dart';
+import '../features/restaurant/presentation/restaurant_kds_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
   initialLocation: Uri.base.path.isEmpty ? '/' : Uri.base.path,
@@ -24,6 +25,7 @@ final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
     GoRoute(path: '/order-tracking', name: 'order-tracking', builder: (context, state) => const LiveOrderTrackingScreen()),
     GoRoute(path: '/profile', name: 'customer-profile', builder: (context, state) => const CustomerProfileScreen()),
     GoRoute(path: '/restaurant/dashboard', name: 'restaurant-dashboard', builder: (context, state) => const RestaurantDashboardScreen()),
+    GoRoute(path: '/restaurant/kds', name: 'restaurant-kds', builder: (context, state) => const RestaurantKdsScreen()),
     GoRoute(
       path: '/food/:itemId',
       name: 'food-item-details',

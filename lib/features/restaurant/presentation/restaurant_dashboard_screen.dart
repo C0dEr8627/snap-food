@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
@@ -138,7 +139,7 @@ class _LiveOrders extends StatelessWidget {
     return _Panel(
       title: 'Live Orders',
       trailing: TextButton(
-        onPressed: () {},
+        onPressed: () => context.go('/restaurant/kds'),
         child: const Text('View KDS'),
       ),
       child: Column(
