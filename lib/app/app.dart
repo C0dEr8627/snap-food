@@ -21,6 +21,7 @@ import '../features/delivery/presentation/delivery_duty_map_screen.dart';
 import '../features/delivery/presentation/delivery_navigate_restaurant_screen.dart';
 import '../features/delivery/presentation/delivery_pickup_verification_screen.dart';
 import '../features/delivery/presentation/delivery_navigate_customer_screen.dart';
+import '../features/delivery/presentation/delivery_verification_screen.dart';
 
 
 final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
@@ -42,6 +43,7 @@ final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
     GoRoute(path: '/delivery/navigate-restaurant', name: 'delivery-navigate-restaurant', builder: (context, state) => const DeliveryNavigateRestaurantScreen()),
     GoRoute(path: '/delivery/pickup-verification', name: 'delivery-pickup-verification', builder: (context, state) => const DeliveryPickupVerificationScreen()),
     GoRoute(path: '/delivery/navigate-customer', name: 'delivery-navigate-customer', builder: (context, state) => const DeliveryNavigateCustomerScreen()),
+    GoRoute(path: '/delivery/verification', name: 'delivery-verification', builder: (context, state) => const DeliveryVerificationScreen()),
     GoRoute(
       path: '/food/:itemId',
       name: 'food-item-details',
