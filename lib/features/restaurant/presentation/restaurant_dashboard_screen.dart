@@ -126,25 +126,235 @@ class _Stats extends StatelessWidget {
 
 class _LiveOrders extends StatelessWidget {
   const _LiveOrders();
-  static const data = [('SF10248','2 items • ₹630','Preparing'),('SF10247','3 items • ₹540','Ready for pickup'),('SF10246','1 item • ₹320','New order')];
+
+  static const data = [
+    ('SF10248', '2 items • ₹630', 'Preparing'),
+    ('SF10247', '3 items • ₹540', 'Ready for pickup'),
+    ('SF10246', '1 item • ₹320', 'New order'),
+  ];
+
   @override
-  Widget build(BuildContext context) => _Panel(title: 'Live Orders', trailing: TextButton(onPressed: () {}, child: const Text('View KDS')), child: Column(children: [for (var i=0; i<data.length; i++) ...[if (i>0) const Divider(height: 1), Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13), child: Row(children: [Container(width: 38, height: 38, decoration: BoxDecoration(color: SnapFoodColors.surfaceContainer, borderRadius: BorderRadius.circular(SnapFoodRadii.md)), child: const Icon(Icons.receipt_long, size: 19, color: SnapFoodColors.secondary)), const SizedBox(width: 10), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('#${data[i].$1}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)), const SizedBox(height: 2), Text(data[i].$2, style: TextStyle(fontSize: 10, color: SnapFoodColors.onSurfaceVariant))])), Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5), decoration: BoxDecoration(color: SnapFoodColors.softYellow, borderRadius: BorderRadius.circular(SnapFoodRadii.full)), child: Text(data[i].$3, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800)))])]]));
-  );
+  Widget build(BuildContext context) {
+    return _Panel(
+      title: 'Live Orders',
+      trailing: TextButton(
+        onPressed: () {},
+        child: const Text('View KDS'),
+      ),
+      child: Column(
+        children: [
+          for (var i = 0; i < data.length; i++)
+            Column(
+              children: [
+                if (i > 0) const Divider(height: 1),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          color: SnapFoodColors.surfaceContainer,
+                          borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+                        ),
+                        child: const Icon(
+                          Icons.receipt_long,
+                          size: 19,
+                          color: SnapFoodColors.secondary,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '#${data[i].$1}',
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              data[i].$2,
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: SnapFoodColors.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: SnapFoodColors.softYellow,
+                          borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+                        ),
+                        child: Text(
+                          data[i].$3,
+                          style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 class _Performance extends StatelessWidget {
   const _Performance();
+
   @override
-  Widget build(BuildContext context) => _Panel(title: 'Today’s Performance', trailing: const Icon(Icons.more_horiz, size: 20, color: SnapFoodColors.outline), child: Padding(padding: const EdgeInsets.fromLTRB(16, 4, 16, 18), child: Column(children: [SizedBox(height: 118, child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [for (final h in <double>[46.0, 64.0, 90.0, 72.0, 104.0, 82.0]) Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [Container(width: 18, height: h, decoration: const BoxDecoration(color: SnapFoodColors.primaryContainer, borderRadius: BorderRadius.vertical(top: Radius.circular(5)))), const SizedBox(height: 5), const Text('•', style: TextStyle(fontSize: 8, color: SnapFoodColors.outline))]))])), const SizedBox(height: 8), const Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Orders by hour', style: TextStyle(fontSize: 10, color: SnapFoodColors.onSurfaceVariant)), Text('48 total', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800))])])));
-  );
+  Widget build(BuildContext context) {
+    const heights = <double>[46.0, 64.0, 90.0, 72.0, 104.0, 82.0];
+
+    return _Panel(
+      title: 'Today’s Performance',
+      trailing: const Icon(
+        Icons.more_horiz,
+        size: 20,
+        color: SnapFoodColors.outline,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 18),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 118,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  for (final h in heights)
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            width: 18,
+                            height: h,
+                            decoration: const BoxDecoration(
+                              color: SnapFoodColors.primaryContainer,
+                              borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          const Text(
+                            '•',
+                            style: TextStyle(fontSize: 8, color: SnapFoodColors.outline),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Orders by hour',
+                  style: TextStyle(fontSize: 10, color: SnapFoodColors.onSurfaceVariant),
+                ),
+                Text(
+                  '48 total',
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _PopularItems extends StatelessWidget {
   const _PopularItems();
-  static const items = [('Chicken Tikka Dum Biryani','128 sold','₹320',Icons.rice_bowl),('Butter Chicken & 2 Naan','96 sold','₹280',Icons.lunch_dining),('Paneer Butter Masala','74 sold','₹240',Icons.restaurant_menu)];
+
+  static const items = [
+    ('Chicken Tikka Dum Biryani', '128 sold', '₹320', Icons.rice_bowl),
+    ('Butter Chicken & 2 Naan', '96 sold', '₹280', Icons.lunch_dining),
+    ('Paneer Butter Masala', '74 sold', '₹240', Icons.restaurant_menu),
+  ];
+
   @override
-  Widget build(BuildContext context) => _Panel(title: 'Popular Items', trailing: TextButton(onPressed: () {}, child: const Text('Manage Menu')), child: Column(children: [for (var i=0; i<items.length; i++) ...[if(i>0) const Divider(height: 1), Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), child: Row(children: [Container(width:44,height:44,decoration:BoxDecoration(color:i==0?SnapFoodColors.softRed:SnapFoodColors.surfaceContainer,borderRadius:BorderRadius.circular(SnapFoodRadii.md)),child:Icon(items[i].$4,size:21,color:SnapFoodColors.secondary)),const SizedBox(width:11),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(items[i].$1,style:const TextStyle(fontSize:12,fontWeight:FontWeight.w800)),const SizedBox(height:2),Text(items[i].$2,style:const TextStyle(fontSize:10,color:SnapFoodColors.onSurfaceVariant))])),Text(items[i].$3,style:const TextStyle(fontSize:12,fontWeight:FontWeight.w900))])]]));
-  );
+  Widget build(BuildContext context) {
+    return _Panel(
+      title: 'Popular Items',
+      trailing: TextButton(
+        onPressed: () {},
+        child: const Text('Manage Menu'),
+      ),
+      child: Column(
+        children: [
+          for (var i = 0; i < items.length; i++)
+            Column(
+              children: [
+                if (i > 0) const Divider(height: 1),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: i == 0
+                              ? SnapFoodColors.softRed
+                              : SnapFoodColors.surfaceContainer,
+                          borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+                        ),
+                        child: Icon(
+                          items[i].$4,
+                          size: 21,
+                          color: SnapFoodColors.secondary,
+                        ),
+                      ),
+                      const SizedBox(width: 11),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              items[i].$1,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              items[i].$2,
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: SnapFoodColors.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        items[i].$3,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 class _Panel extends StatelessWidget {
