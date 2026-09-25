@@ -297,7 +297,7 @@ class RestaurantCard extends StatelessWidget {
       onTap: () {},
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         SizedBox(height: 176, child: Stack(fit: StackFit.expand, children: [
-          Image.network(restaurant.imageUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: SnapFoodColors.surfaceContainerHigh, child: Center(child: Icon(restaurant.icon, size: 72, color: SnapFoodColors.secondary.withAlpha(100)))),
+          Image.network(restaurant.imageUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: SnapFoodColors.surfaceContainerHigh, child: Center(child: Icon(restaurant.icon, size: 72, color: SnapFoodColors.secondary.withAlpha(100))))),
           Positioned(top: 12, right: 12, child: Material(
             color: SnapFoodColors.surfaceContainerLowest.withAlpha(230), shape: const CircleBorder(),
             child: IconButton(onPressed: onFavorite, icon: Icon(favorite ? Icons.favorite : Icons.favorite_border, size: 19, color: SnapFoodColors.secondary)),
@@ -411,7 +411,7 @@ class BottomNav extends StatelessWidget {
     child: Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
       child: SizedBox(height: 64, child: Row(children: [
-        for (var i = 0; i < items.length)
+        for (var i = 0; i < items.length; i++)
           Expanded(child: InkWell(onTap: () => onSelected(i), child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Icon(items[i].$1, size: 22, color: i == selected ? SnapFoodColors.secondary : SnapFoodColors.onSurfaceVariant),
             const SizedBox(height: 2),
