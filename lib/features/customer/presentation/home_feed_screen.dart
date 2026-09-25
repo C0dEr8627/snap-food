@@ -28,8 +28,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
-      body: SafeArea(
-        bottom: false,
+      body: SizedBox(
+        width: MediaQuery.sizeOf(context).width,
+        height: MediaQuery.sizeOf(context).height,
+        child: SafeArea(
+          bottom: false,
         child: LayoutBuilder(builder: (context, c) {
           final wide = c.maxWidth >= 1024;
           return Stack(children: [
@@ -68,8 +71,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
             ),
             const Positioned(top: 0, left: 0, right: 0, child: HomeHeader()),
             Positioned(left: 0, right: 0, bottom: 0, child: BottomNav(selected: nav, onSelected: (v) => setState(() => nav = v))),
-          ]);
-        }),
+            ]);
+          }),
+        ),
       ),
     );
   }
