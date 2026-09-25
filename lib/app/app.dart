@@ -17,6 +17,7 @@ import '../features/restaurant/presentation/restaurant_order_detail_screen.dart'
 import '../features/restaurant/presentation/restaurant_menu_stock_screen.dart';
 import '../features/delivery/presentation/delivery_login_onboarding_screen.dart';
 import '../features/delivery/presentation/delivery_requests_screen.dart';
+import '../features/delivery/presentation/delivery_duty_map_screen.dart';
 
 
 final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
@@ -34,6 +35,7 @@ final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
     GoRoute(path: '/restaurant/menu-stock', name: 'restaurant-menu-stock', builder: (context, state) => const RestaurantMenuStockScreen()),
     GoRoute(path: '/delivery/login', name: 'delivery-login', builder: (context, state) => const DeliveryLoginOnboardingScreen()),
     GoRoute(path: '/delivery/requests', name: 'delivery-requests', builder: (context, state) => const DeliveryRequestsScreen()),
+    GoRoute(path: '/delivery/duty-map', name: 'delivery-duty-map', builder: (context, state) => const DeliveryDutyMapScreen()),
     GoRoute(
       path: '/food/:itemId',
       name: 'food-item-details',
