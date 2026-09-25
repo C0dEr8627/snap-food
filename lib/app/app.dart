@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../design_system/theme/app_theme.dart';
 import '../features/customer/presentation/home_feed_screen.dart';
+import '../features/customer/presentation/restaurant_menu_screen.dart';
 import '../features/customer/presentation/splash_welcome_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
@@ -18,6 +19,11 @@ final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
       path: '/home',
       name: 'customer-home',
       builder: (context, state) => const HomeFeedScreen(),
+    ),
+    GoRoute(
+      path: '/restaurant',
+      name: 'restaurant-menu',
+      builder: (context, state) => const RestaurantMenuScreen(),
     ),
   ],
 ));
