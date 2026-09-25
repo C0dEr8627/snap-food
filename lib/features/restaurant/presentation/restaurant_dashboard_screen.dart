@@ -225,7 +225,7 @@ class _Performance extends StatelessWidget {
         child: Column(
           children: [
             SizedBox(
-              height: 118,
+              height: 120,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
