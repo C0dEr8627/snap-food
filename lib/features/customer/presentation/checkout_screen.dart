@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
@@ -117,7 +118,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
           child: FilledButton(
-            onPressed: () {},
+            onPressed: () => context.push('/order-tracking'),
             style: FilledButton.styleFrom(
               backgroundColor: SnapFoodColors.secondary,
               foregroundColor: Colors.white,
