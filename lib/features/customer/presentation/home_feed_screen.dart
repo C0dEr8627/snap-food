@@ -273,7 +273,7 @@ class Featured extends StatelessWidget {
       const SectionTitle('Featured Champions', subtitle: 'Top-rated neighborhood cravings', trailing: 'Nearby'),
       const SizedBox(height: 10),
       Wrap(spacing: gap, runSpacing: gap, children: [
-        for (var i = 0; i < restaurants.length)
+        for (var i = 0; i < restaurants.length; i++)
           SizedBox(width: width, child: RestaurantCard(
             restaurant: restaurants[i], favorite: favorites.contains(i), onFavorite: () => onFavorite(i),
           )),
