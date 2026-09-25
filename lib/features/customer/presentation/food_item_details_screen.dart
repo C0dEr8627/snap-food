@@ -87,7 +87,7 @@ class _FoodItemDetailsScreenState extends State<FoodItemDetailsScreen> {
                     const SizedBox(height: 16),
                     Text(description, style: const TextStyle(fontSize: 13, height: 1.5, color: SnapFoodColors.onSurfaceVariant)),
                     const SizedBox(height: 18),
-                    const Divider(color: SnapFoodColors.border),
+                    const Divider(color: SnapFoodColors.softBorder),
                     const SizedBox(height: 16),
                     const Text('About this dish', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                     const SizedBox(height: 10),
@@ -187,7 +187,7 @@ class _Tag extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-    decoration: BoxDecoration(color: SnapFoodColors.surfaceContainerLowest, borderRadius: BorderRadius.circular(SnapFoodRadii.full), border: Border.all(color: SnapFoodColors.border)),
+    decoration: BoxDecoration(color: SnapFoodColors.surfaceContainerLowest, borderRadius: BorderRadius.circular(SnapFoodRadii.full), border: Border.all(color: SnapFoodColors.softBorder)),
     child: Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(icon, size: 15, color: SnapFoodColors.secondary),
       const SizedBox(width: 6),
@@ -205,7 +205,7 @@ class _QuantityControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     height: 50,
-    decoration: BoxDecoration(color: SnapFoodColors.surfaceContainerLowest, borderRadius: BorderRadius.circular(SnapFoodRadii.md), border: Border.all(color: SnapFoodColors.border)),
+    decoration: BoxDecoration(color: SnapFoodColors.surfaceContainerLowest, borderRadius: BorderRadius.circular(SnapFoodRadii.md), border: Border.all(color: SnapFoodColors.softBorder)),
     child: Row(children: [
       IconButton(onPressed: onRemove, icon: const Icon(Icons.remove, size: 17)),
       Text(quantity.toString(), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
