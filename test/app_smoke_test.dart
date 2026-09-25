@@ -12,5 +12,13 @@ void main() {
     expect(find.text('Lightning Fast Delivery'), findsOneWidget);
     expect(find.text('Get Started'), findsOneWidget);
     expect(find.textContaining('Already have an account?'), findsOneWidget);
+
+    await tester.tap(find.text('Get Started'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Good afternoon, Alex! 🍕'), findsOneWidget);
+    expect(find.text('Explore Cravings'), findsOneWidget);
+    expect(find.text('Featured Champions'), findsOneWidget);
+    expect(find.text('Home'), findsOneWidget);
   });
 }
