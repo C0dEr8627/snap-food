@@ -17,7 +17,7 @@ class _LiveOrderTrackingScreenState extends State<LiveOrderTrackingScreen>{
       return Center(child:ConstrainedBox(constraints:const BoxConstraints(maxWidth:SnapFoodSpacing.desktopMaxContentWidth),child:CustomScrollView(slivers:[
         SliverAppBar(pinned:true,backgroundColor:SnapFoodColors.surface,surfaceTintColor:Colors.transparent,leading:IconButton(onPressed:()=>Navigator.of(context).pop(),icon:const Icon(Icons.arrow_back)),title:const Text('Track Order',style:TextStyle(fontSize:18,fontWeight:FontWeight.w800))),
         SliverPadding(padding:EdgeInsets.fromLTRB(p,8,p,112),sliver:SliverToBoxAdapter(child:wide?Row(crossAxisAlignment:CrossAxisAlignment.start,children:[const Expanded(child:_MapCard()),const SizedBox(width:18),Expanded(child:_Details(step:step,next:advance))]):Column(children:[const _MapCard(),const SizedBox(height:16),_Details(step:step,next:advance)]))),
-      ]));
+      ])));
     })),
     bottomNavigationBar:SafeArea(top:false,child:Padding(padding:const EdgeInsets.fromLTRB(16,8,16,12),child:FilledButton.icon(onPressed:(){},icon:const Icon(Icons.support_agent_outlined),label:const Text('Need help with this order?'),style:FilledButton.styleFrom(backgroundColor:SnapFoodColors.secondary,foregroundColor:Colors.white,minimumSize:const Size.fromHeight(52),shape:RoundedRectangleBorder(borderRadius:BorderRadius.circular(SnapFoodRadii.md)))))));
   void advance(){if(step<states.length-1)setState(()=>step++);}
