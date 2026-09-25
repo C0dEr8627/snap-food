@@ -39,8 +39,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                 child: Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: SnapFoodSpacing.desktopMaxContentWidth),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: wide ? 24 : 16),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: wide ? 24 : 16),
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         const Greeting(),
                         const SizedBox(height: 16),
@@ -57,7 +59,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                         })),
                         const SizedBox(height: 16),
                         const ExpressBar(),
-                      ]),
+                        ]),
+                      ),
                     ),
                   ),
                 ),
