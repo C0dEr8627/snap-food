@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
@@ -295,7 +296,7 @@ class RestaurantCard extends StatelessWidget {
     borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
     clipBehavior: Clip.antiAlias,
     child: InkWell(
-      onTap: () {},
+      onTap: () => context.push('/restaurant'),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         SizedBox(height: 176, child: Stack(fit: StackFit.expand, children: [
           Image.network(restaurant.imageUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: SnapFoodColors.surfaceContainerHigh, child: Center(child: Icon(restaurant.icon, size: 72, color: SnapFoodColors.secondary.withAlpha(100))))),
