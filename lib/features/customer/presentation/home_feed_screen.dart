@@ -421,7 +421,13 @@ class BottomNav extends StatelessWidget {
       padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
       child: SizedBox(height: 64, child: Row(children: [
         for (var i = 0; i < items.length; i++)
-          Expanded(child: InkWell(onTap: () => onSelected(i), child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Expanded(child: InkWell(onTap: () {
+            if (i == 4) {
+              context.push('/profile');
+            } else {
+              onSelected(i);
+            }
+          }, child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Icon(items[i].$1, size: 22, color: i == selected ? SnapFoodColors.secondary : SnapFoodColors.onSurfaceVariant),
             const SizedBox(height: 2),
             Text(items[i].$2, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: i == selected ? SnapFoodColors.secondary : SnapFoodColors.onSurfaceVariant)),

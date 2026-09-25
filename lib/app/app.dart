@@ -13,7 +13,7 @@ import '../features/customer/presentation/restaurant_menu_screen.dart';
 import '../features/customer/presentation/splash_welcome_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
-  initialLocation: '/',
+  initialLocation: Uri.base.path.isEmpty ? '/' : Uri.base.path,
   routes: [
     GoRoute(path: '/', name: 'splash-welcome', builder: (context, state) => const SplashWelcomeScreen()),
     GoRoute(path: '/home', name: 'customer-home', builder: (context, state) => const HomeFeedScreen()),
