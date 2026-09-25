@@ -127,13 +127,20 @@ class _RestaurantHero extends StatelessWidget {
 class _Verified extends StatelessWidget {
   const _Verified();
   @override
-  Widget build(BuildContext context) => InkWell(
-    borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-    onTap: () => context.push('/food/' + item.id),
-    child: Container(
+  Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-    decoration: BoxDecoration(color: SnapFoodColors.softYellow, borderRadius: BorderRadius.circular(SnapFoodRadii.full)),
-    child: const Row(mainAxisSize: MainAxisSize.min, children: [Icon(Icons.verified, size: 14, color: SnapFoodColors.secondary), SizedBox(width: 4), Text('Authentic', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800))]),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.softYellow,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+    ),
+    child: const Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.verified, size: 14, color: SnapFoodColors.secondary),
+        SizedBox(width: 4),
+        Text('Authentic', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800)),
+      ],
+    ),
   );
 }
 
