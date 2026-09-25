@@ -102,6 +102,7 @@ class HomeHeader extends StatelessWidget {
         Container(width: 36, height: 36, decoration: const BoxDecoration(color: SnapFoodColors.primaryContainer, shape: BoxShape.circle), child: const Icon(Icons.person, size: 20, color: SnapFoodColors.warmBlack)),
       ]),
     ),
+    ),
   );
 }
 
