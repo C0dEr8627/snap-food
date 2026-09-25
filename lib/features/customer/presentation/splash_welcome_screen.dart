@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
@@ -350,7 +351,7 @@ class _SplashActions extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         TextButton(
-          onPressed: () {},
+          onPressed: () => context.go('/home'),
           style: TextButton.styleFrom(
             foregroundColor: SnapFoodColors.onSurface,
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
