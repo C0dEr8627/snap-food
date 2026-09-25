@@ -448,7 +448,9 @@ class _KdsOrderCard extends StatelessWidget {
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: order.status == 'Ready'
+                    ? () => context.go('/restaurant/orders/' + order.id)
+                    : () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: order.status == 'Ready'
                       ? SnapFoodColors.primaryContainer
