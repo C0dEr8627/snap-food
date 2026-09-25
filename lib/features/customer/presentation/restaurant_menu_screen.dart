@@ -173,43 +173,74 @@ class _MenuSection extends StatelessWidget {
 
 class _MenuItemCard extends StatelessWidget {
   const _MenuItemCard({required this.item, required this.quantity, required this.onAdd, required this.onRemove});
-  final MenuItemData item; final int quantity; final VoidCallback onAdd, onRemove;
+  final MenuItemData item;
+  final int quantity;
+  final VoidCallback onAdd;
+  final VoidCallback onRemove;
+
   @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(color: SnapFoodColors.surfaceContainerLowest, borderRadius: BorderRadius.circular(SnapFoodRadii.lg), boxShadow: const [BoxShadow(color: Color(0x0C000000), blurRadius: 5, offset: Offset(0, 2))]),
-    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Container(width: 82, height: 82, decoration: BoxDecoration(color: item.veg ? SnapFoodColors.softYellow : SnapFoodColors.softRed, borderRadius: BorderRadius.circular(SnapFoodRadii.md)), child: Icon(item.veg ? Icons.eco : Icons.local_fire_department, color: item.veg ? Colors.green : SnapFoodColors.secondary, size: 32)),
-      const SizedBox(width: 12),
-      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          if (item.veg) const Icon(Icons.circle, size: 10, color: Colors.green),
-          if (item.veg) const SizedBox(width: 4),
-          Expanded(child: Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800))),
-          if (item.bestseller) Container(padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3), decoration: BoxDecoration(color: SnapFoodColors.softRed, borderRadius: BorderRadius.circular(5)), child: const Text('Bestseller', style: TextStyle(fontSize: 7, fontWeight: FontWeight.w800, color: SnapFoodColors.secondary))),
-        ]),
-        const SizedBox(height: 5),
-        Text(item.description, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 10, height: 1.35, color: SnapFoodColors.onSurfaceVariant)),
-        const SizedBox(height: 7),
-        Row(children: [
-          Text('₹' + item.price.toString(), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
-          if (item.oldPrice != null) ...[const SizedBox(width: 5), Text('₹' + item.oldPrice.toString(), style: const TextStyle(fontSize: 10, decoration: TextDecoration.lineThrough, color: SnapFoodColors.outline))],
-          const Spacer(),
-          if (quantity == 0)
-            OutlinedButton(onPressed: onAdd, style: OutlinedButton.styleFrom(foregroundColor: SnapFoodColors.secondary, side: const BorderSide(color: SnapFoodColors.secondary), padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7)), child: const Text('ADD', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800)))
-          else
-            Container(
-              decoration: BoxDecoration(color: SnapFoodColors.secondary, borderRadius: BorderRadius.circular(SnapFoodRadii.full)),
-              child: Row(children: [
-                IconButton(onPressed: onRemove, icon: const Icon(Icons.remove, color: Colors.white, size: 15), constraints: const BoxConstraints(minWidth: 30, minHeight: 30), padding: EdgeInsets.zero),
-                Text(quantity.toString(), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Colors.white)),
-                IconButton(onPressed: onAdd, icon: const Icon(Icons.add, color: Colors.white, size: 15), constraints: const BoxConstraints(minWidth: 30, minHeight: 30), padding: EdgeInsets.zero),
-              ]),
-            ),
-        ]),
-      ])),
-    ]),
-  ),
+  Widget build(BuildContext context) => InkWell(
+    borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+    onTap: () => context.push('/food/' + item.id),
+    child: Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: SnapFoodColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+        boxShadow: const [BoxShadow(color: Color(0x0C000000), blurRadius: 5, offset: Offset(0, 2))],
+      ),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Container(
+          width: 82,
+          height: 82,
+          decoration: BoxDecoration(
+            color: item.veg ? SnapFoodColors.softYellow : SnapFoodColors.softRed,
+            borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+          ),
+          child: Icon(item.veg ? Icons.eco : Icons.local_fire_department, color: item.veg ? Colors.green : SnapFoodColors.secondary, size: 32),
+        ),
+        const SizedBox(width: 12),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            if (item.veg) const Icon(Icons.circle, size: 10, color: Colors.green),
+            if (item.veg) const SizedBox(width: 4),
+            Expanded(child: Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800))),
+            if (item.bestseller)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                decoration: BoxDecoration(color: SnapFoodColors.softRed, borderRadius: BorderRadius.circular(5)),
+                child: const Text('Bestseller', style: TextStyle(fontSize: 7, fontWeight: FontWeight.w800, color: SnapFoodColors.secondary)),
+              ),
+          ]),
+          const SizedBox(height: 5),
+          Text(item.description, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 10, height: 1.35, color: SnapFoodColors.onSurfaceVariant)),
+          const SizedBox(height: 7),
+          Row(children: [
+            Text('₹' + item.price.toString(), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
+            if (item.oldPrice != null) ...[
+              const SizedBox(width: 5),
+              Text('₹' + item.oldPrice.toString(), style: const TextStyle(fontSize: 10, decoration: TextDecoration.lineThrough, color: SnapFoodColors.outline)),
+            ],
+            const Spacer(),
+            if (quantity == 0)
+              OutlinedButton(
+                onPressed: onAdd,
+                style: OutlinedButton.styleFrom(foregroundColor: SnapFoodColors.secondary, side: const BorderSide(color: SnapFoodColors.secondary), padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7)),
+                child: const Text('ADD', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800)),
+              )
+            else
+              Container(
+                decoration: BoxDecoration(color: SnapFoodColors.secondary, borderRadius: BorderRadius.circular(SnapFoodRadii.full)),
+                child: Row(children: [
+                  IconButton(onPressed: onRemove, icon: const Icon(Icons.remove, color: Colors.white, size: 15), constraints: const BoxConstraints(minWidth: 30, minHeight: 30), padding: EdgeInsets.zero),
+                  Text(quantity.toString(), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Colors.white)),
+                  IconButton(onPressed: onAdd, icon: const Icon(Icons.add, color: Colors.white, size: 15), constraints: const BoxConstraints(minWidth: 30, minHeight: 30), padding: EdgeInsets.zero),
+                ]),
+              ),
+          ]),
+        ])),
+      ]),
+    ),
   );
 }
 
