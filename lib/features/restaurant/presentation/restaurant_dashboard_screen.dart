@@ -74,8 +74,8 @@ class _Sidebar extends StatelessWidget {
       ]),
       const SizedBox(height: 32),
       const _Nav(label: 'Dashboard', icon: Icons.dashboard_rounded, selected: true),
-      const _Nav(label: 'Live Orders / KDS', icon: Icons.receipt_long_rounded),
-      const _Nav(label: 'Menu & Stock', icon: Icons.restaurant_menu_rounded),
+      _Nav(label: 'Live Orders / KDS', icon: Icons.receipt_long_rounded, onTap: () => context.go('/restaurant/kds')),
+      _Nav(label: 'Menu & Stock', icon: Icons.restaurant_menu_rounded, onTap: () => context.go('/restaurant/menu-stock')),
       const _Nav(label: 'Analytics', icon: Icons.analytics_outlined),
       const _Nav(label: 'Settings', icon: Icons.settings_outlined),
       const Spacer(),
@@ -85,15 +85,18 @@ class _Sidebar extends StatelessWidget {
 }
 
 class _Nav extends StatelessWidget {
-  const _Nav({required this.label, required this.icon, this.selected = false});
-  final String label; final IconData icon; final bool selected;
+  const _Nav({required this.label, required this.icon, this.selected = false, this.onTap});
+  final String label; final IconData icon; final bool selected; final VoidCallback? onTap;
   @override
-  Widget build(BuildContext context) => Container(
-    margin: const EdgeInsets.only(bottom: 5),
-    decoration: BoxDecoration(color: selected ? SnapFoodColors.softYellow : Colors.transparent, borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
-    padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 11),
-    child: Row(children: [Icon(icon, size: 19, color: selected ? SnapFoodColors.primary : SnapFoodColors.onSurfaceVariant), const SizedBox(width: 10), Text(label, style: TextStyle(fontSize: 12, fontWeight: selected ? FontWeight.w800 : FontWeight.w600))]),
-  );
+  Widget build(BuildContext context) {
+    final child = Container(
+      margin: const EdgeInsets.only(bottom: 5),
+      decoration: BoxDecoration(color: selected ? SnapFoodColors.softYellow : Colors.transparent, borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 11),
+      child: Row(children: [Icon(icon, size: 19, color: selected ? SnapFoodColors.primary : SnapFoodColors.onSurfaceVariant), const SizedBox(width: 10), Text(label, style: TextStyle(fontSize: 12, fontWeight: selected ? FontWeight.w800 : FontWeight.w600))]),
+    );
+    return onTap == null ? child : InkWell(onTap: onTap, borderRadius: BorderRadius.circular(SnapFoodRadii.md), child: child);
+  }
 }
 
 class _Header extends StatelessWidget {
@@ -289,7 +292,7 @@ class _PopularItems extends StatelessWidget {
     return _Panel(
       title: 'Popular Items',
       trailing: TextButton(
-        onPressed: () {},
+        onPressed: () => context.go('/restaurant/menu-stock'),
         child: const Text('Manage Menu'),
       ),
       child: Column(
