@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
@@ -126,7 +127,7 @@ class _FoodItemDetailsScreenState extends State<FoodItemDetailsScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: FilledButton(
-                onPressed: () {},
+                onPressed: () => context.push('/cart'),
                 style: FilledButton.styleFrom(
                   backgroundColor: SnapFoodColors.secondary,
                   foregroundColor: Colors.white,

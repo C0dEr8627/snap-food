@@ -257,13 +257,17 @@ class _CartBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Material(
     color: SnapFoodColors.secondary, borderRadius: BorderRadius.circular(SnapFoodRadii.lg), elevation: 8,
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(children: [
-        const Icon(Icons.shopping_bag, color: Colors.white, size: 20), const SizedBox(width: 8),
-        Expanded(child: Text(items.toString() + ' items selected  •  ₹' + total.toString() + ' + taxes', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Colors.white))),
-        const Text('View Cart', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Colors.white)), const SizedBox(width: 5), const Icon(Icons.arrow_forward, color: Colors.white, size: 17),
-      ]),
+    child: InkWell(
+      onTap: () => context.push('/cart'),
+      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(children: [
+          const Icon(Icons.shopping_bag, color: Colors.white, size: 20), const SizedBox(width: 8),
+          Expanded(child: Text(items.toString() + ' items selected  •  ₹' + total.toString() + ' + taxes', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Colors.white))),
+          const Text('View Cart', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Colors.white)), const SizedBox(width: 5), const Icon(Icons.arrow_forward, color: Colors.white, size: 17),
+        ]),
+      ),
     ),
   );
 }
