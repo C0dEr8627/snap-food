@@ -18,9 +18,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   static const filterNames = ['Filters', 'Under 25 mins', 'Rating 4.5+', 'Great Offers', 'Pure Veg'];
 
   static const restaurants = [
-    RestaurantMock('Mumbai Spice Kitchen • Andheri West', '4.8', '(1.2k+)', 'North Indian, Biryani, Mughlai', '20–25 mins', '1.8 km', 'Free Delivery on ₹249+', 'Special Butter Chicken & Naan Combo', '₹340', Icons.restaurant),
-    RestaurantMock('The Bombay Tiffin • Juhu', '4.9', '(2.1k+)', 'Maharashtrian, Mumbai Street Food', '25–30 mins', '2.4 km', 'Free Extra Pav on ₹199+', 'Special Butter Pav Bhaji (2 Pav)', '₹140', Icons.lunch_dining),
-    RestaurantMock('Coastal Curry & Dosa House • Bandra', '4.7', '(890+)', 'South Indian, Coastal, Snacks', '20–25 mins', '2.1 km', 'Lightning Fast', 'Ghee Roast Masala Dosa', '₹160', Icons.restaurant_menu),
+    RestaurantMock('Mumbai Spice Kitchen • Andheri West', '4.8', '(1.2k+)', 'North Indian, Biryani, Mughlai', '20–25 mins', '1.8 km', 'Free Delivery on ₹249+', 'Special Butter Chicken & Naan Combo', '₹340', Icons.restaurant, 'https://lh3.googleusercontent.com/aida-public/AB6AXuCI8nFpldvx74-Of_l9s9jlewdgZKH18nVcu_GjT5unSeQsgHmaE2cDY_AjhVM5ogkaeDrk8hmiMl_QCntZj0ecfBVFpzMbiZNbAv5ugrK5FYsMx5XAHCEnWuE30jPap1Mz_rfQeFZvmnrA0qq-QD3fnmMPXuSdEI_yS_f2VeDedcwg2oUUPYPtT3miN-Dil1_weROneWtrTKK9s6ZOOHV9tuQotGSVPR0cfbmVdNzMH5tOzDMRLAcb'),
+    RestaurantMock('The Bombay Tiffin • Juhu', '4.9', '(2.1k+)', 'Maharashtrian, Mumbai Street Food', '25–30 mins', '2.4 km', 'Free Extra Pav on ₹199+', 'Special Butter Pav Bhaji (2 Pav)', '₹140', Icons.lunch_dining, 'https://lh3.googleusercontent.com/aida-public/AB6AXuBbdGjfpMkfgJSqTJT4ni_7blK_IdTaFAbuDHIW2z_EnpYpUEt5ggg1eh7TcCOmakuIfPMUPHZxPp4Wxl5pv1YESdGqNNkbQ-zjTse61hJCjo7J3RShtExpfH6IwexkRHb7uBWimoc3iKFv3-f3g5LWkYJ9RE_3p-1Lg95gcRqZyko7jEmCmd0ws2aw7AtQYlzziRR1bb4QfamSkpnlFXMbHCngbWe7A2Y1TwheNwVqPO-IFzzjKz1C6'),
+    RestaurantMock('Coastal Curry & Dosa House • Bandra', '4.7', '(890+)', 'South Indian, Coastal, Snacks', '20–25 mins', '2.1 km', 'Lightning Fast', 'Ghee Roast Masala Dosa', '₹160', Icons.restaurant_menu, 'https://lh3.googleusercontent.com/aida-public/AB6AXuAVDGZyQbP2xa-fXfa2P96qMami9MdsUAkpONQm3qw3_fpYBOtW0RjXh25ya9amXUd_v4Z56vxRVVn_04B-HmD5WQB8jZJEcA6VGhe5MWWl2byhRDQF82Ax6N46T8tPmjE11BDcQfe7Ksf0AcHmcTpD8SOCuesQqYWIjz_V5twrCz2u4B6WYexUUJZtiKNcrb15OkJFQhKQXr4i325P7L4h5EMt-zlsK9-vhRztlk12LvDjNWqWm8Ah'),
   ];
 
   @override
@@ -297,7 +297,7 @@ class RestaurantCard extends StatelessWidget {
       onTap: () {},
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         SizedBox(height: 176, child: Stack(fit: StackFit.expand, children: [
-          Container(color: SnapFoodColors.surfaceContainerHigh, child: Center(child: Icon(restaurant.icon, size: 72, color: SnapFoodColors.secondary.withAlpha(100)))),
+          Image.network(restaurant.imageUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: SnapFoodColors.surfaceContainerHigh, child: Center(child: Icon(restaurant.icon, size: 72, color: SnapFoodColors.secondary.withAlpha(100)))),
           Positioned(top: 12, right: 12, child: Material(
             color: SnapFoodColors.surfaceContainerLowest.withAlpha(230), shape: const CircleBorder(),
             child: IconButton(onPressed: onFavorite, icon: Icon(favorite ? Icons.favorite : Icons.favorite_border, size: 19, color: SnapFoodColors.secondary)),
@@ -438,7 +438,7 @@ class SectionTitle extends StatelessWidget {
 }
 
 class RestaurantMock {
-  const RestaurantMock(this.name, this.rating, this.reviews, this.cuisines, this.time, this.distance, this.offer, this.dish, this.price, this.icon);
-  final String name, rating, reviews, cuisines, time, distance, offer, dish, price;
+  const RestaurantMock(this.name, this.rating, this.reviews, this.cuisines, this.time, this.distance, this.offer, this.dish, this.price, this.icon, this.imageUrl);
+  final String name, rating, reviews, cuisines, time, distance, offer, dish, price, imageUrl;
   final IconData icon;
 }
