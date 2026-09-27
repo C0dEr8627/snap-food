@@ -159,10 +159,10 @@ class _HeroMascot extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              const AspectRatio(
+              AspectRatio(
                 aspectRatio: 1,
-                child: Image(
-                  image: AssetImage('assets/images/customer/logo.svg'),
+                child: SvgPicture.asset(
+                  'assets/images/customer/logo.svg',
                   fit: BoxFit.contain,
                 ),
               ),
