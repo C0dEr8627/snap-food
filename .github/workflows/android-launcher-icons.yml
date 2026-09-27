@@ -40,12 +40,12 @@ jobs:
             mkdir -p "android/app/src/main/res/mipmap-${density}"
             tmp="/tmp/logo-${density}.png"
             rsvg-convert -w 1599 -h 1066 -o "$tmp" "$src"
-            convert "$tmp" -background none -gravity center -extent "${size}x${size}" "android/app/src/main/res/mipmap-${density}/ic_launcher.png"
+            convert "$tmp" -background none -thumbnail "${size}x${size}" -gravity center -extent "${size}x${size}" "android/app/src/main/res/mipmap-${density}/ic_launcher.png"
           done
 
           mkdir -p android/app/src/main/res/drawable
           rsvg-convert -w 1599 -h 1066 -o /tmp/logo-foreground.png "$src"
-          convert /tmp/logo-foreground.png -background none -gravity center -extent 432x432 android/app/src/main/res/drawable/ic_launcher_foreground.png
+          convert /tmp/logo-foreground.png -background none -thumbnail 432x432 -gravity center -extent 432x432 android/app/src/main/res/drawable/ic_launcher_foreground.png
 
       - name: Add adaptive launcher icon resources
         run: |
