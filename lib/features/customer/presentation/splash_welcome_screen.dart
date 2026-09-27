@@ -159,9 +159,9 @@ class _HeroMascot extends StatelessWidget {
             clipBehavior: Clip.none,
             children: [
               const AspectRatio(
-                aspectRatio: 274 / 179,
+                aspectRatio: 1,
                 child: Image(
-                  image: AssetImage('assets/images/customer/splash_hero.webp'),
+                  image: AssetImage('assets/images/customer/logo.jpg'),
                   fit: BoxFit.contain,
                 ),
               ),
