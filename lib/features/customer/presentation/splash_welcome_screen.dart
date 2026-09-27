@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
@@ -77,7 +78,7 @@ class _SplashContent extends StatelessWidget {
                   ),
                 ),
                 TextSpan(
-                  text: 'FOOD',
+                  text: 'FOODD',
                   style: theme.textTheme.headlineMedium?.copyWith(
                     fontSize: 28,
                     fontWeight: FontWeight.w800,
@@ -161,7 +162,7 @@ class _HeroMascot extends StatelessWidget {
               const AspectRatio(
                 aspectRatio: 1,
                 child: Image(
-                  image: AssetImage('assets/images/customer/logo.jpg'),
+                  image: AssetImage('assets/images/customer/logo.svg'),
                   fit: BoxFit.contain,
                 ),
               ),
