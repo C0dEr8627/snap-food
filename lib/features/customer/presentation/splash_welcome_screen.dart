@@ -320,7 +320,7 @@ class _SplashActions extends StatelessWidget {
           width: double.infinity,
           height: 46,
           child: FilledButton(
-            onPressed: () {},
+            onPressed: () => context.go('/home'),
             style: FilledButton.styleFrom(
               backgroundColor: SnapFoodColors.secondary,
               foregroundColor: SnapFoodColors.onSecondary,
