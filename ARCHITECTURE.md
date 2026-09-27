@@ -1,10 +1,10 @@
-# Snap Food — Architecture
+# Snap Foodd — Architecture
 
 ## 1. Purpose
 
-This document defines the production architecture for Snap Food, a food-delivery platform targeting **iOS, Android, Windows, macOS, and Web** and designed to scale toward approximately **500,000 simultaneous users**.
+This document defines the production architecture for Snap Foodd, a food-delivery platform targeting **iOS, Android, Windows, macOS, and Web** and designed to scale toward approximately **500,000 simultaneous users**.
 
-The 500,000 figure is a capacity target, not a claim that the first release already sustains that load. Production readiness requires load, soak, failure, and realtime-connection testing against realistic Snap Food traffic.
+The 500,000 figure is a capacity target, not a claim that the first release already sustains that load. Production readiness requires load, soak, failure, and realtime-connection testing against realistic Snap Foodd traffic.
 
 The architecture is specific to three product surfaces:
 
@@ -126,7 +126,7 @@ Use interfaces for storage.
 - Sensitive native/desktop session material: platform-secure storage.
 - Web session: prefer secure server-managed cookies rather than long-lived credentials in browser local storage.
 - Preferences: lightweight preferences storage.
-- Larger offline/cache data: add a local database only for a demonstrated Snap Food requirement.
+- Larger offline/cache data: add a local database only for a demonstrated Snap Foodd requirement.
 
 ## 4. Target Flutter structure
 
@@ -177,7 +177,7 @@ Feature folders own their screens, state controllers, feature components, reposi
 
 ## 5. Responsive architecture
 
-Snap Food is mobile-first but not mobile-only.
+Snap Foodd is mobile-first but not mobile-only.
 
 Use centralized semantic layout classes:
 
@@ -260,7 +260,7 @@ The client never treats displayed price, availability, delivery fee, or order st
 
 ## 8. Realtime architecture
 
-Snap Food has two distinct realtime workloads:
+Snap Foodd has two distinct realtime workloads:
 
 1. Order/operational events — KDS changes, order status, assignment, customer tracking status.
 2. Delivery location telemetry — active delivery-partner positions.
@@ -271,7 +271,7 @@ Location telemetry must be throttled, coalesced, permission-aware, battery-aware
 
 ## 9. Production backend boundary
 
-Planned Snap Food capabilities:
+Planned Snap Foodd capabilities:
 
 ```
 Identity & Access
