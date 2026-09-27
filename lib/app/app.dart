@@ -59,7 +59,7 @@ class SnapFoodApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
-    title: 'Snap Food',
+    title: 'Snap Foodd',
     debugShowCheckedModeBanner: false,
     theme: SnapFoodTheme.light,
     routerConfig: ref.watch(appRouterProvider),
