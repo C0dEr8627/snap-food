@@ -175,7 +175,7 @@ class _ProfileIdentity extends StatelessWidget {
                         BorderRadius.circular(SnapFoodRadii.full),
                   ),
                   child: const Text(
-                    'SNAP FOOD MEMBER',
+                    'SNAP FOODD MEMBER',
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.w900,
@@ -311,7 +311,7 @@ class _ProfileSections extends StatelessWidget {
               ),
               _AccountRow(
                 icon: Icons.info_outline,
-                title: 'About Snap Food',
+                title: 'About Snap Foodd',
                 subtitle: 'Version 1.0.0',
               ),
             ],
