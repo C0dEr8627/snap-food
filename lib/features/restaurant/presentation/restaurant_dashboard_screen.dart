@@ -70,7 +70,7 @@ class _Sidebar extends StatelessWidget {
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const Row(children: [
         CircleAvatar(radius: 18, backgroundColor: SnapFoodColors.secondary, child: Icon(Icons.restaurant, color: Colors.white, size: 19)),
-        SizedBox(width: 9), Text('SNAP FOOD', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+        SizedBox(width: 9), Text('SNAP FOODD', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
       ]),
       const SizedBox(height: 32),
       const _Nav(label: 'Dashboard', icon: Icons.dashboard_rounded, selected: true),
