@@ -273,7 +273,7 @@ class _MobileHeader extends StatelessWidget {
       child: Icon(Icons.delivery_dining_rounded, color: SnapFoodColors.warmBlack),
     ),
     const SizedBox(width: 10),
-    const Expanded(child: Text('SNAP FOOD', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900))),
+    const Expanded(child: Text('SNAP FOODD', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900))),
     Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       decoration: BoxDecoration(color: SnapFoodColors.softYellow, borderRadius: BorderRadius.circular(SnapFoodRadii.full)),
@@ -297,7 +297,7 @@ class _Sidebar extends StatelessWidget {
       Row(children: [
         CircleAvatar(radius: 19, backgroundColor: SnapFoodColors.primaryContainer, child: Icon(Icons.delivery_dining_rounded, color: SnapFoodColors.warmBlack)),
         SizedBox(width: 9),
-        Text('SNAP FOOD', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
+        Text('SNAP FOODD', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
       ]),
       SizedBox(height: 34),
       Text('PARTNER', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1, color: SnapFoodColors.onSurfaceVariant)),
