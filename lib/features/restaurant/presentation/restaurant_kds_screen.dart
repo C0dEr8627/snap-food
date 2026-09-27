@@ -626,7 +626,7 @@ class _KdsSidebar extends StatelessWidget {
               ),
               SizedBox(width: 9),
               Text(
-                'SNAP FOOD',
+                'SNAP FOODD',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
               ),
             ],
