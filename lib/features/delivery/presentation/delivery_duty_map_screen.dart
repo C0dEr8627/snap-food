@@ -520,7 +520,7 @@ class _MobileHeader extends StatelessWidget {
           const SizedBox(width: 10),
           const Expanded(
             child: Text(
-              'SNAP FOOD',
+              'SNAP FOODD',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
             ),
           ),
@@ -559,7 +559,7 @@ class _Sidebar extends StatelessWidget {
                   child: Icon(Icons.delivery_dining_rounded, color: SnapFoodColors.warmBlack),
                 ),
                 SizedBox(width: 9),
-                Text('SNAP FOOD', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
+                Text('SNAP FOODD', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
               ],
             ),
             const SizedBox(height: 34),
