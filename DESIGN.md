@@ -1,8 +1,8 @@
-# Snap Food — Design System
+# Snap Foodd — Design System
 
 ## 1. Design authority
 
-The Google Stitch Snap Food export is the source of truth for the initial visual product. The repository contains the exported reference images under design-images/ and the complete Stitch export in stitch_snap_food_design_system.zip.
+The Google Stitch Snap Foodd export is the source of truth for the initial visual product. The repository contains the exported reference images under design-images/ and the complete Stitch export in stitch_snap_food_design_system.zip.
 
 Production Flutter code must reproduce the Stitch screens faithfully. Responsive behavior may adapt layout for viewport, input method, and platform, but must not casually redesign the product.
 
@@ -14,7 +14,7 @@ If implementation and Stitch disagree:
 
 ## 2. Brand character
 
-Snap Food is energetic, appetizing, warm, tactile, and operationally clear.
+Snap Foodd is energetic, appetizing, warm, tactile, and operationally clear.
 
 The system communicates:
 - hunger and immediacy for customers,
@@ -86,7 +86,7 @@ Prices use bold/extra-bold styles. Restaurant metadata, ETA, distance, and ratin
 
 ## 5. Spacing
 
-Snap Food follows a 4/8 px rhythm:
+Snap Foodd follows a 4/8 px rhythm:
 
     space-xs  = 4px
     space-sm  = 8px
@@ -289,7 +289,7 @@ Remote image URLs from Stitch are reference content, not the production asset-ho
 
 Delivery/live-order screens use map concepts. Phase 1 may use deterministic mock map content.
 
-Production maps must sit behind a Snap Food map abstraction so order/delivery business logic is not coupled to one SDK.
+Production maps must sit behind a Snap Foodd map abstraction so order/delivery business logic is not coupled to one SDK.
 
 Location state and map rendering state are separate. GPS/network/map failures have explicit degraded states.
 
@@ -344,7 +344,7 @@ Animation must not block critical operations or make KDS/delivery workflows slow
 - Copy generated Stitch HTML directly into Flutter.
 - Duplicate the same component across domains unnecessarily.
 - Hard-code random dimensions to match one screenshot.
-- Fall back to default Material styling that conflicts with Snap Food.
+- Fall back to default Material styling that conflicts with Snap Foodd.
 - Introduce package widgets whose visual language conflicts with the design.
 - Put backend calls or business calculations inside widgets.
 
