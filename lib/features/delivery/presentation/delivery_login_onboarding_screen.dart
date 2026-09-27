@@ -169,7 +169,7 @@ class _DesktopLayout extends StatelessWidget {
                   _OnboardingIllustration(),
                   SizedBox(height: 28),
                   Text(
-                    'Deliver with Snap Food',
+                    'Deliver with Snap Foodd',
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.w900,
@@ -227,7 +227,7 @@ class _BrandHeader extends StatelessWidget {
         ),
         SizedBox(width: 10),
         Text(
-          'SNAP FOOD',
+          'SNAP FOODD',
           style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
         ),
       ],
@@ -364,7 +364,7 @@ class _LoginForm extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.only(top: 12),
                 child: Text(
-                  'I agree to the Snap Food delivery partner terms and privacy policy.',
+                  'I agree to the Snap Foodd delivery partner terms and privacy policy.',
                   style: TextStyle(
                     fontSize: 11,
                     height: 1.4,
@@ -441,7 +441,7 @@ class _LoginForm extends StatelessWidget {
         TextButton.icon(
           onPressed: () => context.go('/'),
           icon: const Icon(Icons.arrow_back_rounded, size: 17),
-          label: const Text('Back to Snap Food'),
+          label: const Text('Back to Snap Foodd'),
         ),
       ],
     );
