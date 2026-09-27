@@ -3,12 +3,10 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("dev.flutter.flutter-gradle-plugin")
 }
-
 android {
     namespace = "com.snapfood.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
-
     defaultConfig {
         applicationId = "com.snapfood.app"
         minSdk = flutter.minSdkVersion
@@ -16,23 +14,19 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
-
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
 }
-
 flutter {
     source = "../.."
 }
