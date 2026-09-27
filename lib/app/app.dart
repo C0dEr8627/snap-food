@@ -11,6 +11,7 @@ import '../features/customer/presentation/live_order_tracking_screen.dart';
 import '../features/customer/presentation/customer_profile_screen.dart';
 import '../features/customer/presentation/restaurant_menu_screen.dart';
 import '../features/customer/presentation/splash_welcome_screen.dart';
+import '../features/customer/presentation/welcome_screen.dart';
 import '../features/restaurant/presentation/restaurant_dashboard_screen.dart';
 import '../features/restaurant/presentation/restaurant_kds_screen.dart';
 import '../features/restaurant/presentation/restaurant_order_detail_screen.dart';
@@ -27,7 +28,8 @@ import '../features/delivery/presentation/delivery_earnings_history_screen.dart'
 
 final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
   routes: [
-    GoRoute(path: '/', name: 'splash-welcome', builder: (context, state) => const SplashWelcomeScreen()),
+    GoRoute(path: '/', name: 'splash', builder: (context, state) => const SplashScreen()),
+    GoRoute(path: '/welcome', name: 'welcome', builder: (context, state) => const WelcomeScreen()),
     GoRoute(path: '/home', name: 'customer-home', builder: (context, state) => const HomeFeedScreen()),
     GoRoute(path: '/restaurant', name: 'restaurant-menu', builder: (context, state) => const RestaurantMenuScreen()),
     GoRoute(path: '/cart', name: 'cart-review', builder: (context, state) => const CartReviewScreen()),
