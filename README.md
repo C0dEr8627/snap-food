@@ -1,6 +1,6 @@
-# Snap Food
+# Snap Foodd
 
-Snap Food is a production food-delivery platform for **Customers**, **Restaurant Partners**, and **Delivery Partners**. It targets **iOS, Android, Windows, macOS, and Web** from one Flutter/Dart codebase.
+Snap Foodd is a production food-delivery platform for **Customers**, **Restaurant Partners**, and **Delivery Partners**. It targets **iOS, Android, Windows, macOS, and Web** from one Flutter/Dart codebase.
 
 The current repository is design-first. The Google Stitch export in \`stitch_snap_food_design_system.zip\` and the images in \`design-images/\` are the authoritative visual references for the initial UI.
 
@@ -34,7 +34,7 @@ The current repository is design-first. The Google Stitch export in \`stitch_sna
 
 ## Engineering standard
 
-Snap Food is a real client product. We do not optimize for “make the screen work”; we optimize for **modularity, changeability, testability, responsive behavior, security, performance, and production operation**.
+Snap Foodd is a real client product. We do not optimize for “make the screen work”; we optimize for **modularity, changeability, testability, responsive behavior, security, performance, and production operation**.
 
 Core rules:
 
@@ -48,7 +48,7 @@ Core rules:
 - Mock repositories first; production repositories later.
 - No secrets or privileged credentials in the client.
 - Loading, empty, error, offline/degraded, and accessibility states are part of feature completion.
-- Third-party packages require a Snap Food use case and maintenance/license review.
+- Third-party packages require a Snap Foodd use case and maintenance/license review.
 - Architectural changes must be documented.
 
 ## Technology decisions
@@ -61,7 +61,7 @@ Core rules:
 | Navigation | go_router |
 | Immutable models | Freezed |
 | JSON | json_serializable |
-| HTTP | Dio behind Snap Food API abstractions |
+| HTTP | Dio behind Snap Foodd API abstractions |
 | Secure session storage | Platform-secure implementation behind an interface |
 | Preferences | Lightweight preferences behind an interface |
 | Testing | unit + widget + integration + visual regression |
@@ -117,7 +117,7 @@ A screen is complete only when it:
 
 - Matches its Stitch reference at the intended viewport.
 - Adapts correctly at compact/medium/expanded sizes.
-- Uses centralized Snap Food tokens/components.
+- Uses centralized Snap Foodd tokens/components.
 - Keeps logic outside widgets.
 - Has deterministic tests where behavior matters.
 - Handles loading/error/empty states where applicable.
