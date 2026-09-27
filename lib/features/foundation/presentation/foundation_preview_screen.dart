@@ -35,7 +35,7 @@ class FoundationPreviewScreen extends StatelessWidget {
               children: [
                 Container(width: 56, height: 56, decoration: const BoxDecoration(color: SnapFoodColors.goldenYellow, shape: BoxShape.circle), child: const Icon(Icons.restaurant, color: SnapFoodColors.warmBlack)),
                 const SizedBox(height: 24),
-                Text('Snap Food', style: theme.textTheme.displaySmall),
+                Text('Snap Foodd', style: theme.textTheme.displaySmall),
                 const SizedBox(height: 8),
                 Text('Frontend foundation is ready.', style: theme.textTheme.titleMedium),
                 const SizedBox(height: 8),
