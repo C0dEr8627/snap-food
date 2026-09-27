@@ -642,7 +642,7 @@ class _Sidebar extends StatelessWidget {
             children: [
               CircleAvatar(radius: 18, backgroundColor: SnapFoodColors.secondary, child: Icon(Icons.restaurant, color: Colors.white, size: 19)),
               SizedBox(width: 9),
-              Text('SNAP FOOD', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+              Text('SNAP FOODD', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
             ],
           ),
           const SizedBox(height: 32),
