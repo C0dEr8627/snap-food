@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:snap_food/app/app.dart';
+import 'package:snap_foodd/app/app.dart';
 
 void main() {
-  testWidgets('Snap Food splash and welcome screen boots', (tester) async {
+  testWidgets('Snap Foodd splash and welcome screen boots', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: SnapFoodApp()));
     await tester.pumpAndSettle();
 
     expect(find.text('4.9 Rating by 1,20,000+ Mumbai foodies'), findsOneWidget);
-    expect(find.text('SNAP FOOD'), findsOneWidget);
+    expect(find.text('SNAP FOODD'), findsOneWidget);
     expect(find.text('Lightning Fast Delivery'), findsOneWidget);
     expect(find.text('Get Started'), findsOneWidget);
     expect(find.textContaining('Already have an account?'), findsOneWidget);
