@@ -284,7 +284,7 @@ class _MobileHeader extends StatelessWidget {
         child: Row(
           children: [
             IconButton(onPressed: () => Navigator.maybePop(context), icon: const Icon(Icons.arrow_back_rounded)),
-            const Expanded(child: Text('SNAP FOOD', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900))),
+            const Expanded(child: Text('SNAP FOODD', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900))),
             const _StatusPill(),
           ],
         ),
@@ -324,7 +324,7 @@ class _Sidebar extends StatelessWidget {
               children: [
                 CircleAvatar(radius: 19, backgroundColor: SnapFoodColors.primaryContainer, child: Icon(Icons.delivery_dining_rounded, color: SnapFoodColors.warmBlack)),
                 SizedBox(width: 9),
-                Text('SNAP FOOD', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
+                Text('SNAP FOODD', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
               ],
             ),
             SizedBox(height: 34),
