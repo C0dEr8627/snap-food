@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
@@ -318,7 +319,7 @@ class _WelcomeActions extends StatelessWidget {
           width: double.infinity,
           height: 46,
           child: FilledButton(
-            onPressed: () {},
+            onPressed: () => context.go('/home'),
             style: FilledButton.styleFrom(
               backgroundColor: SnapFoodColors.secondary,
               foregroundColor: SnapFoodColors.onSecondary,
@@ -349,7 +350,7 @@ class _WelcomeActions extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         TextButton(
-          onPressed: () {},
+          onPressed: () => context.go('/home'),
           style: TextButton.styleFrom(
             foregroundColor: SnapFoodColors.onSurface,
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
