@@ -243,27 +243,8 @@ Fast discovery and one-thumb browsing on compact screens. Bottom navigation is t
 
 Core destinations include Home, discovery/search, Cart, Orders, and Profile according to the supplied Stitch flow.
 
-### Restaurant Partner
-Operational destinations:
-- Dashboard
-- Live Orders / KDS
-- Order Details
-- Menu / Stock
+### Restaurant Partner is deferred for the current release; keep any existing restaurant visuals as reference only.
 
-KDS should become multi-column when horizontal space permits.
-
-### Delivery Partner
-Task-first flow:
-- Login / Onboarding
-- Home / Duty Map
-- Incoming Request
-- Navigate to Restaurant
-- Pickup Verification
-- Navigate to Customer
-- Handover / PIN Verification
-- Earnings / Trip History
-
-Navigation must not obscure current trip state.
 
 ## 11. Safe areas
 
