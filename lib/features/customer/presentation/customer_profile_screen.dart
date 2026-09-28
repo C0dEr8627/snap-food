@@ -21,7 +21,7 @@ class CustomerProfileScreen extends StatelessWidget {
 
             return Column(
               children: [
-                _ProfileHeader(onBack: () => context.pop()),
+                const _ProfileHeader(),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: EdgeInsets.fromLTRB(
@@ -66,9 +66,7 @@ class CustomerProfileScreen extends StatelessWidget {
 }
 
 class _ProfileHeader extends StatelessWidget {
-  const _ProfileHeader({required this.onBack});
-
-  final VoidCallback onBack;
+  const _ProfileHeader();
 
   @override
   Widget build(BuildContext context) => Material(
@@ -80,10 +78,6 @@ class _ProfileHeader extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Row(
               children: [
-                IconButton(
-                  onPressed: onBack,
-                  icon: const Icon(Icons.arrow_back),
-                ),
                 const Expanded(
                   child: Text(
                     'My Profile',
@@ -91,7 +85,8 @@ class _ProfileHeader extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  tooltip: 'Settings',
+                  onPressed: () => context.go('/settings'),
                   icon: const Icon(Icons.settings_outlined),
                 ),
               ],
@@ -201,14 +196,14 @@ class _ProfileIdentity extends StatelessWidget {
             icon: Icons.receipt_long_outlined,
             title: 'My Orders',
             subtitle: 'Track current and previous orders',
-            onTap: () {},
+            onTap: () => context.go('/orders'),
           ),
           const SizedBox(height: 10),
           _ProfileAction(
             icon: Icons.favorite_border,
             title: 'Favorites',
             subtitle: 'Your saved restaurants and dishes',
-            onTap: () {},
+            onTap: () => context.go('/favorites'),
           ),
         ],
       );
@@ -320,7 +315,7 @@ class _ProfileSections extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
-              onPressed: () {},
+              onPressed: () => context.go('/welcome'),
               icon: const Icon(Icons.logout, size: 18),
               label: const Text('Log out'),
               style: OutlinedButton.styleFrom(
@@ -531,7 +526,23 @@ class _ProfileBottomNav extends StatelessWidget {
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        if (i == 0) context.go('/home');
+                        switch (i) {
+                          case 0:
+                            context.go('/home');
+                            break;
+                          case 1:
+                            context.go('/search');
+                            break;
+                          case 2:
+                            context.go('/orders');
+                            break;
+                          case 3:
+                            context.go('/favorites');
+                            break;
+                          case 4:
+                            context.go('/profile');
+                            break;
+                        }
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
