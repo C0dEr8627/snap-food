@@ -12,6 +12,7 @@ import '../features/customer/presentation/orders_screen.dart';
 import '../features/customer/presentation/favorites_screen.dart';
 import '../features/customer/presentation/live_order_tracking_screen.dart';
 import '../features/customer/presentation/customer_profile_screen.dart';
+import '../features/customer/presentation/customer_settings_screen.dart';
 import '../features/customer/presentation/restaurant_menu_screen.dart';
 import '../features/customer/presentation/splash_welcome_screen.dart';
 import '../features/customer/presentation/welcome_screen.dart';
@@ -42,6 +43,7 @@ final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
     GoRoute(path: '/checkout', name: 'checkout', builder: (context, state) => const CheckoutScreen()),
     GoRoute(path: '/order-tracking', name: 'order-tracking', builder: (context, state) => const LiveOrderTrackingScreen()),
     GoRoute(path: '/profile', name: 'customer-profile', builder: (context, state) => const CustomerProfileScreen()),
+    GoRoute(path: '/settings', name: 'customer-settings', builder: (context, state) => const CustomerSettingsScreen()),
     GoRoute(path: '/restaurant/dashboard', name: 'restaurant-dashboard', builder: (context, state) => const RestaurantDashboardScreen()),
     GoRoute(path: '/restaurant/kds', name: 'restaurant-kds', builder: (context, state) => const RestaurantKdsScreen()),
     GoRoute(path: '/restaurant/orders/:orderId', name: 'restaurant-order-detail', builder: (context, state) => RestaurantOrderDetailScreen(orderId: state.pathParameters['orderId'] ?? 'SF10248')),
