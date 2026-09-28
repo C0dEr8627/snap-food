@@ -422,13 +422,26 @@ class BottomNav extends StatelessWidget {
       child: SizedBox(height: 64, child: Row(children: [
         for (var i = 0; i < items.length; i++)
           Expanded(child: InkWell(onTap: () {
-            if (i == 4) {
-              context.push('/profile');
-            } else {
-              onSelected(i);
+            switch (i) {
+              case 0:
+                context.go('/home');
+                break;
+              case 1:
+                context.go('/search');
+                break;
+              case 2:
+                context.go('/orders');
+                break;
+              case 3:
+                context.go('/favorites');
+                break;
+              case 4:
+                context.go('/profile');
+                break;
             }
+            onSelected(i);
           }, child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Icon(items[i].$1, size: 22, color: i == selected ? SnapFoodColors.secondary : SnapFoodColors.onSurfaceVariant),
+          Icon(items[i].$1, size: 22, color: i == selected ? SnapFoodColors.secondary : SnapFoodColors.onSurfaceVariant),
             const SizedBox(height: 2),
             Text(items[i].$2, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: i == selected ? SnapFoodColors.secondary : SnapFoodColors.onSurfaceVariant)),
           ]))),
