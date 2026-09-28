@@ -1,150 +1,68 @@
 # Snap Foodd
 
-Snap Foodd is a production food-delivery platform for **Customers**, **Restaurant Partners**, and **Delivery Partners**. It targets **iOS, Android, Windows, macOS, and Web** from one Flutter/Dart codebase.
+Snap Foodd is a Flutter food-delivery application backed by Laravel/PHP and MySQL.
 
-The current repository is design-first. The Google Stitch export in \`stitch_snap_food_design_system.zip\` and the images in \`design-images/\` are the authoritative visual references for the initial UI.
+## Release scope
+- **Customer mobile:** Google SSO, catalogue/search, cart, COD checkout, orders and active delivery tracking.
+- **Delivery Partner mobile:** approved-partner sign-in, delivery requests, pickup/delivery workflow and active-trip GPS.
+- **Admin web:** products, categories, orders, delivery partners, assignments and invoices.
+- **Restaurant Partner:** deferred for this release.
 
-## Product surfaces
+## Approved technical decisions
 
-### Customer
-1. Splash & Welcome
-2. Home Feed
-3. Restaurant & Menu
-4. Food Item Details
-5. Checkout
-6. Live Order Tracking
-7. Cart & Review
-8. Customer Profile
-
-### Restaurant Partner
-1. Dashboard
-2. Live Orders / KDS
-3. Order Detail Ticket
-4. Partner Menu / Stock
-
-### Delivery Partner
-1. Login / Onboarding
-2. Delivery Requests
-3. Partner Home / Duty Map
-4. Navigate to Restaurant
-5. Pickup Confirmation / Verification
-6. Navigate to Customer
-7. Delivery Verification / PIN Verification
-8. Earnings / Trip History
-
-## Engineering standard
-
-Snap Foodd is a real client product. We do not optimize for “make the screen work”; we optimize for **modularity, changeability, testability, responsive behavior, security, performance, and production operation**.
-
-Core rules:
-
-- Feature-first architecture with explicit boundaries.
-- UI never owns API, persistence, authentication, or business rules.
-- Immutable models/state where practical.
-- Repository interfaces isolate features from data sources.
-- Dependency injection; no scattered global mutable services.
-- Shared design-system components instead of screen-specific duplicates.
-- Platform-specific behavior behind adapters.
-- Mock repositories first; production repositories later.
-- No secrets or privileged credentials in the client.
-- Loading, empty, error, offline/degraded, and accessibility states are part of feature completion.
-- Third-party packages require a Snap Foodd use case and maintenance/license review.
-- Architectural changes must be documented.
-
-## Technology decisions
-
-| Concern | Decision |
+| Area | Decision |
 |---|---|
-| Language | Dart |
-| Cross-platform UI | Flutter |
+| Mobile | Flutter / Dart |
 | State + DI | Riverpod 3 |
 | Navigation | go_router |
-| Immutable models | Freezed |
-| JSON | json_serializable |
-| HTTP | Dio behind Snap Foodd API abstractions |
-| Secure session storage | Platform-secure implementation behind an interface |
-| Preferences | Lightweight preferences behind an interface |
-| Testing | unit + widget + integration + visual regression |
-| Initial data | deterministic mock repositories |
+| Backend | Laravel / PHP |
+| API | REST under `/api/v1` |
+| Database | MySQL |
+| Auth | Google OAuth SSO |
+| OTP | Deferred |
+| Payments | COD |
+| Maps | Google Maps Platform |
+| Tracking | Active-trip HTTP updates + polling |
+| Admin | Separate Laravel web dashboard |
+| Hosting | GoDaddy; exact plan must be verified |
+| Backend style | Laravel modular monolith |
+| WebSockets | Not required for MVP |
 
-The Stitch HTML is **not** production source code. It is the design specification. Production UI is native Flutter.
+## Documentation source of truth
+Read before coding:
+1. [PRODUCT.md](PRODUCT.md)
+2. [ARCHITECTURE.md](ARCHITECTURE.md)
+3. [API_CONTRACT.md](API_CONTRACT.md)
+4. [DATABASE.md](DATABASE.md)
+5. [AUTH.md](AUTH.md)
+6. [DELIVERY_TRACKING.md](DELIVERY_TRACKING.md)
+7. [ADMIN.md](ADMIN.md)
+8. [DEVELOPMENT.md](DEVELOPMENT.md)
+9. [AI_RULES.md](AI_RULES.md)
+10. [DESIGN.md](DESIGN.md)
 
-## Architecture
+If code and documentation disagree, update them together.
 
-The target frontend flow is:
+## Engineering rules
+- Backend is authoritative for business rules and data.
+- Flutter widgets do not own API calls, persistence, pricing or workflow decisions.
+- Never trust client role, price, availability, total, payment state or order status.
+- Keep repository boundaries between features and external data sources.
+- Keep secrets out of Flutter and Git.
+- Preserve existing UI unless a design change is explicitly requested.
+- Loading, empty, error and degraded-network states are part of completion.
+- Update docs/tests when architecture, API, schema or workflow changes.
 
-\`\`\`
-Screen / Widget
-      ↓
-ViewModel / Controller
-      ↓
-Repository interface
-      ↓
-Mock repository (Phase 1)
-      ↓
-Production repository (later)
-      ↓
-API / local data / realtime
-\`\`\`
+## Implementation order
+1. Verify GoDaddy capabilities.
+2. Laravel + MySQL foundation.
+3. Google SSO end-to-end.
+4. Catalogue/admin.
+5. Cart + COD checkout.
+6. Admin order/delivery assignment.
+7. Delivery partner workflow.
+8. Maps + active tracking.
+9. Invoices.
+10. Security/integration/device release testing.
 
-The detailed architecture is in [ARCHITECTURE.md](ARCHITECTURE.md).
-
-The visual contract is in [DESIGN.md](DESIGN.md).
-
-## Development order
-
-### Phase 0 — Foundation
-Flutter workspace, CI, linting, architecture, design tokens, routing shell, environment configuration, and tests.
-
-### Phase 1 — Frontend
-Implement the Stitch screens with deterministic mock data. Build the design system before duplicating screen-specific UI.
-
-### Phase 2 — Frontend hardening
-Responsive QA across phone/tablet/desktop/web, accessibility, widget tests, visual regression, loading/error/empty states, and performance checks.
-
-### Phase 3 — Backend contracts
-Freeze API/realtime contracts from validated frontend workflows.
-
-### Phase 4 — Backend + database
-Implement identity, catalog, cart, orders, payments, restaurant operations, dispatch, delivery tracking, notifications, and reviews.
-
-### Phase 5 — Production
-Load/soak/failure testing, observability, security, disaster recovery, cost validation, and deployment gates.
-
-## Definition of done
-
-A screen is complete only when it:
-
-- Matches its Stitch reference at the intended viewport.
-- Adapts correctly at compact/medium/expanded sizes.
-- Uses centralized Snap Foodd tokens/components.
-- Keeps logic outside widgets.
-- Has deterministic tests where behavior matters.
-- Handles loading/error/empty states where applicable.
-- Avoids unnecessary rebuilds and expensive work in \`build()\`.
-- Supports relevant touch, mouse, keyboard, and platform navigation.
-- Passes formatting, analysis, and tests.
-
-## Target repository structure
-
-\`\`\`
-lib/
-├── app/
-├── core/
-├── design_system/
-├── features/
-│   ├── auth/
-│   ├── customer/
-│   ├── restaurant/
-│   ├── delivery/
-│   └── orders/
-├── main.dart
-test/
-integration_test/
-assets/
-ARCHITECTURE.md
-DESIGN.md
-README.md
-\`\`\`
-
-The exact tree may evolve when real boundaries are discovered. New architectural patterns should not be introduced casually.
+See [DEVELOPMENT.md](DEVELOPMENT.md).
