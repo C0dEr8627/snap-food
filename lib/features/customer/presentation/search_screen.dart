@@ -155,7 +155,7 @@ class _SearchResultCard extends StatelessWidget {
               const SizedBox(width: 8),
               Text(restaurant.distance, style: const TextStyle(fontSize: 11, color: SnapFoodColors.outline)),
             ]),
-          ]),
+          ])),
           const Icon(Icons.chevron_right, color: SnapFoodColors.outline),
         ]),
       ),
