@@ -72,34 +72,33 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           builder: (context, constraints) {
             final isExpanded = constraints.maxWidth >= 900;
 
-            return SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isExpanded
-                          ? SnapFoodSpacing.desktopMargin
-                          : SnapFoodSpacing.mobileMargin,
-                      vertical: isExpanded ? 28 : 16,
-                    ),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 1120),
-                      child: isExpanded
-                          ? _DesktopWelcome(
-                              heroAnimation: _heroAnimation,
-                              copyAnimation: _copyAnimation,
-                              benefitsAnimation: _benefitsAnimation,
-                              actionsAnimation: _actionsAnimation,
-                            )
-                          : _MobileWelcome(
-                              heroAnimation: _heroAnimation,
-                              copyAnimation: _copyAnimation,
-                              benefitsAnimation: _benefitsAnimation,
-                              actionsAnimation: _actionsAnimation,
-                            ),
-                    ),
+            return SizedBox(
+              width: double.infinity,
+              height: constraints.maxHeight,
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isExpanded
+                        ? SnapFoodSpacing.desktopMargin
+                        : SnapFoodSpacing.mobileMargin,
+                    vertical: isExpanded ? 20 : 12,
+                  ),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 1120),
+                    child: isExpanded
+                        ? _DesktopWelcome(
+                            heroAnimation: _heroAnimation,
+                            copyAnimation: _copyAnimation,
+                            benefitsAnimation: _benefitsAnimation,
+                            actionsAnimation: _actionsAnimation,
+                          )
+                        : _MobileWelcome(
+                            height: constraints.maxHeight,
+                            heroAnimation: _heroAnimation,
+                            copyAnimation: _copyAnimation,
+                            benefitsAnimation: _benefitsAnimation,
+                            actionsAnimation: _actionsAnimation,
+                          ),
                   ),
                 ),
               ),
@@ -113,12 +112,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
 class _MobileWelcome extends StatelessWidget {
   const _MobileWelcome({
+    required this.height,
     required this.heroAnimation,
     required this.copyAnimation,
     required this.benefitsAnimation,
     required this.actionsAnimation,
   });
 
+  final double height;
   final Animation<double> heroAnimation;
   final Animation<double> copyAnimation;
   final Animation<double> benefitsAnimation;
@@ -126,25 +127,26 @@ class _MobileWelcome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = height < 680;
+    final veryCompact = height < 600;
+    final heroSize = veryCompact ? 188.0 : compact ? 220.0 : 252.0;
+
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const _BrandHeader(),
-        const SizedBox(height: 28),
         _AnimatedSection(
           animation: heroAnimation,
-          child: const _FoodHero(),
+          child: _FoodHero(maxSize: heroSize),
         ),
-        const SizedBox(height: 30),
         _AnimatedSection(
           animation: copyAnimation,
           child: const _WelcomeCopy(),
         ),
-        const SizedBox(height: 28),
         _AnimatedSection(
           animation: benefitsAnimation,
           child: const _BenefitStrip(),
         ),
-        const SizedBox(height: 30),
         _AnimatedSection(
           animation: actionsAnimation,
           child: const _WelcomeActions(),
@@ -324,13 +326,21 @@ class _MumbaiLabel extends StatelessWidget {
 }
 
 class _FoodHero extends StatelessWidget {
-  const _FoodHero();
+  const _FoodHero({
+    this.maxSize,
+  });
+
+  final double? maxSize;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final size = constraints.maxWidth >= 600 ? 420.0 : 320.0;
+        final available = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : (maxSize ?? 320);
+        final size = (maxSize ?? (available >= 600 ? 420.0 : 320.0))
+            .clamp(0.0, available);
 
         return SizedBox(
           width: double.infinity,
@@ -394,7 +404,7 @@ class _FoodHero extends StatelessWidget {
                         ),
                       ],
                     ),
-                    padding: const EdgeInsets.all(34),
+                    padding: EdgeInsets.all(size * 0.106),
                     child: SvgPicture.asset(
                       'assets/images/customer/logo.svg',
                       fit: BoxFit.contain,
