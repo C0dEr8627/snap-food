@@ -27,10 +27,10 @@ Build the trusted backend and admin operations that the existing Flutter app can
 |---|---|---|
 | Phase 0 — Environment & repository baseline | **PARTIAL** | Repository/docs inspected; PHP 8.3 target recorded; hosting checklist and safe env example documented. Actual GoDaddy Composer/MySQL capability remains unverified. |
 | Phase 1 — Backend foundation | **COMPLETED** | Laravel API skeleton, routing, health endpoint, PHPUnit config/test, PHP 8.3 CI, Sanctum, MySQL config, Laravel 13 baseline and required Git-preserved directories are complete. Workflow #30 passed the foundation suite. Initial MySQL schema/models and CI migration verification also passed in workflow #48. |
-| Phase 2 — Identity & authorization | **COMPLETED** | Google verification service, login, Sanctum token storage, `/me`, logout, role middleware, resource policies and negative/cross-user authorization tests are implemented and verified by Workflow #146. Server-side delivery-partner provisioning/approval is now implemented and CI-verified by Workflow #205. Admin role provisioning remains operator-controlled until the protected admin web bootstrap flow is defined. |
+| Phase 2 — Identity & authorization | **COMPLETED** | Google verification service, login, Sanctum token storage, `/me`, logout, role middleware, resource policies and negative/cross-user authorization tests are implemented and verified by Workflow #146. Server-side delivery-partner provisioning/approval is now implemented and CI-verified by Workflow #209. Admin role provisioning remains operator-controlled until the protected admin web bootstrap flow is defined. |
 | Phase 3 — Catalogue | **COMPLETED** | Customer category/product reads, search/pagination, admin create/update/deactivate APIs, validation, regression tests and deterministic seed/demo data are implemented and verified by Workflow #146. |
-| Phase 4 — Orders & COD | **IN PROGRESS** | Checkout/list/detail and server-owned admin status transitions are implemented; latest CI verification is pending. Concurrency/state-conflict coverage is now included; delivery-partner-specific transitions remain in Phases 5–6. |
-| Phase 5 — Admin & assignment | **NOT STARTED** | Protected admin web dashboard and delivery assignment operations remain. |
+| Phase 4 — Orders & COD | **IN PROGRESS** | Checkout/list/detail and server-owned admin status transitions are CI-verified; delivery assignment/partner workflow remains. |
+| Phase 5 — Admin & assignment | **IN PROGRESS** | Protected Laravel web authentication/dashboard foundation is implemented; fresh CI verification and concurrency-safe delivery assignment remain. |
 | Phase 6 — Delivery tracking | **NOT STARTED** | Partner workflow, pickup/completion, location updates and tracking authorization remain. |
 | Phase 7 — Invoices | **NOT STARTED** | Numbering decision, invoice generation and access control remain. |
 | Phase 8 — Release readiness | **NOT STARTED** | Seeds, contract examples, clean-DB migration run, automated tests, security review and deployment checklist remain. |
@@ -208,7 +208,8 @@ Build the trusted backend and admin operations that the existing Flutter app can
 ### Latest verification result
 
 - Workflow #204 **PASSED**: PHP 8.3 setup, dependency installation, MySQL migrations and the PHPUnit suite all completed successfully on commit `d9c09af670b3e3a6ea0d00afd0e16b57b254fafe`; this verifies the server-owned admin order status transition increment already present on the branch.
-- Workflow #205 **FAILED**: delivery-partner provisioning/approval migrations passed, but duplicate/admin provisioning returned HTTP 500 instead of 409 because generic conflict exceptions fell through to the `SERVER_ERROR` renderer. The conflict handling is now corrected; fresh CI verification is required.
+- Workflow #205 **FAILED**: delivery-partner provisioning/approval migrations passed, but duplicate/admin provisioning returned HTTP 500 instead of 409 because generic conflict exceptions fell through to the `SERVER_ERROR` renderer. The conflict handling was corrected in commits `563ccd67d50a8cdba0e5ad9669fd1d5febf88dbc` and `68b4e986bd1793de31ce912f9e815de3964bc5ab`.
+- Workflow #209 **PASSED** on `68b4e986bd1793de31ce912f9e815de3964bc5ab`: PHP 8.3 setup, dependency installation, MySQL migrations and PHPUnit all completed successfully. Delivery-partner provisioning/approval is now CI-verified.
 
 - Workflow #109 passed the prior authentication + authorization implementation.
 - Workflow #134 ran the combined latest branch state and **failed in the catalogue test suite**: 7 tests failed after the application boot, dependency installation and MySQL migrations all succeeded.
@@ -223,7 +224,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Immediate next task
 
-**Verify the delivery-partner provisioning/approval increment in CI.** If green, continue with protected Laravel admin web authentication and delivery assignment concurrency work. If CI fails, fix the concrete failure before advancing.
+**Verify the protected Laravel admin web authentication increment in CI (Workflow #221).** The implementation is present on `developer-1-backend-admin`; do not mark the task complete until CI passes. If green, continue with concurrency-safe delivery assignment, assignment history/actor recording and race/conflict tests. If CI fails, fix the concrete failure before advancing.
 
 ## Developer 1 definition of done
 
