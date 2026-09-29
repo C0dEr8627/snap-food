@@ -539,3 +539,14 @@ No backend/Laravel-owned files were modified.
 - M5–M8: [~] backend delivery/tracking/invoice work is documented/verified, while Flutter delivery/tracking/invoice integration remains.
 - M9: [ ] final CI, Android/device and end-to-end verification remain.
 - Next owner/action: Developer 2 connects real catalogue selection to CartController.addItem, then verifies checkout error paths before continuing tracking/delivery/invoice.
+
+
+## Developer 2 checkpoint — 2026-09-29 (catalogue-to-cart + checkout tests)
+
+- M3: [x] typed catalogue DTO/repository/controller and catalogue-backed menu/detail selection complete.
+- M4: [x] real numeric product IDs flow from catalogue → cart → COD request; checkout tests cover duplicate submit, VALIDATION_FAILED and HTTP 409.
+- M5: [x] order history/detail UI implemented; [~] customer tracking remains.
+- M6/M7: [~] delivery assignment/status/location/tracking Flutter integration remains.
+- M8: [ ] invoice Flutter integration remains.
+- M9: [ ] current-head CI, Android/device and end-to-end verification remain.
+- Next owner/action: Developer 2 verifies CI, then implements customer tracking, delivery and invoice integrations in contract order.
