@@ -29,7 +29,7 @@ This document records the exact information Flutter needs before Google SSO can 
 
 ## Current cross-branch checkpoint (2026-09-29)
 
-Developer 1's latest backend commit `b150b2cbb6874c00fda70197d0995057b19a0e6d` passed GitHub Actions Backend workflow #109. The backend auth/authz CI gate is currently green.
+Developer 1's latest inspected branch commit is `aaa75903c5b723aa4d307afa6691f6ab0c535ab7`. Prior auth/authz workflow #109 passed on `b150b2cbb6874c00fda70197d0995057b19a0e6d`; latest workflow #142 exposed four stale `error.code` assertions, corrected in `53cbf6e01ebed21cf295f3700809e2877aaccc26` and `28053a9ff26f854cc70301920b97844dad8c72c9`. Fresh CI after those fixes is still pending.
 
 Flutter is still blocked from the actual Google exchange because the shared `API_CONTRACT.md` / `AUTH.md` do not yet freeze the exact `/auth/google` request credential field/type, successful application-token response shape, or public Google client configuration.
 
