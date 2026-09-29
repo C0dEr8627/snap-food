@@ -87,7 +87,7 @@ class OrderLineRequest {
     required this.quantity,
   });
 
-  final String productId;
+  final int productId;
   final int quantity;
 
   Map<String, Object> toJson() => {
