@@ -14,7 +14,7 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 - [ ] M1 — Laravel boots and connects to non-production MySQL.
 - [x] M2 — Google SSO backend authentication/authorization slice is implemented and verified through workflow #146; end-to-end Flutter session restoration/revocation remains a separate integration check.
 - [x] M3 — Admin product/category CRUD and customer catalogue API work end-to-end, including deterministic seed/demo data verified by workflow #146.
-- [ ] M4 — Customer creates a COD order with server-calculated totals; admin can inspect it.
+- [~] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history are implemented, while CI verification and admin inspection/status operations remain.
 - [ ] M5 — Admin provisions delivery partners and safely assigns orders.
 - [ ] M6 — Partner accepts, confirms pickup, and completes delivery through valid state transitions.
 - [ ] M7 — Active-trip GPS updates are authorized and customer map shows fresh/stale location states.
@@ -64,3 +64,5 @@ Record decisions here only after the owner approves or they are already establis
 - Workflow #138 failed with the remaining controller authorization calls; the latest two commits fixed those paths. Workflow #142 then failed on four stale test assertions expecting `error.code`; the API contract uses top-level `code`. Test assertions were corrected in commits `53cbf6e01ebed21cf295f3700809e2877aaccc26` and `28053a9ff26f854cc70301920b97844dad8c72c9`. Fresh CI verification is pending.
 - Verification gate: GitHub Actions workflow #146 passed.
 - Next implementation: Phase 4 order/COD workflow, starting with state definitions and transition rules.
+
+- Phase 4 initial order/COD slice is now implemented on the branch: orders/order-items/status-history schema, transactional checkout, server-side totals, immutable snapshots, COD pending state, customer list/detail endpoints, and regression tests. CI verification is pending.
