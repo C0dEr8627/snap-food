@@ -834,3 +834,19 @@ No backend/Laravel-owned files were modified.
 3. Confirm approved Android/iOS location and Maps dependencies/configuration.
 4. Implement invoice integration from the frozen success response.
 5. Complete physical GPS/Maps and customer/delivery E2E verification.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (current-head CI #207)
+
+- CI #207 (`36608012303`) completed on the PR merge ref with dependency resolution, formatting, and analyzer passing.
+- The test gate failed on one stale smoke-test assertion: the welcome brand is rendered as an SVG plus split rich text spans, so `find.text('SNAP FOODD')` does not match the rendered widget tree. The failure is in `test/app_smoke_test.dart`, not application runtime behavior.
+- Updated the smoke test to assert the existing SVG semantic label `Snap Foodd` instead of assuming a single literal text node.
+- Android debug APK was skipped because the test step failed first.
+- No backend/Laravel-owned files were modified and no GPS/Maps dependency was introduced.
+- Flutter commands were run by GitHub Actions; local Flutter execution remains unavailable in this connected environment.
+
+### Next execution order
+1. Verify a fresh CI run from the smoke-test fix; confirm tests pass and Android debug APK runs.
+2. Confirm approved Android/iOS location package and Google Maps configuration before adding platform dependencies.
+3. Freeze invoice success JSON fields and implement typed invoice repository/model/UI.
+4. Perform physical GPS/Maps verification and customer/delivery E2E verification.
