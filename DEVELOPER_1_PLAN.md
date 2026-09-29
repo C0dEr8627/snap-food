@@ -174,7 +174,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 21. Workflow #81 ran against the corrected routes but failed because `App\Http\Controllers\Controller` was missing from the Laravel 13 application skeleton.
 22. Added the application controller base class in commit `d01b6de139d819b4b0e2572f0e8dc22b6a6d5c12`.
 23. Workflow #85 reached the authentication suite successfully; one logout regression failed because the Laravel test container retained the authenticated guard instance after token deletion, so the subsequent request received HTTP 200 despite the database token being deleted.
-24. Fixed the logout regression test by clearing cached guards after revocation in commit `9bdef081822ae75d5628b62d3df400ef5b7d5b`.
+24. Fixed the logout regression test by clearing cached guards after revocation in commit `9bdef081822ae75d5628b62d3df400ef5b7d7f5b`.
 25. Added role constants/helpers, `EnsureUserHasRole`, the `role` middleware alias, explicit Address/Category/Product policies and Gate registration.
 26. Added middleware and cross-user/role policy coverage in `AuthorizationPolicyTest.php`; final CI verification is pending for this combined authz slice.
 27. Progress documentation is maintained against actual CI results rather than assuming implementation is verified.
