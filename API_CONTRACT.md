@@ -22,7 +22,8 @@ Codes: `UNAUTHORIZED`, `FORBIDDEN`, `VALIDATION_FAILED`, `NOT_FOUND`, `CONFLICT`
 `GET /categories` · `GET /products` · `GET /products/{product}`. Admin CRUD lives under `/admin/categories` and `/admin/products`.
 
 ## Orders
-`POST /orders` · `GET /orders` · `GET /orders/{order}` · `GET /orders/{order}/tracking`.
+`POST /orders` · `GET /orders` · `GET /orders/{order}` · `GET /orders/{order}/tracking` · `GET /orders/{order}/invoice`.
+`GET /admin/orders/{order}/invoice` is ADMIN-only.
 Checkout sends product IDs, quantities and address data; Laravel resolves prices, availability, fees and totals.
 
 ## Delivery
@@ -56,3 +57,14 @@ DELIVERY_PARTNER only. The authenticated approved/active partner may submit lati
 
 ### GET /api/v1/orders/{order}/tracking
 CUSTOMER owner only. Returns the active order status, latest recorded delivery location and is_stale flag. A location older than 120 seconds is considered stale; missing location is also reported as stale. ADMIN API users may use the corresponding /api/v1/admin/orders/{order}/tracking route.
+
+
+## Invoices
+
+### GET /api/v1/orders/{order}/invoice
+CUSTOMER owner only. Generates the invoice on first read for a DELIVERED order and returns the immutable financial/address/item snapshots captured at issuance. Repeated reads return the same invoice and invoice number.
+
+### GET /api/v1/admin/orders/{order}/invoice
+ADMIN only. Returns or generates the same invoice for a DELIVERED order.
+
+Invoice numbering decision: `INV-{YYYY}-{order_id padded to 8 digits}`. The order ID is unique and immutable, and the invoice number has a database uniqueness constraint, so generation is deterministic and idempotent without a separate sequence table. Invoice generation is locked on the order row to serialize concurrent requests.
