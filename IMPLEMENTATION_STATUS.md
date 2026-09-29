@@ -69,3 +69,14 @@ The backend plan records successful workflows for authentication/catalogue (#146
 - Backend CI: workflows above are recorded in the backend execution plan; not rerun by Developer 2 during this checkpoint.
 
 **Definition of next executable implementation:** typed order/COD + address integration, but it remains blocked until the shared API contract is complete. Until then, contract synchronization is the required dependency, not a reason to invent an incompatible API.
+
+
+## Latest continuation re-check — 2026-09-29
+
+- Re-read the current shared Flutter contract, the backend branch contract, the task plan and prior PR discussion before choosing the next code slice.
+- **No safe API-backed Flutter feature is newly unblocked.** The shared contract still lacks complete Google auth, catalogue, order/COD, address, delivery/tracking and invoice success schemas.
+- Identified an additional contract inconsistency requiring Developer 1's decision: shared delivery summary names `GET /delivery/requests` plus separate POST accept/pickup/complete routes and admin `/assign-delivery`; backend detailed contract names `GET /delivery/assignments`, `PATCH /delivery/assignments/{assignment}/status`, and admin `/assignment`. Do not wire Flutter to either variant until the canonical routes and exact response examples are synchronized.
+- Backend PR #2 remains open and targets `frontend`; Flutter PR #1 remains open and targets `frontend`. No branch was merged.
+- No backend-owned files or speculative DTOs/network calls were added.
+- Flutter format/pub-get/analyze/test/Android build/device verification remains **NOT RUN** because no Flutter/Dart runner is available in this environment.
+- **Next owner/action:** Developer 1 synchronizes exact request/response examples and resolves route discrepancies in the shared/base `API_CONTRACT.md`. Developer 2 then starts with the first newly unblocked plan task, prioritizing order/address integration once those schemas are frozen.
