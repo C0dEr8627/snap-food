@@ -145,7 +145,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Protect customer/admin invoice access.
 - [x] Add totals, numbering uniqueness and unauthorized-access tests.
 
-**Current Phase 7 gate:** Workflow #284 failed because `User::factory()` was unavailable in the minimal Laravel skeleton. After adding user factory support, Workflow #288 exposed the next missing test factory: `Order::factory()` (and `OrderItem::factory()`). Order/OrderItem factory support is now committed; fresh CI verification is required before M8 can be marked complete.
+**Current Phase 7 gate:** Workflow #297 ran after User/Order/OrderItem factory support and passed migrations, but the invoice authorization test `other customer cannot read invoice` received HTTP 500 instead of 403 because `InvoiceController` used `abort(403)`, which bypassed the API's explicit access-denied normalization. Fixed in commit `60c136fb741adcb60eb387cdf6074c70c9a746bf` by throwing `AccessDeniedHttpException`; fresh CI verification is required before M8 can be marked complete.
 
 ## Phase 8 — Integration and release readiness
 
