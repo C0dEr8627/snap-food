@@ -26,7 +26,7 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 >
 > **Verified complete in source control:** Phase 0 static Flutter audit, screen-to-contract mapping, platform/dependency inventory, API transport/client foundation, normalized API errors, environment API URL documentation, API-client fake-transport tests, the catalogue repository boundary with remote/fake implementations, the catalogue Riverpod controller/state layer with retry/error handling and tests, configured repository wiring, catalogue loading/empty/error/retry UI integration across existing customer catalogue screens, secure session storage, `/me` hydration, logout handling, auth-aware route redirects, and the local cart repository/controller boundary with explicit product IDs, quantity updates/removal and provider/repository tests.
 >
-> **Backend checkpoint refreshed:** backend workflow #209 passes, so delivery-partner provisioning/approval is CI-verified. This removes the earlier provisioning blocker, but Flutter delivery work still requires documented assignment/request/location/tracking response schemas. Backend order checkout/list/detail and server-owned status-transition work are verified on the backend, but the shared Flutter-facing order/COD/address examples are still absent from `API_CONTRACT.md`.
+> **Backend checkpoint refreshed:** backend workflow #209 passes, so delivery-partner provisioning/approval is CI-verified. Backend order checkout/list/detail and server-owned status-transition/concurrency work are also verified. Flutter delivery work still requires documented assignment/request/location/tracking response schemas, while Flutter order/COD work requires the exact order/address request/response examples in `API_CONTRACT.md`.
 >
 > **Remaining contract limitations:** Google auth exchange details, catalogue successful response fields, order create/list/detail response/request examples, and address request/response shape are not frozen. Developer 2 will not invent DTO fields, identifiers, statuses or payloads.
 >
@@ -210,3 +210,16 @@ Next implementation gate: freeze the documented order/COD + address contract, th
 - Google SSO, typed catalogue mapping and delivery assignment/tracking integration remain blocked on their documented schemas/configuration.
 - Flutter runtime verification remains **NOT RUN** because no Dart/Flutter runner is available; the current GitHub commit status also exposes no Flutter check results.
 - **Next implementation gate:** once Developer 1 freezes order/COD + address examples, implement typed order models → checkout repository/controller → server-authoritative totals → order success/detail/history, preserving the existing UI and navigation. Then implement delivery request/assignment/tracking flows from the documented delivery contract.
+
+
+## Developer 2 checkpoint — 2026-09-29 (latest implementation continuation)
+
+- Re-read `DEVELOPER_2_PLAN.md`, `AI_TASK_BOARD.md`, `API_CONTRACT.md` and `FLUTTER_CONTRACT_QUESTIONS.md` before selecting the next implementation.
+- Current PR state: PR #1 targets `frontend`, remains open and mergeable; branch head is `ea4756e366e16a438d696a48aad1d38f3f2e7ec3`.
+- Confirmed `API_CONTRACT.md` is unchanged at the required integration gate: it still provides endpoint names and high-level order guidance, but not exact order create/list/detail examples, address request/response fields, Google credential exchange, catalogue success fields, or delivery assignment/tracking schemas.
+- Confirmed backend workflow #209 is passing for delivery-partner provisioning/approval; this is no longer a backend provisioning blocker.
+- No safe Flutter API implementation can be added for orders/addresses/delivery without inventing undocumented DTO fields or payloads, so no speculative network code was introduced.
+- Existing completed Flutter work remains: API transport/errors, catalogue repository/controller/state integration, secure session storage and session restoration/logout, auth-aware routing, and local cart repository/controller with explicit product IDs and quantity tests.
+- Flutter/Dart formatting, analysis, tests, APK build and physical-device verification remain **NOT RUN**; GitHub reports no Flutter commit statuses.
+
+**Next implementation gate:** Developer 1 freezes the exact order/COD + address contract. Then Developer 2 implements typed order models → checkout repository/controller → server-authoritative totals → order success/detail/history, followed by delivery request/assignment/tracking using the documented delivery schemas.
