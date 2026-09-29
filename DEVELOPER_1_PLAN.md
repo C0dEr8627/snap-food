@@ -211,6 +211,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - Workflow #204 **PASSED**: PHP 8.3 setup, dependency installation, MySQL migrations and the PHPUnit suite all completed successfully on commit `d9c09af670b3e3a6ea0d00afd0e16b57b254fafe`; this verifies the server-owned admin order status transition increment already present on the branch.
 - Workflow #205 **FAILED**: delivery-partner provisioning/approval migrations passed, but duplicate/admin provisioning returned HTTP 500 instead of 409 because generic conflict exceptions fell through to the `SERVER_ERROR` renderer. The conflict handling was corrected in commits `563ccd67d50a8cdba0e5ad9669fd1d5febf88dbc` and `68b4e986bd1793de31ce912f9e815de3964bc5ab`.
 - Workflow #209 **PASSED** on `68b4e986bd1793de31ce912f9e815de3964bc5ab`: PHP 8.3 setup, dependency installation, MySQL migrations and PHPUnit all completed successfully. Delivery-partner provisioning/approval is now CI-verified.
+- Backend Workflow #234 **FAILED** after the delivery-assignment increment reached the full PHPUnit suite: MySQL migrations and dependency installation passed, but 7 admin web tests hit `Please provide a valid cache path` because the minimal Laravel skeleton lacked the standard Blade compiled-view and web-session runtime configuration/directories. Added `config/view.php`, `config/session.php`, and the required framework runtime `.gitignore` directories; a fresh CI run is required before marking admin web/assignment verified.
 
 - Workflow #109 passed the prior authentication + authorization implementation.
 - Workflow #134 ran the combined latest branch state and **failed in the catalogue test suite**: 7 tests failed after the application boot, dependency installation and MySQL migrations all succeeded.
@@ -225,7 +226,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Immediate next task
 
-**Verify the protected Laravel admin web authentication and delivery-assignment increments in CI (latest backend workflow).** Both implementations are present on `developer-1-backend-admin`; do not mark either task complete until CI passes. If green, continue with the remaining admin dashboard/order operations and delivery-partner lifecycle APIs. If CI fails, fix the concrete failure before advancing.
+**Re-run CI for the protected Laravel admin web authentication and delivery-assignment increments after the runtime-configuration fix.** Do not mark either task complete until CI passes. If green, continue with the remaining admin dashboard/order operations and delivery-partner lifecycle APIs. If CI fails, fix the concrete failure before advancing.
 
 ## Developer 1 definition of done
 
