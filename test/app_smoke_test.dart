@@ -33,7 +33,10 @@ void main() {
     expect(find.textContaining('GOOD FOOD.'), findsOneWidget);
     expect(find.textContaining('FAST DELIVERY.'), findsOneWidget);
     expect(find.text('Explore food'), findsOneWidget);
-    expect(find.textContaining('Already have an account?'), findsOneWidget);
+    expect(
+      find.textContaining('Already have an account?', findRichText: true),
+      findsOneWidget,
+    );
     expect(find.text('Made for Mumbai'), findsOneWidget);
 
     await tester.tap(find.text('Explore food'));
