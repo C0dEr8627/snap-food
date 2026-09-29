@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design_system/theme/app_theme.dart';
+import '../features/auth/presentation/auth_controller.dart';
 import '../features/customer/presentation/cart_review_screen.dart';
 import '../features/customer/presentation/checkout_screen.dart';
 import '../features/customer/presentation/food_item_details_screen.dart';
@@ -30,8 +31,35 @@ import '../features/delivery/presentation/delivery_verification_screen.dart';
 import '../features/delivery/presentation/delivery_earnings_history_screen.dart';
 
 
-final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
-  routes: [
+final appRouterProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authControllerProvider);
+
+  return GoRouter(
+    initialLocation: '/',
+    redirect: (context, state) {
+      final location = state.matchedLocation;
+      const publicRoutes = {'/', '/welcome', '/delivery/login'};
+
+      if (authState.isLoading) {
+        return location == '/' ? null : '/';
+      }
+
+      if (authState.hasError) {
+        return publicRoutes.contains(location) ? null : '/welcome';
+      }
+
+      final isAuthenticated = authState.valueOrNull?.isAuthenticated ?? false;
+      if (!isAuthenticated && !publicRoutes.contains(location)) {
+        return '/welcome';
+      }
+
+      if (isAuthenticated && (location == '/' || location == '/welcome')) {
+        return '/home';
+      }
+
+      return null;
+    },
+    routes: [
     GoRoute(path: '/', name: 'splash', builder: (context, state) => const SplashScreen()),
     GoRoute(path: '/welcome', name: 'welcome', builder: (context, state) => const WelcomeScreen()),
     GoRoute(path: '/home', name: 'customer-home', builder: (context, state) => const HomeFeedScreen()),
@@ -61,8 +89,9 @@ final appRouterProvider = Provider<GoRouter>((ref) => GoRouter(
       name: 'food-item-details',
       builder: (context, state) => FoodItemDetailsScreen(itemId: state.pathParameters['itemId'] ?? 'biryani'),
     ),
-  ],
-));
+    ],
+  );
+});
 
 class SnapFoodApp extends ConsumerWidget {
   const SnapFoodApp({super.key});
