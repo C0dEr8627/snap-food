@@ -126,7 +126,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         _showMessage('Each item quantity must be between 1 and 99.');
         return;
       }
-      lines.add(OrderLineRequest(productId: productId.toString(), quantity: item.quantity));
+      lines.add(OrderLineRequest(productId: productId, quantity: item.quantity));
     }
 
     final order = await ref.read(orderCheckoutControllerProvider.notifier).submit(
