@@ -234,3 +234,36 @@ No backend/Laravel-owned files were modified.
 4. Improve order success/detail/history UX around the newly real checkout path.
 5. Add customer tracking using GET /orders/{order}/tracking.
 6. Continue delivery partner integration and invoice UI from the frozen contract.
+
+## Developer 2 continuation checkpoint — 2026-09-29 (typed catalogue + real-ID cart boundary)
+
+### Completed in this increment
+- Replaced the transport-neutral catalogue record with typed category/product DTOs matching the synchronized contract: numeric product/category IDs, name, decimal-safe price string, active/available flags, and optional category.
+- Added typed paginated catalogue state with currentPage, lastPage, perPage, total and hasNextPage.
+- Updated the remote catalogue repository to decode the documented data.data paginator envelope and typed product/category responses, while retaining normalized invalid-response errors.
+- Tightened single-product lookup to require a positive numeric product ID.
+- Updated catalogue controller/state messaging and tests for the typed model.
+- Removed illustrative biryani/butter cart fixtures so checkout cannot accidentally submit fake product IDs.
+- Added a cart addItem boundary that stores the catalogue product ID and merges quantities with the backend limit of 99.
+- Updated cart tests to cover numeric catalogue IDs and empty initial state.
+
+### Current task status
+- Phase 0: [~] source/CI workflow established; current-head CI and physical-device verification remain pending.
+- Phase 1: [x] API foundation complete.
+- Phase 2: [~] session lifecycle complete; Google credential exchange/config and final role routing remain pending configuration/integration verification.
+- Phase 3: [x] typed catalogue DTO/repository/controller mapping is now implemented from the frozen contract; actual runtime API verification remains CI/integration dependent.
+- Phase 4: [~] local cart boundary now has no placeholder IDs and supports catalogue-backed numeric IDs; checkout/COD path is implemented but needs successful-path and error/conflict tests.
+- Phase 5: [x] customer order history/detail UI is implemented; UX hardening and tracking remain.
+- Phase 6/7: [~] backend delivery lifecycle/tracking is documented/verified; Flutter delivery and customer tracking integration remain.
+- Invoice: [ ] Flutter invoice integration remains.
+- Release verification: [ ] current-head CI, Android build and physical-device/integration verification remain.
+
+### Verification limitation
+No local Flutter/Dart runner is available in this GitHub-connected environment. The implementation was therefore not locally formatted/analyzed/tested/built here. CI must be observed on the current branch head before claiming green verification.
+
+### Next implementation queue
+1. Verify the new current-head Flutter CI run and fix only concrete failures.
+2. Wire a real catalogue product selection into CartController.addItem so the existing food-detail flow no longer depends on mock IDs.
+3. Add checkout tests for successful COD submission, duplicate submit, VALIDATION_FAILED, and HTTP 409 conflict handling.
+4. Harden order success/detail/history UX and connect customer tracking to the frozen /orders/{order}/tracking response.
+5. Continue delivery-partner assignment/status/location and invoice UI from the frozen contract.
