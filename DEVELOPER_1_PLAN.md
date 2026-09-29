@@ -182,19 +182,23 @@ Build the trusted backend and admin operations that the existing Flutter app can
 28. Implemented customer catalogue category/product reads with active-item filtering, search, pagination and authenticated access.
 29. Implemented admin category/product create/update/deactivate endpoints, update validation and endpoint regression tests; inactive products are hidden from customer reads.
 30. Corrected catalogue policies so active customers can read categories/products while admin-only write operations remain protected.
-31. The current backend branch has not yet produced a CI result for the latest API-hardening + catalogue changes; the new catalogue tests are therefore not yet CI-verified.
-32. Progress documentation is maintained against actual CI results rather than assuming implementation is verified.
+31. Workflow #134 failed on the latest combined API-hardening + catalogue state because Laravel 13's base controller does not provide the `authorize` helper; catalogue controllers were corrected to use `Gate::authorize`.
+32. The correction is committed on `developer-1-backend-admin`; CI verification of those commits is pending.
+33. Progress documentation is maintained against actual CI results rather than assuming implementation is verified.
 
-### Not yet verified
+### Latest verification result
 
-- Workflow #85 failed only on the logout revocation assertion after the application controller fix; the token row was deleted, but the same in-memory test application retained the authenticated Sanctum guard. The test now clears cached guards before issuing the post-logout request.
-- The new role middleware and policy tests have not yet been CI-verified.
+- Workflow #109 passed the prior authentication + authorization implementation.
+- Workflow #134 ran the combined latest branch state and **failed in the catalogue test suite**: 7 tests failed after the application boot, dependency installation and MySQL migrations all succeeded.
+- The concrete failure was `Method App\\Http\\Controllers\\Api\\V1\\Catalogue\\ProductController::authorize does not exist.` The same controller-level authorization helper was also used by `CategoryController`.
+- Fixed the Laravel 13 controller authorization calls by switching catalogue controllers to `Gate::authorize(...)` in commits `26f6217e7a89362550f8f68cfa8027027030645a` and `64aaefff30c5a02bbc0cdf2b367e11166d2403d6`.
+- A new CI result for the fix commits is pending; Phase 2/3 must remain unverified until it passes.
 - A real production Google credential has not been used; tests mock the verifier to avoid external identity-provider calls.
-- GoDaddy Composer/extensions/database/document-root/SSH capabilities.
+- GoDaddy Composer/extensions/database/document-root/SSH capabilities remain unverified.
 
 ## Immediate next task
 
-**Verify the next CI run for the combined authentication + authorization slice.** If green, mark Phase 2 authorization verification complete and proceed to Phase 3 catalogue read/admin CRUD endpoints. If CI exposes another defect, fix the concrete failure before advancing.
+**Verify CI after the catalogue authorization fix.** If green, update the verified Phase 2/3 status, add deterministic catalogue seed/demo data, and then begin Phase 4 order/COD workflow. If CI exposes another defect, fix the concrete failure before advancing.
 
 ## Developer 1 definition of done
 
