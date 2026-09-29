@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/health', HealthController::class)->name('api.v1.health');
 
 Route::post('/auth/google', [AuthController::class, 'google'])
+    ->middleware('throttle:auth-google')
     ->name('api.v1.auth.google');
 
 Route::middleware('auth:sanctum')->group(function (): void {
