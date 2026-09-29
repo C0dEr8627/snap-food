@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
+import 'catalogue_controller.dart';
+import 'catalogue_state_message.dart';
 import '../../../design_system/tokens/app_radii.dart';
 
-class RestaurantMenuScreen extends StatefulWidget {
+class RestaurantMenuScreen extends ConsumerStatefulWidget {
   const RestaurantMenuScreen({super.key});
   @override
-  State<RestaurantMenuScreen> createState() => _RestaurantMenuScreenState();
+  ConsumerState<RestaurantMenuScreen> createState() => _RestaurantMenuScreenState();
 }
 
-class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
+class _RestaurantMenuScreenState extends ConsumerState<RestaurantMenuScreen> {
   int selectedCategory = 0;
   final quantities = <String, int>{'biryani': 1, 'butter': 1};
 
