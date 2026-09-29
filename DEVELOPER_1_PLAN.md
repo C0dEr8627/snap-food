@@ -153,7 +153,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 - [x] Provide safe seed/demo data (synthetic, deterministic and idempotence-tested; never use against production).
 - [x] Maintain API contract examples and integration guide; route audit corrected stale delivery and catalogue paths, representative request/response/error examples were reviewed against the current Laravel route/controller behavior.
-- [ ] Run formatter/static analysis where configured.
+- [~] Run formatter/static analysis where configured. Added the PHP 8.3 CI Pint check (`composer format -- --test`) in commit `781364ba1c0d69340b488e71ac1eb9e74dbe0ff0`; verification is pending.
 - [x] Run migrations from an empty MySQL CI database (verified in passing PHP 8.3/MySQL workflows).
 - [x] Run the automated test suite (latest implementation workflow #386 passed with 402 assertions; 89 warnings).
 - [x] Document backup/restore and production environment checklist in `backend/OPERATIONS.md` (hosting capability verification remains pending).
@@ -297,4 +297,4 @@ A task is complete only when implementation, validation, authorization, automate
 - GoDaddy plan-specific PHP extensions, Composer/build method, database, document root, HTTPS, storage permissions and backup/restore capability remain owner-verification items.
 - No deployment or production migration was performed.
 
-**Next task:** complete the remaining non-executed formatter/static-analysis/security review where a suitable PHP 8.3/Composer environment is available, confirm GoDaddy capabilities with the owner, then obtain explicit human approval before release/deployment.
+**Next task:** verify the new CI Pint check, complete the remaining static/security review where suitable tooling is available, confirm GoDaddy capabilities with the owner, then obtain explicit human approval before release/deployment.
