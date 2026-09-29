@@ -32,7 +32,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 | Phase 4 — Orders & COD | **IN PROGRESS** | Checkout/list/detail and server-owned admin status transitions are CI-verified; delivery assignment/partner workflow remains. |
 | Phase 5 — Admin & assignment | **IN PROGRESS** | Protected Laravel web authentication/dashboard foundation and concurrency-safe delivery assignment are implemented; latest CI verifies the suite, while broader admin dashboard/order operations remain. |
 | Phase 6 — Delivery tracking | **COMPLETED** | Delivery-partner assignment listing/status progression and active-trip location updates/tracking are CI-verified by Workflows #259 and #266. |
-| Phase 7 — Invoices | **IN PROGRESS** | Invoice schema, deterministic numbering, immutable snapshot generation and customer/admin access are implemented; fresh CI verification remains. |
+| Phase 7 — Invoices | **COMPLETED** | Invoice schema, deterministic numbering, immutable snapshot generation and customer/admin access are implemented and verified by Workflow #301. |
 | Phase 8 — Release readiness | **NOT STARTED** | Seeds, contract examples, clean-DB migration run, automated tests, security review and deployment checklist remain. |
 
 ## Phase 0 — Inspect and establish the environment
@@ -145,7 +145,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Protect customer/admin invoice access.
 - [x] Add totals, numbering uniqueness and unauthorized-access tests.
 
-**Current Phase 7 gate:** Workflow #297 ran after User/Order/OrderItem factory support and passed migrations, but the invoice authorization test `other customer cannot read invoice` received HTTP 500 instead of 403 because `InvoiceController` used `abort(403)`, which bypassed the API's explicit access-denied normalization. Fixed in commit `60c136fb741adcb60eb387cdf6074c70c9a746bf` by throwing `AccessDeniedHttpException`; fresh CI verification is required before M8 can be marked complete.
+**Phase 7 gate:** Workflow #301 passed after the invoice authorization fix, including dependency installation, MySQL migrations and the PHPUnit suite. M8 is CI-verified complete.
 
 ## Phase 8 — Integration and release readiness
 
@@ -233,7 +233,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Immediate next task
 
-**Verify and harden the delivery-partner lifecycle increment.** The first CI run for partner assignment listing/status progression exposed two authorization responses being normalized as 500 instead of 403. The implementation now uses explicit HTTP 403 exceptions; a fresh CI run is required before advancing to location/tracking. The next increment is partner-owned latest-location updates with coordinate/timestamp validation, persistence/history, stale-location handling, and customer/admin authorized tracking reads. Do not mark this increment complete until its automated tests pass.
+**Continue Phase 5 admin operations.** The first dashboard increment now exposes server-derived order counts for new, active, preparing, awaiting-delivery and active-delivery states. Next implement the admin order search/filter/detail/status workflow, then broaden catalogue/customer/delivery-partner/assignment/invoice dashboard operations. Keep each increment behind automated CI verification.
 
 ## Developer 1 definition of done
 
