@@ -51,6 +51,13 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
                         padding: EdgeInsets.symmetric(horizontal: wide ? 24 : 16),
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         const Greeting(),
+                        Consumer(builder: (context, ref, _) {
+                          final catalogue = ref.watch(catalogueControllerProvider);
+                          return CatalogueStateMessage(
+                            value: catalogue,
+                            onRetry: () => ref.read(catalogueControllerProvider.notifier).retry(),
+                          );
+                        }),
                         const SizedBox(height: 16),
                         SearchFilters(selected: filter, onSelected: (v) => setState(() => filter = v)),
                         const SizedBox(height: 20),
