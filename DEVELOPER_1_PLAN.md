@@ -117,13 +117,15 @@ Build the trusted backend and admin operations that the existing Flutter app can
 ## Phase 5 — Admin operations and delivery assignment
 
 - [x] Create protected Laravel web login/authorization for admins.
-- [ ] Build dashboard for catalogue, orders, customers, partners, assignments and invoices.
+- [x] Build the operations dashboard with server-derived catalogue/order/customer/partner/assignment/invoice counts and navigation.
+- [x] Add protected, searchable/paginated customer, delivery-partner, assignment and issued-invoice directory pages.
+- [ ] Build web-based catalogue management (category/product list, create/update/deactivate flows).
 - [x] Implement order search/filter/detail/status actions.
 - [x] Provision/approve/deactivate delivery partners.
 - [x] Implement concurrency-safe delivery assignment with transactional order/partner row locking.
 - [x] Record current assignment and status history actor.
 - [x] Add authorization and conflict tests for delivery assignment.
-- [ ] Add broader admin dashboard/order operations.
+- [ ] Add broader admin dashboard/order operations, including catalogue writes and partner approval/activation controls from the web UI.
 
 ## Phase 6 — Delivery APIs and active tracking
 
@@ -164,6 +166,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 47. Added protected Laravel admin order search/filter/list, order detail, valid status actions and status-history display. Workflow #324 passed on PHP 8.3 with MySQL, including the full PHPUnit suite.
 48. Corrected the admin web invalid-transition response to HTTP 409 and fixed the delivery assignment-list regression test to assert the assignment resource identifier rather than the related order identifier.
+49. Added protected customer, delivery-partner, assignment and issued-invoice directory pages with bounded search/state filters and pagination, plus dashboard counts/navigation for all operations directories. Workflow #349 passed on PHP 8.3 with MySQL and the full PHPUnit suite (358 assertions; 82 warnings). The first CI attempt failed only because the test fixture used `name` instead of the invoice snapshot contract's `product_name`; the fixture was corrected before the passing run.
 
 1. Repository and backend documentation baseline established.
 2. PHP 8.3 production target recorded.
