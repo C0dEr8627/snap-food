@@ -30,3 +30,14 @@ Checkout sends product IDs, quantities and address data; Laravel resolves prices
 Admin uses `/admin/delivery-partners` and `POST /admin/orders/{order}/assign-delivery`.
 
 Every endpoint must document auth, authorization, validation, response, errors, side effects and concurrency/idempotency behavior.
+
+
+## Delivery assignment
+
+### POST /api/v1/admin/orders/{order}/assignment
+
+ADMIN only. Assigns a single approved, active, available delivery partner to an order that is `READY_FOR_PICKUP`. The operation is transactional and returns HTTP 409 with `code: CONFLICT` when the order is no longer eligible, the partner is not eligible, or the order is already assigned.
+
+Request: `{ "delivery_partner_id": 123 }`
+
+On success: HTTP 201 with `data` containing the assignment, delivery partner, assigning admin and order status. The server records the `READY_FOR_PICKUP` → `ASSIGNED` status history with the actor.
