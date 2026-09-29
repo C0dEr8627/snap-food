@@ -65,7 +65,7 @@ class AdminOperationsWebTest extends TestCase
             'customer_name' => $customer->name,
             'customer_email' => $customer->email,
             'delivery_address_snapshot' => ['line1' => '1 Test Street'],
-            'items_snapshot' => [['name' => 'Test Meal', 'quantity' => 1, 'unit_price' => '100.00', 'line_total' => '100.00']],
+            'items_snapshot' => [['product_name' => 'Test Meal', 'quantity' => 1, 'unit_price' => '100.00', 'line_total' => '100.00']],
             'subtotal' => '100.00',
             'delivery_fee' => '10.00',
             'total' => '110.00',
