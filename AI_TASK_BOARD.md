@@ -214,3 +214,26 @@ Record decisions here only after the owner approves or they are already establis
 4. Implement order success/detail/history and refresh/error/empty states.
 5. Implement delivery assignment/status/location/tracking from the frozen schemas.
 6. Implement invoice model/repository/UI once the Flutter-facing invoice response schema is frozen.
+
+
+
+## Developer 2 continuation checkpoint — 2026-09-29
+
+### Current implementation status
+- **M2 [~] Google SSO:** session persistence, `/me` restoration, logout/revocation and auth-aware routing are implemented; exact Google credential exchange, session/token response, public client configuration and role response remain gated by the shared contract/config.
+- **M3 [~] Catalogue:** repository/controller/state plus loading/empty/error/retry integration are implemented; typed category/product mapping remains gated by missing successful response fields.
+- **M4 [~] Orders/COD:** backend checkout/list/detail and server-owned status/concurrency work are verified; Flutter local cart boundary is complete; address, typed order models, COD submission, server totals/errors and order history/detail remain gated by missing shared schemas.
+- **M5 [~] Delivery:** backend provisioning/approval, assignment/status progression and active-trip tracking are verified by #209/#259/#266; Flutter delivery integration remains gated by missing shared assignment/location/tracking response examples.
+- **Invoice [ ]:** backend invoice scope is documented; Flutter invoice work has not started because the shared response schema is incomplete.
+- **Phase 0 [~]:** static audit/documentation complete; Flutter/Dart runtime verification is NOT RUN and no Flutter CI result is available.
+
+### Latest contract finding
+The backend branch now has richer delivery/tracking and invoice endpoint documentation, but the shared `developer-2-flutter` contract remains high-level and is not sufficient to safely implement typed Flutter DTOs/network calls. Developer 2 therefore made no speculative API changes in this continuation.
+
+### Next task queue
+1. Developer 1 synchronizes exact order/COD + address + relevant delivery response examples into the shared/base contract.
+2. Developer 2 implements typed order models and repository/controller boundaries.
+3. Add cart → COD checkout duplicate-submit protection and server-authoritative totals/errors.
+4. Add order success/detail/history with loading/empty/error/refresh states.
+5. Add delivery assignment/status/location/tracking.
+6. Add invoice model/repository/UI after the Flutter-facing invoice response schema is frozen.
