@@ -685,3 +685,22 @@ No backend/Laravel-owned files were modified.
 - Completed: live typed catalogue product selection in restaurant menu and food details, real product IDs in cart, active/availability gating, and checkout tests for duplicate submit, validation failure and HTTP 409 conflict.
 - Order controller compatibility fix: replaced unsupported async state accessor with state.value.
 - Remaining: customer tracking, delivery partner integration, invoice UI, CI/device verification.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (active-trip location boundary)
+
+The active-trip tracking slice has progressed beyond the previous delivery lifecycle checkpoint:
+- [x] Define a foreground-only location-source abstraction with explicit permission states.
+- [x] Add a throttled foreground adapter using the documented 5–10 second starting interval (5 seconds default).
+- [x] Bind location publishing to the active assignment ID and the canonical location endpoint.
+- [x] Add clean stop/dispose behavior so location publishing does not continue after trip exit.
+- [x] Bind partner customer navigation to the active assignment instead of static trip identifiers.
+- [x] Add adapter/controller-boundary tests.
+- [ ] Wire a concrete approved Android/iOS location plugin behind the adapter.
+- [ ] Add platform permission/revocation and physical GPS verification.
+- [ ] Add partner freshness/error presentation and complete lifecycle verification.
+- [ ] Add Maps SDK integration and marker rendering once platform configuration is available.
+
+The default location source intentionally reports 'unavailable' until the approved platform location dependency/configuration is available; no fake coordinates or background location behavior is introduced.
+
+No backend/Laravel-owned files were modified.
