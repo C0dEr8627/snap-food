@@ -29,6 +29,8 @@ Route::middleware(EnsureAdminWebUser::class)->group(function (): void {
     Route::post('/admin/catalogue/products/{product}/deactivate', [CatalogueController::class, 'deactivateProduct'])->name('admin.catalogue.products.deactivate');
     Route::get('/admin/customers', [OperationsController::class, 'customers'])->name('admin.customers.index');
     Route::get('/admin/delivery-partners', [OperationsController::class, 'deliveryPartners'])->name('admin.delivery-partners.index');
+    Route::post('/admin/delivery-partners/{deliveryPartner}/approval', [OperationsController::class, 'updatePartnerApproval'])->name('admin.delivery-partners.approval');
+    Route::post('/admin/delivery-partners/{deliveryPartner}/state', [OperationsController::class, 'updatePartnerState'])->name('admin.delivery-partners.state');
     Route::get('/admin/assignments', [OperationsController::class, 'assignments'])->name('admin.assignments.index');
     Route::get('/admin/invoices', [OperationsController::class, 'invoices'])->name('admin.invoices.index');
     Route::get('/admin/orders/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
