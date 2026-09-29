@@ -34,7 +34,9 @@ The authoritative implementation checklist is `DEVELOPER_1_PLAN.md`. It contains
 
 Current phase: **Phase 1 — Backend foundation (in progress)**.
 
-Immediate next task: verify Composer dependency installation and the health PHPUnit test in GitHub Actions. After that passes, implement the database foundation for users, addresses, categories and products.
+Latest CI verification: Composer successfully resolved and installed Laravel 13.33.0, Sanctum 4.3.3 and PHPUnit 12.5.36 on PHP 8.3.35. The test command then failed because `backend/bootstrap/cache` was absent; the branch now preserves that directory with `.gitignore` in commit `63caeb8a66d8b4045f57b08cb2a8268a629a97a8`.
+
+Immediate next task: confirm the health PHPUnit test passes in the next GitHub Actions run. After that passes, implement the database foundation for users, addresses, categories and products.
 
 ## Local setup
 
@@ -53,7 +55,7 @@ From `backend/`:
 
 The isolated agent execution container currently has PHP 8.4.23, but it does not have Composer or the MySQL CLI. Those limitations mean Laravel dependency installation, migrations and PHPUnit cannot be claimed as locally executed here.
 
-GitHub Actions has verified that PHP 8.3.35, the requested PHP extensions and Composer 2.10.3 can be provisioned. The latest CI run failed during dependency resolution because the previous Laravel 11 constraint selected versions blocked by current security advisories. The dependency baseline has now been upgraded to Laravel 13; the next CI run must verify the corrected manifest.
+GitHub Actions has verified PHP 8.3.35, the requested PHP extensions and Composer 2.10.3, and the Laravel 13 dependency set now installs successfully. The latest test attempt failed only because `backend/bootstrap/cache` was absent; that required directory is now preserved in Git. The next CI run must verify the health test.
 
 The target server information supplied by the project owner is PHP 8.3. Hosting capabilities beyond PHP version—Composer availability, required PHP extensions, database access, document root/public directory configuration, SSH/cron/queue support—still need verification on the actual GoDaddy plan before deployment.
 
@@ -63,4 +65,4 @@ Do not point development tests at production. Use a separate non-production MySQ
 
 ## Next implementation slice
 
-After the Laravel 13 foundation passes CI, implement the MySQL migrations/models for users, addresses, categories and products, then add the corresponding validation and tests. Authentication remains gated on verified Google credential handling and the selected Sanctum flow.
+After the bootstrap-cache fix is confirmed by the health test, implement the MySQL migrations/models for users, addresses, categories and products, then add the corresponding validation and tests. Authentication remains gated on verified Google credential handling and the selected Sanctum flow.
