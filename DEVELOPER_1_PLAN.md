@@ -64,7 +64,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Confirm the health PHPUnit test and foundation suite pass after preserving required Laravel test directories.
 - [x] Add MySQL-backed CI service, run migrations and verify the initial database schema.
 - [x] Add model relationship coverage and request validation groundwork for the initial database slice.
-- [ ] Add rate limiting where appropriate, credential-safe logging and consistent API error responses.
+- [x] Add rate limiting where appropriate, credential-safe logging and consistent API error responses.
 
 **Foundation/database CI verification:** workflow #30 passed PHP 8.3 setup, dependency installation and the foundation `composer test` suite. Workflow #48 also passed the MySQL-backed migration and current test suite for the initial database slice.
 
@@ -177,7 +177,9 @@ Build the trusted backend and admin operations that the existing Flutter app can
 24. Fixed the logout regression test by clearing cached guards after revocation in commit `9bdef081822ae75d5628b62d3df400ef5b7d7f5b`.
 25. Added role constants/helpers, `EnsureUserHasRole`, the `role` middleware alias, explicit Address/Category/Product policies and Gate registration.
 26. Added middleware and cross-user/role policy coverage in `AuthorizationPolicyTest.php`; final CI verification is pending for this combined authz slice.
-27. Progress documentation is maintained against actual CI results rather than assuming implementation is verified.
+27. Added Google sign-in rate limiting, credential-safe failure logging, and consistent `/api/v1` exception/error responses with regression tests.
+28. The current backend branch has not yet produced a CI result for the latest API-hardening changes; the next CI run is the verification gate.
+29. Progress documentation is maintained against actual CI results rather than assuming implementation is verified.
 
 ### Not yet verified
 
