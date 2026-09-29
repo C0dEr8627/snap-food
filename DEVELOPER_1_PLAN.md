@@ -110,7 +110,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Return `ORDER_STATE_CONFLICT` with HTTP 409 for invalid/repeated transitions.
 - [x] Add admin/customer authorization and state-conflict regression tests.
 
-**Current Phase 4 gate:** Workflow #204 passed on PHP 8.3 with MySQL after the server-owned admin status-transition implementation. The transition slice is CI-verified; M4 remains in progress until delivery assignment/partner workflow is integrated.
+**Current Phase 4 gate:** Workflows #204 and #386 passed on PHP 8.3 with MySQL. Server-owned order status transitions and concurrency-safe delivery assignment are both CI-verified; Phase 4 is complete.
 
 **Milestone:** Flutter-compatible request creates a real MySQL COD order and customer can retrieve it.
 
@@ -129,8 +129,8 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Phase 6 — Delivery APIs and active tracking
 
-- [ ] Implement partner availability and eligible request list.
-- [ ] Implement approved accept/pickup/completion workflow.
+- [x] Implement partner approval/activation/availability controls and eligible-partner selection for admin assignment.
+- [x] Implement partner-owned pickup/out-for-delivery/completion progression; explicit partner accept remains out of scope for the current product contract.
 - [x] Implement partner-owned active-assignment location updates.
 - [x] Validate coordinates, timestamps and payload size.
 - [x] Persist latest location and required history.
@@ -170,7 +170,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 50. Added protected Laravel web catalogue management for category/product search, create, update and soft-deactivation; deactivating products also disables availability. Category option lists remain independent from search filters. Workflow #363 passed on PHP 8.3 with MySQL and the full PHPUnit suite (375 assertions; 85 warnings).
 51. Added protected web controls for delivery-partner approval/revocation and active/available state changes. Approval metadata records the acting admin; revoking approval and deactivation clear availability, and making a partner available requires approved and active user/partner state. Workflow #371 passed on PHP 8.3 with MySQL and the full PHPUnit suite (389 assertions; 87 warnings).
 52. Added a protected assignment form to admin order detail for READY_FOR_PICKUP orders with no current assignment. The form lists only approved/active/available partners and delegates to the concurrency-safe OrderAssignmentService. Successful assignment marks the partner unavailable; ineligible or stale assignment attempts return HTTP 409. Workflow #386 passed on PHP 8.3 with MySQL and the full PHPUnit suite (402 assertions; 89 warnings).
-53. Audited API_CONTRACT.md against actual Laravel routes and corrected stale catalogue CRUD and delivery lifecycle paths. Added backend/.gitignore, refreshed backend/README.md to current phase status, and documented hosting, backup/restore and release checks in backend/OPERATIONS.md. Formatting/static analysis and final response/error examples remain outstanding.
+53. Audited API_CONTRACT.md against actual Laravel routes and corrected stale catalogue CRUD and delivery lifecycle paths. Added backend/.gitignore, refreshed backend/README.md to current phase status, and documented hosting, backup/restore and release checks in backend/OPERATIONS.md. API integration examples and stable error mapping are now documented; release quality/security checks remain outstanding.
 
 1. Repository and backend documentation baseline established.
 2. PHP 8.3 production target recorded.
@@ -290,7 +290,7 @@ A task is complete only when implementation, validation, authorization, automate
 ### Phase 8 release-readiness verification update — 2026-09-29
 
 - Workflow #406 **PASSED** on current branch head `941e9f2ee2916499fec4d60e4df1a6d37fb789b9`. The configured Backend workflow completed PHP 8.3 setup, Composer dependency installation, MySQL 8.4 service startup, migrations and `composer test`.
-- The current PR #2 still targets `frontend`; the branch head is unchanged by this verification pass.
+- The current PR #2 still targets `frontend`; documentation-only tracking commits followed the CI verification head, so the branch head is now `72da8b3de7ca6d571a73ce8284e70906fc879f10` while CI verification remains tied to `941e9f2ee2916499fec4d60e4df1a6d37fb789b9`.
 - The API contract/integration documentation pass is complete for the representative routes and stable error behavior already implemented. No backend runtime code was changed in this documentation verification increment.
 - The repository workflow does **not** currently configure a Pint/static-analysis/security command, so those checks cannot be marked as executed from CI. Local Composer/PHP execution is not available in the connector environment; do not claim a formatter/static-analysis run.
 - Changed-file inventory was reviewed for release scope; no `.env`, credential, database-dump or Flutter-owned path was introduced by the latest documentation commits. A complete manual content/security review of all historical branch changes remains a human release gate.
