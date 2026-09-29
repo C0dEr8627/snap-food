@@ -5,9 +5,12 @@ import 'package:snap_foodd/app/app.dart';
 void main() {
   testWidgets('Snap Foodd splash and welcome screen boots', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: SnapFoodApp()));
-    await tester.pumpAndSettle();
 
     expect(find.bySemanticsLabel('Snap Foodd'), findsOneWidget);
+
+    await tester.pump(const Duration(milliseconds: 1400));
+    await tester.pumpAndSettle();
+
     expect(find.textContaining('GOOD FOOD.'), findsOneWidget);
     expect(find.textContaining('FAST DELIVERY.'), findsOneWidget);
     expect(find.text('Explore food'), findsOneWidget);
