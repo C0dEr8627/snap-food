@@ -850,3 +850,51 @@ No backend/Laravel-owned files were modified.
 2. Confirm approved Android/iOS location package and Google Maps configuration before adding platform dependencies.
 3. Freeze invoice success JSON fields and implement typed invoice repository/model/UI.
 4. Perform physical GPS/Maps verification and customer/delivery E2E verification.
+
+
+## Developer 2 authoritative status checkpoint — 2026-09-29 (latest branch state)
+
+**Authoritative checkpoint:** `developer-2-flutter` HEAD is `cea9143e6f7c56ad095a5a9f3a5dc8f25f3da11c`. PR #1 remains open, targets `frontend`, and GitHub currently reports it mergeable.
+
+### Completed implementation
+
+- **Phase 0 audit:** static Flutter application audit, screen/feature mapping, dependency/platform inventory, and architecture inspection completed.
+- **Phase 1 API foundation:** configured API client, normalized errors, safe logging, environment URL handling, repository boundaries, fake transport/tests, and shared catalogue state/retry handling completed.
+- **Phase 2 session:** secure session storage, `/me` hydration, logout, expired-session cleanup, Riverpod auth state and go-router redirects completed. Google sign-in/platform credential verification remains pending.
+- **Phase 3 catalogue/cart:** typed catalogue integration, category/product selection, product-ID cart mutations, loading/empty/error/retry states and associated tests completed.
+- **Phase 4 COD checkout:** address validation, server-authoritative order totals, duplicate-submit protection, successful-order cart clearing and order-detail navigation are implemented against the documented contract. Automated/runtime verification remains.
+- **Phase 5 customer orders/tracking:** order history/detail/tracking integration and status presentation are implemented. Runtime verification remains.
+- **Phase 6 delivery lifecycle:** assignment discovery, lifecycle status updates and location publishing are implemented through the documented delivery endpoints.
+- **Phase 7 active-trip lifecycle:** foreground location adapter/controller boundary, active-assignment binding, throttling, lifecycle start/stop, last-successful-publish tracking and permission/error/freshness states are implemented. The platform source still intentionally reports unavailable until an approved location dependency/configuration is provided.
+- **CI smoke-test maintenance:** fixed the current concrete welcome-screen smoke assertion to use the existing `Snap Foodd` semantic label instead of assuming one literal text node.
+
+### Current verification state
+
+- Fresh Flutter CI **#210** (`36609233693`) is currently **pending** for HEAD `cea9143...`. No green/failed result is claimed yet.
+- The previous CI gate (#207) passed dependency resolution, formatting and analyzer, then failed only at the stale welcome smoke assertion. That assertion has now been fixed.
+- Android debug APK verification is still pending because CI #207 stopped before the build.
+- Local Flutter/Dart execution is unavailable in the connected development environment; local `flutter analyze`, `flutter test`, and `flutter build apk --debug` are **NOT RUN**.
+- No backend/Laravel-owned files have been modified.
+
+### Remaining tasks, in execution order
+
+1. **CI verification:** wait for CI #210 and fix only concrete test/build failures.
+2. **GPS/Maps platform integration:** confirm the approved Android/iOS location package and Google Maps configuration, then implement the existing platform adapter without changing repository/controller contracts.
+3. **Invoice:** freeze the exact Flutter-facing success JSON fields for `GET /orders/{order}/invoice`, then implement typed invoice DTO/repository/UI. Do not invent fields.
+4. **Runtime/device verification:** verify GPS permission/revocation, real location publishing, Maps behavior, active-trip lifecycle and customer tracking on physical devices.
+5. **E2E/release gate:** verify customer COD, order tracking, delivery lifecycle, Android debug build and final PR readiness.
+
+### Task board
+
+| Area | Status | Current state |
+|---|---|---|
+| Phase 0 — audit/verification | [~] | Static audit complete; CI/device verification pending |
+| Phase 1 — API foundation | [x] | Complete |
+| Phase 2 — auth/session | [~] | Session lifecycle complete; Google platform/runtime verification pending |
+| Phase 3 — catalogue/cart | [x] | Complete |
+| Phase 4 — COD checkout | [x] | Implementation complete; automated/runtime verification pending |
+| Phase 5 — customer orders/tracking | [x] | Implementation complete; runtime verification pending |
+| Phase 6 — delivery lifecycle | [x] | Assignment/status/location integration complete |
+| Phase 7 — active GPS/Maps | [~] | Adapter/controller/lifecycle complete; approved platform dependency + real Maps/GPS verification pending |
+| Invoice | [ ] | Endpoint documented; exact success JSON field set still not frozen |
+| Release verification | [ ] | Green CI, Android APK, physical-device and E2E verification pending |
