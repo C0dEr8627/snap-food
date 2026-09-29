@@ -153,7 +153,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 - [x] Provide safe seed/demo data (synthetic, deterministic and idempotence-tested; never use against production).
 - [x] Maintain API contract examples and integration guide; route audit corrected stale delivery and catalogue paths, representative request/response/error examples were reviewed against the current Laravel route/controller behavior.
-- [~] Run formatter/static analysis where configured. Added the PHP 8.3 CI Pint check (`composer format -- --test`) in commit `781364ba1c0d69340b488e71ac1eb9e74dbe0ff0`; verification is pending.
+- [~] Run formatter/static analysis where configured. The PHP 8.3 CI Pint check (`composer format -- --test`) was added in commit `781364ba1c0d69340b488e71ac1eb9e74dbe0ff0`. Workflow #413 executed on the PR merge ref and failed at formatting with 29 style issues across 101 files; migrations/tests were skipped. Commit `d7042331b8da04a0ca8b8960761b30aa9c5f03a7` adds a push-only backend formatter workflow that applies Pint on `developer-1-backend-admin` and commits the generated formatting changes; the resulting formatting commit and fresh PR verification are pending.
 - [x] Run migrations from an empty MySQL CI database (verified in passing PHP 8.3/MySQL workflows).
 - [x] Run the automated test suite (latest implementation workflow #386 passed with 402 assertions; 89 warnings).
 - [x] Document backup/restore and production environment checklist in `backend/OPERATIONS.md` (hosting capability verification remains pending).
