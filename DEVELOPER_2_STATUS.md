@@ -812,3 +812,44 @@ No backend/Laravel-owned files were modified. No merge or deployment was perform
 - **Verification:** the fix itself has **not yet been executed by CI** at this checkpoint. Local Flutter/Dart execution is unavailable here.
 - **Remaining product/runtime work:** approved concrete Android/iOS location + Maps dependency/configuration and physical-device verification remain pending; Google SSO still requires the public platform client configuration/runtime sign-in wiring; role-specific routing requires consuming the documented role field safely.
 - **Next task:** inspect the CI run for commit `3470e72773de7130485028633562f020c9d3a2d7`; if green, proceed with the approved GPS/Maps platform integration or the next explicitly unblocked authentication configuration task. Do not claim CI green until the run completes.
+
+
+## Developer 2 continuation checkpoint — 2026-09-30 (CI failure fixed, next implementation queue)
+
+- **Branch:** `developer-2-flutter`
+- **PR:** #1 → `frontend`, still open.
+- **Current branch state:** the customer order/COD, typed catalogue/cart, order history/detail, tracking models, delivery location lifecycle, and invoice foundation are present. No Laravel/backend-owned files were changed.
+
+### Latest CI result
+- Workflow run **36615634186** tested PR merge commit `fa4c4c741339ed644cc16b5751e30e87fbbc6d14`.
+- Dependency resolution: **passed**.
+- Dart formatting: **passed**.
+- `flutter analyze`: **passed** (informational lint output only).
+- `flutter test`: **failed only in `test/app_smoke_test.dart`** because that PR merge snapshot still expected the obsolete welcome-screen text after the Explore Food navigation.
+- Android debug build: **skipped because the test step failed**.
+- The current `developer-2-flutter` file has the corrected assertion: after tapping **Explore food**, it expects the existing home-screen text `What are you craving today?`. A new PR CI run is required to verify that current branch content is what GitHub tests.
+
+### Completed task tracking
+- **Phase 0 Audit/verification:** [~] audit and CI workflow complete; current-head green CI and physical-device verification remain.
+- **Phase 1 API foundation:** [x] complete.
+- **Phase 2 Session lifecycle:** [~] session restore/logout/redirects complete; Google SSO platform configuration and final role routing remain.
+- **Phase 3 Catalogue:** [x] typed DTO/repository/controller mapping and state UI complete; runtime integration verification remains.
+- **Phase 4 Cart/address/COD:** [~] numeric catalogue-backed cart IDs, COD repository/controller, address validation, duplicate-submit protection, server-authoritative totals/errors, successful-order cart clearing/navigation are implemented; success-path runtime verification and broader checkout UI hardening remain.
+- **Phase 5 Customer orders:** [x] order history/detail screens and states are implemented; customer tracking UI remains.
+- **Phase 6/7 Delivery/tracking:** [~] delivery lifecycle/location adapter/controller foundation is implemented; assignment/status/tracking UI and physical GPS verification remain.
+- **Invoice:** [~] invoice model/repository/controller/screen foundation is present; end-to-end backend response verification and final UX integration remain.
+- **Release verification:** [ ] not complete; requires green CI, Android build, and physical-device/integration verification.
+
+### Next implementation order
+1. **CI correction verification:** let the new PR run test the current branch snapshot; fix only any concrete current-head failure.
+2. **Customer tracking:** wire order-detail tracking to the frozen `GET /orders/{order}/tracking` contract, including loading/error/stale-location states while preserving the existing UI/navigation.
+3. **Delivery partner integration:** complete assignment/request/status/location UI from the frozen delivery contract.
+4. **Invoice integration:** connect invoice access to completed orders and verify the frozen immutable invoice fields.
+5. **Authentication completion:** implement only the documented Google SSO/platform configuration and role-routing contract when available.
+6. **Release verification:** green CI + Android build + physical-device GPS/permissions/API integration checks.
+
+### Safety / ownership
+- Do not invent API fields, routes, status enums, credentials, or product IDs.
+- Use fake repositories where a backend response is not yet available.
+- Do not modify Laravel/backend-owned files.
+- Do not merge or deploy from this branch.
