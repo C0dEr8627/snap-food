@@ -6,15 +6,6 @@ import 'package:snap_foodd/features/auth/data/auth_models.dart';
 import 'package:snap_foodd/features/auth/data/auth_repository.dart';
 import 'package:snap_foodd/features/auth/presentation/auth_controller.dart';
 
-class _FakeStore implements SessionStore {
-  String? token;
-  @override
-  Future<String?> readToken() async => token;
-  @override
-  Future<void> writeToken(String value) async => token = value;
-  @override
-  Future<void> clearToken() async => token = null;
-}
 
 class _FakeRepository implements AuthRepository {
   _FakeRepository({this.token});
