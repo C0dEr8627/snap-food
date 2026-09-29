@@ -99,7 +99,8 @@ class DeliveryPartnerProvisioningTest extends TestCase
 
         $this->actingAs($admin, 'sanctum')
             ->postJson('/api/v1/admin/delivery-partners', ['user_id' => $candidate->id])
-            ->assertStatus(409);
+            ->assertStatus(409)
+            ->assertJsonPath('code', 'CONFLICT');
 
         $this->actingAs($admin, 'sanctum')
             ->postJson('/api/v1/admin/delivery-partners', ['user_id' => $adminTarget->id])

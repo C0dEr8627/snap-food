@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
+use App\Exceptions\ConflictException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProvisionDeliveryPartnerRequest;
 use App\Http\Requests\UpdateDeliveryPartnerApprovalRequest;
@@ -33,11 +34,11 @@ class DeliveryPartnerController extends Controller
             }
 
             if ($user->hasRole(User::ROLE_ADMIN)) {
-                abort(Response::HTTP_CONFLICT, 'Admin users cannot be provisioned as delivery partners.');
+                throw new ConflictException('Admin users cannot be provisioned as delivery partners.');
             }
 
             if ($user->hasRole(User::ROLE_DELIVERY_PARTNER)) {
-                abort(Response::HTTP_CONFLICT, 'User is already a delivery partner.');
+                throw new ConflictException('User is already a delivery partner.');
             }
 
             $user->update(['role' => User::ROLE_DELIVERY_PARTNER]);

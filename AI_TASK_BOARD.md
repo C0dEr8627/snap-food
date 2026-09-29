@@ -81,5 +81,5 @@ Record decisions here only after the owner approves or they are already establis
 - New Phase 4 increment: `PATCH /api/v1/admin/orders/{order}/status` is implemented for ADMIN users only. It validates target states, locks the order row with `lockForUpdate()`, enforces the server transition matrix, records actor history, and returns `ORDER_STATE_CONFLICT`/409 for invalid or repeated transitions.
 - Regression tests cover valid admin transition, invalid jump, repeated transition conflict, and customer denial.
 - Workflow #204 **PASSED**: PHP 8.3, MySQL migrations and PHPUnit suite verified the server-owned admin status-transition increment.
-- Delivery-partner provisioning/approval increment is now implemented with admin-only authorization, transactional user-role provisioning, approval/revocation state, and regression tests. CI verification is the next gate.
+- Delivery-partner provisioning/approval is implemented with admin-only authorization, transactional user-role provisioning, approval/revocation state, and regression tests. Workflow #205 **FAILED** because duplicate/admin conflicts returned 500 instead of 409; generic conflict handling is now corrected and fresh CI verification is the next gate.
 - Admin role bootstrap remains operator-controlled until the protected admin web authentication/bootstrap flow is defined.

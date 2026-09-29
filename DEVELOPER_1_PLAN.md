@@ -208,7 +208,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 ### Latest verification result
 
 - Workflow #204 **PASSED**: PHP 8.3 setup, dependency installation, MySQL migrations and the PHPUnit suite all completed successfully on commit `d9c09af670b3e3a6ea0d00afd0e16b57b254fafe`; this verifies the server-owned admin order status transition increment already present on the branch.
-- Workflow #205 **PENDING**: delivery-partner provisioning/approval increment added in the current commit; the next CI run must verify the new migration, authorization and regression tests before this Phase 2 checkbox is considered complete.
+- Workflow #205 **FAILED**: delivery-partner provisioning/approval migrations passed, but duplicate/admin provisioning returned HTTP 500 instead of 409 because generic conflict exceptions fell through to the `SERVER_ERROR` renderer. The conflict handling is now corrected; fresh CI verification is required.
 
 - Workflow #109 passed the prior authentication + authorization implementation.
 - Workflow #134 ran the combined latest branch state and **failed in the catalogue test suite**: 7 tests failed after the application boot, dependency installation and MySQL migrations all succeeded.

@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\ConflictException;
 use App\Exceptions\OrderStateConflictException;
 use App\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Auth\AuthenticationException;
@@ -32,6 +33,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(function (Request $request, Throwable $e): bool {
             return $request->is('api/v1/*') || $request->expectsJson();
+        });
+
+        $exceptions->render(function (ConflictException $e, Request $request) {
+            if (! $request->is('api/v1/*')) return null;
+            return response()->json(['message' => $e->getMessage(), 'errors' => (object) [], 'code' => 'CONFLICT'], 409);
         });
 
         $exceptions->render(function (OrderStateConflictException $e, Request $request) {
