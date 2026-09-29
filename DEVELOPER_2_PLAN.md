@@ -1006,3 +1006,44 @@ No backend/Laravel-owned files were modified.
 3. Wire the approved platform location source behind the existing adapter/controller boundary.
 4. Perform physical GPS permission/revocation, Maps and active-trip verification.
 5. Complete customer/delivery E2E, Android debug APK verification and final PR readiness.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (current-head CI #237 verification)
+
+- Verified PR #1 still targets `frontend`, remains open, and GitHub currently reports it mergeable.
+- Current branch HEAD remains `aea821120f71ab2b559aadf28f99c0428cb76a49`.
+- Fresh Flutter CI run #237 (`36612073430`) is now registered for the current head and is **in progress**. The job has completed checkout and is currently setting up Flutter; dependency resolution, formatting, analyzer, tests and Android debug build have not completed yet.
+- Therefore **no green CI result is claimed**. Local Flutter/Dart execution remains NOT RUN in the connected environment.
+- The latest concrete smoke-test timing failure from CI #234 was addressed in commit `a614c6d963d26064d71ccb28c3b1e5d921608d01`; `DEVELOPER_2_PLAN.md` was then updated in commit `aea821120f71ab2b559aadf28f99c0428cb76a49`.
+- No backend/Laravel-owned files were modified and no unapproved GPS/Maps dependency was added.
+
+### Authoritative task board
+
+| Area | Status | Current state |
+|---|---|---|
+| Phase 0 — audit/verification | [~] | Static audit complete; current-head CI #237 in progress; physical-device verification pending |
+| Phase 1 — API foundation | [x] | Complete |
+| Phase 2 — auth/session | [~] | Session lifecycle complete; Google platform/runtime verification pending |
+| Phase 3 — catalogue/cart | [x] | Complete |
+| Phase 4 — COD checkout | [x] | Implementation complete; automated/runtime verification pending |
+| Phase 5 — customer orders/tracking | [x] | Implementation complete; runtime verification pending |
+| Phase 6 — delivery lifecycle | [x] | Assignment/status/location integration complete |
+| Phase 7 — active GPS/Maps | [~] | Adapter/controller/lifecycle complete; approved platform dependency + real GPS/Maps verification pending |
+| Invoice | [x] | Contract frozen; typed model/repository/controller/UI and delivered-order route implemented; CI verification pending on current head |
+| Release verification | [ ] | Green current-head CI, Android APK, physical-device and E2E verification pending |
+
+### Next execution order
+
+1. **Finish CI #237 verification** and fix only concrete current-head failures if any; do not mark CI green while it is in progress.
+2. **Confirm the approved Android/iOS location package and Google Maps configuration** from repository/project documentation before adding any platform dependency.
+3. **Wire the approved platform GPS source** behind the existing location adapter/controller boundary once the dependency/configuration is explicitly approved; do not invent a package or fake coordinates.
+4. **Verify physical-device GPS/Maps behavior** including permission denial/revocation, active-trip start/stop, throttling, freshness and location publishing.
+5. **Complete customer/delivery E2E and release verification**: COD → order → delivery lifecycle → customer tracking → delivered → invoice, plus Android debug APK and final PR readiness.
+
+### Current blockers / verification gaps
+
+- GitHub Actions is the only available Flutter/Dart execution environment in this session; local Flutter commands remain unavailable.
+- The repository still has no documented approved concrete location/Maps package and no concrete platform Maps configuration that Developer 2 can safely add without guessing. Existing active-trip code therefore keeps the platform source explicitly unavailable until approval/configuration exists.
+- Google auth platform/runtime verification remains pending because public platform configuration/runtime credentials have not been verified in this environment.
+
+`DEVELOPER_2_PLAN.md` is the authoritative task-progress record for Developer 2. Each implementation or verification checkpoint must update this board before the next task is started.
