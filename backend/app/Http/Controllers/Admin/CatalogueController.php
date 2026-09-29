@@ -38,7 +38,9 @@ class CatalogueController extends Controller
             }))
             ->orderBy('name')->paginate(15, ['*'], 'products_page')->withQueryString();
 
-        return view('admin.catalogue.index', compact('categories', 'products', 'validated'));
+        $categoryOptions = Category::query()->orderBy('sort_order')->orderBy('name')->get(['id', 'name']);
+
+        return view('admin.catalogue.index', compact('categories', 'products', 'categoryOptions', 'validated'));
     }
 
     public function storeCategory(Request $request): RedirectResponse
