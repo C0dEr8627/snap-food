@@ -6,6 +6,7 @@ import '../../../core/network/api_transport.dart';
 import '../../auth/data/session_store.dart';
 import '../data/order_models.dart';
 import '../data/order_repository.dart';
+import '../data/order_tracking_models.dart';
 
 final orderApiTransportProvider = Provider<HttpApiTransport>((ref) {
   final transport = HttpApiTransport();
@@ -149,4 +150,21 @@ class OrderHistoryController extends AsyncNotifier<OrderHistoryState> {
         lastPage: page.lastPage,
         total: page.total,
       );
+}
+
+final orderTrackingControllerProvider =
+    AsyncNotifierProvider<OrderTrackingController, OrderTracking?>(
+  OrderTrackingController.new,
+);
+
+class OrderTrackingController extends AsyncNotifier<OrderTracking?> {
+  OrderRepository get _repository => ref.read(orderRepositoryProvider);
+
+  @override
+  Future<OrderTracking?> build() async => null;
+
+  Future<void> load(String orderId) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => _repository.fetchTracking(orderId));
+  }
 }
