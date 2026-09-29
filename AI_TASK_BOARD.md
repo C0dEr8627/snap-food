@@ -237,3 +237,24 @@ The backend branch now has richer delivery/tracking and invoice endpoint documen
 4. Add order success/detail/history with loading/empty/error/refresh states.
 5. Add delivery assignment/status/location/tracking.
 6. Add invoice model/repository/UI after the Flutter-facing invoice response schema is frozen.
+
+
+## Developer 2 checkpoint — 2026-09-29 (continuation / task status synchronization)
+
+- **Branch:** `developer-2-flutter`; **PR:** #1 → `frontend`; open and mergeable.
+- **Current implementation:** API foundation, catalogue repository/controller/state + UI states, session restoration/logout/auth-aware routing, and local cart repository/controller with explicit product IDs and tests are complete.
+- **No new API code added:** the shared contract remains insufficient for the next typed order/COD implementation, so no speculative DTOs, status enums, request payloads or network calls were introduced.
+- **Backend verification currently available:** Workflows #209/#259/#266 cover delivery provisioning/approval, assignment/status progression and active-trip tracking; backend invoice behavior is documented. These do not by themselves freeze the Flutter-facing response schemas.
+- **Verification:** Flutter/Dart formatter, analyzer, tests, APK build and physical-device checks remain NOT RUN; no Flutter CI status is reported.
+
+### Current milestone state
+- M2 `[~]` Auth — session lifecycle done; exact Google exchange/session/role contract remains gated.
+- M3 `[~]` Catalogue — repository/controller/state done; typed response mapping remains gated.
+- M4 `[~]` Orders/COD — backend verified; Flutter address/order schemas remain gated.
+- M5 `[~]` Delivery — backend verification available; Flutter schemas/integration remain gated.
+- M6 `[ ]` Partner delivery completion — Flutter integration not started.
+- M7 `[ ]` Active-trip map integration — Flutter integration not started.
+- M8 `[ ]` Invoice — backend scope documented; Flutter integration not started.
+- M9 `[ ]` Release hardening — runtime/CI/device verification pending.
+
+**Next owner/action:** Developer 1 must synchronize the complete Flutter-facing order/COD + address + delivery response examples into the shared/base contract. Developer 2 then starts typed order models → checkout controller/repository → order success/detail/history → delivery/tracking → invoice.
