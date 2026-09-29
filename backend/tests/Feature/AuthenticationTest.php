@@ -91,7 +91,7 @@ class AuthenticationTest extends TestCase
         $this->postJson('/api/v1/auth/google', [
             'credential' => 'invalid-google-token',
         ])->assertUnauthorized()
-            ->assertJsonPath('error.code', 'INVALID_GOOGLE_CREDENTIAL');
+            ->assertJsonPath('code', 'INVALID_GOOGLE_CREDENTIAL');
 
         $this->assertDatabaseCount('users', 0);
     }
@@ -119,7 +119,7 @@ class AuthenticationTest extends TestCase
         $this->postJson('/api/v1/auth/google', [
             'credential' => 'valid-google-token',
         ])->assertForbidden()
-            ->assertJsonPath('error.code', 'ACCOUNT_INACTIVE');
+            ->assertJsonPath('code', 'ACCOUNT_INACTIVE');
 
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
@@ -181,7 +181,7 @@ class AuthenticationTest extends TestCase
         $this->withHeader('Authorization', 'Bearer '.$token)
             ->getJson('/api/v1/me')
             ->assertForbidden()
-            ->assertJsonPath('error.code', 'ACCOUNT_INACTIVE');
+            ->assertJsonPath('code', 'ACCOUNT_INACTIVE');
 
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
