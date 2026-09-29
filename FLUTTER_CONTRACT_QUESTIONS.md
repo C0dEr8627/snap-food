@@ -1,0 +1,53 @@
+# Flutter Contract Questions / Integration Gate
+
+This document records the exact API details Developer 2 needs before replacing current local/prototype customer flows with real API calls. It intentionally does not invent payloads.
+
+## Order creation — POST /api/v1/orders
+- Exact request JSON field names and types.
+- Product-line field names for product ID and quantity.
+- Exact address fields; whether the API accepts a saved address ID, inline address, or both.
+- COD/payment-method field and allowed value.
+- Whether an idempotency key/header is required.
+- Success status code and complete response example, including order ID and status.
+- Authoritative totals fields and money representation.
+- Validation/error examples for unavailable products, invalid quantities, changed prices, empty cart and invalid address.
+
+## Order list — GET /api/v1/orders
+- Pagination envelope and field names.
+- Order summary fields, order ID/type, status values, timestamps, totals/payment summary.
+- Empty collection response.
+
+## Order detail — GET /api/v1/orders/{order}
+- Complete success response.
+- Order ID/status fields.
+- Item/product snapshot fields, quantity and server-calculated prices/totals.
+- Delivery-address snapshot fields.
+- Payment method/state.
+- Status history if exposed.
+- Not-found/forbidden examples.
+
+## Address handling
+- Whether addresses are persisted customer resources or submitted as delivery snapshots.
+- Create/list/update/delete endpoints, if applicable.
+- Request/response examples, validation and address identifier type.
+- Ownership/error behavior.
+
+## Authentication — POST /api/v1/auth/google
+- Exact credential field/type.
+- Whether Flutter sends an ID token, authorization code, access token, or another credential.
+- Success application-token/session shape.
+- User/role response fields.
+- Public platform client configuration required by Flutter.
+
+## Catalogue
+For GET /categories, GET /products and GET /products/{product}, document the success envelope and exact category/product field names/types, product ID type, price representation, availability/active fields, and pagination/search fields.
+
+## Delivery gate
+Before Flutter delivery implementation:
+- Delivery-partner provisioning/approval CI is green.
+- Delivery request/assignment response examples are documented.
+- Assignment ID/status fields and transitions are documented.
+- Location update and tracking request/response examples are documented.
+
+## Developer 2 rule
+Until these examples are frozen in the shared contract, Flutter will not guess field names, status values, identifiers or payload shapes. Local repositories/fakes may keep UI development moving, but must not be presented as API integration.
