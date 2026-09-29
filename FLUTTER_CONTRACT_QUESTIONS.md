@@ -109,3 +109,13 @@ Until these are synchronized, Developer 2 will not infer field names, status val
 ## 2026-09-29 implementation-gate re-check
 
 The first incomplete Flutter implementation task remains Google SSO, but it cannot be safely implemented until the shared contract defines the exact credential exchange, application session/token response, public client configuration and role fields. The next customer code slice (typed orders/COD/address) is likewise blocked until the shared contract contains exact request/response examples. Developer 2 will not infer these fields from backend implementation details.
+
+## 2026-09-29 latest backend/shared-contract comparison
+
+The backend branch adds useful lifecycle descriptions, but its delivery route names do not fully match the high-level shared contract. Resolve these explicitly in the shared contract before Flutter networking is implemented:
+
+- Shared summary currently lists `GET /delivery/requests`, `POST .../accept`, `POST .../pickup`, and `POST .../complete`.
+- Backend detail documents `GET /delivery/assignments` and `PATCH /delivery/assignments/{assignment}/status` with partner-owned progression `PICKED_UP → OUT_FOR_DELIVERY → DELIVERED`.
+- Shared summary lists admin assignment as `POST /admin/orders/{order}/assign-delivery`; backend detail documents `POST /admin/orders/{order}/assignment` with `delivery_partner_id`.
+
+Contract owner must confirm the canonical paths and provide exact success/error JSON examples for partner assignment listing, status updates, location writes, and customer/admin tracking. The backend branch's prose about behavior is not a substitute for concrete response schemas. Order/address/auth/catalogue response schema blockers listed above remain open.
