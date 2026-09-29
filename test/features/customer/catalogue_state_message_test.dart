@@ -20,7 +20,7 @@ void main() {
   });
 
   testWidgets('shows empty state', (tester) async {
-    const snapshot = CatalogueSnapshot(categories: [], products: []);
+    const snapshot = CatalogueSnapshot(categories: [], products: CataloguePage(items: [], currentPage: 1, lastPage: 1, perPage: 20, total: 0));
 
     await tester.pumpWidget(
       MaterialApp(
