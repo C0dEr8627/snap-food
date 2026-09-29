@@ -307,3 +307,12 @@ The backend branch now has richer delivery/tracking and invoice endpoint documen
 2. Developer 1 synchronizes the exact Flutter-facing order/COD + address contract and resolves canonical delivery routes.
 3. Implement typed order models/repository/controller, then COD checkout with duplicate-submit protection and server-authoritative totals/errors.
 4. Implement order success/detail/history, then delivery/tracking and invoice from frozen schemas.
+
+
+## Developer 2 checkpoint — 2026-09-29 (current CI run status)
+
+- Current branch head: `4c7570bd6aa064643d868e1984286fd85dc364d8`.
+- CI run `36591111357` was cancelled after the branch advanced; it did not produce analyzer/test/build results.
+- CI run `36591122454` is now **in progress**. Checkout passed; Flutter setup is still running. No final CI result is claimed.
+- Task progress remains: Phase 1 complete; Phase 2 session lifecycle partial/Google SSO gated; Phase 3 repository/controller/state boundary complete/typed mapping gated; Phase 4 local cart complete/address+COD gated; Phase 5 not started; Phase 6/7 backend verified/Flutter schema-gated; invoice Flutter work not started; release verification pending.
+- Next owner/action: Developer 1 synchronizes complete order/COD + address and canonical delivery schemas; Developer 2 consumes the frozen contract and implements typed order → checkout → order history/detail, then delivery/tracking and invoice.
