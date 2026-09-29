@@ -17,7 +17,13 @@ class CartController extends Notifier<CartSnapshot> {
   CartSnapshot build() => _repository.load();
 
   void changeQuantity(String productId, int delta) {
-    final item = state.items.where((item) => item.productId == productId).firstOrNull;
+    CartItem? item;
+    for (final candidate in state.items) {
+      if (candidate.productId == productId) {
+        item = candidate;
+        break;
+      }
+    }
     if (item == null) return;
     state = _repository.setQuantity(productId, item.quantity + delta);
   }
