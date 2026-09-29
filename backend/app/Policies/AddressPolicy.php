@@ -9,7 +9,7 @@ class AddressPolicy
 {
     public function before(User $user): ?bool
     {
-        return $user->hasRole(User::ROLE_ADMIN) ? true : null;
+        return $user->is_active && $user->hasRole(User::ROLE_ADMIN) ? true : null;
     }
 
     public function view(User $user, Address $address): bool
