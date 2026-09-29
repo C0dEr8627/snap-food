@@ -295,3 +295,25 @@ Next implementation gate: freeze the documented order/COD + address contract, th
 - **Invoice:** backend implementation is documented, but Flutter invoice UI/repository/model work is not started and remains contract-gated.
 
 **Next implementation sequence:** (1) Developer 1 freezes the complete shared order/COD + address + relevant delivery response examples; (2) Developer 2 implements typed order models; (3) cart → COD checkout repository/controller with duplicate-submit protection; (4) server-authoritative totals/error handling; (5) order success/detail/history; (6) delivery request/assignment/status/location/tracking; (7) invoice integration once its Flutter-facing response schema is frozen. No undocumented payloads will be invented.
+
+
+## Developer 2 checkpoint — 2026-09-29 (latest contract re-check / task progress)
+
+- Re-checked the shared API_CONTRACT.md on developer-2-flutter before starting the next implementation.
+- The shared contract is still high-level for the Flutter integration gate: it lists order, delivery and auth endpoints, but does not provide the exact Flutter-facing order create/list/detail request/response examples, address request/response shape, Google credential exchange/session response, catalogue success fields, or delivery assignment/location/tracking response schemas.
+- Compared the backend branch contract: developer-1-backend-admin now documents delivery assignment/lifecycle/tracking and invoice endpoints, including deterministic/idempotent invoice numbering, but those complete Flutter-facing response schemas are not yet synchronized into the shared/base contract.
+- Backend verification is stronger than the previous checkpoint: Workflows #209, #259 and #266 are documented as passing for delivery-partner provisioning/approval, assignment/status progression, and active-trip location/tracking respectively. The remaining delivery blocker is therefore the shared Flutter response contract, not backend CI.
+- No new Flutter API implementation was added in this checkpoint. Creating typed order/address/delivery/invoice models or network calls now would require guessing undocumented fields and would violate the contract-first rule.
+- Completed Flutter scope remains: API transport/error foundation; catalogue repository/controller/state and loading/empty/error/retry integration; secure session storage and /me restoration; logout/revocation; auth-aware routing; local cart repository/controller with explicit product IDs and quantity updates/removal plus tests; contract-question tracking.
+- Phase 0 — complete except runtime/tooling verification, which is NOT RUN.
+- Phase 1 — complete.
+- Phase 2 — partial; Google SSO exchange/config and role routing remain contract/config gated.
+- Phase 3 — repository/controller/state integration complete; typed field mapping remains schema-gated.
+- Phase 4 — local cart boundary complete; address, COD checkout, server totals/errors, duplicate-submit handling, order success/detail/history and API-backed checkout tests remain contract-gated.
+- Phase 5 — customer order history/detail/status remains contract-gated.
+- Phase 6/7 — backend delivery lifecycle/tracking is verified, but Flutter delivery integration remains schema-gated.
+- Invoice — backend scope exists, but Flutter integration remains contract-gated.
+- Flutter/Dart formatter, analyzer, tests, APK build and physical-device checks remain NOT RUN because no Flutter/Dart runner or Flutter CI result is available in this GitHub-connected environment.
+- Next implementation sequence once the shared contract is frozen: typed order models → cart/COD checkout repository/controller with duplicate-submit protection → server-authoritative totals/error handling → order success/detail/history → delivery assignment/status/location/tracking → invoice model/repository/UI.
+
+No undocumented API payloads will be introduced.
