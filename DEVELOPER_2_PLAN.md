@@ -671,3 +671,10 @@ No backend/Laravel-owned files were modified.
 4. Improve order success/detail/history UX around the newly real checkout path.
 5. Add customer tracking using GET /orders/{order}/tracking.
 6. Continue delivery partner integration and invoice UI from the frozen contract.
+
+## Developer 2 continuation checkpoint — 2026-09-29 (typed catalogue + real-ID cart boundary)
+
+- Completed: typed catalogue category/product DTOs, paginated product state, documented data.data decoding, numeric product-ID validation, typed catalogue tests, removal of placeholder cart fixtures, and CartController.addItem/repository support for real catalogue IDs.
+- Contract alignment: product price remains a string; no client total calculation was introduced. Checkout still sends only product IDs/quantities and the server remains authoritative for totals.
+- Verification: local Flutter/Dart execution is unavailable; current-head CI is the required automated verification source.
+- Next: connect actual catalogue selection to cart add, add checkout success/duplicate/validation/409 tests, then tracking/delivery/invoice and final verification.
