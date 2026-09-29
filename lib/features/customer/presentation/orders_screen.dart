@@ -1,92 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import 'home_feed_screen.dart';
+import 'order_controller.dart';
 
-class OrdersScreen extends StatelessWidget {
+class OrdersScreen extends ConsumerWidget {
   const OrdersScreen({super.key});
-
-  static const orders = [
-    ('SF10248', 'The Bombay Tiffin', 'Chicken Dum Biryani + 2 items', '₹520', 'Delivered', 'Yesterday', Icons.check_circle),
-    ('SF10193', 'Mumbai Spice Kitchen', 'Butter Chicken + Garlic Naan', '₹640', 'On the way', 'Today • 12:42 PM', Icons.delivery_dining),
-    ('SF10087', 'Coastal Curry & Dosa House', 'Ghee Roast Masala Dosa', '₹190', 'Delivered', '18 Sep', Icons.check_circle),
-  ];
-
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: SnapFoodColors.surface,
-    appBar: AppBar(title: const Text('Your orders'), backgroundColor: SnapFoodColors.surface, surfaceTintColor: Colors.transparent),
-    body: ListView(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 92),
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: SnapFoodColors.primaryContainer, borderRadius: BorderRadius.circular(SnapFoodRadii.lg)),
-          child: const Row(children: [
-            Icon(Icons.delivery_dining, size: 32, color: SnapFoodColors.warmBlack),
-            SizedBox(width: 12),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('One order is on the way', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-              SizedBox(height: 3),
-              Text('Arriving in about 18 mins', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
-            ])),
-            Icon(Icons.chevron_right),
-          ]),
-        ),
-        const SizedBox(height: 24),
-        const Text('Order history', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-        const SizedBox(height: 12),
-        ...orders.map((order) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: _OrderCard(order: order),
-        )),
-      ],
-    ),
-    bottomNavigationBar: const BottomNav(selected: 2, onSelected: _noop),
-  );
-
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(orderHistoryControllerProvider);
+    return Scaffold(
+      backgroundColor: SnapFoodColors.surface,
+      appBar: AppBar(title: const Text('Your orders'), backgroundColor: SnapFoodColors.surface, surfaceTintColor: Colors.transparent),
+      body: state.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, __) => Center(child: FilledButton(onPressed: () => ref.read(orderHistoryControllerProvider.notifier).refresh(), child: const Text('Retry'))),
+        data: (orders) {
+          if (orders.orders.isEmpty) return RefreshIndicator(onRefresh: () => ref.read(orderHistoryControllerProvider.notifier).refresh(), child: ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.fromLTRB(16, 48, 16, 92), children: const [Icon(Icons.receipt_long_outlined, size: 52, color: SnapFoodColors.outline), SizedBox(height: 12), Center(child: Text('No orders yet', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800))), SizedBox(height: 6), Center(child: Text('Your completed and active orders will appear here.', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: SnapFoodColors.onSurfaceVariant))) ]));
+          return RefreshIndicator(
+            onRefresh: () => ref.read(orderHistoryControllerProvider.notifier).refresh(),
+            child: ListView.separated(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 92),
+              itemCount: orders.orders.length + (orders.hasNextPage ? 1 : 0),
+              separatorBuilder: (_, index) => SizedBox(height: index == orders.orders.length - 1 ? 0 : 12),
+              itemBuilder: (context, index) {
+                if (index == orders.orders.length) return Padding(padding: const EdgeInsets.only(top: 12), child: OutlinedButton(onPressed: () => ref.read(orderHistoryControllerProvider.notifier).loadNextPage(), child: const Text('Load more orders')));
+                final order = orders.orders[index];
+                return _OrderCard(orderId: order.id, status: order.status, paymentStatus: order.paymentStatus, total: order.total, itemCount: order.items.length, onTap: () => context.push('/orders/' + order.id));
+              },
+            ),
+          );
+        },
+      ),
+      bottomNavigationBar: const BottomNav(selected: 2, onSelected: _noop),
+    );
+  }
   static void _noop(int _) {}
 }
 
 class _OrderCard extends StatelessWidget {
-  const _OrderCard({required this.order});
-  final (String, String, String, String, String, String, IconData) order;
-
+  const _OrderCard({required this.orderId, required this.status, required this.paymentStatus, required this.total, required this.itemCount, required this.onTap});
+  final String orderId; final OrderStatus status; final String paymentStatus; final String total; final int itemCount; final VoidCallback onTap;
   @override
-  Widget build(BuildContext context) {
-    final active = order.$5 == 'On the way';
-    return Material(
-      color: SnapFoodColors.surfaceContainerLowest,
-      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-        onTap: active ? () => context.push('/order-tracking') : null,
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Column(children: [
-            Row(children: [
-              Container(width: 46, height: 46, decoration: BoxDecoration(color: active ? SnapFoodColors.primaryContainer : SnapFoodColors.softRed, borderRadius: BorderRadius.circular(SnapFoodRadii.md)), child: Icon(order.$7, color: active ? SnapFoodColors.warmBlack : SnapFoodColors.secondary)),
-              const SizedBox(width: 12),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(order.$2, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 3),
-                Text(order.$3, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: SnapFoodColors.onSurfaceVariant)),
-              ])),
-              Text(order.$4, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
-            ]),
-            const SizedBox(height: 12),
-            Row(children: [
-              Text(order.$6, style: const TextStyle(fontSize: 10, color: SnapFoodColors.outline)),
-              const Spacer(),
-              Text(order.$5, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: active ? SnapFoodColors.secondary : SnapFoodColors.tertiary)),
-              const SizedBox(width: 6),
-              if (active) const Icon(Icons.chevron_right, size: 17),
-            ]),
-          ]),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Material(color: SnapFoodColors.surfaceContainerLowest, borderRadius: BorderRadius.circular(SnapFoodRadii.lg), child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(SnapFoodRadii.lg), child: Padding(padding: const EdgeInsets.all(14), child: Row(children: [
+    Container(width: 46, height: 46, decoration: BoxDecoration(color: status == OrderStatus.delivered ? SnapFoodColors.softRed : SnapFoodColors.primaryContainer, borderRadius: BorderRadius.circular(SnapFoodRadii.md)), child: Icon(status == OrderStatus.delivered ? Icons.check_circle_outline : Icons.delivery_dining, color: SnapFoodColors.secondary)),
+    const SizedBox(width: 12),
+    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Order #' + orderId, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)), const SizedBox(height: 4), Text(itemCount.toString() + ' item' + (itemCount == 1 ? '' : 's') + ' • ' + _statusLabel(status), style: const TextStyle(fontSize: 11, color: SnapFoodColors.onSurfaceVariant)), const SizedBox(height: 3), Text('Payment: ' + (paymentStatus.isEmpty ? '—' : paymentStatus), style: const TextStyle(fontSize: 10, color: SnapFoodColors.outline))])),
+    Column(crossAxisAlignment: CrossAxisAlignment.end, children: [Text(total.isEmpty ? '—' : '₹' + total, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)), const SizedBox(height: 8), const Icon(Icons.chevron_right, size: 18)]),
+  ]))));
+  static String _statusLabel(OrderStatus status) => switch (status) { OrderStatus.placed => 'Placed', OrderStatus.accepted => 'Accepted', OrderStatus.preparing => 'Preparing', OrderStatus.readyForPickup => 'Ready for pickup', OrderStatus.assigned => 'Assigned', OrderStatus.pickedUp => 'Picked up', OrderStatus.outForDelivery => 'Out for delivery', OrderStatus.delivered => 'Delivered', OrderStatus.cancelled => 'Cancelled', OrderStatus.unknown => 'Status unavailable' };
 }
