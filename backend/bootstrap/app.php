@@ -2,6 +2,7 @@
 
 use App\Exceptions\ConflictException;
 use App\Exceptions\OrderStateConflictException;
+use App\Http\Middleware\EnsureAdminWebUser;
 use App\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -28,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
+            'admin.web' => EnsureAdminWebUser::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
