@@ -227,7 +227,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Immediate next task
 
-**Continue Phase 6 delivery workflow with location/tracking APIs.** Partner assignment listing and delivery-state progression are implemented, and Workflow #244 is green on tests/migrations (the run is still finishing container cleanup). The next increment is partner-owned latest-location updates with coordinate/timestamp validation, persistence/history, stale-location handling, and customer/admin authorized tracking reads. Do not mark this increment complete until its automated tests pass.
+**Verify and harden the delivery-partner lifecycle increment.** The first CI run for partner assignment listing/status progression exposed two authorization responses being normalized as 500 instead of 403. The implementation now uses explicit HTTP 403 exceptions; a fresh CI run is required before advancing to location/tracking. The next increment is partner-owned latest-location updates with coordinate/timestamp validation, persistence/history, stale-location handling, and customer/admin authorized tracking reads. Do not mark this increment complete until its automated tests pass.
 
 ## Developer 1 definition of done
 
