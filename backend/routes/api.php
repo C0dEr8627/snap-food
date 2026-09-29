@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\Catalogue\CategoryController;
 use App\Http\Controllers\Api\V1\Catalogue\ProductController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\Orders\AdminOrderController;
+use App\Http\Controllers\Api\V1\Orders\AdminOrderAssignmentController;
 use App\Http\Controllers\Api\V1\Orders\OrderController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
 
     Route::middleware('role:ADMIN')->group(function (): void {
         Route::patch('/admin/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('api.v1.admin.orders.status');
+        Route::post('/admin/orders/{order}/assignment', [AdminOrderAssignmentController::class, 'store'])->name('api.v1.admin.orders.assignment');
         Route::get('/admin/delivery-partners', [\App\Http\Controllers\Api\V1\Admin\DeliveryPartnerController::class, 'index'])->name('api.v1.admin.delivery-partners.index');
         Route::post('/admin/delivery-partners', [\App\Http\Controllers\Api\V1\Admin\DeliveryPartnerController::class, 'store'])->name('api.v1.admin.delivery-partners.store');
         Route::patch('/admin/delivery-partners/{deliveryPartner}/approval', [\App\Http\Controllers\Api\V1\Admin\DeliveryPartnerController::class, 'updateApproval'])->name('api.v1.admin.delivery-partners.approval');
