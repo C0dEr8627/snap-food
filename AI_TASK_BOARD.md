@@ -14,7 +14,7 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 - [ ] M1 — Laravel boots and connects to non-production MySQL.
 - [x] M2 — Google SSO backend authentication/authorization slice is implemented and verified through workflow #146; end-to-end Flutter session restoration/revocation remains a separate integration check.
 - [x] M3 — Admin product/category CRUD and customer catalogue API work end-to-end, including deterministic seed/demo data verified by workflow #146.
-- [~] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history are implemented, while CI verification and admin inspection/status operations remain.
+- [~] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history are implemented. Workflow #175 exposed a migration/model table-name mismatch; the fix is committed and corrected CI verification is pending.
 - [ ] M5 — Admin provisions delivery partners and safely assigns orders.
 - [ ] M6 — Partner accepts, confirms pickup, and completes delivery through valid state transitions.
 - [ ] M7 — Active-trip GPS updates are authorized and customer map shows fresh/stale location states.
@@ -65,4 +65,7 @@ Record decisions here only after the owner approves or they are already establis
 - Verification gate: GitHub Actions workflow #146 passed.
 - Next implementation: Phase 4 order/COD workflow, starting with state definitions and transition rules.
 
-- Phase 4 initial order/COD slice is now implemented on the branch: orders/order-items/status-history schema, transactional checkout, server-side totals, immutable snapshots, COD pending state, customer list/detail endpoints, and regression tests. CI verification is pending.
+- Phase 4 initial order/COD slice is implemented: orders/order-items/status-history schema, transactional checkout, server-side totals, immutable snapshots, COD pending state, customer list/detail endpoints, and regression tests.
+- Workflow #175 failed with 4 order-related test failures because the migration created `order_status_history` while the `OrderStatusHistory` model queried `order_status_histories`.
+- Fix commit: `112a2ffe1df0bcd07bbf54f43748798809c144b8` aligns the migration and rollback table name with the model convention.
+- Current gate: corrected CI verification pending; after green, continue with server-owned status transition operations and concurrency/conflict coverage.
