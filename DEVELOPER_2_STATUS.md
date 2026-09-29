@@ -325,3 +325,39 @@ No local Flutter/Dart runner is available in this GitHub-connected environment. 
 1. Inspect the new current-head Flutter CI run and fix only concrete failures.
 2. Then implement customer order tracking from `GET /orders/{order}/tracking`.
 3. Continue delivery-partner assignment/status/location integration, then invoice UI.
+
+
+## Developer 2 implementation checkpoint — 2026-09-29 (customer order tracking)
+
+### Completed in this increment
+- Added typed customer tracking models for tracking status, latest latitude/longitude, recorded timestamp, accuracy and stale-state handling.
+- Extended the existing OrderRepository with GET /orders/{order}/tracking using the frozen API contract.
+- Added OrderTrackingController with loading/error/data states.
+- Extended the existing order-detail screen to load tracking only for active orders, show current delivery status/location freshness, and expose retry behavior.
+- Added repository/model coverage for tracking decoding and corrected the existing checkout test to assert the documented integer product_id.
+- Preserved existing order-detail navigation and visual structure; no backend/Laravel-owned files were modified.
+
+### Verification
+- Local Flutter/Dart commands remain unavailable in this GitHub-connected environment; no local analyze/test/build result is claimed.
+- The earlier current-head CI run 36594747609 was cancelled and therefore does not verify this increment.
+- A fresh CI run for the new commits is required and must complete dependency resolution, formatting, analyzer, tests and Android build before release verification can be marked complete.
+
+### Current task status
+- Phase 0: [~] static audit complete; current-head CI/device verification remains pending.
+- Phase 1: [x] API foundation complete.
+- Phase 2: [~] session lifecycle complete; Google SSO configuration/exchange and final role routing remain integration-gated.
+- Phase 3: [x] typed catalogue → menu/detail → real numeric cart IDs complete.
+- Phase 4: [x] cart → COD checkout foundation and tests complete; address validation, server errors and successful order navigation are integrated.
+- Phase 5: [x] order history/detail UI complete; customer tracking now implemented.
+- Phase 6/7: [~] delivery-partner assignment/status/location integration and active-trip/maps UI remain.
+- Invoice: [ ] Flutter invoice integration remains.
+- Release verification: [ ] current-head CI, Android/device and end-to-end verification remain.
+
+### Next implementation
+1. Verify the current-head Flutter CI and fix only concrete failures.
+2. Implement delivery-partner assignment/request/status/location Flutter flows from the frozen canonical delivery contract.
+3. Add active-trip/customer navigation and location freshness handling without background GPS, geofencing or WebSockets.
+4. Implement invoice model/repository/UI.
+5. Finish physical-device and end-to-end verification.
+
+No merge or deployment performed.
