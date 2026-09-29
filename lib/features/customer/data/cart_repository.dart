@@ -3,6 +3,8 @@ import 'cart_models.dart';
 abstract interface class CartRepository {
   CartSnapshot load();
   CartSnapshot setQuantity(String productId, int quantity);
+
+  CartSnapshot clear();
 }
 
 class LocalCartRepository implements CartRepository {
@@ -32,6 +34,12 @@ class LocalCartRepository implements CartRepository {
   CartSnapshot load() => CartSnapshot(List.unmodifiable(_items));
 
   @override
+  @override
+  CartSnapshot clear() {
+    _items.clear();
+    return load();
+  }
+
   CartSnapshot setQuantity(String productId, int quantity) {
     final index = _items.indexWhere((item) => item.productId == productId);
     if (index < 0) return load();
