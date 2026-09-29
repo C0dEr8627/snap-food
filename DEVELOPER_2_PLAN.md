@@ -678,3 +678,10 @@ No backend/Laravel-owned files were modified.
 - Contract alignment: product price remains a string; no client total calculation was introduced. Checkout still sends only product IDs/quantities and the server remains authoritative for totals.
 - Verification: local Flutter/Dart execution is unavailable; current-head CI is the required automated verification source.
 - Next: connect actual catalogue selection to cart add, add checkout success/duplicate/validation/409 tests, then tracking/delivery/invoice and final verification.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (catalogue-to-cart + checkout tests)
+
+- Completed: live typed catalogue product selection in restaurant menu and food details, real product IDs in cart, active/availability gating, and checkout tests for duplicate submit, validation failure and HTTP 409 conflict.
+- Order controller compatibility fix: replaced unsupported async state accessor with state.value.
+- Remaining: customer tracking, delivery partner integration, invoice UI, CI/device verification.
