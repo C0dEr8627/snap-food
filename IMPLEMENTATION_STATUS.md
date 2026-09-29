@@ -365,3 +365,10 @@ No backend/Laravel-owned files were modified.
 4. Improve order success/detail/history UX around the newly real checkout path.
 5. Add customer tracking using GET /orders/{order}/tracking.
 6. Continue delivery partner integration and invoice UI from the frozen contract.
+
+## Developer 2 continuation checkpoint — 2026-09-29 (typed catalogue + real-ID cart boundary)
+
+- Typed catalogue mapping is now implemented and tested.
+- Placeholder cart IDs have been removed; local cart starts empty and supports numeric catalogue IDs through the repository/controller add-item boundary.
+- Existing COD checkout therefore no longer has a default path that submits fake IDs; a user must first add a real catalogue-backed item.
+- Remaining implementation: wire catalogue selection to cart, expand checkout tests, customer tracking, delivery partner flows, invoice UI, and final CI/device verification.
