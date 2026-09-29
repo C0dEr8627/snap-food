@@ -20,6 +20,20 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 - Use API contracts from `API_CONTRACT.md`. If something is unclear, document a question/assumption rather than silently inventing an incompatible payload.
 - Keep all platform-specific code behind small adapters where practical.
 
+## Current execution status
+
+> **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. PR #1 targets `frontend` and remains open. The latest documented Flutter head is `b32a6fb666f76ad2c09efc16c00ae90fcd1fec43`.
+>
+> **Verified complete in source control:** Phase 0 static Flutter audit, screen-to-contract mapping, platform/dependency inventory, API transport/client foundation, normalized API errors, environment API URL documentation, API-client fake-transport tests, the first catalogue repository boundary with a remote implementation plus deterministic fake repository, the catalogue Riverpod controller/state layer with retry/error handling and controller tests, configured repository wiring, catalogue loading/empty/error/retry UI integration across the existing customer catalogue screens with widget coverage, and the initial auth/session foundation with secure token storage, `/me` hydration, logout handling and auth-aware route redirects.
+>
+> **Backend checkpoint refreshed:** Developer 1's branch has documented fixes after workflow #179: `bf2febe...` corrected the status-history assertion, `a0f9b47...` restored the order-list `data` envelope, and `cf5236d...` added explicit customer-role middleware. Commit `a1fcc5c...` documents these Phase 4 corrections. These changes are not treated as verified integration until a fresh green Phase 4 workflow is observed.
+>
+> **Catalogue contract limitation:** `API_CONTRACT.md` still documents catalogue endpoints without defining successful category/product response fields or a common success envelope. The repository therefore preserves JSON payloads without inventing field names. Typed DTO/UI mapping must wait for documented response fields or an explicitly approved backend response shape.
+>
+> **Auth contract limitation:** `API_CONTRACT.md` / `AUTH.md` still do not define the exact Google credential request field/type, successful application-token response shape, public Google client configuration, or sufficiently explicit role response shape. The Flutter auth foundation is ready, but the real provider/exchange must wait for that contract.
+>
+> **Not verified because the GitHub-connected environment has no local Flutter/Dart runner:** `dart format`, `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --debug`, and physical-device checks. These remain **NOT RUN**, not passed.
+
 ## Phase 0 — Inspect current app
 
 - [x] Inspect `pubspec.yaml`, routing, Riverpod providers, feature directories, existing mock repositories and all current screens (static source audit completed; runtime baseline remains separate).
@@ -28,80 +42,64 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 - [x] Identify existing navigation/design regressions from static inspection; do not expand scope into unrelated redesigns.
 - [x] Record dependencies/platform configuration required for Google sign-in, secure storage, Maps and location.
 
-## Current execution status
-
-> **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. Latest catalogue UI, auth-session foundation, auth-aware go_router redirects, and progress documentation are on the branch; PR #1 tracks the current head. PR #1 targets `frontend` and remains open.
->
-> **Verified complete in source control:** Phase 0 static Flutter audit, screen-to-contract mapping, platform/dependency inventory, API transport/client foundation, normalized API errors, environment API URL documentation, API-client fake-transport tests, the first catalogue repository boundary with a remote implementation plus deterministic fake repository, the catalogue Riverpod controller/state layer with retry/error handling and controller tests, configured repository wiring, catalogue loading/empty/error/retry UI integration across the existing customer catalogue screens with widget coverage, and the initial auth/session foundation with secure token storage, `/me` hydration and logout handling.
->
-> **Catalogue contract limitation:** `API_CONTRACT.md` documents the catalogue endpoints but does not define successful category/product response fields or a common success envelope. The repository therefore preserves JSON payloads without inventing field names. A typed DTO and UI mapping must wait for documented response fields or an explicitly approved backend response shape.
->
-> **Not verified because the GitHub-connected environment has no local Flutter/Dart runner:** `dart format`, `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --debug`, and physical-device checks. These remain **NOT RUN**, not passed.
->
-> **Cross-branch contract check (2026-09-29, latest inspected):** Developer 1's latest inspected branch is `developer-1-backend-admin` at `083bab12b37a2a010b15b8c394561e9f627d65de`. Workflow #146 passed the corrected Phase 2/3 authentication/authorization and catalogue slice on PHP 8.3 with MySQL. Workflow #179 then ran against the newer Phase 4 state but failed in `OrderApiTest` after migrations completed: three order tests failed, including a missing `order_status_history` table during order-history assertions and an admin-order endpoint returning 500. Flutter therefore treats Phase 4 as unverified until the backend test failures are fixed and a fresh green CI run exists. However, the checked-in `API_CONTRACT.md` and `AUTH.md` still do not specify the exact `POST /auth/google` request field/credential type or successful application-token response shape, and no public Google client configuration has been documented. Flutter therefore remains blocked from implementing the real exchange payload and platform sign-in configuration. No shared contract file was changed from the Flutter branch.
->
-> **Current first incomplete implementation task:** complete Google SSO credential exchange and session routing. Backend authentication/authorization and catalogue CI are now green in workflow #146, but the latest branch still has the same minimal `API_CONTRACT.md` / `AUTH.md` definitions: the exact `/auth/google` request credential field/type, successful application-token response shape, and public Google client configuration are not frozen. A Flutter-side contract handoff remains at `docs/AUTH_CONTRACT_HANDOFF.md`; it lists the required backend fields without inventing a payload. The secure session foundation, `/me` restoration, logout handling and auth-aware route redirects are implemented. No Google package/configuration or guessed request fields were added.
->
-> **Next implementation sequence:** backend freezes the `/auth/google` request/response contract and public Google client configuration → integrate platform Google sign-in and credential exchange → complete catalogue typed DTOs once catalogue response fields are documented → integrate cart/COD and orders once the Phase 4 contract is documented and CI-verified → delivery → active-trip tracking. While waiting on the auth contract, no incompatible auth implementation will be invented. The next unblocked Flutter work is catalogue typed DTO mapping only after the backend publishes its successful response schema; otherwise the next action remains documentation/contract coordination. The backend Phase 2/3 checkpoint is verified by workflow #146; the newer Phase 4 order/COD slice is blocked by workflow #179 failures and still awaits a green CI verification.
-
 ## Phase 1 — API foundation
 
 - [x] Add a single configured API client with environment-specific base URL.
 - [x] Centralize JSON serialization, timeouts, auth headers, normalized API errors and safe logging (sensitive payloads are not logged).
-- [x] Add repository interfaces/implementations using the current architecture. **Catalogue repository boundary implemented; UI integration remains.**
-- [x] Add loading, empty, error and retry states. **Integrated through the shared catalogue state widget on home, search, restaurant menu and food details; offline/degraded-network presentation remains represented by normalized network errors and is not yet a distinct offline mode.**
-- [x] Keep secrets out of source; document how API URL and public client keys are configured per environment.
-- [x] Use a fake transport for API client unit tests; feature repository fakes are now present for catalogue.
+- [x] Add repository interfaces/implementations using the current architecture. Catalogue repository boundary implemented.
+- [x] Add loading, empty, error and retry states through the shared catalogue state widget.
+- [x] Keep secrets out of source; document API URL and public-key configuration approach.
+- [x] Use a fake transport for API client unit tests; feature repository fakes are present for catalogue.
 
 ## Phase 2 — Google SSO and session state
 
-- [ ] Implement Google sign-in using platform-appropriate public client configuration. **Session foundation is ready; credential provider/exchange remains blocked on the undocumented `/auth/google` request/response shape, public client configuration, and role response shape.**
-- [ ] Send credential to Laravel `POST /api/v1/auth/google` according to the contract. **Blocked until request/response fields are documented.**
+- [ ] Implement Google sign-in using platform-appropriate public client configuration. **Blocked on the missing public configuration and exact backend exchange contract.**
+- [ ] Send credential to Laravel `POST /api/v1/auth/google` according to the contract. **Blocked; do not guess the field or credential type.**
 - [x] Securely persist the application session/token using `flutter_secure_storage` behind `SessionStore`.
 - [x] Hydrate current user through `GET /api/v1/me`; unauthorized restoration clears the stored token.
 - [x] Implement logout/revocation via `POST /api/v1/auth/logout` and clear local session state.
-- [x] Integrate Riverpod auth state with go_router redirects. **Unauthenticated protected routes return to `/welcome`; session restoration/loading is held at `/`; authenticated sessions leave `/` and `/welcome` for `/home`. Role-specific customer/delivery routing remains pending the documented user-role response shape and Google SSO integration.**
-- [ ] Keep customer and approved delivery partner navigation separated; admin remains web-only.
-- [x] Add controller tests for startup restoration, expired session cleanup and logout. **Google cancellation/login failure remain pending the provider integration.**
+- [x] Integrate Riverpod auth state with go_router redirects.
+- [ ] Keep customer and approved delivery partner navigation separated; role-specific routing remains pending the documented user-role response shape and real SSO integration.
+- [x] Add controller tests for startup restoration, expired session cleanup and logout.
 
 **Milestone:** Google sign-in → Laravel auth → authenticated Flutter session.
 
 ## Phase 3 — Customer catalogue
 
-- [ ] Define typed models for categories/products and API response/error envelopes. **Blocked on missing successful response schema in API_CONTRACT.md.**
-- [ ] Replace hard-coded catalogue presentation behind existing UI. **Repository/controller and state integration are complete; field-level replacement is blocked on the undocumented success response schema.**
-- [x] Connect home, search/filter, restaurant menu and product details to the catalogue controller state boundary. **Field-level rendering remains blocked on undocumented response fields.**
-- [x] Handle empty catalogue plus loading/error/retry states. **Unavailable-product and image-failure behavior remain pending typed product mapping.**
+- [ ] Define typed models for categories/products and API response/error envelopes. **Blocked on missing successful response schema in `API_CONTRACT.md`.**
+- [ ] Replace hard-coded catalogue presentation behind existing UI. **Repository/controller/state integration is complete; field-level replacement is blocked on undocumented response fields.**
+- [x] Connect home, search/filter, restaurant menu and product details to the catalogue controller state boundary.
+- [x] Handle empty catalogue plus loading/error/retry states.
 - [ ] Keep displayed price informational; checkout total comes from backend response.
 - [x] Add repository fake coverage for catalogue fixtures.
-- [x] Add catalogue controller coverage for successful load and repository failure state, plus widget coverage for loading/empty/error/retry states.
+- [x] Add catalogue controller and widget coverage for success/loading/empty/error/retry states.
 
 **Milestone:** admin-created products appear in customer app when backend is integrated.
 
 ## Phase 4 — Cart, addresses and COD checkout
 
 - [ ] Review current cart implementation and preserve usable UI.
-- [ ] Ensure cart quantities reference product IDs; treat local subtotal as preview only.
+- [ ] Ensure cart quantities reference product IDs; local subtotal is preview only.
 - [ ] Implement address selection/entry based on agreed contract.
-- [ ] Add COD checkout request and submit only product IDs, quantities and required address data.
+- [ ] Add COD checkout request and submit only product IDs, quantities and required address data. **Blocked until backend Phase 4 is green and request/response examples are frozen.**
 - [ ] Display server-calculated totals and server validation errors.
 - [ ] Prevent duplicate taps/submissions and show pending/success/failure states.
 - [ ] Route successful order to order detail/status screen.
 - [ ] Test empty cart, changed price, unavailable product, request timeout and duplicate submit.
 
-**Milestone:** customer places a real COD order once backend is ready.
+**Milestone:** customer places a real COD order once backend is verified and documented.
 
 ## Phase 5 — Customer orders/profile
 
 - [ ] Connect order history/detail/status to API.
 - [ ] Render backend status values through a centralized status-to-label/presentation mapping.
-- [ ] Ensure users only see their own orders through backend authorization (client filtering is not security).
-- [ ] Keep existing favorites/profile/settings navigation working; if an endpoint is not yet available, clearly isolate temporary local/mock behavior and document it.
+- [ ] Ensure users only see their own orders through backend authorization.
+- [ ] Keep existing favorites/profile/settings navigation working; isolate any temporary local/mock behavior and document it.
 - [ ] Add loading, empty, error and refresh states.
 
 ## Phase 6 — Delivery Partner app flows
 
-- [ ] Build approved-partner entry/session state using same backend identity contract.
+- [ ] Build approved-partner entry/session state using the same backend identity contract.
 - [ ] Connect availability, delivery request list, accept, pickup and completion.
 - [ ] Display current assignment and prevent duplicate actions while requests are in flight.
 - [ ] Implement pickup/customer navigation using Google Maps SDK or approved external navigation approach.
@@ -120,8 +118,6 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 - [ ] Distinguish fresh/stale/no-location/loading/error states.
 - [ ] Test denied/revoked permission, app screen exit, network loss, stale GPS and completed delivery.
 - [ ] No continuous background location, geofencing or WebSockets.
-
-**Milestone:** customer sees a delivery partner's active-trip location on the map.
 
 ## Phase 8 — Quality and release
 
