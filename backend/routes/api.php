@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\Orders\AdminOrderController;
 use App\Http\Controllers\Api\V1\Orders\AdminOrderAssignmentController;
 use App\Http\Controllers\Api\V1\Orders\OrderController;
+use App\Http\Controllers\Api\V1\Delivery\DeliveryPartnerOrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('api.v1.health');
@@ -28,6 +29,11 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('/orders', [OrderController::class, 'index'])->name('api.v1.orders.index');
         Route::post('/orders', [OrderController::class, 'store'])->name('api.v1.orders.store');
         Route::get('/orders/{order}', [OrderController::class, 'show'])->name('api.v1.orders.show');
+    });
+
+    Route::middleware('role:DELIVERY_PARTNER')->group(function (): void {
+        Route::get('/delivery/assignments', [DeliveryPartnerOrderController::class, 'index'])->name('api.v1.delivery.assignments.index');
+        Route::patch('/delivery/assignments/{assignment}/status', [DeliveryPartnerOrderController::class, 'updateStatus'])->name('api.v1.delivery.assignments.status');
     });
 
     Route::middleware('role:ADMIN')->group(function (): void {
