@@ -30,7 +30,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 | Phase 2 — Identity & authorization | **COMPLETED** | Google verification service, login, Sanctum token storage, `/me`, logout, role middleware, resource policies and negative/cross-user authorization tests are implemented and verified by Workflow #146. Server-side delivery-partner provisioning/approval is now implemented and CI-verified by Workflow #209. Admin role provisioning remains operator-controlled until the protected admin web bootstrap flow is defined. |
 | Phase 3 — Catalogue | **COMPLETED** | Customer category/product reads, search/pagination, admin create/update/deactivate APIs, validation, regression tests and deterministic seed/demo data are implemented and verified by Workflow #146. |
 | Phase 4 — Orders & COD | **IN PROGRESS** | Checkout/list/detail and server-owned admin status transitions are CI-verified; delivery assignment/partner workflow remains. |
-| Phase 5 — Admin & assignment | **IN PROGRESS** | Protected Laravel web authentication/dashboard foundation is implemented; fresh CI verification and concurrency-safe delivery assignment remain. |
+| Phase 5 — Admin & assignment | **IN PROGRESS** | Protected Laravel web authentication/dashboard foundation and concurrency-safe delivery assignment are implemented; CI verification and broader admin dashboard/order operations remain. |
 | Phase 6 — Delivery tracking | **NOT STARTED** | Partner workflow, pickup/completion, location updates and tracking authorization remain. |
 | Phase 7 — Invoices | **NOT STARTED** | Numbering decision, invoice generation and access control remain. |
 | Phase 8 — Release readiness | **NOT STARTED** | Seeds, contract examples, clean-DB migration run, automated tests, security review and deployment checklist remain. |
@@ -120,8 +120,8 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [ ] Build dashboard for catalogue, orders, customers, partners, assignments and invoices.
 - [ ] Implement order search/filter/detail/status actions.
 - [ ] Provision/approve/deactivate delivery partners.
-- [ ] Implement concurrency-safe delivery assignment.
-- [ ] Record assignment/status history and actor.
+- [x] Implement concurrency-safe delivery assignment with transactional order/partner row locking.
+- [x] Record current assignment and status history actor.
 - [ ] Add authorization and race/conflict tests.
 
 ## Phase 6 — Delivery APIs and active tracking
@@ -204,6 +204,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 45. Workflow #184 verified migrations and the suite boot but failed one cross-customer order-detail authorization assertion with HTTP 500 instead of 403. Added an explicit `AccessDeniedHttpException` JSON mapping with `FORBIDDEN` code in `032e4144e5fba9e0b24a16418b82a23b1dbc2d52`.
 46. Workflow #189 passed the corrected authorization fix on PHP 8.3 with MySQL, verifying the initial Phase 4 checkout/list/detail slice.
 47. Implemented server-owned admin order status transitions through `PATCH /api/v1/admin/orders/{order}/status`, with role/policy authorization, transactional `lockForUpdate()`, status-history actor recording, and `ORDER_STATE_CONFLICT` HTTP 409 handling. Added regression coverage for valid transitions, invalid/repeated transitions, and customer denial.
+48. Implemented concurrency-safe admin delivery assignment through `POST /api/v1/admin/orders/{order}/assignment`; the service locks the order and delivery-partner rows in one transaction, requires READY_FOR_PICKUP plus approved/active/available partner state, prevents duplicate assignment and records the ASSIGNED status actor history.
 
 ### Latest verification result
 
@@ -224,7 +225,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Immediate next task
 
-**Verify the protected Laravel admin web authentication increment in CI (Workflow #221).** The implementation is present on `developer-1-backend-admin`; do not mark the task complete until CI passes. If green, continue with concurrency-safe delivery assignment, assignment history/actor recording and race/conflict tests. If CI fails, fix the concrete failure before advancing.
+**Verify the protected Laravel admin web authentication and delivery-assignment increments in CI (latest backend workflow).** Both implementations are present on `developer-1-backend-admin`; do not mark either task complete until CI passes. If green, continue with the remaining admin dashboard/order operations and delivery-partner lifecycle APIs. If CI fails, fix the concrete failure before advancing.
 
 ## Developer 1 definition of done
 
