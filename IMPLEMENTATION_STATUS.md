@@ -372,3 +372,12 @@ No backend/Laravel-owned files were modified.
 - Placeholder cart IDs have been removed; local cart starts empty and supports numeric catalogue IDs through the repository/controller add-item boundary.
 - Existing COD checkout therefore no longer has a default path that submits fake IDs; a user must first add a real catalogue-backed item.
 - Remaining implementation: wire catalogue selection to cart, expand checkout tests, customer tracking, delivery partner flows, invoice UI, and final CI/device verification.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (catalogue-to-cart + checkout tests)
+
+- Catalogue-backed product selection is now wired through restaurant menu and food details.
+- Mock food identifiers are no longer used by the customer catalogue/menu/cart path.
+- COD checkout test coverage now includes duplicate-submit protection, validation failure and HTTP 409 conflict behavior.
+- Order controller async state access was corrected for compatibility.
+- Remaining implementation: customer tracking, delivery integration, invoice integration, UX hardening and final verification.
