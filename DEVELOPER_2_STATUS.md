@@ -867,3 +867,17 @@ No backend/Laravel-owned files were modified. No merge or deployment was perform
 1. Inspect fresh CI for commit `74886bcd8e958f0183e6cff64817614a4d8b8378`.
 2. If the smoke test still fails, fix the underlying router lifecycle deterministically rather than extending arbitrary test delays.
 3. Once tests pass, verify the Android debug build and update release-readiness status based on actual CI results.
+
+
+## Developer 2 continuation checkpoint — 2026-09-30 (welcome prompt finder correction)
+
+- **Reported failure:** the smoke test now reaches the welcome screen and passes the welcome headline, Explore food, and preceding assertions, but fails to find “Already have an account?”.
+- **Cause identified from widget structure:** that prompt is rendered as a RichText with nested TextSpans in _WelcomeActions, not as a standalone Text widget. The test's find.textContaining was not configured to search rich-text widgets, so it could not match the visible prompt.
+- **Correction committed:** 8c720c2ccf193d48b39e07993e1a5417e1f51a66 updates the assertion to find.textContaining('Already have an account?', findRichText: true). The earlier auth/splash settling correction remains in place.
+- **Verification:** a fresh CI run was pending for the previous head when checked; the new finder correction has not yet been executed by CI. Local Flutter/Dart execution is unavailable here, so no test pass is claimed.
+- **Scope:** test and status documentation only; no production UI/navigation, API contract, or backend/Laravel-owned files changed.
+
+### Immediate next steps
+1. Inspect CI for the latest branch head after 8c720c2ccf193d48b39e07993e1a5417e1f51a66.
+2. If the smoke test passes, verify the Android debug build and record actual results.
+3. If another assertion fails, distinguish widget-finder semantics from real navigation/rendering behavior before changing production code.
