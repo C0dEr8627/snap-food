@@ -298,3 +298,15 @@ A task is complete only when implementation, validation, authorization, automate
 - No deployment or production migration was performed.
 
 **Next task:** verify the new CI Pint check, complete the remaining static/security review where suitable tooling is available, confirm GoDaddy capabilities with the owner, then obtain explicit human approval before release/deployment.
+
+
+### Developer 1 task-tracking update — 2026-09-29 (formatter remediation)
+
+- Re-checked PR #2 and branch `developer-1-backend-admin`. Branch head before this increment was `c82eb6a3f1f4403684c2e54cf0841f887540af66`.
+- Workflow #416 (Backend) confirmed the same concrete quality-gate failure: PHP 8.3 and Composer installation passed; Pint reported 29 style issues across 101 PHP files; migrations/tests were skipped.
+- The Pint output identified issues including import ordering, fully-qualified type imports, unary-operator spacing, no-unused-imports, class-attribute separation, lambda/new-parentheses and control-structure formatting.
+- The first push-only formatter workflow did not produce a formatting commit that can be verified through the available PR-triggered workflow data. To make the remediation path explicit, `.github/workflows/backend-format.yml` was updated in commit `b39ed4c1935a99e8b4ca043686d135a2a50682ee` to support PR-target formatting events for same-repository changes as well as branch pushes.
+- Backend workflow #418 is currently **QUEUED/RUNNING** for the new branch head `b39ed4c1935a99e8b4ca043686d135a2a50682ee`; formatting is **not yet verified complete**.
+- No Flutter-owned files, deployment, or production migration were changed.
+
+**Next task:** observe the current workflow result. If Pint is still the only failure, apply the exact formatter changes and obtain a fresh green PHP 8.3/MySQL migration + PHPUnit run before moving to final manual security/content review, GoDaddy capability confirmation, and release approval.
