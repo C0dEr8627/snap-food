@@ -29,7 +29,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 | Phase 1 — Backend foundation | **COMPLETED** | Laravel API skeleton, routing, health endpoint, PHPUnit config/test, PHP 8.3 CI, Sanctum, MySQL config, Laravel 13 baseline and required Git-preserved directories are complete. Workflow #30 passed the foundation suite. Initial MySQL schema/models and CI migration verification also passed in workflow #48. |
 | Phase 2 — Identity & authorization | **COMPLETED** | Google verification service, login, Sanctum token storage, `/me`, logout, role middleware, resource policies and negative/cross-user authorization tests are implemented and verified by Workflow #146. Rate limiting, credential-safe logging and standardized API errors are also covered. Delivery-partner/admin provisioning remains a later operations task. |
 | Phase 3 — Catalogue | **COMPLETED** | Customer category/product reads, search/pagination, admin create/update/deactivate APIs, validation, regression tests and deterministic seed/demo data are implemented and verified by Workflow #146. |
-| Phase 4 — Orders & COD | **NOT STARTED** | Order snapshots, totals, COD state, transitions, history and tests remain. |
+| Phase 4 — Orders & COD | **IN PROGRESS** | Order schema/models, customer checkout, immutable address/product snapshots, server-side totals, COD pending state, status history and ownership/transition tests are implemented; CI verification and remaining order operations are next. |
 | Phase 5 — Admin & assignment | **NOT STARTED** | Protected admin web dashboard and delivery assignment operations remain. |
 | Phase 6 — Delivery tracking | **NOT STARTED** | Partner workflow, pickup/completion, location updates and tracking authorization remain. |
 | Phase 7 — Invoices | **NOT STARTED** | Numbering decision, invoice generation and access control remain. |
@@ -97,15 +97,17 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Phase 4 — Orders and COD
 
-- [ ] Define allowed order states and transitions from `PRODUCT.md` and `API_CONTRACT.md`.
-- [ ] Implement validated delivery-address snapshots.
-- [ ] Recalculate price/availability/fees/totals server-side.
-- [ ] Create order/item immutable snapshots in one transaction.
-- [ ] Persist COD payment method and initial pending payment state.
-- [ ] Add order status history.
-- [ ] Implement customer list/detail endpoints with ownership checks.
-- [ ] Prevent invalid state jumps, price tampering and unauthorized access.
-- [ ] Add transaction, state-transition and ownership tests.
+- [x] Define allowed order states and transitions from `PRODUCT.md` and `API_CONTRACT.md`.
+- [x] Implement validated delivery-address snapshots.
+- [x] Recalculate price/availability/fees/totals server-side.
+- [x] Create order/item immutable snapshots in one transaction.
+- [x] Persist COD payment method and initial pending payment state.
+- [x] Add order status history.
+- [x] Implement customer list/detail endpoints with ownership checks.
+- [x] Prevent invalid state jumps, price tampering and unauthorized access.
+- [x] Add transaction, state-transition and ownership tests.
+
+**Current Phase 4 gate:** implementation is present; CI verification is required before these items are marked verified complete.
 
 **Milestone:** Flutter-compatible request creates a real MySQL COD order and customer can retrieve it.
 
@@ -190,6 +192,8 @@ Build the trusted backend and admin operations that the existing Flutter app can
 36. Workflow #146 passed the corrected authentication/authorization and catalogue suite on PHP 8.3 with MySQL, verifying the combined Phase 2/3 implementation.
 37. Added deterministic catalogue demo data in `backend/database/seeders/DatabaseSeeder.php`, including active customer-facing records and inactive records for filtering scenarios.
 38. Added `DatabaseSeederTest` coverage proving the catalogue seed is deterministic and idempotent.
+39. Started Phase 4 order/COD workflow with orders, order items and status history schema; server-owned lifecycle states; transactional checkout; immutable address/product snapshots; server-calculated totals; COD pending payment state; customer order list/detail endpoints and ownership policy.
+40. Added order checkout, price-tampering, unavailable-product, ownership, role and transition regression tests in `OrderApiTest`.
 
 ### Latest verification result
 
