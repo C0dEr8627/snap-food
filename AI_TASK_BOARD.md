@@ -258,3 +258,17 @@ The backend branch now has richer delivery/tracking and invoice endpoint documen
 - M9 `[ ]` Release hardening — runtime/CI/device verification pending.
 
 **Next owner/action:** Developer 1 must synchronize the complete Flutter-facing order/COD + address + delivery response examples into the shared/base contract. Developer 2 then starts typed order models → checkout controller/repository → order success/detail/history → delivery/tracking → invoice.
+
+
+## Developer 2 checkpoint — 2026-09-29 (implementation gate / current branch sync)
+
+- Branch: `developer-2-flutter`; PR #1 → `frontend`, open and mergeable.
+- Current PR head observed: `0c9f9844afbfc3bfb99fc2604f50cab5cec8beeb`.
+- Re-read the required Flutter architecture/API/auth/tracking/design/development docs and inspected the existing Flutter source tree before selecting the next implementation.
+- First incomplete plan task: Google SSO, but it remains blocked by the missing exact Google credential exchange/session response/public client configuration/role schema.
+- Next executable customer implementation remains typed order/COD + address integration, but the shared contract still lacks exact order create/list/detail and address schemas.
+- Backend delivery verification is available (#209/#259/#266), but Flutter delivery response schemas are not synchronized into the shared contract.
+- No speculative DTOs, payloads, status enums or backend-owned changes were introduced.
+- Flutter/Dart format/analyze/test/APK/device checks remain NOT RUN because no Flutter/Dart runner or Flutter CI result is available.
+
+**Next owner/action:** Developer 1 synchronizes the complete Flutter-facing order/COD + address contract; Developer 2 then implements typed order models → checkout repository/controller → server-authoritative totals/errors → order success/detail/history, followed by delivery/tracking.
