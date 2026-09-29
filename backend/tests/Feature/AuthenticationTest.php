@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Services\Auth\GoogleCredentialVerifier;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use RuntimeException;
 use Tests\TestCase;
 
