@@ -48,7 +48,7 @@ class AdminDashboardTest extends TestCase
             ->assertViewHas('directoryCounts', [
                 'categories' => 0,
                 'products' => 0,
-                'customers' => 0,
+                'customers' => 9,
                 'delivery_partners' => 0,
                 'assignments' => 0,
                 'invoices' => 0,
