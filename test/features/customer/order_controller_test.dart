@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:snap_foodd/core/network/api_exception.dart';
 import 'package:snap_foodd/features/customer/data/order_models.dart';
 import 'package:snap_foodd/features/customer/data/order_repository.dart';
+import 'package:snap_foodd/features/customer/data/order_tracking_models.dart';
 import 'package:snap_foodd/features/customer/presentation/order_controller.dart';
 
 void main() {
@@ -124,4 +125,7 @@ class _FailingOrderRepository implements OrderRepository {
 
   @override
   Future<Order> fetchOrder(String orderId) async => throw error;
+
+  @override
+  Future<OrderTracking> fetchTracking(String orderId) async => throw error;
 }
