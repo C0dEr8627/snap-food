@@ -246,3 +246,8 @@ Approval is updated with `PATCH /admin/delivery-partners/{deliveryPartner}/appro
 - A successful assignment is not idempotent by client request key; refresh state before retrying after an uncertain network result.
 - Never persist Google ID tokens or bearer tokens in logs. Store the returned application token in the platform's secure storage.
 - Admin API routes require an ADMIN bearer token; the separate admin web dashboard uses browser session authentication and CSRF protection.
+
+
+## Flutter integration note — 2026-09-30
+
+The Flutter implementation on `developer-2-flutter` consumes the backend-authoritative routes and response envelopes documented above. The backend contract in this file takes precedence over older placeholder delivery routes in the historical Flutter branch.

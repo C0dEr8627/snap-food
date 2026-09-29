@@ -42,7 +42,8 @@ class _DeliveryDutyMapScreenState extends State<DeliveryDutyMapScreen> {
                             if (!desktop)
                               _MobileHeader(
                                 online: online,
-                                onToggle: () => setState(() => online = !online),
+                                onToggle: () =>
+                                    setState(() => online = !online),
                               ),
                             if (!desktop) const SizedBox(height: 18),
                             Row(
@@ -50,7 +51,8 @@ class _DeliveryDutyMapScreenState extends State<DeliveryDutyMapScreen> {
                               children: [
                                 const Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Duty map',
@@ -64,7 +66,8 @@ class _DeliveryDutyMapScreenState extends State<DeliveryDutyMapScreen> {
                                         'See your active area and nearby demand.',
                                         style: TextStyle(
                                           fontSize: 14,
-                                          color: SnapFoodColors.onSurfaceVariant,
+                                          color:
+                                              SnapFoodColors.onSurfaceVariant,
                                         ),
                                       ),
                                     ],
@@ -73,7 +76,8 @@ class _DeliveryDutyMapScreenState extends State<DeliveryDutyMapScreen> {
                                 if (desktop)
                                   _OnlineToggle(
                                     online: online,
-                                    onToggle: () => setState(() => online = !online),
+                                    onToggle: () =>
+                                        setState(() => online = !online),
                                   ),
                               ],
                             ),
@@ -83,7 +87,9 @@ class _DeliveryDutyMapScreenState extends State<DeliveryDutyMapScreen> {
                             LayoutBuilder(
                               builder: (context, inner) {
                                 final columns = inner.maxWidth >= 850 ? 3 : 1;
-                                final width = (inner.maxWidth - (columns - 1) * 14) / columns;
+                                final width =
+                                    (inner.maxWidth - (columns - 1) * 14) /
+                                    columns;
                                 return Wrap(
                                   spacing: 14,
                                   runSpacing: 14,
@@ -109,7 +115,8 @@ class _DeliveryDutyMapScreenState extends State<DeliveryDutyMapScreen> {
                                     SizedBox(
                                       width: width,
                                       child: const _StatCard(
-                                        icon: Icons.account_balance_wallet_outlined,
+                                        icon: Icons
+                                            .account_balance_wallet_outlined,
                                         label: 'Today',
                                         value: '₹684',
                                         detail: 'from 5 completed trips',
@@ -152,10 +159,7 @@ class _MapPanel extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          CustomPaint(
-            size: Size.infinite,
-            painter: _MapPainter(),
-          ),
+          CustomPaint(size: Size.infinite, painter: _MapPainter()),
           Positioned(
             top: 16,
             left: 16,
@@ -164,11 +168,7 @@ class _MapPanel extends StatelessWidget {
               text: online ? 'You are here' : 'You are offline',
             ),
           ),
-          const Positioned(
-            top: 16,
-            right: 16,
-            child: _MapLegend(),
-          ),
+          const Positioned(top: 16, right: 16, child: _MapLegend()),
           const Positioned(
             left: 31,
             top: 112,
@@ -228,13 +228,28 @@ class _MapPainter extends CustomPainter {
     final paths = [
       Path()
         ..moveTo(-20, size.height * .28)
-        ..quadraticBezierTo(size.width * .35, size.height * .08, size.width + 20, size.height * .32),
+        ..quadraticBezierTo(
+          size.width * .35,
+          size.height * .08,
+          size.width + 20,
+          size.height * .32,
+        ),
       Path()
         ..moveTo(size.width * .18, size.height + 20)
-        ..quadraticBezierTo(size.width * .40, size.height * .52, size.width * .60, -20),
+        ..quadraticBezierTo(
+          size.width * .40,
+          size.height * .52,
+          size.width * .60,
+          -20,
+        ),
       Path()
         ..moveTo(-20, size.height * .70)
-        ..quadraticBezierTo(size.width * .45, size.height * .45, size.width + 20, size.height * .74),
+        ..quadraticBezierTo(
+          size.width * .45,
+          size.height * .45,
+          size.width + 20,
+          size.height * .74,
+        ),
     ];
 
     for (final path in paths) {
@@ -303,14 +318,12 @@ class _CurrentLocation extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(7),
           decoration: BoxDecoration(
-            color: online ? SnapFoodColors.primary : SnapFoodColors.onSurfaceVariant,
+            color: online
+                ? SnapFoodColors.primary
+                : SnapFoodColors.onSurfaceVariant,
             shape: BoxShape.circle,
             boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 10,
-                spreadRadius: 3,
-              ),
+              BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 3),
             ],
           ),
           child: const Icon(
@@ -347,24 +360,24 @@ class _MapLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        decoration: BoxDecoration(
-          color: SnapFoodColors.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(SnapFoodRadii.full),
-          border: Border.all(color: SnapFoodColors.softBorder),
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+      border: Border.all(color: SnapFoodColors.softBorder),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 15, color: SnapFoodColors.secondary),
+        const SizedBox(width: 6),
+        Text(
+          text,
+          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 15, color: SnapFoodColors.secondary),
-            const SizedBox(width: 6),
-            Text(
-              text,
-              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900),
-            ),
-          ],
-        ),
-      );
+      ],
+    ),
+  );
 }
 
 class _MapLegend extends StatelessWidget {
@@ -372,24 +385,30 @@ class _MapLegend extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        decoration: BoxDecoration(
-          color: SnapFoodColors.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(SnapFoodRadii.md),
-          border: Border.all(color: SnapFoodColors.softBorder),
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+      border: Border.all(color: SnapFoodColors.softBorder),
+    ),
+    child: const Row(
+      children: [
+        Icon(Icons.circle, size: 8, color: SnapFoodColors.foodRed),
+        SizedBox(width: 5),
+        Text(
+          'High demand',
+          style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800),
         ),
-        child: const Row(
-          children: [
-            Icon(Icons.circle, size: 8, color: SnapFoodColors.foodRed),
-            SizedBox(width: 5),
-            Text('High demand', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800)),
-            SizedBox(width: 10),
-            Icon(Icons.circle, size: 8, color: SnapFoodColors.secondary),
-            SizedBox(width: 5),
-            Text('Medium', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800)),
-          ],
+        SizedBox(width: 10),
+        Icon(Icons.circle, size: 8, color: SnapFoodColors.secondary),
+        SizedBox(width: 5),
+        Text(
+          'Medium',
+          style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800),
         ),
-      );
+      ],
+    ),
+  );
 }
 
 class _StatCard extends StatelessWidget {
@@ -407,39 +426,58 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: SnapFoodColors.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-          border: Border.all(color: SnapFoodColors.softBorder),
+    padding: const EdgeInsets.all(18),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+      border: Border.all(color: SnapFoodColors.softBorder),
+    ),
+    child: Row(
+      children: [
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: SnapFoodColors.primaryContainer,
+            borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+          ),
+          child: Icon(icon, color: SnapFoodColors.warmBlack, size: 21),
         ),
-        child: Row(
-          children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: SnapFoodColors.primaryContainer,
-                borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  color: SnapFoodColors.onSurfaceVariant,
+                ),
               ),
-              child: Icon(icon, color: SnapFoodColors.warmBlack, size: 21),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: SnapFoodColors.onSurfaceVariant)),
-                  const SizedBox(height: 3),
-                  Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
-                  const SizedBox(height: 2),
-                  Text(detail, style: const TextStyle(fontSize: 9, color: SnapFoodColors.onSurfaceVariant)),
-                ],
+              const SizedBox(height: 3),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 2),
+              Text(
+                detail,
+                style: const TextStyle(
+                  fontSize: 9,
+                  color: SnapFoodColors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
         ),
-      );
+      ],
+    ),
+  );
 }
 
 class _DemandPanel extends StatelessWidget {
@@ -448,42 +486,52 @@ class _DemandPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: SnapFoodColors.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-          border: Border.all(color: SnapFoodColors.softBorder),
+    width: double.infinity,
+    padding: const EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+      border: Border.all(color: SnapFoodColors.softBorder),
+    ),
+    child: Row(
+      children: [
+        Icon(
+          online ? Icons.bolt_rounded : Icons.pause_circle_outline_rounded,
+          size: 25,
+          color: online
+              ? SnapFoodColors.secondary
+              : SnapFoodColors.onSurfaceVariant,
         ),
-        child: Row(
-          children: [
-            Icon(
-              online ? Icons.bolt_rounded : Icons.pause_circle_outline_rounded,
-              size: 25,
-              color: online ? SnapFoodColors.secondary : SnapFoodColors.onSurfaceVariant,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    online ? 'Demand is active around you' : 'You are currently offline',
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    online
-                        ? 'Andheri East and Ghatkopar currently have more requests than nearby zones.'
-                        : 'Go online when you are ready to receive delivery requests.',
-                    style: const TextStyle(fontSize: 11, color: SnapFoodColors.onSurfaceVariant),
-                  ),
-                ],
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                online
+                    ? 'Demand is active around you'
+                    : 'You are currently offline',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 5),
+              Text(
+                online
+                    ? 'Andheri East and Ghatkopar currently have more requests than nearby zones.'
+                    : 'Go online when you are ready to receive delivery requests.',
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: SnapFoodColors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
         ),
-      );
+      ],
+    ),
+  );
 }
 
 class _OnlineToggle extends StatelessWidget {
@@ -493,15 +541,20 @@ class _OnlineToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => OutlinedButton.icon(
-        onPressed: onToggle,
-        icon: Icon(online ? Icons.pause_circle_outline_rounded : Icons.play_circle_outline_rounded, size: 18),
-        label: Text(online ? 'Go offline' : 'Go online'),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: SnapFoodColors.warmBlack,
-          side: const BorderSide(color: SnapFoodColors.softBorder),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        ),
-      );
+    onPressed: onToggle,
+    icon: Icon(
+      online
+          ? Icons.pause_circle_outline_rounded
+          : Icons.play_circle_outline_rounded,
+      size: 18,
+    ),
+    label: Text(online ? 'Go offline' : 'Go online'),
+    style: OutlinedButton.styleFrom(
+      foregroundColor: SnapFoodColors.warmBlack,
+      side: const BorderSide(color: SnapFoodColors.softBorder),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    ),
+  );
 }
 
 class _MobileHeader extends StatelessWidget {
@@ -511,28 +564,31 @@ class _MobileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        children: [
-          const CircleAvatar(
-            radius: 19,
-            backgroundColor: SnapFoodColors.primaryContainer,
-            child: Icon(Icons.delivery_dining_rounded, color: SnapFoodColors.warmBlack),
-          ),
-          const SizedBox(width: 10),
-          const Expanded(
-            child: Text(
-              'SNAP FOODD',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
-            ),
-          ),
-          TextButton(
-            onPressed: onToggle,
-            child: Text(
-              online ? 'ONLINE' : 'OFFLINE',
-              style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900),
-            ),
-          ),
-        ],
-      );
+    children: [
+      const CircleAvatar(
+        radius: 19,
+        backgroundColor: SnapFoodColors.primaryContainer,
+        child: Icon(
+          Icons.delivery_dining_rounded,
+          color: SnapFoodColors.warmBlack,
+        ),
+      ),
+      const SizedBox(width: 10),
+      const Expanded(
+        child: Text(
+          'SNAP FOODD',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+        ),
+      ),
+      TextButton(
+        onPressed: onToggle,
+        child: Text(
+          online ? 'ONLINE' : 'OFFLINE',
+          style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900),
+        ),
+      ),
+    ],
+  );
 }
 
 class _Sidebar extends StatelessWidget {
@@ -541,54 +597,62 @@ class _Sidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: 224,
-        height: double.infinity,
-        padding: const EdgeInsets.fromLTRB(18, 24, 14, 18),
-        decoration: const BoxDecoration(
-          color: SnapFoodColors.surfaceContainerLowest,
-          border: Border(right: BorderSide(color: SnapFoodColors.softBorder)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    width: 224,
+    height: double.infinity,
+    padding: const EdgeInsets.fromLTRB(18, 24, 14, 18),
+    decoration: const BoxDecoration(
+      color: SnapFoodColors.surfaceContainerLowest,
+      border: Border(right: BorderSide(color: SnapFoodColors.softBorder)),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Row(
           children: [
-            const Row(
-              children: [
-                CircleAvatar(
-                  radius: 19,
-                  backgroundColor: SnapFoodColors.primaryContainer,
-                  child: Icon(Icons.delivery_dining_rounded, color: SnapFoodColors.warmBlack),
-                ),
-                SizedBox(width: 9),
-                Text('SNAP FOODD', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
-              ],
-            ),
-            const SizedBox(height: 34),
-            const Text(
-              'PARTNER',
-              style: TextStyle(
-                fontSize: 9,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1,
-                color: SnapFoodColors.onSurfaceVariant,
+            CircleAvatar(
+              radius: 19,
+              backgroundColor: SnapFoodColors.primaryContainer,
+              child: Icon(
+                Icons.delivery_dining_rounded,
+                color: SnapFoodColors.warmBlack,
               ),
             ),
-            const SizedBox(height: 10),
-            const _NavRow(Icons.inbox_outlined, 'Requests', false),
-            const _NavRow(Icons.map_outlined, 'Duty map', true),
-            const _NavRow(Icons.route_outlined, 'Trips', false),
-            const _NavRow(Icons.account_balance_wallet_outlined, 'Earnings', false),
-            const Spacer(),
+            SizedBox(width: 9),
             Text(
-              online ? 'ONLINE • ACCEPTING REQUESTS' : 'OFFLINE • PAUSED',
-              style: TextStyle(
-                fontSize: 9,
-                fontWeight: FontWeight.w900,
-                color: online ? SnapFoodColors.primary : SnapFoodColors.onSurfaceVariant,
-              ),
+              'SNAP FOODD',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
             ),
           ],
         ),
-      );
+        const SizedBox(height: 34),
+        const Text(
+          'PARTNER',
+          style: TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1,
+            color: SnapFoodColors.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 10),
+        const _NavRow(Icons.inbox_outlined, 'Requests', false),
+        const _NavRow(Icons.map_outlined, 'Duty map', true),
+        const _NavRow(Icons.route_outlined, 'Trips', false),
+        const _NavRow(Icons.account_balance_wallet_outlined, 'Earnings', false),
+        const Spacer(),
+        Text(
+          online ? 'ONLINE • ACCEPTING REQUESTS' : 'OFFLINE • PAUSED',
+          style: TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w900,
+            color: online
+                ? SnapFoodColors.primary
+                : SnapFoodColors.onSurfaceVariant,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _NavRow extends StatelessWidget {
@@ -599,18 +663,21 @@ class _NavRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        margin: const EdgeInsets.only(bottom: 5),
-        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 11),
-        decoration: BoxDecoration(
-          color: selected ? SnapFoodColors.primaryContainer : null,
-          borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+    margin: const EdgeInsets.only(bottom: 5),
+    padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 11),
+    decoration: BoxDecoration(
+      color: selected ? SnapFoodColors.primaryContainer : null,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+    ),
+    child: Row(
+      children: [
+        Icon(icon, size: 18, color: SnapFoodColors.warmBlack),
+        const SizedBox(width: 10),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
         ),
-        child: Row(
-          children: [
-            Icon(icon, size: 18, color: SnapFoodColors.warmBlack),
-            const SizedBox(width: 10),
-            Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
-          ],
-        ),
-      );
+      ],
+    ),
+  );
 }

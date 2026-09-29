@@ -33,18 +33,47 @@ class FoundationPreviewScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(width: 56, height: 56, decoration: const BoxDecoration(color: SnapFoodColors.goldenYellow, shape: BoxShape.circle), child: const Icon(Icons.restaurant, color: SnapFoodColors.warmBlack)),
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: const BoxDecoration(
+                    color: SnapFoodColors.goldenYellow,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.restaurant,
+                    color: SnapFoodColors.warmBlack,
+                  ),
+                ),
                 const SizedBox(height: 24),
                 Text('Snap Fooddd', style: theme.textTheme.displaySmall),
                 const SizedBox(height: 8),
-                Text('Frontend foundation is ready.', style: theme.textTheme.titleMedium),
+                Text(
+                  'Frontend foundation is ready.',
+                  style: theme.textTheme.titleMedium,
+                ),
                 const SizedBox(height: 8),
-                Text('Development checkpoint for the cross-platform Flutter foundation. The first Stitch screen will replace this preview in the next milestone.', style: theme.textTheme.bodyMedium?.copyWith(color: SnapFoodColors.onSurfaceVariant)),
+                Text(
+                  'Development checkpoint for the cross-platform Flutter foundation. The first Stitch screen will replace this preview in the next milestone.',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: SnapFoodColors.onSurfaceVariant,
+                  ),
+                ),
                 const SizedBox(height: 24),
-                Wrap(spacing: 12, runSpacing: 12, children: [
-                  SnapFoodPrimaryButton(label: 'Foundation ready', onPressed: () {}),
-                  SnapFoodSecondaryButton(label: wide ? 'Expanded layout' : 'Compact layout', onPressed: () {}),
-                ]),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    SnapFoodPrimaryButton(
+                      label: 'Foundation ready',
+                      onPressed: () {},
+                    ),
+                    SnapFoodSecondaryButton(
+                      label: wide ? 'Expanded layout' : 'Compact layout',
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

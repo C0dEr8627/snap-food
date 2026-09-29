@@ -238,3 +238,15 @@ Record decisions here only after the owner approves or they are already establis
 - Backend workflow #435 **PASSED** on the preceding public-directory fix commit `d1431914bfa2dd13c319c6508318ae566fdaab6d`; this new import fix requires a fresh CI verification.
 - Next local validation: pull the latest branch, restart `php artisan serve`, then proceed to local `.env`/MySQL configuration and migrations once the server responds successfully.
 - No Flutter-owned files, deployment, or production migration were changed.
+
+
+## Developer 2 merge synchronization — 2026-09-30
+
+- **Branch:** `developer-2-flutter`
+- **PR:** #1 → `frontend`
+- **Purpose:** synchronize the Flutter branch with the current `frontend` integration head after the backend/admin branch was merged.
+- **Flutter implementation retained:** API/network foundation, auth session restoration/logout and route guards, catalogue repository/controller/state, local cart boundary, customer order/invoice repositories and models, delivery assignment/status/location/tracking integration, and associated tests.
+- **Backend contract authority:** the current `frontend` API contract is retained as the authoritative shared contract; stale placeholder delivery routes from the older Flutter contract are not restored.
+- **Merge resolution:** the only files changed on both sides since the common base were `AI_TASK_BOARD.md` and `API_CONTRACT.md`; both were reconciled against the current backend-integrated `frontend` state.
+- **Verification note:** the previously observed Flutter CI analyzer/test stages passed before the Android debug build hit the Java heap limit; Android build success and physical-device/E2E verification remain pending.
+- **Next action:** run current-head Flutter CI after synchronization, then address any concrete build/test failures before merging PR #1 into `frontend`.
