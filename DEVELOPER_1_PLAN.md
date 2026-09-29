@@ -169,12 +169,14 @@ Build the trusted backend and admin operations that the existing Flutter app can
 16. Foreign-key behavior tests added for address cascade and product/category restrict-on-delete.
 17. Initial address/category/product FormRequest validation added, including coordinate ranges, slug/price/stock validation and admin-only authorization checks.
 18. Workflow #58 passed the relationship/request-validation slice.
-19. Google credential verification service, auth routes, Sanctum token storage, `/me`, logout and authentication regression tests implemented.
+19. Google credential verification service, auth controller, Sanctum token storage, `/me`, logout and authentication regression tests implemented.
+20. Workflow #79 exposed that the authentication routes had not been persisted into `routes/api.php`; the missing route registration was corrected in commit `8df16414dd31f5eb0901d09dd94b43fca1707d72`.
+21. Workflow #80 is currently running against the corrected route registration.
 20. `DEVELOPER_1_PLAN.md` and `backend/README.md` updated to reflect the verified database foundation and current authentication implementation status.
 
 ### Not yet verified
 
-- The latest Google SSO/Sanctum implementation is awaiting workflow #73.
+- The Google SSO/Sanctum implementation had a route-registration CI failure in workflow #79; the missing API route registration has now been corrected and workflow #80 is pending.
 - A real production Google credential has not been used; tests mock the verifier to avoid external identity-provider calls.
 - GoDaddy Composer/extensions/database/document-root/SSH capabilities.
 
