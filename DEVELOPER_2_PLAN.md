@@ -249,3 +249,14 @@ Next implementation gate: freeze the documented order/COD + address contract, th
 - Flutter/Dart formatting, analysis, tests, APK build and physical-device checks remain **NOT RUN** because no Flutter/Dart runner is available and no Flutter CI status is reported.
 
 **Next implementation gate:** Developer 1 must merge/freeze the complete Flutter-facing order/COD + address examples into the shared contract. Then Developer 2 will implement typed order models → checkout repository/controller → server-authoritative totals → order success/detail/history. Delivery partner request/assignment/location/tracking follows once those response schemas are documented.
+
+
+## Developer 2 checkpoint — 2026-09-29 (latest contract gate / status synchronization)
+
+- **Branch:** `developer-2-flutter`; **PR:** #1 → `frontend`, open and mergeable.
+- **Current implementation status:** the local cart repository/controller boundary is the latest completed customer-flow implementation. Existing API transport/error handling, catalogue repository/controller/state wiring, secure session storage, `/me` restoration, logout/revocation and auth-aware routing remain complete.
+- **Contract re-check:** the shared `frontend` `API_CONTRACT.md` still does not define exact order create/list/detail request/response examples or address request/response fields. The backend branch now documents delivery assignment/lifecycle/tracking behavior, but those changes are not yet synchronized into the shared/base contract and still do not provide the complete Flutter-facing response examples needed for typed delivery integration.
+- **Backend verification:** delivery-partner provisioning/approval workflow #209 passes; backend order checkout/list/detail plus server-owned status-transition/concurrency work are verified.
+- **Implementation decision:** no speculative order/address DTOs, status enums, checkout payloads or delivery network calls were added. This is intentional contract-first behavior, not an implementation failure.
+- **Verification:** Flutter/Dart formatting, analyzer, tests, APK build and physical-device checks remain **NOT RUN** because this GitHub-connected environment has no local Flutter/Dart runner; no Flutter CI status is reported.
+- **Next task after contract freeze:** implement typed order models → checkout repository/controller → server-authoritative totals/error handling → order success/detail/history, preserving the existing UI. After the delivery schemas are frozen in the shared contract, implement delivery request/assignment/status/tracking flows.
