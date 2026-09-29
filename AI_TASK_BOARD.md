@@ -160,3 +160,14 @@ Record decisions here only after the owner approves or they are already establis
 - Commit `b39ed4c1935a99e8b4ca043686d135a2a50682ee` updates the backend formatter workflow to cover same-repository PR synchronization as well as branch pushes, so formatting remediation has an explicit CI path.
 - Backend workflow #418 is currently queued/running against the new head. Do not mark M9 complete until a fresh formatter-clean Backend workflow verifies migrations and PHPUnit.
 - Next owner/action: verify #418; then resolve any remaining formatter/static-analysis/security findings, complete manual security/content review, confirm GoDaddy capabilities, and obtain explicit human release approval.
+
+
+### Developer 1 task-tracking update — 2026-09-29 (Pint applied)
+
+- The formatter remediation workflow successfully created generated formatting commit `fe67a57f07500f06443b8978d8ad42906132edd7` with message `style(backend): apply Laravel Pint formatting`.
+- This confirms the previously identified Pint changes were applied to the backend branch. The formatter gate is therefore **remediated at the source level**, but the required fresh Backend verification is still pending.
+- Backend workflow #419 for the formatting commit is `action_required`, so it is not being counted as a passing verification.
+- Backend workflow #420 is currently `in_progress` on the subsequent documentation head `fd34ef249e14961700e506cda563ded7c404aaa5`; its final result is required before marking the CI gate complete.
+- No Flutter-owned files, deployment, or production migration were changed.
+
+**Next task:** verify workflow #420. If it passes formatting, migrations and PHPUnit, mark the formatting/CI gate verified; then proceed to final manual security/content review, GoDaddy capability confirmation and broader integration/release validation.
