@@ -58,6 +58,18 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
               ),
             ),
             SliverToBoxAdapter(
+              child: Consumer(builder: (context, ref, _) {
+                final catalogue = ref.watch(catalogueControllerProvider);
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: CatalogueStateMessage(
+                    value: catalogue,
+                    onRetry: () => ref.read(catalogueControllerProvider.notifier).retry(),
+                  ),
+                );
+              }),
+            ),
+            SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 18, 16, 120),
                 child: Column(
