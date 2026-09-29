@@ -41,7 +41,7 @@ ADMIN only. Assigns a single approved, active, available delivery partner to an 
 
 Request: `{ "delivery_partner_id": 123 }`
 
-On success: HTTP 201 with `data` containing the assignment, delivery partner, assigning admin and order status. The server records the `READY_FOR_PICKUP` → `ASSIGNED` status history with the actor.
+On success: HTTP 201 with `data` containing the assignment, delivery partner, assigning admin and order status. The server records the `READY_FOR_PICKUP` → `ASSIGNED` status history with the actor and marks the assigned partner unavailable to prevent concurrent assignment to another order. If eligibility or order state changes before the transaction obtains its row locks, the operation returns HTTP 409 and does not create the assignment.
 
 
 ## Delivery partner lifecycle and tracking
