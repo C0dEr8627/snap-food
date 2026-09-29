@@ -93,6 +93,8 @@ class _DeliveryNavigateCustomerScreenState extends ConsumerState<DeliveryNavigat
                                           assignment: assignment,
                                           arrived: arrived,
                                           onArrived: _markArrived,
+                                          locationState: locationState,
+                                          lastPublishedAt: lastPublishedAt,
                                         ),
                                       ),
                                     ],
@@ -105,7 +107,9 @@ class _DeliveryNavigateCustomerScreenState extends ConsumerState<DeliveryNavigat
                                     _TripPanel(
                                       assignment: assignment,
                                       arrived: arrived,
-                                      onArrived: () => setState(() => arrived = true),
+                                      onArrived: _markArrived,
+                                      locationState: locationState,
+                                      lastPublishedAt: lastPublishedAt,
                                     ),
                                   ],
                                 );
