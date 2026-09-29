@@ -19,7 +19,7 @@ Codes: `UNAUTHORIZED`, `FORBIDDEN`, `VALIDATION_FAILED`, `NOT_FOUND`, `CONFLICT`
 `POST /auth/google` · `GET /me` · `POST /auth/logout`
 
 ## Catalogue
-`GET /categories` · `GET /products` · `GET /products/{product}`. Admin CRUD lives under `/admin/categories` and `/admin/products`.
+`GET /categories` · `GET /categories/{category}` · `GET /products` · `GET /products/{product}`. ADMIN catalogue writes use `POST /categories`, `PATCH /categories/{category}`, `DELETE /categories/{category}`, `POST /products`, `PATCH /products/{product}` and `DELETE /products/{product}`. Delete operations soft-deactivate records; product deactivation also sets `is_available=false`. Catalogue list responses use `data` containing a Laravel paginator; search uses `search`, product category filtering uses `category_id`, and `per_page` is bounded to 1–100.
 
 ## Orders
 `POST /orders` · `GET /orders` · `GET /orders/{order}` · `GET /orders/{order}/tracking` · `GET /orders/{order}/invoice`.
@@ -27,8 +27,14 @@ Codes: `UNAUTHORIZED`, `FORBIDDEN`, `VALIDATION_FAILED`, `NOT_FOUND`, `CONFLICT`
 Checkout sends product IDs, quantities and address data; Laravel resolves prices, availability, fees and totals.
 
 ## Delivery
-`GET /delivery/requests` · `POST /delivery/assignments/{assignment}/accept` · `POST /delivery/assignments/{assignment}/pickup` · `POST /delivery/assignments/{assignment}/location` · `POST /delivery/assignments/{assignment}/complete`.
-Admin uses `/admin/delivery-partners` and `POST /admin/orders/{order}/assign-delivery`.
+Actual delivery-partner API routes are:
+- `GET /delivery/assignments` — paginated assignments owned by the authenticated approved/active delivery partner whose order is assigned, picked up or out for delivery.
+- `PATCH /delivery/assignments/{assignment}/status` with `{ "status": "PICKED_UP|OUT_FOR_DELIVERY|DELIVERED" }` — advances only the authenticated partner's own order through allowed transitions; invalid transitions return HTTP 409.
+- `POST /delivery/assignments/{assignment}/location` with `latitude`, `longitude`, `recorded_at` and optional `accuracy` — stores an active-trip location for the assignment owner.
+- ADMIN partner operations: `GET /admin/delivery-partners`, `POST /admin/delivery-partners`, and `PATCH /admin/delivery-partners/{deliveryPartner}/approval` with `{ "approved": true|false }`.
+- ADMIN order assignment: `POST /admin/orders/{order}/assignment` with `{ "delivery_partner_id": 123 }`.
+
+There is no separate `/delivery/requests`, `accept`, `pickup` or `complete` endpoint in the current implementation. Pickup and completion are represented by the status PATCH endpoint. Admin web routes are separate session-authenticated routes and are not part of the `/api/v1` contract.
 
 Every endpoint must document auth, authorization, validation, response, errors, side effects and concurrency/idempotency behavior.
 
