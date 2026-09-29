@@ -720,3 +720,18 @@ No backend/Laravel-owned files were modified.
 3. Implement invoice model/repository/UI from the frozen endpoint contract.
 4. Run current-head CI and fix only concrete failures.
 5. Complete Android/device/E2E verification and update PR readiness.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (current-head CI analyzer fixes)
+
+- Inspected Flutter CI run `36601413076`: dependency resolution and formatting passed; analyzer failed on concrete delivery/order/test callback issues, so tests/APK were skipped.
+- Fixed every concrete analyzer error reported by that run and pushed the fixes to `developer-2-flutter` at head `7d1809dd33dcc7dd8996a0cedf5fa544cbeee5d2`.
+- No speculative location dependency, Maps SDK, API response field or backend-owned change was introduced.
+- Fresh CI for the new head was not yet visible when this checkpoint was written.
+
+### Updated queue
+1. Verify fresh current-head CI and address only concrete failures.
+2. Wire approved platform GPS + Maps configuration once documented/configured.
+3. Perform physical permission/GPS verification.
+4. Implement invoice integration only after the exact Flutter-facing invoice response fields are frozen.
+5. Finish E2E/release verification.
