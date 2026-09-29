@@ -32,15 +32,15 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 
 > **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. Latest catalogue UI work is now on the branch; PR #1 tracks the current head. PR #1 targets `frontend` and remains open.
 >
-> **Verified complete in source control:** Phase 0 static Flutter audit, screen-to-contract mapping, platform/dependency inventory, API transport/client foundation, normalized API errors, environment API URL documentation, API-client fake-transport tests, the first catalogue repository boundary with a remote implementation plus deterministic fake repository, the catalogue Riverpod controller/state layer with retry/error handling and controller tests, configured repository wiring, and catalogue loading/empty/error/retry UI integration across the existing customer catalogue screens with widget coverage.
+> **Verified complete in source control:** Phase 0 static Flutter audit, screen-to-contract mapping, platform/dependency inventory, API transport/client foundation, normalized API errors, environment API URL documentation, API-client fake-transport tests, the first catalogue repository boundary with a remote implementation plus deterministic fake repository, the catalogue Riverpod controller/state layer with retry/error handling and controller tests, configured repository wiring, catalogue loading/empty/error/retry UI integration across the existing customer catalogue screens with widget coverage, and the initial auth/session foundation with secure token storage, `/me` hydration and logout handling.
 >
 > **Catalogue contract limitation:** `API_CONTRACT.md` documents the catalogue endpoints but does not define successful category/product response fields or a common success envelope. The repository therefore preserves JSON payloads without inventing field names. A typed DTO and UI mapping must wait for documented response fields or an explicitly approved backend response shape.
 >
 > **Not verified because the GitHub-connected environment has no local Flutter/Dart runner:** `dart format`, `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --debug`, and physical-device checks. These remain **NOT RUN**, not passed.
 >
-> **Current first incomplete implementation task:** replace the remaining hard-coded catalogue presentation with documented API fields once the successful category/product response schema is available. Until then, the UI state boundary is integrated but deliberately does not invent product/category field mappings.
+> **Current first incomplete implementation task:** complete Google SSO credential exchange and session routing after the backend documents the `/auth/google` request/response contract. The secure session foundation and `/me` restoration are now implemented without inventing undocumented token or credential fields.
 >
-> **Next implementation sequence:** document/confirm catalogue success response fields → add typed DTOs and replace hard-coded catalogue content → auth/session contract coordination → Google SSO/session persistence → orders/checkout → delivery → active-trip tracking.
+> **Next implementation sequence:** confirm `/auth/google` request/response fields → integrate platform Google sign-in and credential exchange → connect auth state to go_router → complete catalogue typed DTOs once catalogue response fields are documented → orders/checkout → delivery → active-trip tracking.
 
 ## Phase 1 — API foundation
 
@@ -53,14 +53,14 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 
 ## Phase 2 — Google SSO and session state
 
-- [ ] Implement Google sign-in using platform-appropriate public client configuration.
-- [ ] Send credential to Laravel `POST /api/v1/auth/google` according to the contract.
-- [ ] Securely persist the application session/token using a suitable secure-storage package.
-- [ ] Hydrate current user through `GET /api/v1/me`; do not infer authorization solely from local state.
-- [ ] Implement logout/revocation and clear local sensitive state.
-- [ ] Integrate Riverpod auth state with go_router redirects.
+- [ ] Implement Google sign-in using platform-appropriate public client configuration. **Session foundation is ready; credential provider/exchange remains blocked on the undocumented `/auth/google` request/response shape and platform client configuration.**
+- [ ] Send credential to Laravel `POST /api/v1/auth/google` according to the contract. **Blocked until request/response fields are documented.**
+- [x] Securely persist the application session/token using `flutter_secure_storage` behind `SessionStore`.
+- [x] Hydrate current user through `GET /api/v1/me`; unauthorized restoration clears the stored token.
+- [x] Implement logout/revocation via `POST /api/v1/auth/logout` and clear local session state.
+- [ ] Integrate Riverpod auth state with go_router redirects. **Auth controller is ready; route wiring remains.**
 - [ ] Keep customer and approved delivery partner navigation separated; admin remains web-only.
-- [ ] Test cancellation, login failure, expired session, logout, startup restoration and unauthorized API responses.
+- [x] Add controller tests for startup restoration, expired session cleanup and logout. **Google cancellation/login failure remain pending the provider integration.**
 
 **Milestone:** Google sign-in → Laravel auth → authenticated Flutter session.
 
