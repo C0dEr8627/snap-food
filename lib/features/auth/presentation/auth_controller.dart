@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../../core/network/api_transport.dart';
 import '../../../core/network/api_exception.dart';
 import '../data/auth_models.dart';
 import '../data/auth_repository.dart';
@@ -13,6 +14,7 @@ final authSessionStoreProvider = Provider<SessionStore>((ref) {
 final authApiClientProvider = Provider<ApiClient>((ref) {
   return ApiClient(
     config: ApiConfig.fromEnvironment(),
+    transport: HttpApiTransport(),
     tokenProvider: () => ref.read(authSessionStoreProvider).readToken(),
   );
 });
