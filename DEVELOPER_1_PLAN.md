@@ -29,11 +29,11 @@ Build the trusted backend and admin operations that the existing Flutter app can
 | Phase 1 — Backend foundation | **COMPLETED** | Laravel API skeleton, routing, health endpoint, PHPUnit config/test, PHP 8.3 CI, Sanctum, MySQL config, Laravel 13 baseline and required Git-preserved directories are complete. Workflow #30 passed the foundation suite. Initial MySQL schema/models and CI migration verification also passed in workflow #48. |
 | Phase 2 — Identity & authorization | **COMPLETED** | Google verification service, login, Sanctum token storage, `/me`, logout, role middleware, resource policies and negative/cross-user authorization tests are implemented and verified by Workflow #146. Server-side delivery-partner provisioning/approval is now implemented and CI-verified by Workflow #209. Admin role provisioning remains operator-controlled until the protected admin web bootstrap flow is defined. |
 | Phase 3 — Catalogue | **COMPLETED** | Customer category/product reads, search/pagination, admin create/update/deactivate APIs, validation, regression tests and deterministic seed/demo data are implemented and verified by Workflow #146. |
-| Phase 4 — Orders & COD | **IN PROGRESS** | Checkout/list/detail and server-owned admin status transitions are CI-verified; delivery assignment/partner workflow remains. |
-| Phase 5 — Admin & assignment | **IN PROGRESS** | Protected Laravel web authentication/dashboard foundation and concurrency-safe delivery assignment are implemented; latest CI verifies the suite, while broader admin dashboard/order operations remain. |
+| Phase 4 — Orders & COD | **COMPLETED** | COD checkout, immutable snapshots, customer order list/detail, server-owned transitions and assignment/delivery lifecycle are implemented and CI-verified. |
+| Phase 5 — Admin & assignment | **COMPLETED** | Protected admin login/dashboard, order search/detail/status/history, catalogue management, customer/partner/assignment/invoice directories, partner approval/availability controls and concurrency-safe web/API assignment are implemented. |
 | Phase 6 — Delivery tracking | **COMPLETED** | Delivery-partner assignment listing/status progression and active-trip location updates/tracking are CI-verified by Workflows #259 and #266. |
 | Phase 7 — Invoices | **COMPLETED** | Invoice schema, deterministic numbering, immutable snapshot generation and customer/admin access are implemented and verified by Workflow #301. |
-| Phase 8 — Release readiness | **NOT STARTED** | Seeds, contract examples, clean-DB migration run, automated tests, security review and deployment checklist remain. |
+| Phase 8 — Release readiness | **IN PROGRESS** | Safe deterministic seeds, clean-MySQL CI migrations/tests, hosting/backup checklist and secret-ignore rules are complete. API response examples and Flutter integration guidance are now documented. Remaining: formatter/static-analysis/security-diff review, verify contract examples against all resource/error shapes, and confirm GoDaddy hosting capabilities with the owner. |
 
 ## Phase 0 — Inspect and establish the environment
 
@@ -243,7 +243,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Immediate next task
 
-**Continue Phase 5 admin operations.** The first dashboard increment now exposes server-derived order counts for new, active, preparing, awaiting-delivery and active-delivery states. Next implement the admin order search/filter/detail/status workflow, then broaden catalogue/customer/delivery-partner/assignment/invoice dashboard operations. Keep each increment behind automated CI verification.
+**Finish Phase 8 release-readiness verification.** API request/response examples and `backend/API_INTEGRATION.md` have been added against the current route/controller behavior. Next run the configured Pint formatting check and any available static/security checks, review the complete branch diff for secrets and contract drift, verify the latest CI run, and record any remaining warnings. Confirm GoDaddy plan-specific capabilities with the owner before release. Do not deploy or run production migrations.
 
 ## Developer 1 definition of done
 
@@ -273,3 +273,15 @@ A task is complete only when implementation, validation, authorization, automate
 - Workflow #266 **PASSED** on commit `f99dde6b52ff0450693fff8b63b90ce31bbe2722`.
 - The active-trip location/tracking increment is now CI-verified complete: partner-owned location writes, coordinate/timestamp validation, active-trip enforcement, persisted history, customer/admin tracking authorization and stale-location behavior.
 - M7 is complete. Next implementation is Phase 7 invoice generation and access control.
+
+
+### Phase 8 progress update — API contract and client integration
+
+- [x] Audit the API route table against the written contract for auth, catalogue, orders, delivery, tracking, assignment, partner administration and invoices.
+- [x] Add representative Google sign-in, catalogue pagination, COD checkout, assignment, delivery status and partner provisioning examples to `API_CONTRACT.md`.
+- [x] Document the stable error envelope and common HTTP/code mapping; distinguish field validation errors from state conflicts.
+- [x] Add `backend/API_INTEGRATION.md` covering bearer-token lifecycle, response envelopes/pagination, error handling, safe retry behavior, order/assignment conflicts, delivery tracking and release gates.
+- [ ] Run `composer format -- --test` or the repository-supported Pint check in a PHP 8.3/Composer environment and record the actual result.
+- [ ] Complete a final security/secret/diff review and verify the latest branch CI after the documentation changes.
+- [ ] Confirm GoDaddy PHP extensions, Composer/build approach, database, document root, HTTPS, storage permissions and backup/restore capability with the owner.
+- [ ] Obtain human approval for release/deployment; no deployment performed by this task.
