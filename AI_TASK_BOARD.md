@@ -134,3 +134,11 @@ Record decisions here only after the owner approves or they are already establis
 - No deployment or production migration was performed.
 
 **Next owner/action:** Developer 1 completes any available PHP 8.3/Composer quality checks and final diff/security review; project owner confirms GoDaddy capabilities and gives explicit release approval. Developer 2/frontend integration remains a separate validation track.
+
+### Developer 1 task-tracking update — 2026-09-29
+
+- Phase 4 documentation is now aligned with the verified implementation: server-owned order transitions and concurrency-safe delivery assignment are complete and CI-verified.
+- Phase 6 documentation is now aligned with the current contract: partner approval/activation/availability and eligible-partner selection are implemented through admin assignment; partner-owned delivery progression is `PICKED_UP → OUT_FOR_DELIVERY → DELIVERED`. No separate partner-accept endpoint is being introduced without a product-contract change.
+- Phase 8 remains **IN PROGRESS**. Workflow #406 passed on CI verification head `941e9f2ee2916499fec4d60e4df1a6d37fb789b9`; subsequent tracking commit `1184d969d5a32267019e23b39f3e7f595879a81b` updates the plan only.
+- Remaining release gates: PHP 8.3/Composer formatter/static-analysis/security checks where available, final manual security/content review, GoDaddy capability confirmation, broader Flutter/device/end-to-end validation, and explicit human release approval.
+- No deployment or production migration was performed.
