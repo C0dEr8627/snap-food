@@ -773,3 +773,34 @@ No backend/Laravel-owned files were modified.
 2. Establish the approved GPS/Maps platform dependency/configuration.
 3. Implement invoice integration after exact response fields are frozen.
 4. Verify physical GPS/Maps behavior and end-to-end flows.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (CI verification gate + implementation queue)
+
+- Rechecked PR #1 on `developer-2-flutter`: current head is `413e3dff20902d51d47a0f371b984efc153540d8d`; PR targets `frontend` and is reported mergeable.
+- Flutter CI run #196 (`36606481962`) is **in progress**. Job `Analyze, test and build Android` has completed checkout and is still setting up Flutter; dependency resolution, formatting, analyzer, tests and Android build have not yet executed. No green/failed conclusion is claimed.
+- Reviewed current Flutter platform configuration. `pubspec.yaml` contains no location or Google Maps package, and the Android manifest contains no location/Maps configuration. The navigation/duty-map screens still contain illustrative custom-painted map surfaces rather than a real Maps SDK. No speculative platform dependency was added.
+- The shared invoice contract documents `GET /orders/{order}/invoice`, delivered-order ownership, immutable generation and deterministic invoice numbering, but it does not enumerate a concrete success JSON field set. The Flutter invoice DTO/UI therefore remains intentionally unimplemented rather than inventing fields.
+- No backend/Laravel-owned files were modified.
+
+### Current task board
+
+| Area | Status | Current state |
+|---|---|---|
+| Phase 0 — audit/verification | [~] | CI workflow exists; current-head CI #196 pending; physical-device verification pending |
+| Phase 1 — API foundation | [x] | Complete |
+| Phase 2 — auth/session | [~] | Session restore/logout/routing complete; Google platform credential/runtime verification pending |
+| Phase 3 — catalogue/cart | [x] | Complete |
+| Phase 4 — COD checkout | [x] | Complete; automated/runtime verification remains |
+| Phase 5 — customer orders/tracking | [x] | Complete; runtime verification remains |
+| Phase 6 — delivery lifecycle | [x] | Assignment/status/location integration complete |
+| Phase 7 — active GPS/Maps | [~] | Adapter/controller/lifecycle complete; real GPS + Maps SDK/configuration/device verification pending |
+| Invoice | [ ] | Endpoint known; exact success schema still not frozen, so DTO/UI not started |
+| Release verification | [ ] | Green CI, Android APK, physical-device and E2E verification pending |
+
+### Next execution order
+1. Wait for/inspect CI #196 and fix only concrete analyzer/test/build failures.
+2. Obtain/confirm approved Android/iOS location package and Maps configuration; then implement the platform source behind the existing location adapter without changing repository contracts.
+3. Freeze the invoice success JSON fields and implement typed invoice repository/model/UI.
+4. Run physical GPS permission/revocation and Maps verification.
+5. Complete E2E/release verification and update PR readiness.
