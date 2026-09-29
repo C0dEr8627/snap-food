@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Services\Auth\GoogleCredentialVerifier;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use RuntimeException;
 use Tests\TestCase;
 
@@ -184,4 +185,68 @@ class AuthenticationTest extends TestCase
 
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
+
+    public function test_google_login_is_rate_limited_after_ten_attempts_from_same_ip(): void
+    {
+        $this->mock(GoogleCredentialVerifier::class, function ($mock): void {
+            $mock->shouldReceive('verify')
+                ->times(10)
+                ->andThrow(new RuntimeException('invalid'));
+        });
+
+        for ($attempt = 0; $attempt < 10; $attempt++) {
+            $this->postJson('/api/v1/auth/google', [
+                'credential' => 'invalid-google-token',
+            ])->assertUnauthorized();
+        }
+
+        $this->postJson('/api/v1/auth/google', [
+            'credential' => 'invalid-google-token',
+        ])->assertTooManyRequests()
+            ->assertJsonPath('code', 'RATE_LIMITED')
+            ->assertJsonPath('message', 'Too many requests. Please try again later.');
+    }
+
+    public function test_failed_google_credential_logs_only_safe_context(): void
+    {
+        Log::spy();
+
+        $this->mock(GoogleCredentialVerifier::class, function ($mock): void {
+            $mock->shouldReceive('verify')
+                ->once()
+                ->with('secret-google-credential')
+                ->andThrow(new RuntimeException('invalid'));
+        });
+
+        $this->postJson('/api/v1/auth/google', [
+            'credential' => 'secret-google-credential',
+        ])->assertUnauthorized()
+            ->assertJsonStructure(['message', 'errors', 'code']);
+
+        Log::shouldHaveReceived('warning')
+            ->once()
+            ->withArgs(function (string $message, array $context): bool {
+                return $message === 'Google credential verification failed.'
+                    && ! array_key_exists('credential', $context)
+                    && ($context['route'] ?? null) === 'api.v1.auth.google';
+            });
+    }
+
+    public function test_api_validation_errors_follow_contract_shape(): void
+    {
+        $this->postJson('/api/v1/auth/google', [])
+            ->assertUnprocessable()
+            ->assertJsonStructure(['message', 'errors' => ['credential'], 'code'])
+            ->assertJsonPath('code', 'VALIDATION_FAILED')
+            ->assertJsonPath('message', 'Validation failed.');
+    }
+
+    public function test_unknown_api_route_uses_contract_not_found_shape(): void
+    {
+        $this->getJson('/api/v1/does-not-exist')
+            ->assertNotFound()
+            ->assertJsonStructure(['message', 'errors', 'code'])
+            ->assertJsonPath('code', 'NOT_FOUND');
+    }
+
 }
