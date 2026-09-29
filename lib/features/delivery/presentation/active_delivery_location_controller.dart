@@ -19,6 +19,7 @@ class ActiveDeliveryLocationController extends Notifier<ActiveDeliveryLocationSt
   late DeliveryRepository _repository;
   late ForegroundDeliveryLocationAdapter _adapter;
   int? _assignmentId;
+  DateTime? _lastPublishedAt;
 
   @override
   ActiveDeliveryLocationState build() {
@@ -29,6 +30,7 @@ class ActiveDeliveryLocationController extends Notifier<ActiveDeliveryLocationSt
   }
 
   int? get assignmentId => _assignmentId;
+  DateTime? get lastPublishedAt => _lastPublishedAt;
 
   Future<void> start(int assignmentId) async {
     if (assignmentId <= 0) {
@@ -39,6 +41,7 @@ class ActiveDeliveryLocationController extends Notifier<ActiveDeliveryLocationSt
 
     await stop();
     _assignmentId = assignmentId;
+    _lastPublishedAt = null;
     state = ActiveDeliveryLocationState.requestingPermission;
 
     final permission = await _adapter.start(
@@ -52,7 +55,8 @@ class ActiveDeliveryLocationController extends Notifier<ActiveDeliveryLocationSt
     state = switch (permission) {
       DeliveryLocationPermission.granted => ActiveDeliveryLocationState.tracking,
       DeliveryLocationPermission.denied ||
-      DeliveryLocationPermission.deniedForever => ActiveDeliveryLocationState.permissionDenied,
+      DeliveryLocationPermission.deniedForever =>
+        ActiveDeliveryLocationState.permissionDenied,
       DeliveryLocationPermission.unavailable => ActiveDeliveryLocationState.unavailable,
     };
   }
@@ -68,6 +72,10 @@ class ActiveDeliveryLocationController extends Notifier<ActiveDeliveryLocationSt
           accuracy: position.accuracy,
         ),
       );
+      if (_assignmentId == id && _adapter.isRunning) {
+        _lastPublishedAt = DateTime.now().toUtc();
+        state = ActiveDeliveryLocationState.tracking;
+      }
     } catch (_) {
       if (_assignmentId == id && _adapter.isRunning) {
         state = ActiveDeliveryLocationState.error;
@@ -78,6 +86,7 @@ class ActiveDeliveryLocationController extends Notifier<ActiveDeliveryLocationSt
   Future<void> stop() async {
     await _adapter.stop();
     _assignmentId = null;
+    _lastPublishedAt = null;
     if (state != ActiveDeliveryLocationState.idle) {
       state = ActiveDeliveryLocationState.idle;
     }
@@ -102,7 +111,8 @@ class UnavailableDeliveryLocationSource implements DeliveryLocationSource {
       DeliveryLocationPermission.unavailable;
 
   @override
-  Stream<DeliveryPosition> get positions => const Stream<DeliveryPosition>.empty();
+  Stream<DeliveryPosition> get positions =>
+      const Stream<DeliveryPosition>.empty();
 
   @override
   Future<void> dispose() async {}
