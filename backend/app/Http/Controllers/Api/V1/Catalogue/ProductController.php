@@ -38,7 +38,7 @@ class ProductController extends Controller
 
     public function show(Request $request, Product $product): JsonResponse
     {
-        $this->authorize('view', $product);
+        Gate::authorize('view', $product);
 
         abort_unless(
             $request->user()->hasRole('ADMIN')
@@ -65,7 +65,7 @@ class ProductController extends Controller
 
     public function destroy(Request $request, Product $product): JsonResponse
     {
-        $this->authorize('delete', $product);
+        Gate::authorize('delete', $product);
 
         $product->update(['is_active' => false, 'is_available' => false]);
 
