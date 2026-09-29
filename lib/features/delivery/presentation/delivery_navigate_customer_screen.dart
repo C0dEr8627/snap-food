@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/delivery_models.dart';
+import 'active_delivery_location_controller.dart';
 import 'delivery_controller.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
@@ -19,8 +22,40 @@ class _DeliveryNavigateCustomerScreenState extends ConsumerState<DeliveryNavigat
   bool arrived = false;
 
   @override
+  void initState() {
+    super.initState();
+    ref.listenManual<DeliveryAssignment?>(
+      activeDeliveryAssignmentProvider,
+      (_, next) => unawaited(_syncLocation(next)),
+    );
+    Future.microtask(() => _syncLocation(ref.read(activeDeliveryAssignmentProvider)));
+  }
+
+  Future<void> _syncLocation(DeliveryAssignment? assignment) async {
+    final controller = ref.read(activeDeliveryLocationControllerProvider.notifier);
+    if (assignment == null || assignment.status == 'DELIVERED' || assignment.status == 'CANCELLED') {
+      await controller.stop();
+      return;
+    }
+    await controller.start(assignment.id);
+  }
+
+  Future<void> _markArrived() async {
+    setState(() => arrived = true);
+    await ref.read(activeDeliveryLocationControllerProvider.notifier).stop();
+  }
+
+  @override
+  void dispose() {
+    unawaited(ref.read(activeDeliveryLocationControllerProvider.notifier).stop());
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final assignment = ref.watch(activeDeliveryAssignmentProvider);
+    final locationState = ref.watch(activeDeliveryLocationControllerProvider);
+    final lastPublishedAt = ref.read(activeDeliveryLocationControllerProvider.notifier).lastPublishedAt;
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
       body: SafeArea(
@@ -57,7 +92,7 @@ class _DeliveryNavigateCustomerScreenState extends ConsumerState<DeliveryNavigat
                                         child: _TripPanel(
                                           assignment: assignment,
                                           arrived: arrived,
-                                          onArrived: () => setState(() => arrived = true),
+                                          onArrived: _markArrived,
                                         ),
                                       ),
                                     ],
@@ -218,10 +253,24 @@ class _CustomerRoutePainter extends CustomPainter {
 }
 
 class _TripPanel extends StatelessWidget {
-  const _TripPanel({required this.assignment, required this.arrived, required this.onArrived});
+  const _TripPanel({required this.assignment, required this.arrived, required this.onArrived, required this.locationState, required this.lastPublishedAt});
   final DeliveryAssignment? assignment;
   final bool arrived;
   final VoidCallback onArrived;
+  final ActiveDeliveryLocationState locationState;
+  final DateTime? lastPublishedAt;
+
+  static String _locationLabel(ActiveDeliveryLocationState state, DateTime? lastPublishedAt) {
+    final published = lastPublishedAt?.toLocal().toIso8601String().replaceFirst('T', ' ');
+    return switch (state) {
+      ActiveDeliveryLocationState.idle => 'Location publishing stopped',
+      ActiveDeliveryLocationState.requestingPermission => 'Requesting location permission',
+      ActiveDeliveryLocationState.tracking => published == null ? 'Foreground GPS active; waiting for first update' : 'Last update sent $published',
+      ActiveDeliveryLocationState.permissionDenied => 'Location permission denied',
+      ActiveDeliveryLocationState.unavailable => 'GPS unavailable on this build',
+      ActiveDeliveryLocationState.error => 'Last location update failed',
+    };
+  }
 
   @override
   Widget build(BuildContext context) => Column(
@@ -261,10 +310,10 @@ class _TripPanel extends StatelessWidget {
                   value: assignment?.status ?? 'NO ACTIVE TRIP',
                 ),
                 const SizedBox(height: 13),
-                const _InfoRow(
+                _InfoRow(
                   icon: Icons.gps_fixed_rounded,
                   label: 'Location',
-                  value: 'Foreground updates only',
+                  value: _locationLabel(locationState, lastPublishedAt),
                 ),
                 const SizedBox(height: 18),
                 const Divider(color: SnapFoodColors.softBorder),
