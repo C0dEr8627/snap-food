@@ -38,7 +38,7 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 >
 > **Not verified because the GitHub-connected environment has no local Flutter/Dart runner:** `dart format`, `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --debug`, and physical-device checks. These remain **NOT RUN**, not passed.
 >
-> **Current first incomplete implementation task:** complete Google SSO credential exchange and session routing after the backend documents the `/auth/google` request/response contract. The secure session foundation and `/me` restoration are now implemented without inventing undocumented token or credential fields.
+> **Current first incomplete implementation task:** complete Google SSO credential exchange and session routing after the backend documents the `/auth/google` request/response contract. A Flutter-side contract handoff has now been added at `docs/AUTH_CONTRACT_HANDOFF.md`; it lists the required backend fields without inventing a payload. The secure session foundation and `/me` restoration are implemented.
 >
 > **Next implementation sequence:** confirm `/auth/google` request/response fields → integrate platform Google sign-in and credential exchange → connect auth state to go_router → complete catalogue typed DTOs once catalogue response fields are documented → orders/checkout → delivery → active-trip tracking.
 
