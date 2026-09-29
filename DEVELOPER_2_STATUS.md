@@ -168,3 +168,12 @@ No backend/Laravel-owned files were modified. No merge or deployment was perform
 - Add invoice model/repository/UI from the frozen invoice response.
 
 No backend/Laravel-owned files were modified.
+## Status correction — contract gate cleared
+
+The earlier sections of this file describing the Flutter order/delivery contract as incomplete are superseded by the 2026-09-29 schema synchronization in `API_CONTRACT.md`. The backend branch now documents the concrete request/response examples used by the new order foundation, and those relevant details have been synchronized to the Flutter branch.
+
+Current implementation therefore advances from contract-gated Phase 4 work to the next integration slice: cart/address UI wiring → COD submission → server-error/conflict presentation → order success/detail/history UI.
+
+Current branch head at this documentation checkpoint: `44efccf13fa01660aaf873d22130cc6d5bc4b2a6`.
+GitHub currently reports PR #1 as open but `mergeable: false`; a compare against `frontend` reports the Flutter branch is 168 commits ahead and 0 behind. This mergeability state is recorded without assuming a cause.
+CI verification for the latest code commit is not available through the current connector result set; no green analyzer/test/APK result is claimed.
