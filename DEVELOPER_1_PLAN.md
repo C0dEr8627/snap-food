@@ -21,111 +21,158 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - Never commit `.env`, secrets, real credentials, database dumps with personal data or tokens.
 - Do not change Flutter screens or dependencies except when a documented contract change requires coordination.
 
+## Progress dashboard
+
+| Phase | Status | Completed / remaining |
+|---|---|---|
+| Phase 0 — Environment & repository baseline | **PARTIAL** | Repository/docs inspected; PHP 8.3 target recorded; hosting checklist and safe env example documented. Actual GoDaddy Composer/MySQL capability remains unverified. |
+| Phase 1 — Backend foundation | **IN PROGRESS** | Laravel API skeleton, `/api/v1` routing, health endpoint, PHPUnit config/test, PHP 8.3 CI and Sanctum dependency are present. MySQL config is now added. CI still needs a successful dependency install/test run. |
+| Phase 2 — Identity & authorization | **NOT STARTED** | Google verification, users, Sanctum tokens, roles, ownership and auth tests remain. |
+| Phase 3 — Catalogue | **NOT STARTED** | Categories/products schema, models, validation, catalogue APIs, admin CRUD and tests remain. |
+| Phase 4 — Orders & COD | **NOT STARTED** | Order snapshots, totals, COD state, transitions, history and tests remain. |
+| Phase 5 — Admin & assignment | **NOT STARTED** | Protected admin web dashboard and delivery assignment operations remain. |
+| Phase 6 — Delivery tracking | **NOT STARTED** | Partner workflow, pickup/completion, location updates and tracking authorization remain. |
+| Phase 7 — Invoices | **NOT STARTED** | Numbering decision, invoice generation and access control remain. |
+| Phase 8 — Release readiness | **NOT STARTED** | Seeds, contract examples, clean-DB migration run, automated tests, security review and deployment checklist remain. |
+
 ## Phase 0 — Inspect and establish the environment
 
 - [x] Inspect repository and existing docs before creating files.
-- [x] Record PHP, Composer, Laravel and MySQL requirements/status in `backend/README.md`. Exact versions remain unverified until local toolchain and hosting are known.
-- [x] Document the GoDaddy hosting capability checklist in `backend/README.md`.
-- [x] Hosting information is unavailable: local/staging setup remains portable and the blocker is recorded; no hosting capability is assumed.
-- [x] Create a safe local environment example at `backend/.env.example` with placeholders only.
-- [x] Document setup, migration, seed, test and deployment discovery/setup guidance in `backend/README.md`.
-- [x] Check available agent execution environment: PHP CLI 8.4.23 exists, Composer and MySQL CLI are absent. This does not verify the user's local machine or hosting environment.
-- [x] Record the production server PHP target as PHP 8.3 and select a PHP 8.3-compatible Laravel baseline (Laravel 11).
+- [x] Record PHP, Composer, Laravel and MySQL requirements/status in `backend/README.md`.
+- [x] Document the GoDaddy hosting capability checklist.
+- [x] Record that unverified hosting capabilities must not be assumed.
+- [x] Create safe `backend/.env.example` placeholders.
+- [x] Check agent environment: PHP 8.4.23 exists; Composer and MySQL CLI are absent.
+- [x] Record production PHP target as PHP 8.3.
+- [x] Add PHP 8.3 Composer platform constraint.
 
-**Gate:** PARTIALLY PASSED. The production target is PHP 8.3, and the repository now contains a Laravel 11/PHP 8.3-compatible foundation, API versioning, a health endpoint, PHPUnit configuration and PHP 8.3 CI. The gate is still blocked for execution because Composer and MySQL are unavailable in the agent container and the actual GoDaddy Composer/PHP-extension/database capabilities remain unverified. Do not claim migrations or tests passed until they run in a usable PHP 8.3 + Composer + non-production MySQL environment.
+**Gate:** PARTIALLY PASSED. The target runtime is known, but local dependency/database execution and actual GoDaddy capabilities remain unverified.
 
 ## Phase 1 — Backend foundation
 
-- [x] Create Laravel app foundation under `backend/`.
-- [ ] Configure environment-based MySQL connection.
+- [x] Create Laravel application foundation under `backend/`.
 - [x] Configure `/api/v1` routing baseline and health endpoint.
-- [x] Establish PHPUnit automated test configuration and initial health feature test.
-- [x] Add health/readiness endpoint without exposing configuration/secrets.
+- [x] Establish PHPUnit feature-test configuration and health test.
+- [x] Add non-sensitive health/readiness endpoint.
+- [x] Add PHP 8.3 GitHub Actions workflow with PDO/MySQL extensions.
+- [x] Add Sanctum dependency for the planned application-token flow.
+- [x] Add environment-driven MySQL configuration at `backend/config/database.php`.
+- [x] Align application configuration with the current Laravel skeleton structure.
+- [x] Align PHPUnit configuration with the Laravel 13/PHPUnit 12 baseline.
+- [x] Update framework baseline from Laravel 11 to Laravel 13 because Laravel 11 security support ended March 12, 2026; Laravel 13 requires PHP 8.3.
+- [ ] Obtain a successful `composer install` in CI.
+- [ ] Run the PHPUnit health test successfully in CI.
 - [ ] Add request validation, rate limiting where appropriate, logging without credentials and consistent error responses.
-- [x] Document target PHP 8.3 and selected Laravel 11 baseline; runtime dependency installation remains unverified in the agent container.
+
+**Current CI blocker:** workflow run #13 reached PHP 8.3.35 and installed the required extensions and Composer 2.10.3, but dependency resolution stopped because the Laravel 11 constraint selected versions blocked by current security advisories. The dependency baseline has now been moved to Laravel 13/PHP 8.3. A new CI run must verify the corrected manifest.
 
 ## Phase 2 — Identity and authorization
 
-- [ ] Implement Google credential verification server-side using supported Google verification libraries/APIs.
-- [ ] Find/create users using a stable Google subject identifier; do not rely only on mutable email.
-- [ ] Choose and document the application-token/session approach compatible with the hosting and Flutter client (evaluate Laravel Sanctum if suitable).
+- [ ] Implement Google credential verification server-side.
+- [ ] Find/create users by stable Google subject identifier.
+- [ ] Implement Sanctum application tokens/session flow.
 - [ ] Implement login, `GET /api/v1/me`, logout/revocation and role middleware/policies.
 - [ ] Roles: `CUSTOMER`, `DELIVERY_PARTNER`, `ADMIN`; no Restaurant Partner scope.
-- [ ] Customer accounts may be created through Google sign-in; delivery partner accounts must be provisioned/approved; admin access must never be self-assigned.
-- [ ] Enforce resource ownership for addresses, orders, invoices and tracking.
-- [ ] Add tests for invalid credentials, inactive/unapproved accounts, token revocation, role escalation and cross-user data access.
+- [ ] Provision/approve delivery partners and admins server-side only.
+- [ ] Enforce resource ownership.
+- [ ] Add invalid credential, inactive account, token revocation, role escalation and cross-user access tests.
 
-**Milestone:** Google SSO → Laravel verification → MySQL user → application session/token → `/me`.
+**Milestone:** Google SSO → Laravel verification → MySQL user → application token/session → `/me`.
 
 ## Phase 3 — Catalogue
 
 - [ ] Add categories and products migrations/models/validation/resources.
-- [ ] Define product price, availability/stock and active state.
-- [ ] Implement public/authenticated customer reads as agreed in `API_CONTRACT.md`.
-- [ ] Implement admin category/product create, update, list, detail and deactivate/delete policy.
+- [ ] Define price, availability/stock and active state.
+- [ ] Implement customer catalogue reads.
+- [ ] Implement admin category/product CRUD and deactivate/delete policy.
 - [ ] Add pagination, search/filter and deterministic seed data.
-- [ ] Add tests for validation, inactive products and admin-only writes.
+- [ ] Add validation, inactive-product and admin-only write tests.
 
 **Milestone:** admin creates/updates a product; customer catalogue API returns it.
 
 ## Phase 4 — Orders and COD
 
 - [ ] Define allowed order states and transitions from `PRODUCT.md` and `API_CONTRACT.md`.
-- [ ] Implement address handling or validated delivery-address snapshots.
-- [ ] Accept product IDs and quantities; recalculate price/availability/totals on server.
-- [ ] Create order and item price/name snapshots in one database transaction.
-- [ ] Persist payment method as COD and initial payment state as pending; do not invent collection reconciliation rules.
-- [ ] Add order status history with actor/timestamp.
+- [ ] Implement validated delivery-address snapshots.
+- [ ] Recalculate price/availability/fees/totals server-side.
+- [ ] Create order/item immutable snapshots in one transaction.
+- [ ] Persist COD payment method and initial pending payment state.
+- [ ] Add order status history.
 - [ ] Implement customer list/detail endpoints with ownership checks.
-- [ ] Prevent invalid status jumps, duplicate creation where idempotency is needed and access to other customers' orders.
-- [ ] Add tests for client price tampering, unavailable products, invalid quantities, rollback, state transitions and ownership.
+- [ ] Prevent invalid state jumps, price tampering and unauthorized access.
+- [ ] Add transaction, state-transition and ownership tests.
 
 **Milestone:** Flutter-compatible request creates a real MySQL COD order and customer can retrieve it.
 
 ## Phase 5 — Admin operations and delivery assignment
 
 - [ ] Create protected Laravel web login/authorization for admins.
-- [ ] Build functional dashboard for products/categories, orders, customers, delivery partners, assignments and invoice access.
-- [ ] Implement order list/detail/filter and allowed status actions.
+- [ ] Build dashboard for catalogue, orders, customers, partners, assignments and invoices.
+- [ ] Implement order search/filter/detail/status actions.
 - [ ] Provision/approve/deactivate delivery partners.
-- [ ] Implement assignment with transaction/locking or an equivalent concurrency-safe guard against double assignment.
+- [ ] Implement concurrency-safe delivery assignment.
 - [ ] Record assignment/status history and actor.
 - [ ] Add authorization and race/conflict tests.
 
 ## Phase 6 — Delivery APIs and active tracking
 
-- [ ] Implement partner availability and eligible delivery request list.
-- [ ] Accept/reject workflow only if approved in contract; enforce one valid assignment per order.
-- [ ] Implement pickup confirmation and delivery completion with valid state checks.
-- [ ] Implement location update endpoint for the partner's own active assignment only.
-- [ ] Validate coordinate ranges, timestamps and payload size; persist latest location and required history.
-- [ ] Implement tracking read endpoint with order/customer/assignment authorization.
-- [ ] Do not require WebSockets or persistent workers; use HTTP updates + polling for MVP.
-- [ ] Add stale-location handling and tracking authorization tests.
+- [ ] Implement partner availability and eligible request list.
+- [ ] Implement approved accept/pickup/completion workflow.
+- [ ] Implement partner-owned active-assignment location updates.
+- [ ] Validate coordinates, timestamps and payload size.
+- [ ] Persist latest location and required history.
+- [ ] Implement authorized tracking reads.
+- [ ] Use HTTP updates + polling for MVP; no WebSockets/background GPS dependency.
+- [ ] Add stale-location and authorization tests.
 
 ## Phase 7 — Invoices
 
 - [ ] Agree invoice numbering and required fields before implementation.
-- [ ] Generate invoice from immutable order snapshots.
-- [ ] Protect customer invoice access by order ownership; protect admin access by role.
-- [ ] Add tests for totals, numbering uniqueness and unauthorized access.
+- [ ] Generate invoices from immutable order snapshots.
+- [ ] Protect customer/admin invoice access.
+- [ ] Add totals, numbering uniqueness and unauthorized-access tests.
 
 ## Phase 8 — Integration and release readiness
 
 - [ ] Provide safe seed/demo data.
-- [ ] Maintain API contract examples and a concise integration guide.
-- [ ] Run formatter, static analysis where configured, migrations from empty DB and automated tests.
+- [ ] Maintain API contract examples and integration guide.
+- [ ] Run formatter/static analysis where configured.
+- [ ] Run migrations from an empty MySQL database.
+- [ ] Run the automated test suite.
 - [ ] Document backup/restore and production environment checklist.
 - [ ] Verify no secrets or sensitive data are committed.
-- [ ] Produce a PR summary with changed files, commands/tests and known limitations.
+- [ ] Produce final PR summary with changed files, tests and limitations.
 
-## Current execution note
+## Current execution status
 
-The next code slice is the database foundation: users, addresses, categories and products migrations/models, validation and tests. It must be executed in an environment that can install Composer dependencies and connect to a non-production MySQL database. The agent container cannot currently satisfy that prerequisite, so no migration/test result will be claimed until a usable environment is available.
+### Completed in this branch
+
+1. Repository and backend documentation baseline established.
+2. PHP 8.3 production target recorded.
+3. Laravel API foundation created under `backend/`.
+4. `/api/v1/health` endpoint and feature test created.
+5. PHP 8.3 CI workflow created.
+6. Sanctum dependency added for planned authentication.
+7. Invalid Composer JSON identified by CI and corrected.
+8. CI dependency blocker identified: Laravel 11 is now outside its security-support window and Composer blocks the affected framework versions.
+9. Laravel baseline upgraded to `^13.17`, with PHP `^8.3`, current Sanctum compatibility, PHPUnit 12, Pint 1.27 and Collision 8.9.
+10. Laravel-style application config and environment-driven MySQL config added.
+
+### Not yet verified
+
+- Composer dependency installation after the Laravel 13 change.
+- PHPUnit execution.
+- MySQL migration execution.
+- Any real Google credential verification.
+- GoDaddy Composer/extensions/database/document-root/SSH capabilities.
+
+## Immediate next task
+
+**Foundation verification:** run the GitHub Actions workflow against the corrected Laravel 13/PHP 8.3 dependency manifest. If dependency installation and the health test pass, proceed immediately to the database foundation for `users`, `addresses`, `categories` and `products`, using `DATABASE.md` as the schema contract.
 
 ## Developer 1 definition of done
 
-A task is complete only when implementation, validation, authorization, automated tests, docs and error behavior agree. No claiming tests passed unless they were actually run. Report blockers explicitly.
+A task is complete only when implementation, validation, authorization, automated tests, docs and error behavior agree. Never claim tests passed unless they actually ran. Report blockers explicitly.
 
 ## End-of-task report format
 
