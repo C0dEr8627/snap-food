@@ -16,8 +16,8 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 - [x] M3 — Admin product/category CRUD and customer catalogue API work end-to-end, including deterministic seed/demo data verified by workflow #146.
 - [~] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history, server-owned admin status transitions, and delivery assignment are implemented. Workflow #204 verified status transitions; assignment verification is pending.
 - [~] M5 — Delivery-partner provisioning/approval is CI-verified by Workflow #209 behind ADMIN API authorization. Protected Laravel web authentication and concurrency-safe order assignment are implemented and Workflow #244 has passed the PHPUnit suite; broader dashboard operations remain.
-- [~] M6 — Partner assignment listing and valid pickup → out-for-delivery → delivered transitions are implemented with ownership/conflict tests; explicit partner accept step remains to be finalized against the product contract; CI exposed two 403 cases being normalized as 500, and the response handling has been corrected pending fresh verification.
-- [ ] M7 — Active-trip GPS updates are authorized and customer map shows fresh/stale location states.
+- [x] M6 — Partner assignment listing and valid pickup → out-for-delivery → delivered transitions are implemented with ownership/conflict tests and verified by Workflow #259. The explicit partner accept step remains to be finalized against the product contract.
+- [~] M7 — Active-trip GPS updates, latest-location reads, stale-state reporting and customer/admin authorization are implemented; fresh CI verification is pending.
 - [ ] M8 — Invoice generation and access rules are tested.
 - [ ] M9 — Security, Android device, end-to-end and deployment-readiness checks pass.
 
@@ -91,5 +91,14 @@ Record decisions here only after the owner approves or they are already establis
 - Workflow #240 then failed because the branch's `backend/routes/web.php` had reverted to the default welcome route and `bootstrap/app.php` lacked the admin web middleware alias, causing 404s/session assertions in all 7 admin-web tests. Those files were restored in commits `fe7f3cabb1e38782971c53062d50af8b1ff83ce3` and `cc08d4ff61540fdd4e5786d82821e43dc53b1377`.
 - Workflow #243 is running on `cc08d4ff61540fdd4e5786d82821e43dc53b1377`; admin web authentication and delivery assignment are not marked verified until it passes.
 
-- Workflow #244 passed dependency installation, MySQL migrations and the PHPUnit test step after the admin web route/middleware restoration; final workflow cleanup was still in progress when checked.
+- Workflow #244 passed dependency installation, MySQL migrations and the PHPUnit test step after the admin web route/middleware restoration.
+- Workflow #259 PASSED on commit 148e8ab54a617007c38d3ecb3498445d04d16968, verifying the corrected delivery-partner lifecycle authorization responses with PHP 8.3/MySQL.
 - New Phase 6 increment: delivery partners can list their own active assignments and progress owned assignments through PICKED_UP → OUT_FOR_DELIVERY → DELIVERED. Cross-partner access, unapproved-partner access, and invalid state skips are covered by `DeliveryPartnerOrderTest`.
+
+
+### Developer 1 status — delivery lifecycle and tracking — 2026-09-29
+
+- M6 delivery-partner assignment listing and owned status progression are CI-verified complete by Workflow #259.
+- Implemented M7 location slice: POST /api/v1/delivery/assignments/{assignment}/location for the owning approved/active partner, coordinate/accuracy/timestamp validation, active-trip enforcement, persistent location history, and GET /api/v1/orders/{order}/tracking plus admin tracking read with stale-state reporting.
+- Location implementation commit: 8fce7c8374943d23e4e723f9df01776ac6d71b99; conflict response normalization follow-up: d2fbd64cbdc8086530eda80536ed09e33fd9ff16.
+- M7 remains in progress pending CI verification; invoices remain next after the location/tracking gate passes.
