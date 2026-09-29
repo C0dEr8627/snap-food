@@ -32,7 +32,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 | Phase 4 — Orders & COD | **IN PROGRESS** | Checkout/list/detail and server-owned admin status transitions are CI-verified; delivery assignment/partner workflow remains. |
 | Phase 5 — Admin & assignment | **IN PROGRESS** | Protected Laravel web authentication/dashboard foundation and concurrency-safe delivery assignment are implemented; latest CI verifies the suite, while broader admin dashboard/order operations remain. |
 | Phase 6 — Delivery tracking | **COMPLETED** | Delivery-partner assignment listing/status progression and active-trip location updates/tracking are CI-verified by Workflows #259 and #266. |
-| Phase 7 — Invoices | **NOT STARTED** | Numbering decision, invoice generation and access control remain. |
+| Phase 7 — Invoices | **IN PROGRESS** | Invoice schema, deterministic numbering, immutable snapshot generation and customer/admin access are implemented; fresh CI verification remains. |
 | Phase 8 — Release readiness | **NOT STARTED** | Seeds, contract examples, clean-DB migration run, automated tests, security review and deployment checklist remain. |
 
 ## Phase 0 — Inspect and establish the environment
@@ -140,10 +140,12 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Phase 7 — Invoices
 
-- [ ] Agree invoice numbering and required fields before implementation.
-- [ ] Generate invoices from immutable order snapshots.
-- [ ] Protect customer/admin invoice access.
-- [ ] Add totals, numbering uniqueness and unauthorized-access tests.
+- [x] Agree invoice numbering and required fields before implementation.
+- [x] Generate invoices from immutable order snapshots.
+- [x] Protect customer/admin invoice access.
+- [x] Add totals, numbering uniqueness and unauthorized-access tests.
+
+**Current Phase 7 gate:** invoice implementation is awaiting fresh CI verification.
 
 ## Phase 8 — Integration and release readiness
 
