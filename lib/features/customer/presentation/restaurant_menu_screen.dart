@@ -93,7 +93,7 @@ class _RestaurantMenuScreenState extends ConsumerState<RestaurantMenuScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               scrollDirection: Axis.horizontal,
               itemCount: categories.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              separatorBuilder: (_, index) => const SizedBox(width: 8),
               itemBuilder: (_, i) => ChoiceChip(
                 selected: selectedCategory == i,
                 onSelected: (_) => setState(() => selectedCategory = i),
@@ -108,10 +108,7 @@ class _RestaurantMenuScreenState extends ConsumerState<RestaurantMenuScreen> {
             const SliverToBoxAdapter(child: _MenuSection(
               title: 'Tandoori & Starters',
               subtitle: 'Fresh Cut Daily',
-              items: [
-                MenuItemData('Crispy Paneer Tikka (6 pcs)', 'Charcoal roasted with mint chutney', 210, null, 'paneerTikka', true),
-                MenuItemData('Amritsari Fish Fry', 'Crisp spiced fillet & chaat masala', 260, null, 'fish', false),
-              ],
+              items: const [],
             )),
             const SliverToBoxAdapter(child: SizedBox(height: 120)),
           ]),
@@ -203,7 +200,7 @@ class _MenuItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => InkWell(
     borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-    onTap: () => context.push('/food/' + item.id),
+    onTap: onTap,
     child: Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
