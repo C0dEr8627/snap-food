@@ -75,7 +75,7 @@
             <p>{{ $order->assignment?->deliveryPartner?->user?->name ?? 'Unassigned' }}</p>
             @if ($order->assignment)
                 <p>Assigned at: {{ $order->assignment->assigned_at?->toIso8601String() }}</p>
-            @elseif ($order->status === \\App\\Models\\Order::STATUS_READY_FOR_PICKUP)
+            @elseif ($order->status === 'READY_FOR_PICKUP')
                 <h4>Assign delivery partner</h4>
                 @if ($eligiblePartners->isNotEmpty())
                     <form method="POST" action="{{ route('admin.orders.assignment', $order) }}">
