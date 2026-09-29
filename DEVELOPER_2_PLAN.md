@@ -30,12 +30,12 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 
 ## Phase 1 — API foundation
 
-- [ ] Add a single configured API client with environment-specific base URL.
-- [ ] Centralize JSON serialization, timeouts, auth headers, normalized API errors and safe logging.
+- [x] Add a single configured API client with environment-specific base URL.
+- [x] Centralize JSON serialization, timeouts, auth headers, normalized API errors and safe logging (sensitive payloads are not logged).
 - [ ] Add repository interfaces/implementations using the current architecture.
 - [ ] Add loading, empty, error, retry and offline/degraded-network states.
-- [ ] Keep secrets out of source; document how API URL and public client keys are configured per environment.
-- [ ] Use mocked/fake repositories for unit/widget tests; do not block UI work waiting for backend deployment.
+- [x] Keep secrets out of source; document how API URL and public client keys are configured per environment.
+- [x] Use a fake transport for API client unit tests; feature repository fakes remain to be added as repositories are introduced.
 
 ## Phase 2 — Google SSO and session state
 
