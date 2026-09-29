@@ -48,7 +48,7 @@ Record decisions here only after the owner approves or they are already establis
 ## Developer 2 checkpoint — 2026-09-29
 
 - **Branch:** `developer-2-flutter`
-- **Current Flutter PR:** #1 targeting `frontend`; latest implementation checkpoint is `ea4756e366e16a438d696a48aad1d38f3f2e7ec3`.
+- **Current Flutter PR:** #1 targeting `frontend`; latest implementation checkpoint is `029c53bdb16af52575a0fe83b31c33f5cf5a925f`.
 - **Flutter implementation completed:** API client/transport foundation, normalized API errors, environment API URL documentation, catalogue repository + fake/remote implementations, Riverpod catalogue controller/state, catalogue loading/empty/error/retry UI integration, secure application-session storage, `/me` restoration, logout/revocation handling, auth controller tests, auth-aware go_router redirects, and the local cart repository/controller boundary with explicit product IDs and quantity tests.
 - **Backend checkpoint:** `developer-1-backend-admin` has documented fixes after workflow #179: `bf2febe67ee45507886be50aca809e7c0bca9f23` fixes the stale status-history table assertion, `a0f9b47f70df16871ea4da82a50ebf5640b1582b` restores the established `data` envelope for order lists, and `cf5236d87a7c2ad00be965a89ce94a5cd72a566b` restricts customer order routes with `role:CUSTOMER`. Backend documentation commit `a1fcc5c920db6e4de71a53e294f3d71df95ad9b0` records the earlier fixes; commit `032e4144e5fba9e0b24a16418b82a23b1dbc2d52` adds 403/FORBIDDEN exception normalization and workflow #186 verifies it.
 - **Backend verification:** workflow #146 passed the corrected Phase 2/3 authentication/authorization + catalogue suite on PHP 8.3 with MySQL. The backend plan records workflow #204 as passing for server-owned admin order status transitions; workflow #205 failed on delivery-partner provisioning/approval conflict rendering; the backend fix is awaiting fresh CI verification.
@@ -120,3 +120,15 @@ Record decisions here only after the owner approves or they are already establis
 - **Current blockers:** exact Flutter-facing order create/list/detail and address schemas; Google auth exchange/configuration; catalogue success fields; delivery assignment/request/location/tracking response examples.
 - **Verification:** Flutter/Dart formatting, analyzer, tests, APK build and physical-device checks are **NOT RUN**; current commit status has no Flutter checks.
 - **Next owner/action:** Developer 1 freezes order/COD + address examples. Developer 2 then implements typed order models, checkout/history and server-authoritative totals, followed by delivery/active-trip tracking from documented schemas. No undocumented payloads are to be invented.
+
+
+## Developer 2 checkpoint — 2026-09-29 (current implementation gate)
+
+- **Branch:** `developer-2-flutter`
+- **PR:** #1 → `frontend`, open and mergeable.
+- **Current head:** `029c53bdb16af52575a0fe83b31c33f5cf5a925f`.
+- **Completed Flutter:** API transport/client + normalized errors; catalogue repository/controller/state and loading/empty/error/retry UI integration; secure session storage and `/me` restoration; logout/revocation; auth-aware routing; local cart repository/controller with explicit product IDs and quantity tests; contract-question tracking.
+- **Backend verified:** workflow #209 passes for delivery-partner provisioning/approval; backend order checkout/list/detail and server-owned status-transition/concurrency work are verified.
+- **Current blocker:** the next Phase 4 address/checkout implementation cannot safely begin because `API_CONTRACT.md` still lacks exact order create/list/detail and address request/response schemas. Google SSO, typed catalogue mapping and delivery assignment/tracking are similarly contract/config gated.
+- **Verification:** Flutter/Dart format, analyzer, tests, APK build and physical-device checks remain **NOT RUN**; no Flutter CI status is reported.
+- **Next owner/action:** Developer 1 freezes the order/COD + address contract. Developer 2 then implements typed order models → checkout repository/controller → server-authoritative totals → order success/detail/history, followed by delivery/tracking.
