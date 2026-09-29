@@ -44,6 +44,8 @@ Read before coding:
 12. [DEVELOPER_2_PLAN.md](DEVELOPER_2_PLAN.md) — Flutter/Maps task plan
 13. [AIDLC_WORKFLOW.md](AIDLC_WORKFLOW.md) — parallel AI workflow, branches, commits and PRs
 14. [AI_TASK_BOARD.md](AI_TASK_BOARD.md) — shared integration milestones
+15. [AI_TASK_TEMPLATE.md](AI_TASK_TEMPLATE.md) — reusable scoped task definition
+16. [`.github/pull_request_template.md`](.github/pull_request_template.md) — required PR checklist
 
 If code and documentation disagree, update them together.
 
