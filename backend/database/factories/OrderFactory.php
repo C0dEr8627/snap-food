@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class OrderFactory extends Factory
 {
+    // Shared test fixture for delivered-order invoice and order lifecycle coverage.
     protected $model = Order::class;
 
     public function definition(): array
