@@ -197,7 +197,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 41. Workflow #175 failed after migrations/tests booted successfully because `order_status_histories` was missing at runtime; the migration had created the singular `order_status_history` table.
 42. Corrected the migration table name and rollback target to `order_status_histories`, matching the `OrderStatusHistory` model and relationship conventions, in commit `112a2ffe1df0bcd07bbf54f43748798809c144b8`.
 43. Workflow #179 completed with 3 remaining `OrderApiTest` failures: a stale singular table assertion, an order-list response shape mismatch (`data.total`), and an admin order-route authorization response of HTTP 500 instead of 403.
-44. Corrected the stale status-history assertion in `bf2febe67ee45507886be50aca809e7c0bca9e7c0bca9f23`, wrapped the order list paginator in the established `data` response envelope in `a0f9b47f70df16871ea4da82a50ebf5640b1582b`, and added explicit `role:CUSTOMER` middleware to customer order routes in `cf5236d87a7c2ad00be965a89ce94a5cd72a566b`.
+44. Corrected the stale status-history assertion in `bf2febe67ee45507886be50aca809e7c0bca9f23`, wrapped the order list paginator in the established `data` response envelope in `a0f9b47f70df16871ea4da82a50ebf5640b1582b`, and added explicit `role:CUSTOMER` middleware to customer order routes in `cf5236d87a7c2ad00be965a89ce94a5cd72a566b`.
 45. Workflow #184 verified migrations and the suite boot but failed one cross-customer order-detail authorization assertion with HTTP 500 instead of 403. Added an explicit `AccessDeniedHttpException` JSON mapping with `FORBIDDEN` code in `032e4144e5fba9e0b24a16418b82a23b1dbc2d52`; fresh CI verification is pending.
 
 ### Latest verification result
