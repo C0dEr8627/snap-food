@@ -16,7 +16,7 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 - [x] M3 — Admin product/category CRUD and customer catalogue API work end-to-end, including deterministic seed/demo data verified by workflow #146.
 - [~] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history, server-owned admin status transitions, and delivery assignment are implemented. Workflow #204 verified status transitions; assignment verification is pending.
 - [~] M5 — Delivery-partner provisioning/approval is CI-verified by Workflow #209 behind ADMIN API authorization. Protected Laravel web authentication and concurrency-safe order assignment are implemented and Workflow #244 has passed the PHPUnit suite; broader dashboard operations remain.
-- [~] M6 — Partner assignment listing and valid pickup → out-for-delivery → delivered transitions are implemented with ownership/conflict tests; explicit partner accept step remains to be finalized against the product contract.
+- [~] M6 — Partner assignment listing and valid pickup → out-for-delivery → delivered transitions are implemented with ownership/conflict tests; explicit partner accept step remains to be finalized against the product contract; CI exposed two 403 cases being normalized as 500, and the response handling has been corrected pending fresh verification.
 - [ ] M7 — Active-trip GPS updates are authorized and customer map shows fresh/stale location states.
 - [ ] M8 — Invoice generation and access rules are tested.
 - [ ] M9 — Security, Android device, end-to-end and deployment-readiness checks pass.
