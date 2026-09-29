@@ -1,48 +1,47 @@
 # Snap Foodd Backend
 
-Laravel API and protected admin dashboard for Snap Foodd. This directory is the backend boundary; Flutter-owned files remain at the repository root and under `lib/`.
+Laravel API and admin application for Snap Foodd.
 
-## Toolchain status
+## Target runtime
 
-The repository currently has no Laravel application, `composer.json`, PHP test configuration, or backend source. A check of the isolated execution container on 2026-09-29 found PHP CLI 8.4.23, but Composer and the MySQL CLI are not installed. This is only the agent's execution environment; it does not verify the developer's machine or the GoDaddy hosting plan. No database server or non-production connection has been verified.
+The production server target is **PHP 8.3**. The backend dependency baseline therefore uses Laravel 11, which supports PHP 8.2+ and is compatible with PHP 8.3.
 
-| Component | Current requirement/status |
-|---|---|
-| PHP | Agent container: 8.4.23 CLI; developer machine and hosting version not verified. Choose a Laravel-supported version after checking both. |
-| Composer | Not installed in agent container; developer machine/hosting availability not verified. |
-| Laravel | Not installed; choose a version compatible with verified PHP and hosting. |
-| MySQL | MySQL-compatible database required; no MySQL CLI/server connection verified. |
-| HTTPS/domain | Hosting details not yet supplied. |
-| Extensions | Verify Laravel-required PHP extensions against the chosen Laravel version and hosting plan. |
+`backend/composer.json` also pins Composer dependency resolution to PHP `8.3.0` through Composer's platform configuration. This prevents development dependency resolution from selecting packages that require a newer PHP runtime than the GoDaddy target.
 
-Do not treat unknown capabilities as available. In particular, SSH, Composer on-host, cron, queue workers, WebSockets, writable storage, and document-root control are unverified.
+## Current foundation
 
-## GoDaddy hosting discovery checklist
+- Laravel 11 application structure is established under `backend/`.
+- API routes are versioned under `/api/v1`.
+- `GET /api/v1/health` provides a non-sensitive health response.
+- PHPUnit 11 feature-test configuration includes the health endpoint test.
+- CI runs the backend with PHP 8.3 and required PDO/MySQL extensions.
+- Sanctum is included as the planned application-token mechanism; authentication implementation is a later task.
+- MySQL remains the authoritative production database.
+- No production credentials or `.env` files are committed.
 
-Complete this checklist against the exact hosting plan and account before choosing a deployment procedure. Do not put credentials or account identifiers in this file.
+## Local setup
 
-- [ ] Hosting product/plan and limits identified
-- [ ] Supported PHP version and selectable PHP configuration verified
-- [ ] Required PHP extensions verified
-- [ ] MySQL version, database creation and remote/local connection constraints verified
-- [ ] HTTPS and intended API/admin domain or subdomain verified
-- [ ] SSH access verified
-- [ ] Composer availability (or safe build-artifact deployment path) verified
-- [ ] Document-root/public-directory control verified
-- [ ] Laravel storage/cache write permissions verified
-- [ ] Cron availability and minimum interval verified
-- [ ] Queue/background worker/process limits verified
-- [ ] Deployment, rollback and backup/restore method documented
+From `backend/`:
 
-**Current blocker:** the exact developer toolchain, a non-production MySQL database and hosting account/plan details have not been provided or verified. Keep development portable and do not deploy. The current execution container is insufficient to install dependencies or validate a Laravel/MySQL boot sequence as-is.
+1. Ensure PHP 8.3 and Composer 2 are installed.
+2. Copy `.env.example` to `.env`.
+3. Run `composer install`.
+4. Run `php artisan key:generate`.
+5. Configure a non-production MySQL database in `.env`.
+6. Run `php artisan migrate`.
+7. Run `composer test`.
+8. Run `composer format` before committing PHP changes.
 
-## Local setup (after Laravel scaffold is added)
+## Environment verification
 
-1. Install a PHP version supported by the selected Laravel release and the required extensions.
-2. Install Composer.
-3. Copy `.env.example` to `.env` and set local-only values.
-4. Create a dedicated, non-production MySQL database and user.
-5. From this directory, run `composer install`, `php artisan key:generate`, `php artisan migrate`, and `php artisan test` when the corresponding Laravel files exist.
-6. Never point local tests or migrations at production.
+The isolated agent execution container currently has PHP 8.4.23, but it does not have Composer or the MySQL CLI. Those limitations mean the Laravel dependency install, migrations, and PHPUnit suite cannot be claimed as locally executed here.
 
-Commands above are setup guidance, not commands executed as part of this repository inspection. Update this document with exact version requirements and verified command results once the toolchain and database are available.
+The target server information supplied by the project owner is PHP 8.3. Hosting capabilities beyond PHP version—Composer availability, required PHP extensions, database access, document root/public directory configuration, SSH/cron/queue support—still need verification on the actual GoDaddy plan before deployment.
+
+## Hosting safety
+
+Do not point development tests at production. Use a separate non-production MySQL database. Never commit OAuth credentials, database passwords, application keys, access tokens, or customer data.
+
+## Next implementation slice
+
+After the foundation is installed in an environment with Composer, implement the MySQL migrations/models for users, addresses, categories and products, then add the corresponding validation and tests. Authentication remains gated on verified Google credential handling and the selected Sanctum flow.
