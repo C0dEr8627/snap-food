@@ -9,7 +9,11 @@ class ProductPolicy
 {
     public function before(User $user): ?bool
     {
-        return $user->is_active && $user->hasRole(User::ROLE_ADMIN) ? true : false;
+        if (! $user->is_active) {
+            return false;
+        }
+
+        return $user->hasRole(User::ROLE_ADMIN) ? true : null;
     }
 
     public function viewAny(User $user): bool
@@ -24,16 +28,16 @@ class ProductPolicy
 
     public function create(User $user): bool
     {
-        return $user->is_active;
+        return $user->is_active && $user->hasRole(User::ROLE_ADMIN);
     }
 
     public function update(User $user, Product $product): bool
     {
-        return $user->is_active;
+        return $user->is_active && $user->hasRole(User::ROLE_ADMIN);
     }
 
     public function delete(User $user, Product $product): bool
     {
-        return $user->is_active;
+        return $user->is_active && $user->hasRole(User::ROLE_ADMIN);
     }
 }
