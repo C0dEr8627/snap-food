@@ -361,3 +361,35 @@ No local Flutter/Dart runner is available in this GitHub-connected environment. 
 5. Finish physical-device and end-to-end verification.
 
 No merge or deployment performed.
+
+## Developer 2 implementation checkpoint — 2026-09-29 (delivery assignment foundation)
+
+- Added typed delivery assignment and location-update models.
+- Added RemoteDeliveryRepository for GET /delivery/assignments, PATCH /delivery/assignments/{assignment}/status and POST /delivery/assignments/{assignment}/location.
+- Added assignment/status validation and connected the existing Delivery Requests screen to the assignment API through Riverpod without changing its overall layout/navigation.
+- The request action now crosses the real server status mutation boundary instead of only showing a snackbar.
+- No background GPS, WebSockets, geofencing or backend/Laravel-owned files were introduced.
+
+### Verification
+- Local Flutter/Dart execution is unavailable; formatter/analyzer/tests/APK build are NOT RUN.
+- A fresh Flutter CI run is required for the current branch head.
+- No merge or deployment performed.
+
+### Current task status
+- Phase 0: [~] static audit complete; CI/device verification pending.
+- Phase 1: [x] API foundation complete.
+- Phase 2: [~] session lifecycle complete; Google SSO/config and role routing remain gated.
+- Phase 3: [x/~] catalogue-to-cart and checkout integration implemented; runtime verification pending.
+- Phase 4: [x/~] cart/COD checkout and order integration implemented; runtime verification pending.
+- Phase 5: [x] customer orders/detail/tracking integration implemented in source; runtime verification pending.
+- Phase 6: [~] delivery assignment repository/request-list API integration started; lifecycle UX and active-assignment flow remain.
+- Phase 7: [~] customer tracking exists; partner location publishing, active-trip location adapter and maps integration remain.
+- Invoice: [ ] not started.
+- Release verification: [ ] CI/device/E2E pending.
+
+### Next implementation
+1. Verify current-head CI and fix only concrete failures.
+2. Refine delivery assignment lifecycle UI for PICKED_UP, OUT_FOR_DELIVERY and DELIVERED.
+3. Implement active-assignment state and location adapter with permission/freshness/error handling, without background GPS.
+4. Connect delivery navigation screens to assignment/order data.
+5. Implement invoice model/repository/UI.
