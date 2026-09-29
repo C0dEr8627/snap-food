@@ -95,7 +95,7 @@ class OrderApiTest extends TestCase
             'unit_price' => '299.00',
             'line_total' => '598.00',
         ]);
-        $this->assertDatabaseHas('order_status_history', [
+        $this->assertDatabaseHas('order_status_histories', [
             'order_id' => $order->id,
             'from_status' => null,
             'to_status' => Order::STATUS_PLACED,
