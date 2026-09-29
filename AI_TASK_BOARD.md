@@ -218,3 +218,13 @@ Record decisions here only after the owner approves or they are already establis
 - No Flutter-owned files were changed; no deployment or production migration was performed.
 
 **Next owner/action:** owner validates hosting/release prerequisites; Developer 2 completes frontend/device/E2E validation; then the owner gives explicit release approval. Any backend defect found during those checks becomes the next implementation task and must be CI-verified before release.
+
+
+### Developer 1 task-tracking update — 2026-09-29 (local Laravel serving fix)
+
+- Local backend testing exposed a concrete missing Laravel runtime directory: backend/public/ was absent from the tracked backend tree.
+- Added the standard Laravel backend/public/index.php front controller and backend/public/.htaccess rewrite configuration.
+- This restores the expected Laravel HTTP document root needed by php artisan serve and Apache-style hosting.
+- Commits: 81d0753ca65ee7de00d743ec8d09153da6b9ec00, 2d25a91eb7d24194fc4fc74f5d9895d4fcf3f923.
+- CI verification for the new runtime fix is pending; local validation should rerun php artisan serve after pulling the latest branch.
+- No Flutter-owned files, deployment, or production migration were changed.
