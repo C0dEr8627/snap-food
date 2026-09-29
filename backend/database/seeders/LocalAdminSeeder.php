@@ -25,6 +25,7 @@ class LocalAdminSeeder extends Seeder
                 'name' => 'Local Admin',
                 'role' => User::ROLE_ADMIN,
                 'is_active' => true,
+                'google_subject' => null,
             ],
         );
     }
