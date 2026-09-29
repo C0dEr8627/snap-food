@@ -153,7 +153,7 @@ class _CartItemCard extends StatelessWidget {
     child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Container(
         width: 62, height: 62,
-        decoration: BoxDecoration(color: item.vegetarianetarian ? SnapFoodColors.softYellow : SnapFoodColors.softRed, borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
+        decoration: BoxDecoration(color: item.vegetarian ? SnapFoodColors.softYellow : SnapFoodColors.softRed, borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
         child: Icon(item.vegetarian ? Icons.eco : Icons.local_fire_department, color: item.vegetarian ? Colors.green : SnapFoodColors.secondary, size: 28),
       ),
       const SizedBox(width: 10),
