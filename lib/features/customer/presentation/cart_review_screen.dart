@@ -1,44 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../../../design_system/tokens/app_spacing.dart';
+import '../data/cart_models.dart';
+import 'cart_controller.dart';
 
-class CartReviewScreen extends StatefulWidget {
+class CartReviewScreen extends ConsumerWidget {
   const CartReviewScreen({super.key});
 
   @override
-  State<CartReviewScreen> createState() => _CartReviewScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cart = ref.watch(cartControllerProvider);
+    final items = cart.items;
+    final subtotal = cart.previewSubtotal;
+    final deliveryFee = subtotal >= 299 ? 0 : 35;
+    final taxes = ((subtotal + deliveryFee) * 0.05).round();
+    final total = subtotal + deliveryFee + taxes;
+    final itemCount = cart.itemCount;
 
-class _CartReviewScreenState extends State<CartReviewScreen> {
-  final items = <_CartItem>[
-    _CartItem(id: 'biryani', name: 'Special Chicken Tikka Dum Biryani', description: 'Chicken • Single', price: 320, quantity: 1, veg: false),
-    _CartItem(id: 'butter', name: 'Butter Chicken & 2 Butter Naan Combo', description: 'Combo • Serves 1', price: 280, quantity: 1, veg: false),
-  ];
 
-  int get subtotal => items.fold(0, (sum, item) => sum + item.price * item.quantity);
-  int get deliveryFee => subtotal >= 299 ? 0 : 35;
-  int get taxes => ((subtotal + deliveryFee) * 0.05).round();
-  int get total => subtotal + deliveryFee + taxes;
-  int get itemCount => items.fold(0, (sum, item) => sum + item.quantity);
-
-  void changeQuantity(String id, int delta) {
-    setState(() {
-      final index = items.indexWhere((item) => item.id == id);
-      if (index < 0) return;
-      final next = items[index].quantity + delta;
-      if (next <= 0) {
-        items.removeAt(index);
-      } else {
-        items[index].quantity = next;
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
       body: SafeArea(
@@ -80,7 +63,7 @@ class _CartReviewScreenState extends State<CartReviewScreen> {
                             const SizedBox(height: 8),
                             ...items.map((item) => Padding(
                               padding: const EdgeInsets.only(bottom: 10),
-                              child: _CartItemCard(item: item, onRemove: () => changeQuantity(item.id, -1), onAdd: () => changeQuantity(item.id, 1)),
+                              child: _CartItemCard(item: item, onRemove: () => ref.read(cartControllerProvider.notifier).changeQuantity(item.productId, -1), onAdd: () => ref.read(cartControllerProvider.notifier).changeQuantity(item.productId, 1)),
                             )),
                             if (items.isEmpty) const _EmptyCart(),
                             const SizedBox(height: 8),
@@ -159,7 +142,7 @@ class _RestaurantSummary extends StatelessWidget {
 
 class _CartItemCard extends StatelessWidget {
   const _CartItemCard({required this.item, required this.onRemove, required this.onAdd});
-  final _CartItem item;
+  final CartItem item;
   final VoidCallback onRemove;
   final VoidCallback onAdd;
 
@@ -170,7 +153,7 @@ class _CartItemCard extends StatelessWidget {
     child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Container(
         width: 62, height: 62,
-        decoration: BoxDecoration(color: item.veg ? SnapFoodColors.softYellow : SnapFoodColors.softRed, borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
+        decoration: BoxDecoration(color: item.vegetarian ? SnapFoodColors.softYellow : SnapFoodColors.softRed, borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
         child: Icon(item.veg ? Icons.eco : Icons.local_fire_department, color: item.veg ? Colors.green : SnapFoodColors.secondary, size: 28),
       ),
       const SizedBox(width: 10),
@@ -180,7 +163,7 @@ class _CartItemCard extends StatelessWidget {
         Text(item.description, style: const TextStyle(fontSize: 10, color: SnapFoodColors.onSurfaceVariant)),
         const SizedBox(height: 8),
         Row(children: [
-          Text('₹' + item.price.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+          Text('₹' + item.previewPrice.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
           const Spacer(),
           _MiniQuantity(quantity: item.quantity, onRemove: onRemove, onAdd: onAdd),
         ]),
@@ -306,12 +289,3 @@ class _EmptyCart extends StatelessWidget {
   );
 }
 
-class _CartItem {
-  _CartItem({required this.id, required this.name, required this.description, required this.price, required this.quantity, required this.veg});
-  final String id;
-  final String name;
-  final String description;
-  final int price;
-  int quantity;
-  final bool veg;
-}
