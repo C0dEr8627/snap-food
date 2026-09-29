@@ -16,6 +16,8 @@ class CartController extends Notifier<CartSnapshot> {
   @override
   CartSnapshot build() => _repository.load();
 
+  void clear() => state = _repository.clear();
+
   void changeQuantity(String productId, int delta) {
     CartItem? item;
     for (final candidate in state.items) {
