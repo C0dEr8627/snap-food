@@ -21,7 +21,7 @@ class OrderController
             ->latest()
             ->paginate(min(max((int) request()->integer('per_page', 20), 1), 100));
 
-        return response()->json($orders);
+        return response()->json(['data' => $orders]);
     }
 
     public function store(StoreOrderRequest $request, OrderCheckoutService $checkout): JsonResponse
