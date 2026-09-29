@@ -820,3 +820,17 @@ No backend/Laravel-owned files were modified.
 3. Confirm approved Android/iOS GPS package and Google Maps configuration before adding platform dependencies.
 4. Freeze exact invoice success JSON fields, then implement typed invoice repository/model/UI.
 5. Perform physical GPS/Maps and customer/delivery E2E verification.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (CI test gate)
+
+- CI #200 (36607353094) reached analyzer successfully after flutter analyze --no-fatal-infos, then failed on three concrete tests: integer product-ID expectation, catalogue async error-state timing, and stale welcome-screen smoke assertions.
+- Those test failures are now fixed; latest branch head is fb0fac9b1e886b3c56fb839fadb6fe24e87bcad6.
+- No backend/Laravel-owned files were modified and no speculative GPS/Maps dependency was added.
+
+### Updated execution order
+1. Verify fresh CI from fb0fac9b1e886b3c56fb839fadb6fe24e87bcad6; tests must pass before the Android build can be evaluated.
+2. Fix only concrete current-head test/build failures.
+3. Confirm approved Android/iOS location and Maps dependencies/configuration.
+4. Implement invoice integration from the frozen success response.
+5. Complete physical GPS/Maps and customer/delivery E2E verification.
