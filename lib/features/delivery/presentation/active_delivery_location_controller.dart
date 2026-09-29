@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/delivery_location_adapter.dart';
@@ -43,17 +45,7 @@ class ActiveDeliveryLocationController extends Notifier<ActiveDeliveryLocationSt
       onPosition: (position) {
         final id = _assignmentId;
         if (id == null || !_adapter.isRunning) return;
-        _repository.updateLocation(
-          id,
-          DeliveryLocationUpdate(
-            latitude: position.latitude,
-            longitude: position.longitude,
-            recordedAt: position.recordedAt,
-            accuracy: position.accuracy,
-          ),
-        ).catchError((_) {
-          state = ActiveDeliveryLocationState.error;
-        });
+        unawaited(_publish(id, position));
       },
     );
 
@@ -63,6 +55,24 @@ class ActiveDeliveryLocationController extends Notifier<ActiveDeliveryLocationSt
       DeliveryLocationPermission.deniedForever => ActiveDeliveryLocationState.permissionDenied,
       DeliveryLocationPermission.unavailable => ActiveDeliveryLocationState.unavailable,
     };
+  }
+
+  Future<void> _publish(int id, DeliveryPosition position) async {
+    try {
+      await _repository.updateLocation(
+        id,
+        DeliveryLocationUpdate(
+          latitude: position.latitude,
+          longitude: position.longitude,
+          recordedAt: position.recordedAt,
+          accuracy: position.accuracy,
+        ),
+      );
+    } catch (_) {
+      if (_assignmentId == id && _adapter.isRunning) {
+        state = ActiveDeliveryLocationState.error;
+      }
+    }
   }
 
   Future<void> stop() async {
