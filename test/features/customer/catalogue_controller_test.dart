@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -42,11 +44,20 @@ void main() {
     );
     addTearDown(container.dispose);
 
-    await expectLater(
-      container.read(catalogueControllerProvider.future),
-      throwsA(isA<ApiException>()),
+    final errorCompleter = Completer<Object?>();
+    final subscription = container.listen<AsyncValue<CatalogueSnapshot>>(
+      catalogueControllerProvider,
+      (_, next) {
+        if (next.hasError && !errorCompleter.isCompleted) {
+          errorCompleter.complete(next.error);
+        }
+      },
+      fireImmediately: true,
     );
+    addTearDown(subscription.close);
 
+    final error = await errorCompleter.future.timeout(const Duration(seconds: 5));
+    expect(error, isA<ApiException>());
     expect(container.read(catalogueControllerProvider).hasError, isTrue);
   });
 }
