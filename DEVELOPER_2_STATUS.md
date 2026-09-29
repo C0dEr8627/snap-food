@@ -689,3 +689,39 @@ No backend/Laravel-owned files were modified. No merge or deployment was perform
 3. Confirm the approved Android/iOS GPS package and Google Maps configuration before adding platform dependencies.
 4. Freeze the exact invoice success JSON fields and implement invoice repository/model/UI without inventing fields.
 5. Perform physical GPS/Maps and customer/delivery E2E verification.
+
+
+## Developer 2 continuation checkpoint — 2026-09-30 (CI #245 smoke-route correction)
+
+- Fresh Flutter CI run #245 (`36613575199`) executed the PR merge ref containing the latest smoke-test override. Dependency resolution, formatting, formatting check and analyzer passed; 36 tests passed before the smoke test failed again at the welcome assertion. Android debug build was skipped because tests failed.
+- The deterministic signed-out auth override is present in the merge ref, so the remaining failure is in router behavior while asynchronous auth bootstrap is still loading: the router currently redirected `/welcome` back to `/` until auth restoration completed, while the splash timer was navigating to `/welcome`.
+- Corrected `lib/app/app.dart` so the public `/` and `/welcome` routes remain reachable while auth restoration is loading; protected routes remain redirected to the splash. This keeps public onboarding independent of session bootstrap without weakening protected-route gating.
+- **Fix commit:** `e9ff9078d6e1e2fe6c6bc407214c171ca2dcfd78` (`fix(flutter): keep welcome route reachable during auth bootstrap`).
+- No backend/Laravel-owned files, API contracts, platform credentials, GPS/Maps dependencies or production data flows were changed.
+
+### Authoritative task board
+
+| Area | Status | Current state |
+|---|---|---|
+| Phase 0 — audit/verification | [~] | CI #245 isolated the remaining auth-bootstrap/splash routing issue; fix committed; fresh CI pending |
+| Phase 1 — API foundation | [x] | Complete |
+| Phase 2 — auth/session | [~] | Session lifecycle implementation complete; Google platform/runtime verification pending; public onboarding now remains reachable during bootstrap |
+| Phase 3 — catalogue/cart | [x] | Typed catalogue, real product IDs, cart integration and tests complete; runtime verification pending |
+| Phase 4 — COD checkout | [x] | Server-backed COD flow, address validation, duplicate-submit protection, server-authoritative totals/errors and success navigation implemented; runtime verification pending |
+| Phase 5 — customer orders/tracking | [x] | Order history/detail/tracking implementation present; runtime/E2E verification pending |
+| Phase 6 — delivery lifecycle | [x] | Assignment/status/location integration implemented against canonical routes; runtime verification pending |
+| Phase 7 — active GPS/Maps | [~] | Adapter/controller/lifecycle complete; approved platform location + Maps configuration and physical verification blocked |
+| Invoice | [x] | Contract frozen; typed model/repository/controller/UI and delivered-order route implemented; CI/runtime verification pending |
+| Release verification | [ ] | Green current-head CI, Android APK, physical-device and full E2E verification pending |
+
+### Next execution order
+1. Verify fresh CI on `e9ff907...` and fix only concrete current-head failures.
+2. Close the GPS/Maps dependency gate by confirming an approved Android/iOS location package and Maps configuration; do not invent a dependency.
+3. Wire the approved platform GPS source behind the existing adapter/controller boundary.
+4. Verify customer tracking and delivery runtime behavior, including permission denial/revocation, stale/no-location/error states, active-trip lifecycle, throttling and location publishing.
+5. Run release E2E and Android debug APK verification: COD → order → delivery → tracking → delivered → invoice, then final PR readiness.
+
+### Current blockers
+- No approved concrete GPS/Maps dependency or platform Maps configuration is documented in the repository.
+- Google auth platform/runtime verification remains pending.
+- Local Flutter/Dart execution remains unavailable; GitHub Actions is the available Flutter execution environment.
