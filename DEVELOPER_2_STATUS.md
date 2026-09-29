@@ -205,3 +205,32 @@ CI verification for the latest code commit is not available through the current 
 5. Implement delivery partner assignment/status/location UI and then invoice integration.
 
 No backend/Laravel-owned files were modified.
+## Developer 2 implementation checkpoint — 2026-09-29 (COD checkout integration)
+
+### Completed in this increment
+- Wired the customer checkout screen to the existing authenticated OrderCheckoutController.
+- Replaced legacy UPI/card selection and client-calculated totals with the contract-defined COD-only checkout flow.
+- Added inline delivery-address form validation for the frozen checkout address fields.
+- Derived checkout line items from the local cart and enforce positive numeric catalogue product IDs before submission; placeholder fixture IDs are rejected rather than submitted as fake backend IDs.
+- Added server-error presentation using ApiException message/code, including validation/conflict responses without recalculating totals client-side.
+- Added duplicate-submit protection through the existing controller and disabled checkout controls while submitting.
+- Added cart clear operation and clear the cart only after the server successfully creates an order.
+- Navigate to the server-returned order detail after successful checkout.
+- Corrected the order-detail screen to avoid the unsupported AsyncValue.valueOrNull API.
+- Aligned OrderLineRequest.productId with the API contract's integer product IDs and updated the repository test.
+
+### Important remaining integration point
+- The current local cart still seeds illustrative non-numeric IDs (biryani, butter). The checkout now safely refuses those values instead of creating invalid orders. The next catalogue/cart increment must replace those fixture identifiers with real API product IDs when adding products to the cart.
+
+### Verification
+- No local Flutter/Dart execution is available in this GitHub-connected environment.
+- CI must be inspected for the current branch head before marking this increment verified.
+- No backend/Laravel-owned files were modified.
+
+### Next execution order
+1. Verify current-head CI and fix concrete Flutter failures only.
+2. Replace local cart fixture product IDs with real catalogue-backed IDs and typed catalogue mapping.
+3. Add/expand checkout tests for successful COD submission, duplicate submission, validation failure and 409 conflict presentation.
+4. Improve order success/detail/history UX around the newly real checkout path.
+5. Add customer tracking using GET /orders/{order}/tracking.
+6. Continue delivery partner integration and invoice UI from the frozen contract.
