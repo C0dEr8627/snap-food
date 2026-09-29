@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/delivery_location_adapter.dart';
+import '../data/delivery_models.dart';
 import '../data/delivery_repository.dart';
 import 'delivery_controller.dart';
 
