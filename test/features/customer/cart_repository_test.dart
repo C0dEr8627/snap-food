@@ -1,42 +1,55 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:snap_foodd/features/customer/data/cart_models.dart';
 import 'package:snap_foodd/features/customer/data/cart_repository.dart';
 import 'package:snap_foodd/features/customer/presentation/cart_controller.dart';
 
-void main() {
-  test('local cart keeps product IDs and updates quantities', () {
-    final repository = LocalCartRepository();
-
-    expect(repository.load().items.map((item) => item.productId), [
-      'biryani',
-      'butter',
-    ]);
-
-    final updated = repository.setQuantity('biryani', 3);
-
-    expect(updated.itemCount, 4);
-    expect(
-      updated.items.firstWhere((item) => item.productId == 'biryani').quantity,
-      3,
+CartItem _item(String id, {int quantity = 1}) => CartItem(
+      productId: id,
+      name: 'Product $id',
+      description: 'Catalogue item',
+      previewPrice: 100,
+      quantity: quantity,
+      vegetarian: false,
     );
+
+void main() {
+  test('cart starts empty so checkout cannot submit placeholder IDs', () {
+    final repository = LocalCartRepository();
+    expect(repository.load().items, isEmpty);
+  });
+
+  test('adding a catalogue product merges quantities and caps at 99', () {
+    final repository = LocalCartRepository(
+      initialItems: [_item('15', quantity: 98)],
+    );
+
+    final updated = repository.addItem(_item('15', quantity: 2));
+
+    expect(updated.items.single.quantity, 99);
+    expect(updated.items.single.productId, '15');
   });
 
   test('cart removes an item when quantity reaches zero', () {
-    final repository = LocalCartRepository();
-
-    final updated = repository.setQuantity('biryani', 0);
-
-    expect(updated.items.map((item) => item.productId), ['butter']);
+    final repository = LocalCartRepository(initialItems: [_item('15')]);
+    final updated = repository.setQuantity('15', 0);
+    expect(updated.items, isEmpty);
   });
 
-  test('cart provider exposes preview subtotal from the repository', () {
-    final container = ProviderContainer();
+  test('controller exposes repository cart state', () {
+    final container = ProviderContainer(
+      overrides: [
+        cartRepositoryProvider.overrideWithValue(
+          LocalCartRepository(initialItems: [_item('15')]),
+        ),
+      ],
+    );
     addTearDown(container.dispose);
 
-    final cart = container.read(cartControllerProvider);
-
-    expect(cart.itemCount, 2);
-    expect(cart.previewSubtotal, 600);
+    expect(
+      container.read(cartControllerProvider).items.single.productId,
+      '15',
+    );
   });
 }
