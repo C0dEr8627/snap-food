@@ -26,9 +26,9 @@ Build the trusted backend and admin operations that the existing Flutter app can
 | Phase | Status | Completed / remaining |
 |---|---|---|
 | Phase 0 — Environment & repository baseline | **PARTIAL** | Repository/docs inspected; PHP 8.3 target recorded; hosting checklist and safe env example documented. Actual GoDaddy Composer/MySQL capability remains unverified. |
-| Phase 1 — Backend foundation | **COMPLETED** | Laravel API skeleton, routing, health endpoint, PHPUnit config/test, PHP 8.3 CI, Sanctum, MySQL config, Laravel 13 baseline, bootstrap cache preservation and PHPUnit test-directory preservation are complete. Workflow #30 passed `composer test` on PHP 8.3.35. Database CI verification is now part of the next slice. |
+| Phase 1 — Backend foundation | **COMPLETED** | Laravel API skeleton, routing, health endpoint, PHPUnit config/test, PHP 8.3 CI, Sanctum, MySQL config, Laravel 13 baseline and required Git-preserved directories are complete. Workflow #30 passed the foundation suite. Initial MySQL schema/models and CI migration verification also passed in workflow #48. |
 | Phase 2 — Identity & authorization | **NOT STARTED** | Google verification, users, Sanctum tokens, roles, ownership and auth tests remain. |
-| Phase 3 — Catalogue | **NOT STARTED** | Categories/products schema, models, validation, catalogue APIs, admin CRUD and tests remain. |
+| Phase 3 — Catalogue | **PARTIAL** | Categories/products schema, models, casts and initial request validation are implemented. Catalogue APIs, resources, pagination/search, deterministic seeds, admin CRUD and endpoint tests remain. |
 | Phase 4 — Orders & COD | **NOT STARTED** | Order snapshots, totals, COD state, transitions, history and tests remain. |
 | Phase 5 — Admin & assignment | **NOT STARTED** | Protected admin web dashboard and delivery assignment operations remain. |
 | Phase 6 — Delivery tracking | **NOT STARTED** | Partner workflow, pickup/completion, location updates and tracking authorization remain. |
@@ -61,10 +61,12 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Align PHPUnit configuration with the Laravel 13/PHPUnit 12 baseline.
 - [x] Update framework baseline from Laravel 11 to Laravel 13 because Laravel 11 security support ended March 12, 2026; Laravel 13 requires PHP 8.3.
 - [x] Verify CI can resolve and install the Laravel 13 dependency set on PHP 8.3.
-- [x] Confirm the health PHPUnit test passes after preserving `backend/tests/Unit`.
-- [ ] Add request validation, rate limiting where appropriate, logging without credentials and consistent error responses.
+- [x] Confirm the health PHPUnit test and foundation suite pass after preserving required Laravel test directories.
+- [x] Add MySQL-backed CI service, run migrations and verify the initial database schema.
+- [x] Add model relationship coverage and request validation groundwork for the initial database slice.
+- [ ] Add rate limiting where appropriate, credential-safe logging and consistent API error responses.
 
-**Foundation CI verification:** workflow #30 passed PHP 8.3 setup, dependency installation and the full `composer test` command. The health test and PHPUnit suite now pass after preserving the Laravel bootstrap cache and PHPUnit Unit directory.\n\n**Earlier CI verification:** workflow run #21 installed PHP 8.3.35, all configured extensions, Composer 2.10.3, Laravel 13.33.0 and PHPUnit 12.5.36 successfully. The test command first failed because `backend/bootstrap/cache` did not exist; commit `63caeb8a66d8b4045f57b08cb2a8268a629a97a8` fixed that. Workflow #26 then reached PHPUnit but failed because `backend/tests/Unit` was missing. Commit `160626d2bbb09b3b0560b7b61ed5f05f6ca473bd` preserves the Unit test directory; a new workflow run is required to verify the health test.
+**Foundation/database CI verification:** workflow #30 passed PHP 8.3 setup, dependency installation and the foundation `composer test` suite. Workflow #48 also passed the MySQL-backed migration and current test suite for the initial database slice.
 
 ## Phase 2 — Identity and authorization
 
@@ -81,12 +83,13 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Phase 3 — Catalogue
 
-- [ ] Add categories and products migrations/models/validation/resources.
-- [ ] Define price, availability/stock and active state.
+- [x] Add initial categories and products migrations/models/casts.
+- [x] Add initial category/product request validation and admin authorization checks.
+- [ ] Define and enforce final catalogue write policy/resources at endpoint level.
 - [ ] Implement customer catalogue reads.
 - [ ] Implement admin category/product CRUD and deactivate/delete policy.
 - [ ] Add pagination, search/filter and deterministic seed data.
-- [ ] Add validation, inactive-product and admin-only write tests.
+- [ ] Add inactive-product and admin-only endpoint tests.
 
 **Milestone:** admin creates/updates a product; customer catalogue API returns it.
 
@@ -154,25 +157,27 @@ Build the trusted backend and admin operations that the existing Flutter app can
 5. PHP 8.3 CI workflow created.
 6. Sanctum dependency added for planned authentication.
 7. Invalid Composer JSON identified by CI and corrected.
-8. CI dependency blocker identified: Laravel 11 is now outside its security-support window and Composer blocks the affected framework versions.
-9. Laravel baseline upgraded to `^13.17`, with PHP `^8.3`, current Sanctum compatibility, PHPUnit 12, Pint 1.27 and Collision 8.9.
-10. Laravel-style application config and environment-driven MySQL config added.
-11. CI verified dependency resolution and installation successfully on PHP 8.3.
-12. CI bootstrap failure diagnosed; required `backend/bootstrap/cache` directory is now preserved in Git.
-13. Workflow #26 confirmed Laravel boots and PHPUnit starts after the cache fix; the remaining failure is the missing `backend/tests/Unit` directory.
-14. PHPUnit test-directory failure fixed by preserving `backend/tests/Unit` in Git.\n15. Workflow #30 passed the complete PHPUnit suite after the Unit-directory fix.\n16. Initial `users`, `addresses`, `categories` and `products` migrations/models added from `DATABASE.md`; schema assertions and a MySQL service were added to CI, pending their first run.
+8. Laravel baseline upgraded to `^13.17`, with PHP `^8.3`, current Sanctum compatibility, PHPUnit 12, Pint 1.27 and Collision 8.9.
+9. Laravel-style application config and environment-driven MySQL config added.
+10. CI verified dependency resolution and installation successfully on PHP 8.3.
+11. CI bootstrap/test-directory failures diagnosed and fixed.
+12. Workflow #30 passed the foundation PHPUnit suite.
+13. Initial `users`, `addresses`, `categories` and `products` migrations/models added.
+14. Workflow #48 passed MySQL startup, migrations, schema assertions and the current PHPUnit suite.
+15. Bidirectional Eloquent relationship tests added for users/addresses and categories/products.
+16. Foreign-key behavior tests added for address cascade and product/category restrict-on-delete.
+17. Initial address/category/product FormRequest validation added, including coordinate ranges, slug/price/stock validation and admin-only authorization checks.
+18. `DEVELOPER_1_PLAN.md` and `backend/README.md` updated to reflect the verified database foundation and partial catalogue progress.
 
 ### Not yet verified
 
-- Health PHPUnit test after the PHPUnit Unit-directory fix.
-- Full PHPUnit pass.
-- MySQL migration execution.
+- The latest relationship/request-validation commits have not yet been verified by a post-change GitHub Actions run.
 - Any real Google credential verification.
 - GoDaddy Composer/extensions/database/document-root/SSH capabilities.
 
 ## Immediate next task
 
-**Database foundation verification:** run the new MySQL-backed GitHub Actions workflow, confirm migrations and `DatabaseSchemaTest` pass, then proceed to model/relationship and validation tests. Authentication remains gated on verified Google credential handling and the selected Sanctum flow.
+**Verify the latest relationship/request-validation slice in GitHub Actions.** If green, tighten any validation/test gaps found, then begin Phase 2 identity/authentication: Google credential verification, stable-subject user lookup/creation, Sanctum token issuance/revocation, `/me`, role enforcement and negative authorization tests.
 
 ## Developer 1 definition of done
 
