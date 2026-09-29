@@ -33,7 +33,7 @@ class CategoryController extends Controller
 
     public function show(Request $request, Category $category): JsonResponse
     {
-        $this->authorize('view', $category);
+        Gate::authorize('view', $category);
 
         abort_unless($request->user()->hasRole('ADMIN') || $category->is_active, 404);
 
@@ -56,7 +56,7 @@ class CategoryController extends Controller
 
     public function destroy(Request $request, Category $category): JsonResponse
     {
-        $this->authorize('delete', $category);
+        Gate::authorize('delete', $category);
 
         $category->update(['is_active' => false]);
 
