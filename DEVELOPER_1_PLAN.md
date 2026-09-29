@@ -33,7 +33,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 | Phase 5 — Admin & assignment | **COMPLETED** | Protected admin login/dashboard, order search/detail/status/history, catalogue management, customer/partner/assignment/invoice directories, partner approval/availability controls and concurrency-safe web/API assignment are implemented. |
 | Phase 6 — Delivery tracking | **COMPLETED** | Delivery-partner assignment listing/status progression and active-trip location updates/tracking are CI-verified by Workflows #259 and #266. |
 | Phase 7 — Invoices | **COMPLETED** | Invoice schema, deterministic numbering, immutable snapshot generation and customer/admin access are implemented and verified by Workflow #301. |
-| Phase 8 — Release readiness | **IN PROGRESS** | Safe deterministic seeds, clean-MySQL CI migrations/tests, hosting/backup checklist, secret-ignore rules, API contract examples and Flutter integration guidance are complete. Workflow #406 passed on the current head commit `941e9f2ee2916499fec4d60e4df1a6d37fb789b9`. Remaining: formatter/static-analysis/security-diff review, GoDaddy hosting capability confirmation and explicit human release approval. |
+| Phase 8 — Release readiness | **IN PROGRESS** | Safe deterministic seeds, clean-MySQL CI migrations/tests, hosting/backup checklist, secret-ignore rules, API contract examples and Flutter integration guidance are complete. Backend workflow #423 passed on branch head `ceea963758533a8cb7a84030d7fce053503e6398`, including PHP 8.3, Composer, Pint, MySQL migrations and PHPUnit. Remaining: final manual security/content/diff review, GoDaddy hosting capability confirmation, broader Flutter/device/E2E validation and explicit human release approval. |
 
 ## Phase 0 — Inspect and establish the environment
 
@@ -153,7 +153,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 - [x] Provide safe seed/demo data (synthetic, deterministic and idempotence-tested; never use against production).
 - [x] Maintain API contract examples and integration guide; route audit corrected stale delivery and catalogue paths, representative request/response/error examples were reviewed against the current Laravel route/controller behavior.
-- [~] Run formatter/static analysis where configured. The PHP 8.3 CI Pint check (`composer format -- --test`) was added in commit `781364ba1c0d69340b488e71ac1eb9e74dbe0ff0`. Workflow #413 executed on the PR merge ref and failed at formatting with 29 style issues across 101 files; migrations/tests were skipped. Commit `d7042331b8da04a0ca8b8960761b30aa9c5f03a7` adds a push-only backend formatter workflow that applies Pint on `developer-1-backend-admin` and commits the generated formatting changes; the resulting formatting commit and fresh PR verification are pending.
+- [x] Run formatter/static analysis where configured. Laravel Pint is enforced by the PHP 8.3 Backend workflow via `composer format -- --test`. Workflow #421 passed on the formatted code head, and workflow #423 passed again on the current branch head `ceea963758533a8cb7a84030d7fce053503e6398`, confirming formatting, migrations and PHPUnit.
 - [x] Run migrations from an empty MySQL CI database (verified in passing PHP 8.3/MySQL workflows).
 - [x] Run the automated test suite (latest implementation workflow #386 passed with 402 assertions; 89 warnings).
 - [x] Document backup/restore and production environment checklist in `backend/OPERATIONS.md` (hosting capability verification remains pending).
@@ -332,3 +332,14 @@ A task is complete only when implementation, validation, authorization, automate
 - No deployment or production migration has been performed.
 
 **Next implementation task:** perform the final backend security/content/diff review and document any findings before release approval.
+
+
+### Final backend security/content review — 2026-09-29
+
+- **CI freshness:** Backend workflow **#423 PASSED** on current branch head `ceea963758533a8cb7a84030d7fce053503e6398`. The run completed PHP 8.3 setup, Composer dependency installation, Laravel Pint formatting, MySQL migrations and PHPUnit successfully.
+- **Route/authentication review:** API role boundaries, Sanctum authentication, admin web session protection, Google credential verification, login throttling, and inactive-account handling were inspected. No blocking authorization or credential-handling issue was identified in the reviewed paths.
+- **Order/delivery review:** checkout recalculates product prices/availability and totals server-side under product row locks; admin status transitions and delivery assignment use transactional order/partner locks; delivery status/location endpoints verify authenticated partner ownership and active/approved state; customer/admin tracking and invoice access are ownership/role checked. No blocking access-control or state-conflict issue was identified in the reviewed paths.
+- **Input/configuration review:** request validation bounds coordinates, timestamps, catalogue fields and identifiers; monetary calculations use integer minor units for checkout; environment examples contain placeholders only; backend ignores local environment files and generated artifacts. No committed production secret or obvious unsafe dynamic SQL path was identified in the reviewed files.
+- **Scope/diff review:** changed filenames remain within backend, project documentation and GitHub workflow scope; no Flutter-owned files were introduced. No deployment or production migration was performed.
+- **Release gates still open:** GoDaddy plan-specific capability confirmation, broader Flutter/device/end-to-end validation, and explicit human release approval. These cannot be marked complete from repository evidence alone.
+- **Next developer action:** no additional backend feature is required by the current plan before release gates. If the owner provides GoDaddy capability details or a concrete integration failure, address that next; otherwise the backend branch is ready for the remaining external validation gates.
