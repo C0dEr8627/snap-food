@@ -9,7 +9,7 @@
     <header>
         <h1>Snap Foodd Admin</h1>
         <p>Signed in as {{ auth('web')->user()->email ?? auth('web')->user()->name }}</p>
-        <nav><a href="{{ route('admin.orders.index') }}">Orders</a> · <a href="{{ route('admin.customers.index') }}">Customers</a> · <a href="{{ route('admin.delivery-partners.index') }}">Delivery partners</a> · <a href="{{ route('admin.assignments.index') }}">Assignments</a> · <a href="{{ route('admin.invoices.index') }}">Invoices</a></nav>
+        <nav><a href="{{ route('admin.catalogue.index') }}">Catalogue</a> · <a href="{{ route('admin.orders.index') }}">Orders</a> · <a href="{{ route('admin.customers.index') }}">Customers</a> · <a href="{{ route('admin.delivery-partners.index') }}">Delivery partners</a> · <a href="{{ route('admin.assignments.index') }}">Assignments</a> · <a href="{{ route('admin.invoices.index') }}">Invoices</a></nav>
         <form method="POST" action="{{ route('admin.logout') }}">
             @csrf
             <button type="submit">Sign out</button>
@@ -60,7 +60,7 @@
         <section aria-labelledby="operations">
             <h3 id="operations">Operations</h3>
             <ul>
-                <li>Catalogue management is available through the protected admin API.</li>
+                <li><a href="{{ route('admin.catalogue.index') }}">Catalogue management</a></li>
                 <li><a href="{{ route('admin.orders.index') }}">Orders</a></li>
                 <li><a href="{{ route('admin.customers.index') }}">Customers</a></li>
                 <li><a href="{{ route('admin.delivery-partners.index') }}">Delivery partners</a></li>
