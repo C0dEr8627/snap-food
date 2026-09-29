@@ -74,6 +74,23 @@ class OrderController extends Controller
         ]);
     }
 
+    public function assignDelivery(Request $request, Order $order, OrderAssignmentService $assignmentService): RedirectResponse
+    {
+        Gate::authorize('updateStatus', $order);
+        $validated = $request->validate([
+            'delivery_partner_id' => ['required', 'integer', 'exists:delivery_partners,id'],
+        ]);
+
+        try {
+            $partner = DeliveryPartner::query()->findOrFail($validated['delivery_partner_id']);
+            $assignmentService->assign($order, $partner, $request->user());
+        } catch (ConflictException $e) {
+            abort(409, $e->getMessage());
+        }
+
+        return redirect()->route('admin.orders.show', $order)->with('status', 'Delivery partner assigned.');
+    }
+
     public function updateStatus(
         Request $request,
         Order $order,
