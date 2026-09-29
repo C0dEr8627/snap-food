@@ -179,3 +179,13 @@ Next implementation gate: freeze the documented order/COD + address contract, th
 - No backend order/address payloads were added or inferred.
 - Flutter/Dart formatting, analysis and test execution remain NOT RUN because no Flutter/Dart runner is available in the GitHub-connected environment.
 - Next implementation remains contract-gated: typed order request/response models and COD submission after Developer 1 documents exact order/address schemas.
+
+
+## Developer 2 checkpoint — 2026-09-29 (contract integration gate documented)
+
+- Added `FLUTTER_CONTRACT_QUESTIONS.md` to make the remaining backend-to-Flutter integration requirements explicit without inventing API fields.
+- The document covers order create/list/detail, address handling, Google auth exchange, catalogue success schemas, and delivery response/verification requirements.
+- No API DTOs or network calls were added because `API_CONTRACT.md` still lacks the exact response/request examples needed for safe implementation.
+- The local cart repository/controller boundary remains the latest completed customer-flow implementation.
+- Flutter runtime verification remains NOT RUN because no Dart/Flutter runner is available in this environment.
+- Next implementation gate: consume the frozen order/address contract and implement typed order models plus cart → COD checkout → server totals → order detail/history.
