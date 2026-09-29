@@ -107,7 +107,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Prevent invalid state jumps, price tampering and unauthorized access.
 - [x] Add transaction, state-transition and ownership tests.
 
-**Current Phase 4 gate:** implementation is present; CI verification is required before these items are marked verified complete.
+**Current Phase 4 gate:** Workflow #175 failed because the migration created `order_status_history` while Eloquent expects `order_status_histories`. The schema naming mismatch is fixed in commit `112a2ffe1df0bcd07bbf54f43748798809c144b8`; CI verification is pending on the corrected branch state.
 
 **Milestone:** Flutter-compatible request creates a real MySQL COD order and customer can retrieve it.
 
@@ -194,6 +194,8 @@ Build the trusted backend and admin operations that the existing Flutter app can
 38. Added `DatabaseSeederTest` coverage proving the catalogue seed is deterministic and idempotent.
 39. Started Phase 4 order/COD workflow with orders, order items and status history schema; server-owned lifecycle states; transactional checkout; immutable address/product snapshots; server-calculated totals; COD pending payment state; customer order list/detail endpoints and ownership policy.
 40. Added order checkout, price-tampering, unavailable-product, ownership, role and transition regression tests in `OrderApiTest`.
+41. Workflow #175 failed after migrations/tests booted successfully because `order_status_histories` was missing at runtime; the migration had created the singular `order_status_history` table.
+42. Corrected the migration table name and rollback target to `order_status_histories`, matching the `OrderStatusHistory` model and relationship conventions, in commit `112a2ffe1df0bcd07bbf54f43748798809c144b8`.
 
 ### Latest verification result
 
@@ -203,12 +205,14 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - Fixed the Laravel 13 controller authorization calls by switching catalogue controllers to `Gate::authorize(...)` in commits `26f6217e7a89362550f8f68cfa8027027030645a` and `64aaefff30c5a02bbc0cdf2b367e11166d2403d6`.
 - Workflow #142 failed only four assertions in `AuthenticationTest`/`AuthorizationPolicyTest` because they expected the old nested `error.code` shape. The test assertions were corrected in commits `53cbf6e01ebed21cf295f3700809e2877aaccc26` and `28053a9ff26f854cc70301920b97844dad8c72c9`.
 - Workflow #146 passed after those corrections, including MySQL migrations and the full PHPUnit suite for the branch state.
+- Workflow #175 failed with 4 order-related test failures because `order_status_histories` did not exist; the concrete SQL error was `Table 'snap_foodd_test.order_status_histories' doesn't exist` while inserting the initial `PLACED` history row.
+- Fixed the migration naming mismatch in commit `112a2ffe1df0bcd07bbf54f43748798809c144b8`; a new CI run is required before Phase 4 can be marked verified.
 - A real production Google credential has not been used; tests mock the verifier to avoid external identity-provider calls.
 - GoDaddy Composer/extensions/database/document-root/SSH capabilities remain unverified.
 
 ## Immediate next task
 
-**Begin Phase 4 — Orders and COD.** The Phase 2/3 verification gate is green. First define and enforce order states/transitions, then implement address/product snapshots, server-side totals, COD payment state and order history with ownership/state-transition tests.
+**Verify the corrected Phase 4 order/COD slice in CI.** Workflow #175 exposed a migration/model table-name mismatch; commit `112a2ffe1df0bcd07bbf54f43748798809c144b8` fixes it. After the corrected CI run is green, continue with server-owned order status transition operations, authorization, conflict handling and concurrency/state-locking tests.
 
 ## Developer 1 definition of done
 
