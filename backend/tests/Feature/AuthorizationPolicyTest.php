@@ -75,7 +75,7 @@ class AuthorizationPolicyTest extends TestCase
         );
 
         $this->assertSame(403, $response->getStatusCode());
-        $this->assertSame('ACCOUNT_INACTIVE', $response->getData(true)['error']['code']);
+        $this->assertSame('ACCOUNT_INACTIVE', $response->getData(true)['code']);
     }
 
     public function test_address_policy_enforces_customer_ownership_and_allows_admin_access(): void
