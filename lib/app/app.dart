@@ -43,7 +43,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       const publicRoutes = {'/', '/welcome', '/delivery/login'};
 
       if (authState.isLoading) {
-        return location == '/' ? null : '/';
+        // Keep the public splash/welcome flow reachable while session
+        // restoration is still in flight. Protected routes remain gated.
+        return location == '/' || location == '/welcome' ? null : '/';
       }
 
       if (authState.hasError) {
