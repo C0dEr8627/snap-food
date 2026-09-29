@@ -267,3 +267,33 @@ No local Flutter/Dart runner is available in this GitHub-connected environment. 
 3. Add checkout tests for successful COD submission, duplicate submit, VALIDATION_FAILED, and HTTP 409 conflict handling.
 4. Harden order success/detail/history UX and connect customer tracking to the frozen /orders/{order}/tracking response.
 5. Continue delivery-partner assignment/status/location and invoice UI from the frozen contract.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (catalogue-to-cart + checkout tests)
+
+### Completed in this increment
+- Replaced the remaining illustrative restaurant-menu product IDs with the live typed catalogue product list.
+- Restaurant menu now filters the loaded catalogue by category, displays backend product IDs/prices, and adds real catalogue products to the local cart.
+- Food-detail route now requires a numeric catalogue product ID, reads the matching typed product from catalogue state, respects active/available flags, and adds that exact product ID to cart.
+- Removed the food-detail/menu dependency on mock IDs such as biryani/butter/paneer.
+- Checkout controller tests now cover successful duplicate-submit protection, VALIDATION_FAILED, and HTTP 409 conflict handling.
+- Fixed order history controller state access to use the supported state.value API.
+- Cart remains server-authoritative at checkout; catalogue prices are preview-only.
+
+### Current task status
+- Phase 0: [~] documentation/source workflow complete; CI/device verification remains.
+- Phase 1: [x] API foundation complete.
+- Phase 2: [~] session lifecycle implemented; Google SSO/config and final role-routing verification remain.
+- Phase 3: [x] typed catalogue DTO/repository/controller and catalogue-backed UI selection complete.
+- Phase 4: [~] real-ID cart + COD checkout implemented; checkout test coverage now includes success/duplicate/validation/409 paths. End-to-end runtime verification remains.
+- Phase 5: [x] order history/detail UI implemented; customer tracking remains.
+- Phase 6/7: [~] backend delivery lifecycle/tracking behavior is documented/verified; Flutter delivery/tracking integration remains.
+- Invoice: [ ] Flutter invoice integration remains.
+- Release verification: [ ] current-head CI, Android build and physical-device/integration verification remain.
+
+### Next implementation queue
+1. Verify current-head CI and fix concrete compile/analyzer/test failures.
+2. Inspect the frozen tracking response and implement customer tracking from /orders/{order}/tracking.
+3. Implement delivery assignment/status/location integration from the documented schemas.
+4. Implement invoice model/repository/UI from the frozen invoice schema.
+5. Finish UX hardening and final CI/device/end-to-end verification.
