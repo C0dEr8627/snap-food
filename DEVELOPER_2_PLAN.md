@@ -347,3 +347,25 @@ No undocumented API payloads will be introduced.
 6. Implement invoice model/repository/UI once its Flutter-facing response schema is frozen.
 
 No undocumented API payloads will be introduced, and no Laravel/backend-owned files will be modified by Developer 2.
+
+
+## Developer 2 checkpoint — 2026-09-29 (continuation / contract re-check)
+
+- **Branch/PR:** `developer-2-flutter`, PR #1 → `frontend`, still open and mergeable.
+- **Implementation decision:** no new Flutter API integration was added in this continuation because the shared `API_CONTRACT.md` is still missing the exact Flutter-facing schemas required for the next order/COD task. Implementing DTOs or network calls now would require undocumented assumptions.
+- **Completed implementation remains:** API transport/client + normalized errors; catalogue repository/controller/state and loading/empty/error/retry integration; secure session storage; `/me` restoration; logout/revocation; auth-aware routing; local cart repository/controller with explicit product IDs and quantity updates/removal plus tests.
+- **Backend evidence re-checked:** developer-1-backend-admin documents passing Workflows #209, #259 and #266 for delivery-partner provisioning/approval, assignment/status progression and active-trip tracking. Backend invoice scope is also documented, but Flutter-facing invoice response fields are not frozen in the shared contract.
+- **Current blockers:** Google auth exchange/session/role schema; catalogue success fields; order create/list/detail request/response examples; address request/response shape; delivery assignment/status/location/tracking response examples; invoice success response/snapshot fields.
+- **Verification:** Flutter/Dart formatting, analyzer, tests, APK build and physical-device checks remain **NOT RUN** because no Flutter/Dart runner or Flutter CI result is available.
+
+### Task tracking after this continuation
+- **Phase 0:** static audit/documentation complete; runtime verification/tooling baseline remains NOT RUN.
+- **Phase 1:** complete.
+- **Phase 2:** session lifecycle complete; Google SSO exchange/config and role routing remain contract/config gated.
+- **Phase 3:** repository/controller/state integration complete; typed catalogue mapping remains schema-gated.
+- **Phase 4:** local cart boundary complete; address, COD checkout, server totals/errors, duplicate-submit flow, order success/detail/history and API-backed edge-case tests remain contract-gated.
+- **Phase 5:** customer order history/detail/status remains blocked by missing order list/detail schemas.
+- **Phase 6/7:** backend delivery lifecycle/tracking is verified; Flutter delivery integration remains blocked by missing shared delivery schemas.
+- **Invoice:** backend scope documented; Flutter invoice model/repository/UI remains not started pending the shared success schema.
+
+**Next executable Flutter task once the shared contract is frozen:** implement typed order models and repository/controller boundaries, then cart → COD checkout with duplicate-submit protection and server-authoritative totals/error handling. No undocumented payloads will be introduced.
