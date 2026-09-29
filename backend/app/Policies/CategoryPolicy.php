@@ -9,7 +9,7 @@ class CategoryPolicy
 {
     public function before(User $user): ?bool
     {
-        return $user->hasRole(User::ROLE_ADMIN) ? true : false;
+        return $user->is_active && $user->hasRole(User::ROLE_ADMIN) ? true : false;
     }
 
     public function viewAny(User $user): bool
