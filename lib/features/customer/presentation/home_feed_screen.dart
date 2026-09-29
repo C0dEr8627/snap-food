@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
+import 'catalogue_controller.dart';
+import 'catalogue_state_message.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../../../design_system/tokens/app_spacing.dart';
 
-class HomeFeedScreen extends StatefulWidget {
+class HomeFeedScreen extends ConsumerStatefulWidget {
   const HomeFeedScreen({super.key});
   @override
-  State<HomeFeedScreen> createState() => _HomeFeedScreenState();
+  ConsumerState<HomeFeedScreen> createState() => _HomeFeedScreenState();
 }
 
-class _HomeFeedScreenState extends State<HomeFeedScreen> {
+class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
   int filter = 0;
   int nav = 0;
   final favorites = <int>{};
