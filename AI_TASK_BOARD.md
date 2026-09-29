@@ -228,3 +228,13 @@ Record decisions here only after the owner approves or they are already establis
 - Commits: 81d0753ca65ee7de00d743ec8d09153da6b9ec00, 2d25a91eb7d24194fc4fc74f5d9895d4fcf3f923.
 - CI verification for the new runtime fix is pending; local validation should rerun php artisan serve after pulling the latest branch.
 - No Flutter-owned files, deployment, or production migration were changed.
+
+
+### Developer 1 status — 2026-09-29 (local Laravel front-controller import fix)
+
+- Local validation exposed a second concrete runtime defect after restoring `backend/public/`: `public/index.php` called `Request::capture()` without importing `Illuminate\\Http\\Request`, producing `Class "Request" not found` under `php artisan serve`.
+- Fixed `backend/public/index.php` by adding the standard `use Illuminate\\Http\\Request;` import.
+- Fix commit: `2376e97cd3d3fab6465ddf6ff6ebb021c9628a22`.
+- Backend workflow #435 **PASSED** on the preceding public-directory fix commit `d1431914bfa2dd13c319c6508318ae566fdaab6d`; this new import fix requires a fresh CI verification.
+- Next local validation: pull the latest branch, restart `php artisan serve`, then proceed to local `.env`/MySQL configuration and migrations once the server responds successfully.
+- No Flutter-owned files, deployment, or production migration were changed.
