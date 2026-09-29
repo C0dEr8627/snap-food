@@ -96,3 +96,15 @@ Record decisions here only after the owner approves or they are already establis
 - No backend files or undocumented API payloads were changed by Developer 2.
 - Flutter/Dart runtime verification remains NOT RUN because no local runner is available.
 - Next action: Developer 1 freezes order/COD + address examples; Developer 2 implements typed order models and checkout/history, then delivery flows from the documented assignment/tracking contract.
+
+
+## Developer 2 checkpoint — 2026-09-29 (implementation continuation / status synchronization)
+
+- **Branch:** `developer-2-flutter`
+- **PR:** #1 → `frontend`, currently open and mergeable.
+- **Head:** `7854e5a3ef6131e8bbb3f252d579ef21c7589b94`.
+- **Completed Flutter work:** API transport/client + normalized errors; catalogue repository/controller/state and loading/empty/error/retry UI integration; secure session storage; `/me` restoration; logout/revocation; auth-aware routing; local cart repository/controller with explicit product IDs and quantity tests; contract-question documentation.
+- **Backend gate:** workflow #209 passes, verifying delivery-partner provisioning/approval. This removes the earlier provisioning blocker.
+- **Still blocked by shared contract:** order create/list/detail request/response examples, address request/response shape, Google auth exchange/configuration, catalogue success fields, and delivery assignment/tracking response examples.
+- **Verification:** Flutter/Dart formatting, analyzer, tests, APK build and physical-device checks are **NOT RUN**. Current commit status has no reported Flutter checks.
+- **Next owner/action:** Developer 1 freezes the exact order/COD + address contract. Developer 2 then implements typed order models and checkout/history, followed by delivery/active-trip tracking from the documented assignment/tracking contract. No undocumented payloads are to be invented.
