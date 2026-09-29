@@ -30,18 +30,19 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Create a safe local environment example at `backend/.env.example` with placeholders only.
 - [x] Document setup, migration, seed, test and deployment discovery/setup guidance in `backend/README.md`.
 - [x] Check available agent execution environment: PHP CLI 8.4.23 exists, Composer and MySQL CLI are absent. This does not verify the user's local machine or hosting environment.
+- [x] Record the production server PHP target as PHP 8.3 and select a PHP 8.3-compatible Laravel baseline (Laravel 11).
 
-**Gate:** NOT YET PASSED. No Laravel application, Composer manifest or PHP test configuration exists. Composer is unavailable in the agent execution container, and no non-production MySQL server/connection or target hosting compatibility has been verified. Do not scaffold by guessing a Laravel version or proceed to feature implementation until the supported PHP/Laravel version and a usable dependency/database setup are established.
+**Gate:** PARTIALLY PASSED. The production target is PHP 8.3, and the repository now contains a Laravel 11/PHP 8.3-compatible foundation, API versioning, a health endpoint, PHPUnit configuration and PHP 8.3 CI. The gate is still blocked for execution because Composer and MySQL are unavailable in the agent container and the actual GoDaddy Composer/PHP-extension/database capabilities remain unverified. Do not claim migrations or tests passed until they run in a usable PHP 8.3 + Composer + non-production MySQL environment.
 
 ## Phase 1 — Backend foundation
 
-- [ ] Create Laravel app under `backend/`.
+- [x] Create Laravel app foundation under `backend/`.
 - [ ] Configure environment-based MySQL connection.
-- [ ] Configure `/api/v1` routing, JSON error format and validation conventions.
-- [ ] Establish migrations, factories/seeders and automated test setup.
-- [ ] Add health/readiness endpoint without exposing configuration/secrets.
+- [x] Configure `/api/v1` routing baseline and health endpoint.
+- [x] Establish PHPUnit automated test configuration and initial health feature test.
+- [x] Add health/readiness endpoint without exposing configuration/secrets.
 - [ ] Add request validation, rate limiting where appropriate, logging without credentials and consistent error responses.
-- [ ] Document exact supported PHP/Laravel versions after verifying toolchain.
+- [x] Document target PHP 8.3 and selected Laravel 11 baseline; runtime dependency installation remains unverified in the agent container.
 
 ## Phase 2 — Identity and authorization
 
@@ -117,6 +118,10 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [ ] Document backup/restore and production environment checklist.
 - [ ] Verify no secrets or sensitive data are committed.
 - [ ] Produce a PR summary with changed files, commands/tests and known limitations.
+
+## Current execution note
+
+The next code slice is the database foundation: users, addresses, categories and products migrations/models, validation and tests. It must be executed in an environment that can install Composer dependencies and connect to a non-production MySQL database. The agent container cannot currently satisfy that prerequisite, so no migration/test result will be claimed until a usable environment is available.
 
 ## Developer 1 definition of done
 
