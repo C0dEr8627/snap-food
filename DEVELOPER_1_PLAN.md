@@ -23,14 +23,14 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Phase 0 — Inspect and establish the environment
 
-- [ ] Inspect repository and existing docs before creating files.
-- [ ] Record PHP, Composer, Laravel and MySQL requirements in `backend/README.md`.
-- [ ] Hosting capability checklist: GoDaddy plan, PHP version/extensions, MySQL version, HTTPS/domain, SSH, Composer, document-root control, cron, writable storage, deployment method, process/worker limits.
-- [ ] If hosting information is unavailable, keep local/staging setup portable and record the blocker; do not invent hosting capabilities.
-- [ ] Create a safe local environment example such as `.env.example` with placeholders only.
-- [ ] Document setup, migration, seed, test and deployment commands.
+- [x] Inspect repository and existing docs before creating files.
+- [x] Record PHP, Composer, Laravel and MySQL requirements/status in `backend/README.md`. Exact versions remain unverified until local toolchain and hosting are known.
+- [x] Document the GoDaddy hosting capability checklist in `backend/README.md`.
+- [x] Hosting information is unavailable: local/staging setup remains portable and the blocker is recorded; no hosting capability is assumed.
+- [x] Create a safe local environment example at `backend/.env.example` with placeholders only.
+- [x] Document setup, migration, seed, test and deployment discovery/setup guidance in `backend/README.md`.
 
-**Gate:** a clean developer environment can boot Laravel and connect to a non-production MySQL database before feature work proceeds.
+**Gate:** NOT YET PASSED. The repository has no Laravel application, Composer manifest or PHP test configuration, and the local PHP/Composer toolchain plus a non-production MySQL database have not been verified. Do not proceed to feature implementation until a Laravel environment can boot and connect to a non-production database.
 
 ## Phase 1 — Backend foundation
 
