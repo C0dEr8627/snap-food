@@ -7,36 +7,38 @@ import 'package:snap_foodd/features/customer/data/catalogue_repository.dart';
 import 'package:snap_foodd/features/customer/presentation/catalogue_controller.dart';
 
 void main() {
-  test('loads categories and products into one snapshot', () async {
+  test('loads typed categories and paginated products', () async {
     final repository = FakeCatalogueRepository(
-      categories: const [
-        CatalogueRecord(payload: {'id': 'c1'}),
-      ],
+      categories: const [CatalogueCategory(id: 2, name: 'Biryani')],
       products: const [
-        CatalogueRecord(payload: {'id': 'p1'}),
+        CatalogueProduct(
+          id: 15,
+          categoryId: 2,
+          name: 'Chicken Biryani',
+          price: '320.00',
+          isActive: true,
+          isAvailable: true,
+        ),
       ],
     );
 
     final container = ProviderContainer(
-      overrides: [
-        catalogueRepositoryProvider.overrideWithValue(repository),
-      ],
+      overrides: [catalogueRepositoryProvider.overrideWithValue(repository)],
     );
     addTearDown(container.dispose);
 
     final snapshot = await container.read(catalogueControllerProvider.future);
 
-    expect(snapshot.categories.single.payload['id'], 'c1');
-    expect(snapshot.products.single.payload['id'], 'p1');
+    expect(snapshot.categories.single.id, 2);
+    expect(snapshot.products.items.single.id, 15);
+    expect(snapshot.products.hasNextPage, isFalse);
   });
 
   test('exposes a safe retryable error when repository fails', () async {
     final repository = _FailingCatalogueRepository();
 
     final container = ProviderContainer(
-      overrides: [
-        catalogueRepositoryProvider.overrideWithValue(repository),
-      ],
+      overrides: [catalogueRepositoryProvider.overrideWithValue(repository)],
     );
     addTearDown(container.dispose);
 
@@ -45,14 +47,13 @@ void main() {
       throwsA(isA<ApiException>()),
     );
 
-    final state = container.read(catalogueControllerProvider);
-    expect(state.hasError, isTrue);
+    expect(container.read(catalogueControllerProvider).hasError, isTrue);
   });
 }
 
 class _FailingCatalogueRepository implements CatalogueRepository {
   @override
-  Future<List<CatalogueRecord>> fetchCategories() async {
+  Future<List<CatalogueCategory>> fetchCategories() async {
     throw const ApiException(
       message: 'Catalogue unavailable.',
       code: 'SERVER_ERROR',
@@ -61,7 +62,7 @@ class _FailingCatalogueRepository implements CatalogueRepository {
   }
 
   @override
-  Future<List<CatalogueRecord>> fetchProducts({
+  Future<CataloguePage> fetchProducts({
     Map<String, String>? queryParameters,
   }) async {
     throw const ApiException(
@@ -72,7 +73,7 @@ class _FailingCatalogueRepository implements CatalogueRepository {
   }
 
   @override
-  Future<CatalogueRecord> fetchProduct(String productId) {
+  Future<CatalogueProduct> fetchProduct(String productId) {
     throw const ApiException(
       message: 'Catalogue unavailable.',
       code: 'SERVER_ERROR',
