@@ -1047,3 +1047,46 @@ No backend/Laravel-owned files were modified.
 - Google auth platform/runtime verification remains pending because public platform configuration/runtime credentials have not been verified in this environment.
 
 `DEVELOPER_2_PLAN.md` is the authoritative task-progress record for Developer 2. Each implementation or verification checkpoint must update this board before the next task is started.
+
+## Developer 2 continuation checkpoint — 2026-09-30 (CI #238 + platform dependency gate)
+
+- **Branch:** `developer-2-flutter`
+- **PR:** #1 → `frontend`, open and currently reported mergeable.
+- **Current HEAD:** `bf3e32f4587032104f36745af3e0bd8219080db6`.
+- **Latest Flutter CI:** run #238 (`36612431841`) is **in progress** for the current documentation commit. Job `109556959338` has completed checkout and is currently setting up Flutter; dependency resolution, formatting, analyzer, tests and Android debug build have not completed. **CI is not marked green.**
+- The task board was refreshed in the preceding documentation commit; this checkpoint records the latest observed CI state and platform-dependency gate.
+- **Platform dependency audit:** `pubspec.yaml` contains no concrete location or Google Maps package, and `android/app/src/main/AndroidManifest.xml` contains no location permissions or Maps metadata. Repository search also found no `geolocator` or `google_maps_flutter` usage and no documented approved concrete replacement.
+- Therefore the next GPS/Maps implementation is **blocked on explicit project approval/configuration**, not on missing adapter/controller code. The existing foreground location adapter/controller remains the integration boundary and must not be bypassed with an invented package or fake coordinates.
+- Google SSO platform/runtime verification remains pending; no client secrets or platform credentials are to be invented or committed.
+- **No backend/Laravel-owned files were modified. No merge or deployment was performed.**
+
+### Authoritative task board
+
+| Area | Status | Current state |
+|---|---|---|
+| Phase 0 — audit/verification | [~] | Static audit complete; CI #238 in progress; physical-device verification pending |
+| Phase 1 — API foundation | [x] | Complete |
+| Phase 2 — auth/session | [~] | Session lifecycle complete; Google platform/runtime verification pending |
+| Phase 3 — catalogue/cart | [x] | Typed catalogue, real product IDs, cart integration and tests complete; runtime verification pending |
+| Phase 4 — COD checkout | [x] | Server-backed COD flow, address validation, duplicate-submit protection, server-authoritative totals/errors and success navigation implemented; runtime verification pending |
+| Phase 5 — customer orders/tracking | [x] | Order history/detail integration implemented; tracking integration remains to be verified/completed where not yet covered |
+| Phase 6 — delivery lifecycle | [x] | Assignment/status/location integration implemented against canonical routes; runtime verification pending |
+| Phase 7 — active GPS/Maps | [~] | Adapter/controller/lifecycle complete; approved platform location + Maps configuration and physical verification blocked |
+| Invoice | [x] | Contract frozen; typed model/repository/controller/UI and delivered-order route implemented; CI/runtime verification pending |
+| Release verification | [ ] | Green current-head CI, Android APK, physical-device and full E2E verification pending |
+
+### Next execution order
+
+1. **Finish CI #238 verification** and fix only concrete current-head formatter/analyzer/test/build failures.
+2. **Close the platform dependency gate:** obtain/confirm the approved Android/iOS location package and Google Maps configuration from project documentation/owner direction. Do not guess.
+3. **Wire the approved platform GPS source** behind the existing location adapter/controller boundary.
+4. **Complete customer tracking and delivery runtime verification** including stale/no-location/error states, permission denial/revocation, active-trip start/stop and location publishing.
+5. **Run the release gate:** Android debug APK, physical-device verification, customer COD → order → delivery → tracking → delivered → invoice E2E, then final PR readiness.
+
+### Current blockers
+
+- GitHub Actions is the available Flutter/Dart execution environment; local Flutter/Dart commands remain unavailable in this session.
+- No approved concrete GPS/Maps dependency or platform Maps configuration is documented in the repository, so adding one would be speculative.
+- Google auth platform/runtime verification remains pending.
+
+`DEVELOPER_2_PLAN.md` remains the authoritative Developer 2 task-progress record; update it after each implementation or verification checkpoint.
