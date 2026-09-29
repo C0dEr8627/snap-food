@@ -576,3 +576,39 @@ No backend/Laravel-owned files were modified. No merge or deployment was perform
 - Fresh Flutter CI run `36605874261` (run #189) is now **in progress** for the updated branch. Setup/checkout have passed; Flutter setup is currently running. Analyzer, tests and Android build have not run yet, so no green verification is claimed.
 - The immediate test-level analyzer blocker from run #187 is fixed by `ea88f35202db2153570aa149b51b8b805df07bcc`.
 - Task documentation is now explicitly aligned with the current implementation queue: invoice is unblocked at the contract level; concrete platform GPS/Maps dependency selection and device verification remain pending.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (current-head CI warning cleanup)
+
+- Inspected completed Flutter CI run #191 (36605956482) for the previous PR merge commit. Dependency resolution and Dart formatting passed, but flutter analyze failed; tests and Android build were skipped.
+- The analyzer output contained three concrete warning-level blockers: unnecessary non-null assertion in lib/features/customer/data/order_repository.dart; unused delivery data/repository imports in lib/features/delivery/presentation/delivery_requests_screen.dart; unused dart:async import in test/features/delivery/active_delivery_location_controller_test.dart.
+- Removed only those concrete warnings. No unrelated legacy lint cleanup was performed.
+- The fixes are now on developer-2-flutter; current PR head is 718db207354c67b9cbdb7d2208f3d040c7e066c6.
+- Fresh Flutter CI #195 (36606407678) is currently in progress against the updated head. Do not mark CI green until analyzer, tests and Android build complete.
+- PR #1 remains open, targets frontend, and GitHub currently reports it as mergeable.
+- Invoice implementation remains pending because API_CONTRACT.md documents the invoice endpoint and immutability behavior but does not yet provide a concrete Flutter-facing success JSON field set sufficient to define a typed invoice DTO safely.
+- Platform GPS/Maps integration remains pending: pubspec.yaml has no concrete location/Maps dependency, so no speculative package was added. The existing adapter continues to report unavailable until the approved dependency/configuration is established.
+- Local Flutter/Dart execution is unavailable in this GitHub-connected environment; CI is the automated verification source.
+
+### Current task board
+
+| Area | Status | Current state |
+|---|---|---|
+| Phase 0 — audit/verification | [~] | Audit and CI workflow complete; current-head CI #195 pending; physical-device verification pending |
+| Phase 1 — API foundation | [x] | Complete |
+| Phase 2 — auth/session | [~] | Session restore/logout/routing complete; Google platform credential configuration and final runtime role verification pending |
+| Phase 3 — catalogue/cart | [x] | Typed catalogue, real numeric product IDs and catalogue-to-cart integration complete |
+| Phase 4 — COD checkout | [x] | COD submission, address validation, duplicate protection, conflict handling and server-authoritative order navigation complete |
+| Phase 5 — customer orders/tracking | [x] | History/detail and tracking source integration complete |
+| Phase 6 — delivery lifecycle | [x] | Assignment/status/location repository and lifecycle UI integration complete |
+| Phase 7 — active GPS/Maps | [~] | Adapter/controller/lifecycle/freshness complete; concrete platform GPS, Maps SDK/configuration and device verification pending |
+| Invoice | [ ] | Contract endpoint known; typed response/UI not started because exact success fields are not frozen |
+| Release verification | [ ] | Current-head CI, Android build, physical-device GPS/Maps and end-to-end verification pending |
+
+### Next execution order
+
+1. Inspect Flutter CI #195 and fix only concrete current-head analyzer/test/build failures.
+2. Confirm the approved Android/iOS GPS package and Google Maps configuration before adding platform dependencies.
+3. Freeze the exact Flutter-facing invoice success response fields, then implement invoice model/repository/UI without inventing fields.
+4. Run physical-device permission/GPS/Maps verification.
+5. Complete customer/delivery end-to-end verification and update PR readiness.
