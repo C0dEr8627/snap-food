@@ -46,6 +46,18 @@ class _RestaurantMenuScreenState extends ConsumerState<RestaurantMenuScreen> {
               actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.ios_share)), IconButton(onPressed: () {}, icon: const Icon(Icons.favorite_border))],
             ),
             const SliverToBoxAdapter(child: _RestaurantHero()),
+            SliverToBoxAdapter(
+              child: Consumer(builder: (context, ref, _) {
+                final catalogue = ref.watch(catalogueControllerProvider);
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: CatalogueStateMessage(
+                    value: catalogue,
+                    onRetry: () => ref.read(catalogueControllerProvider.notifier).retry(),
+                  ),
+                );
+              }),
+            ),
             SliverToBoxAdapter(child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
