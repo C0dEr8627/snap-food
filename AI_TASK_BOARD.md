@@ -272,3 +272,11 @@ The backend branch now has richer delivery/tracking and invoice endpoint documen
 - Flutter/Dart format/analyze/test/APK/device checks remain NOT RUN because no Flutter/Dart runner or Flutter CI result is available.
 
 **Next owner/action:** Developer 1 synchronizes the complete Flutter-facing order/COD + address contract; Developer 2 then implements typed order models → checkout repository/controller → server-authoritative totals/errors → order success/detail/history, followed by delivery/tracking.
+
+## Developer 2 checkpoint — 2026-09-29 (Flutter CI enablement)
+
+- Added `.github/workflows/flutter-ci.yml` on `developer-2-flutter` (commit `785ab5f4a1a68fa7bf2a11ff2c0a549eb558d5fa`).
+- The workflow is configured to run Flutter dependency resolution, Dart formatting validation, static analysis, tests and Android debug APK build on relevant branch pushes, PRs targeting `frontend`, and manual dispatch.
+- This enables remote verification but is **not evidence of a passing run**. Phase 0 runtime verification and M9 release hardening remain pending until CI results and device checks are actually reviewed.
+- API integration remains gated by missing Flutter-facing auth/catalogue/order/address/delivery/tracking/invoice schemas and canonical delivery route synchronization.
+- Next owner/action: Developer 2 inspects the first Flutter CI run and fixes any actual failures; Developer 1 synchronizes the complete shared API contract; then Developer 2 resumes typed order/address integration.
