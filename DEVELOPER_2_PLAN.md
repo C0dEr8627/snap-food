@@ -22,7 +22,7 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 
 ## Current execution status
 
-> **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. PR #1 targets `frontend` and remains open. The latest documented Flutter head is `c98f3d42d1beb1f6b06bae5f5b8f2c36a660a603`.
+> **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. PR #1 targets `frontend` and remains open. The latest verified branch head before this documentation update was `9a0c84104b72b8f1761912f7e217cf8d6370e5e6`.
 >
 > **Verified complete in source control:** Phase 0 static Flutter audit, screen-to-contract mapping, platform/dependency inventory, API transport/client foundation, normalized API errors, environment API URL documentation, API-client fake-transport tests, the first catalogue repository boundary with a remote implementation plus deterministic fake repository, the catalogue Riverpod controller/state layer with retry/error handling and controller tests, configured repository wiring, catalogue loading/empty/error/retry UI integration across the existing customer catalogue screens with widget coverage, and the initial auth/session foundation with secure token storage, `/me` hydration, logout handling and auth-aware route redirects.
 >
@@ -37,7 +37,7 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 ## Phase 0 — Inspect current app
 
 - [x] Inspect `pubspec.yaml`, routing, Riverpod providers, feature directories, existing mock repositories and all current screens (static source audit completed; runtime baseline remains separate).
-- [ ] Run formatter/analyzer/tests available in the environment; record actual baseline results.
+- [!] Run formatter/analyzer/tests available in the environment; **NOT RUN** because the GitHub-connected development environment has no local Flutter/Dart runner and the branch currently has no Flutter CI workflow. This is a tooling blocker, not a passing baseline.
 - [x] Map each current screen to its feature and intended API endpoint.
 - [x] Identify existing navigation/design regressions from static inspection; do not expand scope into unrelated redesigns.
 - [x] Record dependencies/platform configuration required for Google sign-in, secure storage, Maps and location.
@@ -78,8 +78,8 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 
 ## Phase 4 — Cart, addresses and COD checkout
 
-- [ ] Review current cart implementation and preserve usable UI.
-- [ ] Ensure cart quantities reference product IDs; local subtotal is preview only.
+- [x] Review current cart implementation and preserve usable UI. Static review completed: the existing cart keeps quantity state keyed by item ID, preserves the current Stitch-aligned UI/navigation, and remains intentionally local until the checkout contract is frozen.
+- [ ] Ensure cart quantities reference product IDs; local subtotal is preview only. The current cart item identifier is the existing local product key; exact backend product-ID shape remains pending the shared order/catalogue contract.
 - [ ] Implement address selection/entry based on agreed contract.
 - [ ] Add COD checkout request and submit only product IDs, quantities and required address data. **Backend checkout/list/detail is now CI-green in workflow #186; Flutter implementation remains blocked until exact request/response examples are documented in the shared contract.**
 - [ ] Display server-calculated totals and server validation errors.
