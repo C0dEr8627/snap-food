@@ -659,3 +659,33 @@ No backend/Laravel-owned files were modified. No merge or deployment was perform
 3. Confirm approved Android/iOS GPS package and Google Maps configuration before adding platform dependencies.
 4. Freeze exact invoice success JSON fields, then implement typed invoice repository/model/UI.
 5. Perform physical GPS/Maps and customer/delivery E2E verification.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (CI test gate)
+
+- Flutter CI run #200 (36607353094) verified that the new analyzer policy works: dependency resolution passed, Dart formatting passed, and flutter analyze passed with informational findings only.
+- CI then reached the test suite and exposed three concrete test failures; Android APK build was skipped because the test step failed.
+- Fixed the three concrete test issues: integer product-ID expectation, catalogue async error-state timing, and stale welcome-screen smoke assertions.
+- Latest implementation commit after these fixes: fb0fac9b1e886b3c56fb839fadb6fe24e87bcad6.
+- No backend/Laravel-owned files were modified.
+
+### Current task board
+| Area | Status | Current state |
+|---|---|---|
+| Phase 0 — audit/verification | [~] | Analyzer passes; fresh CI after test fixes pending; device verification pending |
+| Phase 1 — API foundation | [x] | Complete |
+| Phase 2 — auth/session | [~] | Session restore/logout/routing complete; Google credential/runtime verification pending |
+| Phase 3 — catalogue/cart | [x] | Typed catalogue + real numeric product IDs wired into cart/menu/detail |
+| Phase 4 — COD checkout | [x] | Server-backed COD flow, address validation, duplicate-submit protection and conflict handling implemented |
+| Phase 5 — customer orders/tracking | [x] | History/detail/tracking integration implemented; runtime verification pending |
+| Phase 6 — delivery lifecycle | [x] | Assignment/status/location integration complete |
+| Phase 7 — active GPS/Maps | [~] | Adapter/controller/lifecycle complete; approved real GPS + Maps SDK/config/device verification pending |
+| Invoice | [ ] | Exact Flutter-facing success fields must be frozen before DTO/UI implementation |
+| Release verification | [ ] | Green current-head CI, Android APK, physical-device and E2E verification pending |
+
+### Next implementation order
+1. Inspect fresh CI for fb0fac9b1e886b3c56fb839fadb6fe24e87bcad6; fix only concrete formatter/analyzer/test/build failures.
+2. If tests pass, inspect Android debug APK build output and record the result.
+3. Confirm the approved Android/iOS GPS package and Google Maps configuration before adding platform dependencies.
+4. Freeze the exact invoice success JSON fields and implement invoice repository/model/UI without inventing fields.
+5. Perform physical GPS/Maps and customer/delivery E2E verification.
