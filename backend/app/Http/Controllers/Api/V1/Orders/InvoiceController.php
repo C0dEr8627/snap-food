@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Services\InvoiceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class InvoiceController
 {
@@ -15,11 +16,11 @@ class InvoiceController
         $user = $request->user();
 
         if ($user->role === \App\Models\User::ROLE_CUSTOMER && $order->customer_id !== $user->id) {
-            abort(403);
+            throw new AccessDeniedHttpException('You are not authorized to perform this action.');
         }
 
         if ($user->role !== \App\Models\User::ROLE_CUSTOMER && $user->role !== \App\Models\User::ROLE_ADMIN) {
-            abort(403);
+            throw new AccessDeniedHttpException('You are not authorized to perform this action.');
         }
 
         $invoice = $invoiceService->generateForDeliveredOrder($order);
