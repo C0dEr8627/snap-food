@@ -50,7 +50,7 @@ class OrderController extends Controller
 
     public function show(Order $order): View
     {
-        Gate::authorize('view', $order);
+        Gate::authorize('viewAdmin', $order);
 
         $order->load([
             'customer',
