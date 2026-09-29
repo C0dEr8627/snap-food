@@ -151,3 +151,12 @@ Record decisions here only after the owner approves or they are already establis
 - Phase 8 remains **IN PROGRESS**. Workflow #406 passed on CI verification head `941e9f2ee2916499fec4d60e4df1a6d37fb789b9`; subsequent tracking commit `1184d969d5a32267019e23b39f3e7f595879a81b` updates the plan only.
 - Remaining release gates: PHP 8.3/Composer formatter/static-analysis/security checks where available, final manual security/content review, GoDaddy capability confirmation, broader Flutter/device/end-to-end validation, and explicit human release approval.
 - No deployment or production migration was performed.
+
+
+### Developer 1 task-tracking update — 2026-09-29 (formatter remediation)
+
+- M9 remains **IN PROGRESS**; formatting is not yet verified complete.
+- Workflow #416 confirmed Pint still fails with 29 style issues across 101 PHP files; migrations/tests were skipped.
+- Commit `b39ed4c1935a99e8b4ca043686d135a2a50682ee` updates the backend formatter workflow to cover same-repository PR synchronization as well as branch pushes, so formatting remediation has an explicit CI path.
+- Backend workflow #418 is currently queued/running against the new head. Do not mark M9 complete until a fresh formatter-clean Backend workflow verifies migrations and PHPUnit.
+- Next owner/action: verify #418; then resolve any remaining formatter/static-analysis/security findings, complete manual security/content review, confirm GoDaddy capabilities, and obtain explicit human release approval.
