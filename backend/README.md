@@ -15,17 +15,17 @@ Laravel API and separate session-authenticated admin dashboard for Snap Foodd.
 
 ## Current implementation status
 
-The authoritative task checklist is `DEVELOPER_1_PLAN.md`. Operational release, backup/restore and hosting checks are documented in `backend/OPERATIONS.md`.
+The authoritative task checklist is `DEVELOPER_1_PLAN.md`. Client integration examples are in `API_CONTRACT.md` and `backend/API_INTEGRATION.md`; operational release, backup/restore and hosting checks are documented in `backend/OPERATIONS.md`.
 
 - Phase 0: partially verified. GoDaddy plan-specific Composer, extensions, DB access, SSH and document-root capabilities still need confirmation.
 - Phase 1: Laravel 13 foundation, MySQL migrations, health endpoint and PHP 8.3 CI are implemented.
 - Phase 2: Google credential verification, token lifecycle, role middleware, policies and authorization tests are implemented.
 - Phase 3: customer catalogue reads, admin API CRUD, validation and deterministic demo seeding are implemented.
-- Phase 4: COD checkout, immutable order snapshots, customer order APIs, server-owned transitions and concurrency-safe assignment are implemented.
-- Phase 5: protected admin web login/dashboard, order search/detail/status, catalogue management, customer/partner/assignment/invoice directories, partner approval/availability controls and web assignment are implemented.
+- Phase 4: COD checkout, immutable order snapshots, customer order APIs, server-owned transitions and concurrency-safe assignment are implemented and CI-verified.
+- Phase 5: protected admin web login/dashboard, order search/detail/status, catalogue management, customer/partner/assignment/invoice directories, partner approval/availability controls and web/API assignment are implemented and CI-verified.
 - Phase 6: partner assignment listing/status progression, active-trip location updates and authorized tracking reads are implemented. The separate accept step is not implemented; pickup and delivery progression use the status endpoint.
 - Phase 7: immutable invoice snapshots, deterministic numbering and customer/admin access are implemented.
-- Phase 8: in progress. Contract route audit has started; final clean-database/release checklist, formatter/security review and hosting verification remain.
+- Phase 8: in progress. `API_CONTRACT.md` now includes representative request/response/error examples and `backend/API_INTEGRATION.md` describes client token handling, pagination, errors, safe retries and delivery tracking. Final formatter/static/security review, latest CI verification and hosting capability confirmation remain.
 
 ## Verification
 
