@@ -132,3 +132,18 @@ Record decisions here only after the owner approves or they are already establis
 - **Current blocker:** the next Phase 4 address/checkout implementation cannot safely begin because `API_CONTRACT.md` still lacks exact order create/list/detail and address request/response schemas. Google SSO, typed catalogue mapping and delivery assignment/tracking are similarly contract/config gated.
 - **Verification:** Flutter/Dart format, analyzer, tests, APK build and physical-device checks remain **NOT RUN**; no Flutter CI status is reported.
 - **Next owner/action:** Developer 1 freezes the order/COD + address contract. Developer 2 then implements typed order models → checkout repository/controller → server-authoritative totals → order success/detail/history, followed by delivery/tracking.
+
+
+## Developer 2 checkpoint — 2026-09-29 (latest continuation)
+
+- **Branch:** `developer-2-flutter`; **PR:** #1 → `frontend`, open/mergeable; current head is `16b7fc5f6bbb668924779bcc77e99e2c478bf7fe` after the latest progress-documentation commit.
+- **Completed Flutter:** API transport/client + normalized errors; catalogue repository/controller/state and loading/empty/error/retry UI integration; secure session storage; `/me` restoration; logout/revocation; auth-aware routing; local cart repository/controller with explicit product IDs and quantity tests; contract-question documentation.
+- **Backend verified:** workflow #209 passes for delivery-partner provisioning/approval; backend order checkout/list/detail and server-owned status-transition/concurrency work are verified.
+- **Contract check:** `developer-1-backend-admin` contains a new admin delivery-assignment contract section, but it is not yet on the shared/base `frontend` contract and does not provide the Flutter-facing delivery request/tracking schemas. Order create/list/detail and address request/response examples are still missing from the shared contract.
+- **M2:** `[~]` Google SSO remains blocked by the exact credential exchange, success session/token shape, public client configuration and role response shape.
+- **M3:** `[x]` backend catalogue milestone verified; Flutter typed field mapping remains schema-gated.
+- **M4:** `[~]` backend order/COD + status/concurrency work verified; Flutter checkout/history/address remain contract-gated.
+- **M5:** `[~]` delivery-partner provisioning/approval verified; assignment/accept/pickup/location/complete and tracking remain to be implemented and schema-verified.
+- **Flutter verification:** formatter/analyzer/tests/APK/device checks are **NOT RUN**; no Flutter CI status is reported.
+
+**Next owner/action:** Developer 1 freezes the complete Flutter-facing order/COD + address contract in the shared/base contract. Developer 2 then implements typed order models, checkout repository/controller, server-authoritative totals, order success/detail/history, followed by delivery request/assignment/tracking. No undocumented API payloads will be introduced.
