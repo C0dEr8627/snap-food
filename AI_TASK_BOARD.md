@@ -18,7 +18,7 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 - [~] M5 — Delivery-partner provisioning/approval is CI-verified by Workflow #209 behind ADMIN API authorization. Protected Laravel web authentication and concurrency-safe order assignment are implemented and Workflow #244 has passed the PHPUnit suite; broader dashboard operations remain.
 - [x] M6 — Partner assignment listing and valid pickup → out-for-delivery → delivered transitions are implemented with ownership/conflict tests and verified by Workflow #259. The explicit partner accept step remains to be finalized against the product contract.
 - [x] M7 — Active-trip GPS updates, latest-location reads, stale-state reporting and customer/admin authorization are implemented and verified by Workflow #266.
-- [~] M8 — Invoice schema, deterministic numbering, immutable snapshots and customer/admin access are implemented; CI verification is pending.
+- [~] M8 — Invoice schema, deterministic numbering, immutable snapshots and customer/admin access are implemented; CI verification is pending after Workflow #288 exposed missing Order/OrderItem factory support.
 - [ ] M9 — Security, Android device, end-to-end and deployment-readiness checks pass.
 
 ## Handoff format
@@ -107,4 +107,7 @@ Record decisions here only after the owner approves or they are already establis
 - Workflow #266 **PASSED** on commit `f99dde6b52ff0450693fff8b63b90ce31bbe2722`, verifying M7 active-trip location/tracking with PHP 8.3/MySQL. M7 is now complete; Phase 7 invoices is the next implementation.
 
 
-- Phase 7 invoice increment is implemented on `developer-1-backend-admin`: delivered-order invoice generation is idempotent, snapshots order/customer/item financial data, and customer/admin authorization is enforced. Workflow #284 failed only because `InvoiceApiTest` used `User::factory()` but the minimal Laravel `User` model lacked `HasFactory`; the model trait and `UserFactory` are now added. M8 remains in progress until fresh CI verifies the implementation.
+- Phase 7 invoice increment is implemented on `developer-1-backend-admin`: delivered-order invoice generation is idempotent, snapshots order/customer/item financial data, and customer/admin authorization is enforced.
+- Workflow #284 failed because `InvoiceApiTest` used `User::factory()` while the minimal Laravel `User` model lacked `HasFactory`; User factory support was added.
+- Workflow #288 then failed after dependency installation and MySQL migrations passed: 7 invoice tests called `Order::factory()` and the minimal `Order`/`OrderItem` models lacked factory support. Added `HasFactory`, `OrderFactory`, and `OrderItemFactory`.
+- M8 remains in progress until a fresh CI run passes the full PHPUnit suite. Next action: rerun/verify invoice CI, then continue with the next incomplete plan item.
