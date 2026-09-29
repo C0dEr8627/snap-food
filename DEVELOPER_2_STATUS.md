@@ -500,3 +500,37 @@ No backend/Laravel-owned files were modified. No merge or deployment was perform
 5. Finish end-to-end/device verification and update PR readiness.
 
 No backend/Laravel-owned files were modified. No merge or deployment was performed.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (current-head CI analyzer fixes)
+
+- Current branch head: `7d1809dd33dcc7dd8996a0cedf5fa544cbeee5d2`.
+- Inspected Flutter CI run `36601413076` for the previous active-trip head. Dependency resolution and formatting passed, but `flutter analyze` failed; tests and Android build were skipped.
+- Fixed all concrete analyzer errors reported by that run:
+  - imported the typed `DeliveryLocationUpdate` model into the active location controller;
+  - corrected `ConsumerStatefulWidget.createState` typing and preserved the active-assignment map panel binding;
+  - removed stale duplicate delivery transport/session provider declarations from the delivery requests screen;
+  - completed the order-controller test fake with `fetchTracking`;
+  - removed invalid const construction in foreground location adapter tests;
+  - made the food-detail quantity increment callback nullable to match the disabled-at-limit state.
+- No speculative API fields, location packages, Maps SDKs or backend/Laravel files were added.
+- A new CI run for `7d1809dd33dcc7dd8996a0cedf5fa544cbeee5d2` was not yet visible at documentation time; current-head verification remains pending.
+
+### Task board after this increment
+- Phase 0: **[~]** static audit complete; concrete current-head CI failures from the last run fixed; fresh analyzer/test/Android verification pending; physical-device verification pending.
+- Phase 1: **[x]** API foundation complete.
+- Phase 2: **[~]** session lifecycle complete; Google SSO exchange/config and final role routing remain configuration/integration gated.
+- Phase 3: **[x]** typed catalogue → menu/detail → real numeric cart IDs complete; runtime verification pending.
+- Phase 4: **[x]** cart → COD checkout foundation, validation/conflict handling and successful-order navigation implemented; runtime verification pending.
+- Phase 5: **[x]** order history/detail and customer tracking implemented; runtime verification pending.
+- Phase 6: **[~]** delivery assignment/status lifecycle implemented; partner active-trip location lifecycle implemented; approved platform GPS/Maps integration remains.
+- Phase 7: **[~]** customer tracking + foreground location adapter/lifecycle/freshness/error states implemented; concrete GPS/Maps platform integration and physical-device verification remain.
+- Invoice: **[ ]** Flutter invoice model/repository/UI remains; exact Flutter-facing invoice response fields are still not enumerated in the shared contract, so no speculative DTO is being added.
+- Release verification: **[ ]** fresh CI, Android build, physical device and E2E verification pending.
+
+### Next execution queue
+1. Inspect the fresh CI run for `7d1809dd33dcc7dd8996a0cedf5fa544cbeee5d2` and fix only newly reported concrete failures.
+2. Identify an approved Android/iOS location package and Maps configuration from project configuration/documentation before adding dependencies.
+3. Verify real permission/GPS behavior on a physical device.
+4. Freeze the exact invoice success response fields, then implement invoice model/repository/UI without inventing fields.
+5. Complete E2E/device verification and update PR readiness.
