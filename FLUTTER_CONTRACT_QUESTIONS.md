@@ -51,3 +51,7 @@ Before Flutter delivery implementation:
 
 ## Developer 2 rule
 Until these examples are frozen in the shared contract, Flutter will not guess field names, status values, identifiers or payload shapes. Local repositories/fakes may keep UI development moving, but must not be presented as API integration.
+
+
+## Invoice integration gate
+The backend branch now documents `GET /api/v1/orders/{order}/invoice` for customer-owned delivered orders and the corresponding admin route, including deterministic/idempotent invoice numbering. Before Flutter invoice work begins, the shared contract must document the complete Flutter-facing invoice success response, financial/address/item snapshot fields, invoice identifier/number fields, authorization errors and generation/error behavior. Developer 2 will not infer these response fields from the backend implementation.
