@@ -12,7 +12,7 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 
 - [ ] M0 — GoDaddy plan/capabilities recorded; local development assumptions documented.
 - [ ] M1 — Laravel boots and connects to non-production MySQL.
-- [!] M2 — Google SSO end-to-end is not yet verified. Flutter session restore/revoke foundation is implemented and backend auth/authz CI is green. The backend branch still does not freeze the exact `/auth/google` request credential field/type, successful application-token response shape, or public Google client configuration. No guessed payload/package/configuration has been added.
+- [!] M2 — Google SSO end-to-end is not yet verified. Flutter session restore/revoke foundation is implemented and the prior backend auth/authz CI checkpoint is green. The backend branch still does not freeze the exact `/auth/google` request credential field/type, successful application-token response shape, or public Google client configuration. No guessed payload/package/configuration has been added.
 - [ ] M3 — Admin product/category CRUD and customer catalogue API work end-to-end.
 - [ ] M4 — Customer creates a COD order with server-calculated totals; admin can inspect it.
 - [ ] M5 — Admin provisions delivery partners and safely assigns orders.
@@ -51,7 +51,7 @@ Record decisions here only after the owner approves or they are already establis
 - **Branch:** `developer-2-flutter`
 - **Latest implementation/documentation commits:** `0ba538f4846db2459ce15e5233b45e289eda585e`, `c3623da7e745f23e783ccbbae7c05d9af50e6c7a`
 - **Completed:** API foundation; catalogue repository/controller/state foundation and existing-screen integration; secure session/token persistence; /me restoration; logout/revocation handling; auth controller tests; Riverpod-aware go_router redirects; progress tracking documentation.
-- **Verified backend dependency:** Developer 1 auth/authz workflow #109 passed on commit `b150b2cbb6874c00fda70197d0995057b19a0e6d`.
+- **Verified backend dependency:** Developer 1 auth/authz workflow #109 passed on commit `b150b2cbb6874c00fda70197d0995057b19a0e6d`; the latest backend branch is `01be74815ac6e4403409309972eb77eb69ca6ffc` and still needs fresh CI verification after the catalogue authorization fix.
 - **Blocked:** Google SSO exchange until backend freezes request/response fields and public client configuration.
 - **Also blocked:** typed catalogue DTO/UI mapping until successful category/product response fields are documented.
 - **Not run:** Flutter formatter/analyzer/tests/build/device checks because this environment has no local Flutter/Dart runner.
