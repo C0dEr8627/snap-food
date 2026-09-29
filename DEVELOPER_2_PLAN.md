@@ -898,3 +898,12 @@ No backend/Laravel-owned files were modified.
 | Phase 7 — active GPS/Maps | [~] | Adapter/controller/lifecycle complete; approved platform dependency + real Maps/GPS verification pending |
 | Invoice | [ ] | Endpoint documented; exact success JSON field set still not frozen |
 | Release verification | [ ] | Green CI, Android APK, physical-device and E2E verification pending |
+
+
+## Developer 2 checkpoint — 2026-09-29 (CI smoke-test follow-up)
+
+- Current PR CI run #211 completed with dependency resolution, formatting and analyzer passing, then failed only in `test/app_smoke_test.dart` because the welcome headline is rendered as separate text nodes rather than one literal `GOOD FOOD.\nFAST DELIVERY.` widget.
+- Fixed the smoke test to assert the two visible headline fragments independently with `find.textContaining`, preserving the existing UI and avoiding production-code changes.
+- Android debug build was skipped by CI because the test step failed; it remains pending until the smoke test passes.
+- No backend/Laravel-owned files were modified.
+- Next: verify the new smoke-test commit in CI. If green, proceed to the next unblocked platform/configuration gate; do not add an unapproved GPS/Maps dependency.
