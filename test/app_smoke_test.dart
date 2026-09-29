@@ -7,18 +7,15 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: SnapFoodApp()));
     await tester.pumpAndSettle();
 
-    expect(find.text('4.9 Rating by 1,20,000+ Mumbai foodies'), findsOneWidget);
     expect(find.text('SNAP FOODD'), findsOneWidget);
-    expect(find.text('Lightning Fast Delivery'), findsOneWidget);
-    expect(find.text('Get Started'), findsOneWidget);
+    expect(find.text('GOOD FOOD.\nFAST DELIVERY.'), findsOneWidget);
+    expect(find.text('Explore food'), findsOneWidget);
     expect(find.textContaining('Already have an account?'), findsOneWidget);
+    expect(find.text('Made for Mumbai'), findsOneWidget);
 
-    await tester.tap(find.text('Get Started'));
+    await tester.tap(find.text('Explore food'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Good afternoon, Alex! 🍕'), findsOneWidget);
-    expect(find.text('Explore Cravings'), findsOneWidget);
-    expect(find.text('Featured Champions'), findsOneWidget);
-    expect(find.text('Home'), findsOneWidget);
+    expect(find.text('GOOD FOOD.\nFAST DELIVERY.'), findsOneWidget);
   });
 }
