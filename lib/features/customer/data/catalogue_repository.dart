@@ -3,127 +3,134 @@ import '../../../core/network/api_exception.dart';
 import 'catalogue_models.dart';
 
 abstract interface class CatalogueRepository {
-  Future<List<CatalogueRecord>> fetchCategories();
-
-  Future<List<CatalogueRecord>> fetchProducts({
-    Map<String, String>? queryParameters,
-  });
-
-  Future<CatalogueRecord> fetchProduct(String productId);
+  Future<List<CatalogueCategory>> fetchCategories();
+  Future<CataloguePage> fetchProducts({Map<String, String>? queryParameters});
+  Future<CatalogueProduct> fetchProduct(String productId);
 }
 
-/// Remote implementation backed exclusively by the documented catalogue
-/// endpoints. Response parsing stays conservative until API_CONTRACT.md
-/// documents the successful response envelope and product/category fields.
 class RemoteCatalogueRepository implements CatalogueRepository {
   const RemoteCatalogueRepository(this._client);
-
   final ApiClient _client;
 
   @override
-  Future<List<CatalogueRecord>> fetchCategories() async {
+  Future<List<CatalogueCategory>> fetchCategories() async {
     final response = await _client.get('/categories');
-    return _decodeCollection(response, resource: 'categories');
+    final records = _decodeCollection(response, resource: 'categories');
+    try {
+      return records.map(CatalogueCategory.fromJson).toList(growable: false);
+    } on FormatException catch (error) {
+      throw ApiException(message: error.message, code: 'INVALID_RESPONSE');
+    }
   }
 
   @override
-  Future<List<CatalogueRecord>> fetchProducts({
-    Map<String, String>? queryParameters,
-  }) async {
-    final response = await _client.get(
-      '/products',
-      queryParameters: queryParameters,
-    );
-    return _decodeCollection(response, resource: 'products');
+  Future<CataloguePage> fetchProducts({Map<String, String>? queryParameters}) async {
+    final response = await _client.get('/products', queryParameters: queryParameters);
+    return _decodeProductPage(response);
   }
 
   @override
-  Future<CatalogueRecord> fetchProduct(String productId) async {
-    if (productId.trim().isEmpty) {
+  Future<CatalogueProduct> fetchProduct(String productId) async {
+    final normalized = productId.trim();
+    final parsedId = int.tryParse(normalized);
+    if (parsedId == null || parsedId <= 0) {
       throw const ApiException(
-        message: 'A product id is required.',
+        message: 'A valid numeric product id is required.',
         code: 'INVALID_PRODUCT_ID',
       );
     }
-
-    final response = await _client.get('/products/${Uri.encodeComponent(productId)}');
-    if (response is Map<String, dynamic>) {
-      return CatalogueRecord.fromJson(response);
+    final response = await _client.get('/products/${Uri.encodeComponent(normalized)}');
+    final payload = _decodeSingle(response, resource: 'product');
+    try {
+      return CatalogueProduct.fromJson(payload);
+    } on FormatException catch (error) {
+      throw ApiException(message: error.message, code: 'INVALID_RESPONSE');
     }
-    throw const ApiException(
-      message: 'The server returned an unexpected product response.',
-      code: 'INVALID_RESPONSE',
-    );
   }
 
-  List<CatalogueRecord> _decodeCollection(
-    Object? response, {
-    required String resource,
-  }) {
+  List<Map<String, dynamic>> _decodeCollection(Object? response, {required String resource}) {
     if (response is List) {
-      return response
-          .whereType<Map>()
-          .map(
-            (item) => CatalogueRecord.fromJson(
-              Map<String, dynamic>.from(item),
-            ),
-          )
-          .toList(growable: false);
+      return response.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList(growable: false);
     }
-
     if (response is Map<String, dynamic>) {
-      // Do not assume a common response envelope. Accept only an explicitly
-      // named resource key if the backend returns one.
+      final data = response['data'];
+      if (data is List) {
+        return data.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList(growable: false);
+      }
       final value = response[resource];
       if (value is List) {
-        return value
-            .whereType<Map>()
-            .map(
-              (item) => CatalogueRecord.fromJson(
-                Map<String, dynamic>.from(item),
-              ),
-            )
-            .toList(growable: false);
+        return value.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList(growable: false);
       }
     }
+    throw ApiException(message: 'The server returned an unexpected $resource response.', code: 'INVALID_RESPONSE');
+  }
 
-    throw ApiException(
-      message: 'The server returned an unexpected $resource response.',
-      code: 'INVALID_RESPONSE',
-    );
+  CataloguePage _decodeProductPage(Object? response) {
+    if (response is! Map<String, dynamic>) {
+      throw const ApiException(message: 'The server returned an unexpected products response.', code: 'INVALID_RESPONSE');
+    }
+    final outerData = response['data'];
+    if (outerData is! Map) {
+      throw const ApiException(message: 'The server returned an unexpected products response.', code: 'INVALID_RESPONSE');
+    }
+    final page = Map<String, dynamic>.from(outerData);
+    final records = page['data'];
+    if (records is! List) {
+      throw const ApiException(message: 'The server returned an unexpected products page.', code: 'INVALID_RESPONSE');
+    }
+    try {
+      return CataloguePage(
+        items: records.whereType<Map>().map((item) => CatalogueProduct.fromJson(Map<String, dynamic>.from(item))).toList(growable: false),
+        currentPage: _pageInt(page['current_page'], 1),
+        lastPage: _pageInt(page['last_page'], 1),
+        perPage: _pageInt(page['per_page'], records.length),
+        total: _pageInt(page['total'], records.length),
+      );
+    } on FormatException catch (error) {
+      throw ApiException(message: error.message, code: 'INVALID_RESPONSE');
+    }
+  }
+
+  Map<String, dynamic> _decodeSingle(Object? response, {required String resource}) {
+    if (response is Map<String, dynamic>) {
+      final data = response['data'];
+      if (data is Map) return Map<String, dynamic>.from(data);
+      return response;
+    }
+    throw ApiException(message: 'The server returned an unexpected $resource response.', code: 'INVALID_RESPONSE');
+  }
+
+  int _pageInt(Object? value, int fallback) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '') ?? fallback;
   }
 }
 
-/// Deterministic local repository for controller/widget tests and offline
-/// development. It intentionally accepts fixture records supplied by tests.
 class FakeCatalogueRepository implements CatalogueRepository {
   FakeCatalogueRepository({
-    Iterable<CatalogueRecord> categories = const [],
-    Iterable<CatalogueRecord> products = const [],
+    Iterable<CatalogueCategory> categories = const [],
+    Iterable<CatalogueProduct> products = const [],
   })  : _categories = List.unmodifiable(categories),
         _products = List.unmodifiable(products);
 
-  final List<CatalogueRecord> _categories;
-  final List<CatalogueRecord> _products;
+  final List<CatalogueCategory> _categories;
+  final List<CatalogueProduct> _products;
 
   @override
-  Future<List<CatalogueRecord>> fetchCategories() async => _categories;
+  Future<List<CatalogueCategory>> fetchCategories() async => _categories;
 
   @override
-  Future<List<CatalogueRecord>> fetchProducts({
-    Map<String, String>? queryParameters,
-  }) async => _products;
+  Future<CataloguePage> fetchProducts({Map<String, String>? queryParameters}) async {
+    return CataloguePage(items: _products, currentPage: 1, lastPage: 1, perPage: _products.length, total: _products.length);
+  }
 
   @override
-  Future<CatalogueRecord> fetchProduct(String productId) async {
+  Future<CatalogueProduct> fetchProduct(String productId) async {
+    final id = int.tryParse(productId);
     for (final product in _products) {
-      final id = product.payload['id'];
-      if (id != null && id.toString() == productId) return product;
+      if (product.id == id) return product;
     }
-    throw const ApiException(
-      message: 'Product not found in the local catalogue.',
-      code: 'NOT_FOUND',
-      statusCode: 404,
-    );
+    throw const ApiException(message: 'Product not found in the local catalogue.', code: 'NOT_FOUND', statusCode: 404);
   }
 }
