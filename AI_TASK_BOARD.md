@@ -19,7 +19,7 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 - [x] M6 — Partner assignment listing and valid pickup → out-for-delivery → delivered transitions are implemented with ownership/conflict tests and verified by Workflow #259. The explicit partner accept step remains to be finalized against the product contract.
 - [x] M7 — Active-trip GPS updates, latest-location reads, stale-state reporting and customer/admin authorization are implemented and verified by Workflow #266.
 - [x] M8 — Invoice schema, deterministic numbering, immutable snapshots and customer/admin access are implemented and verified by Workflow #301.
-- [~] M9 — Implementation and CI coverage are substantially complete; the PHP 8.3 CI now includes a Pint formatting gate (verification pending), with remaining release gates of static/security review, GoDaddy capability confirmation, broader end-to-end/device validation and explicit human release approval.
+- [~] M9 — Implementation and CI coverage are substantially complete; the PHP 8.3 CI now includes a Pint formatting gate. Workflow #413 failed at the new formatting check with 29 style issues across 101 files; migrations/tests were skipped. Commit `d7042331b8da04a0ca8b8960761b30aa9c5f03a7` adds a push-only formatter workflow to apply Pint and commit formatting on `developer-1-backend-admin`. Remaining gates are fresh formatting/test verification, static/security review, GoDaddy capability confirmation, broader end-to-end/device validation and explicit human release approval.
 
 ## Handoff format
 
@@ -133,7 +133,11 @@ Record decisions here only after the owner approves or they are already establis
 - GoDaddy plan-specific capability verification remains pending with the owner.
 - No deployment or production migration was performed.
 
-### Developer 1 task-tracking update — 2026-09-29 (quality gate)
+### Developer 1 task-tracking update — 2026-09-29
+
+- Workflow #413 **FAILED** at the new Pint check: dependency installation passed, Pint found 29 style issues across 101 files, and migrations/tests were skipped.
+- Commit `d7042331b8da04a0ca8b8960761b30aa9c5f03a7` adds a push-only `Backend Format` workflow to apply Pint and commit generated formatting changes directly to `developer-1-backend-admin`; fresh PR verification is still pending.
+ (quality gate)
 
 - Added a PHP 8.3 CI Pint formatting check to `.github/workflows/backend.yml` in commit `781364ba1c0d69340b488e71ac1eb9e74dbe0ff0`.
 - The PR head is now `781364ba1c0d69340b488e71ac1eb9e74dbe0ff0`; the connector has not yet returned a PR-triggered workflow run for this commit, so the formatting gate is **pending verification** and is not marked complete.
