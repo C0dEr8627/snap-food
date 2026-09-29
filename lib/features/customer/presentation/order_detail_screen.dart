@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../data/order_models.dart';
+import 'package:go_router/go_router.dart';
 import 'order_controller.dart';
 import '../data/order_tracking_models.dart';
 
@@ -48,6 +49,14 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
             _Section(title: 'Items', child: Column(children: [for (final item in order.items) ListTile(contentPadding: EdgeInsets.zero, title: Text(item.productId.isEmpty ? 'Product' : 'Product ' + item.productId, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700)), trailing: Text('×' + item.quantity.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800)))])),
             const SizedBox(height: 12),
             _Section(title: 'Delivery address', child: order.deliveryAddress == null ? const Text('Address snapshot unavailable.', style: TextStyle(fontSize: 11, color: SnapFoodColors.onSurfaceVariant)) : Text(_addressText(order.deliveryAddress!), style: const TextStyle(fontSize: 11, height: 1.45, color: SnapFoodColors.onSurfaceVariant))),
+            if (order.status == OrderStatus.delivered) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => context.push('/orders/' + widget.orderId + '/invoice'),
+                icon: const Icon(Icons.receipt_long_outlined),
+                label: const Text('View invoice'),
+              ),
+            ],
             const SizedBox(height: 12),
             _Section(title: 'Payment', child: Column(children: [_Row('Method', order.paymentMethod), const SizedBox(height: 7), _Row('Status', order.paymentStatus), const Divider(height: 18), _Row('Subtotal', order.subtotal), const SizedBox(height: 7), _Row('Delivery', order.deliveryFee), const Divider(height: 18), _Row('Total', order.total, strong: true)])),
           ]);
