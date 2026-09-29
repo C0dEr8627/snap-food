@@ -3,16 +3,30 @@ import 'package:flutter/material.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../../../design_system/tokens/app_spacing.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../data/delivery_models.dart';
+import '../data/delivery_repository.dart';
+import '../../../core/network/api_client.dart';
+import '../../../core/network/api_transport.dart';
+import '../../auth/data/session_store.dart';
 
-class DeliveryRequestsScreen extends StatefulWidget {
+class DeliveryRequestsScreen extends ConsumerStatefulWidget {
   const DeliveryRequestsScreen({super.key});
 
   @override
-  State<DeliveryRequestsScreen> createState() => _DeliveryRequestsScreenState();
+  ConsumerState<DeliveryRequestsScreen> createState() => _DeliveryRequestsScreenState();
 }
 
-class _DeliveryRequestsScreenState extends State<DeliveryRequestsScreen> {
+class _DeliveryRequestsScreenState extends ConsumerState<DeliveryRequestsScreen> {
   String filter = 'All';
+
+  late final deliveryRepositoryProvider = Provider<DeliveryRepository>((ref) => RemoteDeliveryRepository(
+    ApiClient(
+      config: ApiConfig.fromEnvironment(),
+      transport: ref.watch(deliveryApiTransportProvider),
+      tokenProvider: ref.watch(deliverySessionStoreProvider).readToken,
+    ),
+  ));
 
   final requests = const [
     ['TRP-1842', 'Mumbai Spice Kitchen', 'Andheri East', 'Powai', '4.8 km', '18 min', '₹128', 'Standard'],
@@ -23,15 +37,19 @@ class _DeliveryRequestsScreenState extends State<DeliveryRequestsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final assignments = ref.watch(deliveryAssignmentsProvider);
+
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, c) {
             final desktop = c.maxWidth >= 900;
-            final visible = filter == 'All'
-                ? requests
-                : requests.where((r) => r[7] == filter).toList();
+            final visible = assignments.when(
+              loading: () => const <List<String>>[],
+              error: (_, __) => requests,
+              data: (page) => page.items.map((r) => [r.id.toString(), r.orderId?.toString() ?? 'Order', r.pickupAddress ?? 'Pickup', r.dropoffAddress ?? 'Dropoff', '—', '—', '—', r.status]).toList(),
+            );
             return Row(
               children: [
                 if (desktop) const _Sidebar(),
@@ -61,7 +79,11 @@ class _DeliveryRequestsScreenState extends State<DeliveryRequestsScreen> {
                               style: TextStyle(fontSize: 14, color: SnapFoodColors.onSurfaceVariant),
                             ),
                             const SizedBox(height: 20),
-                            const _OnlineBanner(),
+                            assignments.when(
+                              loading: () => const _OnlineBanner(),
+                              error: (_, __) => const _OnlineBanner(),
+                              data: (_) => const _OnlineBanner(),
+                            ),
                             const SizedBox(height: 18),
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
@@ -94,7 +116,14 @@ class _DeliveryRequestsScreenState extends State<DeliveryRequestsScreen> {
                                     runSpacing: 14,
                                     children: [
                                       for (final r in visible)
-                                        SizedBox(width: width, child: _RequestCard(data: r)),
+                                        SizedBox(width: width, child: _RequestCard(data: r, onStatus: (status) async {
+                                          try {
+                                            await ref.read(deliveryRepositoryProvider).updateStatus(int.parse(r[0]), status);
+                                            ref.invalidate(deliveryAssignmentsProvider);
+                                          } catch (error) {
+                                            if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
+                                          }
+                                        })),
                                     ],
                                   );
                                 },
@@ -115,8 +144,9 @@ class _DeliveryRequestsScreenState extends State<DeliveryRequestsScreen> {
 }
 
 class _RequestCard extends StatelessWidget {
-  const _RequestCard({required this.data});
+  const _RequestCard({required this.data, required this.onStatus});
   final List<String> data;
+  final Future<void> Function(String status) onStatus;
 
   @override
   Widget build(BuildContext context) {
@@ -155,9 +185,7 @@ class _RequestCard extends StatelessWidget {
             width: double.infinity,
             height: 46,
             child: ElevatedButton(
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(data[0] + ' accepted — navigation flow is ready.')),
-              ),
+              onPressed: () => onStatus('PICKED_UP'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: SnapFoodColors.secondary,
                 foregroundColor: SnapFoodColors.onPrimary,
@@ -332,3 +360,16 @@ class _NavRow extends StatelessWidget {
     ]),
   );
 }
+
+final deliveryApiTransportProvider = Provider<HttpApiTransport>((ref) {
+  final transport = HttpApiTransport();
+  ref.onDispose(transport.close);
+  return transport;
+});
+
+final deliverySessionStoreProvider = Provider<SessionStore>((ref) => SecureSessionStore());
+
+final deliveryAssignmentsProvider = FutureProvider.autoDispose<DeliveryAssignmentPage>((ref) {
+  final repository = ref.watch(deliveryRepositoryProvider);
+  return repository.fetchAssignments();
+});
