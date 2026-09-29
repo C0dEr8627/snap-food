@@ -30,12 +30,6 @@
     }
   },
   "scripts": {
-    "setup": [
-      "Composer\\Config::disableProcessTimeout",
-      "@php -r "file_exists('.env') || copy('.env.example', '.env');"",
-      "@php artisan key:generate",
-      "@php artisan migrate --force"
-    ],
     "test": "@php artisan test",
     "format": "@php vendor/bin/pint"
   },
