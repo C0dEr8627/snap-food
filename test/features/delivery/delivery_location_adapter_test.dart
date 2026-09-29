@@ -72,7 +72,7 @@ void main() {
       longitude: 2,
       recordedAt: DateTime.utc(2026, 9, 29),
     ));
-    source.controller.add(const DeliveryPosition(
+    source.controller.add(DeliveryPosition(
       latitude: 3,
       longitude: 4,
       recordedAt: DateTime.utc(2026, 9, 29, 0, 0, 1),
