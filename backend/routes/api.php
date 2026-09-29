@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\Catalogue\CategoryController;
 use App\Http\Controllers\Api\V1\Catalogue\ProductController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\Orders\AdminOrderController;
 use App\Http\Controllers\Api\V1\Orders\OrderController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     });
 
     Route::middleware('role:ADMIN')->group(function (): void {
+        Route::patch('/admin/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('api.v1.admin.orders.status');
         Route::post('/categories', [CategoryController::class, 'store'])->name('api.v1.categories.store');
         Route::patch('/categories/{category}', [CategoryController::class, 'update'])->name('api.v1.categories.update');
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('api.v1.categories.destroy');
