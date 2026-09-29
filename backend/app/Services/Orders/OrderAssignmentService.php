@@ -33,6 +33,9 @@ class OrderAssignmentService
                 throw new ConflictException('Order is already assigned.');
             }
 
+            $lockedPartner->is_available = false;
+            $lockedPartner->save();
+
             $assignment = OrderAssignment::create([
                 'order_id' => $lockedOrder->id,
                 'delivery_partner_id' => $lockedPartner->id,
