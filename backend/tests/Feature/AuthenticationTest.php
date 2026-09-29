@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Services\Auth\GoogleCredentialVerifier;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
 use RuntimeException;
 use Tests\TestCase;
 
@@ -144,6 +145,11 @@ class AuthenticationTest extends TestCase
             ->assertOk();
 
         $this->assertDatabaseCount('personal_access_tokens', 0);
+
+        // Clear the cached guard user between requests so the next call exercises
+        // Sanctum token lookup against the database rather than the test container's
+        // in-memory guard state.
+        Auth::forgetGuards();
 
         $this->withHeader('Authorization', 'Bearer '.$token)
             ->getJson('/api/v1/me')
