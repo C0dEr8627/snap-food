@@ -29,7 +29,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 | Phase 1 — Backend foundation | **COMPLETED** | Laravel API skeleton, routing, health endpoint, PHPUnit config/test, PHP 8.3 CI, Sanctum, MySQL config, Laravel 13 baseline and required Git-preserved directories are complete. Workflow #30 passed the foundation suite. Initial MySQL schema/models and CI migration verification also passed in workflow #48. |
 | Phase 2 — Identity & authorization | **COMPLETED** | Google verification service, login, Sanctum token storage, `/me`, logout, role middleware, resource policies and negative/cross-user authorization tests are implemented and verified by Workflow #146. Rate limiting, credential-safe logging and standardized API errors are also covered. Delivery-partner/admin provisioning remains a later operations task. |
 | Phase 3 — Catalogue | **COMPLETED** | Customer category/product reads, search/pagination, admin create/update/deactivate APIs, validation, regression tests and deterministic seed/demo data are implemented and verified by Workflow #146. |
-| Phase 4 — Orders & COD | **IN PROGRESS** | Order schema/models, customer checkout, immutable address/product snapshots, server-side totals, COD pending state, status history and ownership/transition tests are implemented; CI verification and remaining order operations are next. |
+| Phase 4 — Orders & COD | **IN PROGRESS** | Checkout/list/detail and server-owned admin status transitions are implemented; latest CI verification is pending. Concurrency/state-conflict coverage is now included; delivery-partner-specific transitions remain in Phases 5–6. |
 | Phase 5 — Admin & assignment | **NOT STARTED** | Protected admin web dashboard and delivery assignment operations remain. |
 | Phase 6 — Delivery tracking | **NOT STARTED** | Partner workflow, pickup/completion, location updates and tracking authorization remain. |
 | Phase 7 — Invoices | **NOT STARTED** | Numbering decision, invoice generation and access control remain. |
@@ -106,8 +106,11 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Implement customer list/detail endpoints with ownership checks.
 - [x] Prevent invalid state jumps, price tampering and unauthorized access.
 - [x] Add transaction, state-transition and ownership tests.
+- [x] Implement server-owned admin order status transitions with transactional row locking and status-history actor recording.
+- [x] Return `ORDER_STATE_CONFLICT` with HTTP 409 for invalid/repeated transitions.
+- [x] Add admin/customer authorization and state-conflict regression tests.
 
-**Current Phase 4 gate:** Workflow #184 ran the corrected branch and still failed one `OrderApiTest`: cross-customer order detail expected 403 but received 500. The failure occurs after MySQL migrations and the full suite boot successfully. The API exception layer has now been hardened to normalize Symfony `AccessDeniedHttpException` to the documented 403/FORBIDDEN response in commit `032e4144e5fba9e0b24a16418b82a23b1dbc2d52`. A fresh CI run is required before marking the checkout/list/detail slice verified.
+**Current Phase 4 gate:** Workflow #189 passed the corrected authorization fix on PHP 8.3 with MySQL. The initial checkout/list/detail slice is now CI-verified. The next implementation increment adds server-owned admin status transitions, transactional `lockForUpdate()` protection, actor history, and `ORDER_STATE_CONFLICT` HTTP 409 handling; fresh CI verification is required before this transition increment is marked complete.
 
 **Milestone:** Flutter-compatible request creates a real MySQL COD order and customer can retrieve it.
 
@@ -198,7 +201,9 @@ Build the trusted backend and admin operations that the existing Flutter app can
 42. Corrected the migration table name and rollback target to `order_status_histories`, matching the `OrderStatusHistory` model and relationship conventions, in commit `112a2ffe1df0bcd07bbf54f43748798809c144b8`.
 43. Workflow #179 completed with 3 remaining `OrderApiTest` failures: a stale singular table assertion, an order-list response shape mismatch (`data.total`), and an admin order-route authorization response of HTTP 500 instead of 403.
 44. Corrected the stale status-history assertion in `bf2febe67ee45507886be50aca809e7c0bca9f23`, wrapped the order list paginator in the established `data` response envelope in `a0f9b47f70df16871ea4da82a50ebf5640b1582b`, and added explicit `role:CUSTOMER` middleware to customer order routes in `cf5236d87a7c2ad00be965a89ce94a5cd72a566b`.
-45. Workflow #184 verified migrations and the suite boot but failed one cross-customer order-detail authorization assertion with HTTP 500 instead of 403. Added an explicit `AccessDeniedHttpException` JSON mapping with `FORBIDDEN` code in `032e4144e5fba9e0b24a16418b82a23b1dbc2d52`; fresh CI verification is pending.
+45. Workflow #184 verified migrations and the suite boot but failed one cross-customer order-detail authorization assertion with HTTP 500 instead of 403. Added an explicit `AccessDeniedHttpException` JSON mapping with `FORBIDDEN` code in `032e4144e5fba9e0b24a16418b82a23b1dbc2d52`.
+46. Workflow #189 passed the corrected authorization fix on PHP 8.3 with MySQL, verifying the initial Phase 4 checkout/list/detail slice.
+47. Implemented server-owned admin order status transitions through `PATCH /api/v1/admin/orders/{order}/status`, with role/policy authorization, transactional `lockForUpdate()`, status-history actor recording, and `ORDER_STATE_CONFLICT` HTTP 409 handling. Added regression coverage for valid transitions, invalid/repeated transitions, and customer denial.
 
 ### Latest verification result
 
@@ -215,7 +220,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Immediate next task
 
-**Verify commit `032e4144e5fba9e0b24a16418b82a23b1dbc2d52` in CI.** If green, mark the initial checkout/list/detail slice verified and continue with server-owned order status transition operations, authorization, `ORDER_STATE_CONFLICT` handling and concurrency/state-locking tests.
+**Verify the new server-owned status-transition increment in CI.** If green, mark the transition slice verified and continue with delivery assignment/partner authorization and concurrency coverage in Phase 5/6. If CI fails, fix the concrete failure before advancing.
 
 ## Developer 1 definition of done
 
