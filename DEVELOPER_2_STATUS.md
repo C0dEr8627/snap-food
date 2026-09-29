@@ -881,3 +881,18 @@ No backend/Laravel-owned files were modified. No merge or deployment was perform
 1. Inspect CI for the latest branch head after 8c720c2ccf193d48b39e07993e1a5417e1f51a66.
 2. If the smoke test passes, verify the Android debug build and record actual results.
 3. If another assertion fails, distinguish widget-finder semantics from real navigation/rendering behavior before changing production code.
+
+
+## Developer 2 continuation checkpoint — 2026-09-30 (guest-browsing route guard correction)
+
+- **Reported failure:** the local smoke test reaches the welcome screen, taps **Explore food**, then cannot find `What are you craving today?` on the home feed.
+- **Root cause identified:** `/home` rendered the expected `HomeFeedScreen`, but the auth redirect classified it as protected. The smoke-test auth override is signed out, so GoRouter redirected back to `/welcome` after the tap. The home-feed text itself is a normal `Text` widget; this is a route-access behavior issue, not a rich-text finder issue.
+- **Correction committed:** `4d2f9fdedc547b09d3a29db37067844e9045228a` adds `/home` to the public routes and applies the public-route rule consistently while auth restoration is loading. Other customer actions such as orders, checkout, profile and tracking remain behind the auth guard.
+- **CI evidence before correction:** workflow run `36616886099` (run #264) passed dependency resolution, formatting, formatting check and analyzer, then failed in tests; Android debug APK build was skipped. This run tested the prior head and does not verify this correction.
+- **Verification:** Flutter/Dart cannot be run locally in this connected environment. Fresh CI is required; no test/build pass is claimed.
+- **Scope:** one router access-rule correction plus this status documentation; no backend/Laravel-owned files or API contracts changed. No merge/deployment performed.
+
+### Immediate next steps
+1. Verify current-head CI for `4d2f9fdedc547b09d3a29db37067844e9045228a`.
+2. If the smoke test passes, confirm Android debug APK build and then continue the next unblocked implementation task.
+3. Keep GPS/Maps platform configuration, Google auth runtime verification, physical-device checks and full E2E on the release-readiness checklist.
