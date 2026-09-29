@@ -939,3 +939,35 @@ No backend/Laravel-owned files were modified.
 | Phase 7 — active GPS/Maps | [~] | Adapter/controller/lifecycle complete; approved platform dependency + real GPS/Maps verification pending |
 | Invoice | [x] | Contract frozen; typed repository/controller/UI and delivered-order route implemented; runtime verification pending |
 | Release verification | [ ] | Fresh green CI, Android APK, physical-device and E2E verification pending |
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (invoice CI analyzer follow-up)
+
+- Fresh Flutter CI run #229 (36610984138) reached dependency resolution and formatting successfully, then failed at flutter analyze; tests and Android build were skipped.
+- Inspected the actual analyzer output and found two concrete invoice-screen errors: the new invoice screen was missing the DeliveryAddress import, and nullable address-list elements were being passed to trim() without narrowing. There was also one redundant null assertion in the invoice fake repository.
+- Fixed those concrete issues in commits 255905c4c2c896dce47575dd86097a567f539f41 and 3e4adf5c0977aa8c01dee8035c0511d15dd6ba12.
+- No backend/Laravel-owned files were modified. No GPS/Maps dependency was added.
+- A new CI run is expected for the corrected head; its analyzer/test/build result must be verified before claiming the invoice implementation is CI-green.
+- The next feature remains the approved GPS/Maps platform integration, but it is still blocked because pubspec.yaml has no location/Maps package and the Android manifest has no location/Maps configuration. Do not invent or add an unapproved dependency.
+
+### Current task board
+
+| Area | Status | Current state |
+|---|---|---|
+| Phase 0 — audit/verification | [~] | CI verification ongoing; physical-device verification pending |
+| Phase 1 — API foundation | [x] | Complete |
+| Phase 2 — auth/session | [~] | Session lifecycle complete; Google platform/runtime verification pending |
+| Phase 3 — catalogue/cart | [x] | Complete |
+| Phase 4 — COD checkout | [x] | Implementation complete; automated/runtime verification pending |
+| Phase 5 — customer orders/tracking | [x] | Implementation complete; runtime verification pending |
+| Phase 6 — delivery lifecycle | [x] | Assignment/status/location integration complete |
+| Phase 7 — active GPS/Maps | [~] | Adapter/controller/lifecycle complete; approved platform dependency + real GPS/Maps verification pending |
+| Invoice | [x] | Contract frozen; typed model/repository/controller/UI and delivered-order route implemented; analyzer fixes just applied; CI verification pending |
+| Release verification | [ ] | Green current-head CI, Android APK, physical-device and E2E verification pending |
+
+### Next execution order
+1. Verify fresh CI for commits 255905c... / 3e4adf5... and fix only concrete failures.
+2. Confirm the approved Android/iOS location package and Google Maps configuration.
+3. Wire the approved platform location source behind the existing adapter/controller boundary.
+4. Perform physical GPS permission/revocation, Maps and active-trip verification.
+5. Complete customer/delivery E2E, Android debug APK and final PR readiness.
