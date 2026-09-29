@@ -354,16 +354,3 @@ class _NavRow extends StatelessWidget {
     ]),
   );
 }
-
-final deliveryApiTransportProvider = Provider<HttpApiTransport>((ref) {
-  final transport = HttpApiTransport();
-  ref.onDispose(transport.close);
-  return transport;
-});
-
-final deliverySessionStoreProvider = Provider<SessionStore>((ref) => SecureSessionStore());
-
-final deliveryAssignmentsProvider = FutureProvider.autoDispose<DeliveryAssignmentPage>((ref) {
-  final repository = ref.watch(deliveryRepositoryProvider);
-  return repository.fetchAssignments();
-});
