@@ -27,7 +27,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 |---|---|---|
 | Phase 0 — Environment & repository baseline | **PARTIAL** | Repository/docs inspected; PHP 8.3 target recorded; hosting checklist and safe env example documented. Actual GoDaddy Composer/MySQL capability remains unverified. |
 | Phase 1 — Backend foundation | **COMPLETED** | Laravel API skeleton, routing, health endpoint, PHPUnit config/test, PHP 8.3 CI, Sanctum, MySQL config, Laravel 13 baseline and required Git-preserved directories are complete. Workflow #30 passed the foundation suite. Initial MySQL schema/models and CI migration verification also passed in workflow #48. |
-| Phase 2 — Identity & authorization | **PARTIAL** | Google verification service, login, Sanctum token storage, `/me`, logout and negative auth tests are implemented. CI verification is blocked by a missing Laravel application `Controller` base class, now fixed; role middleware/policies and cross-user authorization remain. |
+| Phase 2 — Identity & authorization | **PARTIAL** | Google verification service, login, Sanctum token storage, `/me`, logout, role middleware, resource policies and negative/cross-user authorization tests are implemented. CI verification remains pending after workflow #85 exposed a test-container guard-cache issue. |
 | Phase 3 — Catalogue | **PARTIAL** | Categories/products schema, models, casts and initial request validation are implemented. Catalogue APIs, resources, pagination/search, deterministic seeds, admin CRUD and endpoint tests remain. |
 | Phase 4 — Orders & COD | **NOT STARTED** | Order snapshots, totals, COD state, transitions, history and tests remain. |
 | Phase 5 — Admin & assignment | **NOT STARTED** | Protected admin web dashboard and delivery assignment operations remain. |
@@ -74,11 +74,11 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Find/create users by stable Google subject identifier.
 - [x] Implement Sanctum application tokens/session flow and token storage migration.
 - [x] Implement login, `GET /api/v1/me`, logout/revocation; role middleware/policies remain.
-- [ ] Roles: `CUSTOMER`, `DELIVERY_PARTNER`, `ADMIN`; no Restaurant Partner scope.
+- [x] Define role constants for `CUSTOMER`, `DELIVERY_PARTNER`, `ADMIN`; no Restaurant Partner scope.
 - [ ] Provision/approve delivery partners and admins server-side only.
-- [ ] Enforce resource ownership.
+- [x] Enforce address resource ownership through a Laravel policy; admin access is explicit through policy `before` handling.
 - [x] Add invalid credential, inactive account, token revocation and role-escalation regression tests.
-- [ ] Add explicit role middleware/policy and cross-user resource authorization tests.
+- [x] Add explicit role middleware, register the `role` middleware alias, register resource policies and add cross-user authorization tests.
 
 **Milestone:** Google SSO → Laravel verification → MySQL user → application token/session → `/me`.
 
@@ -172,18 +172,23 @@ Build the trusted backend and admin operations that the existing Flutter app can
 19. Google credential verification service, auth controller, Sanctum token storage, `/me`, logout and authentication regression tests implemented.
 20. Workflow #79 exposed that the authentication routes had not been persisted into `routes/api.php`; the missing route registration was corrected in commit `8df16414dd31f5eb0901d09dd94b43fca1707d72`.
 21. Workflow #81 ran against the corrected routes but failed because `App\Http\Controllers\Controller` was missing from the Laravel 13 application skeleton.
-22. Added the application controller base class in commit `d01b6de139d819b4b0e2572f0e8dc22b6a6d5c12`; the next CI run will verify the authentication slice again.
-23. Progress documentation is being updated to record the actual CI failure/fix rather than the stale workflow #73/#80 status.
+22. Added the application controller base class in commit `d01b6de139d819b4b0e2572f0e8dc22b6a6d5c12`.
+23. Workflow #85 reached the authentication suite successfully; one logout regression failed because the Laravel test container retained the authenticated guard instance after token deletion, so the subsequent request received HTTP 200 despite the database token being deleted.
+24. Fixed the logout regression test by clearing cached guards after revocation in commit `9bdef081822ae75d5628b62d3df400ef5b7d5b`.
+25. Added role constants/helpers, `EnsureUserHasRole`, the `role` middleware alias, explicit Address/Category/Product policies and Gate registration.
+26. Added middleware and cross-user/role policy coverage in `AuthorizationPolicyTest.php`; final CI verification is pending for this combined authz slice.
+27. Progress documentation is maintained against actual CI results rather than assuming implementation is verified.
 
 ### Not yet verified
 
-- Workflow #81 failed after reaching the authentication tests: all 7 authentication tests that exercised `AuthController` hit `Class "App\\Http\\Controllers\\Controller" not found`. This is now fixed by adding the missing application base controller in commit `d01b6de139d819b4b0e2572f0e8dc22b6a6d5c12`.
+- Workflow #85 failed only on the logout revocation assertion after the application controller fix; the token row was deleted, but the same in-memory test application retained the authenticated Sanctum guard. The test now clears cached guards before issuing the post-logout request.
+- The new role middleware and policy tests have not yet been CI-verified.
 - A real production Google credential has not been used; tests mock the verifier to avoid external identity-provider calls.
 - GoDaddy Composer/extensions/database/document-root/SSH capabilities.
 
 ## Immediate next task
 
-**Verify workflow #73 for the Google SSO/Sanctum slice.** If green, complete the remaining Phase 2 authorization work (role middleware/policies and cross-user authorization tests), then proceed to catalogue read/admin CRUD endpoints.
+**Verify the next CI run for the combined authentication + authorization slice.** If green, mark Phase 2 authorization verification complete and proceed to Phase 3 catalogue read/admin CRUD endpoints. If CI exposes another defect, fix the concrete failure before advancing.
 
 ## Developer 1 definition of done
 
