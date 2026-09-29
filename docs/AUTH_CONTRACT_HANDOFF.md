@@ -27,6 +27,12 @@ This document records the exact information Flutter needs before Google SSO can 
 - `AuthController` can transition between signed-out, authenticated, loading and failure states.
 - Controller tests cover restoration, expired session cleanup and logout.
 
+## Current cross-branch checkpoint (2026-09-29)
+
+Developer 1's latest backend commit `b150b2cbb6874c00fda70197d0995057b19a0e6d` passed GitHub Actions Backend workflow #109. The backend auth/authz CI gate is currently green.
+
+Flutter is still blocked from the actual Google exchange because the shared `API_CONTRACT.md` / `AUTH.md` do not yet freeze the exact `/auth/google` request credential field/type, successful application-token response shape, or public Google client configuration.
+
 ## Remaining implementation after contract freeze
 
 - Add the approved public Google sign-in package/configuration.
