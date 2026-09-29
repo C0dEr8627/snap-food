@@ -11,6 +11,7 @@ import '../features/customer/presentation/home_feed_screen.dart';
 import '../features/customer/presentation/search_screen.dart';
 import '../features/customer/presentation/orders_screen.dart';
 import '../features/customer/presentation/order_detail_screen.dart';
+import '../features/customer/presentation/invoice_screen.dart';
 import '../features/customer/presentation/favorites_screen.dart';
 import '../features/customer/presentation/live_order_tracking_screen.dart';
 import '../features/customer/presentation/customer_profile_screen.dart';
@@ -67,6 +68,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     GoRoute(path: '/search', name: 'customer-search', builder: (context, state) => const SearchScreen()),
     GoRoute(path: '/orders', name: 'customer-orders', builder: (context, state) => const OrdersScreen()),
     GoRoute(path: '/orders/:orderId', name: 'customer-order-detail', builder: (context, state) => OrderDetailScreen(orderId: state.pathParameters['orderId'] ?? '')),
+    GoRoute(path: '/orders/:orderId/invoice', name: 'customer-invoice', builder: (context, state) => InvoiceScreen(orderId: state.pathParameters['orderId'] ?? '')),
     GoRoute(path: '/favorites', name: 'customer-favorites', builder: (context, state) => const FavoritesScreen()),
     GoRoute(path: '/restaurant', name: 'restaurant-menu', builder: (context, state) => const RestaurantMenuScreen()),
     GoRoute(path: '/cart', name: 'cart-review', builder: (context, state) => const CartReviewScreen()),
