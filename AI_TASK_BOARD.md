@@ -107,4 +107,4 @@ Record decisions here only after the owner approves or they are already establis
 - Workflow #266 **PASSED** on commit `f99dde6b52ff0450693fff8b63b90ce31bbe2722`, verifying M7 active-trip location/tracking with PHP 8.3/MySQL. M7 is now complete; Phase 7 invoices is the next implementation.
 
 
-- Phase 7 invoice increment is implemented on `developer-1-backend-admin`: delivered-order invoice generation is idempotent, snapshots order/customer/item financial data, and customer/admin authorization is enforced. M8 remains in progress until CI verifies the implementation.
+- Phase 7 invoice increment is implemented on `developer-1-backend-admin`: delivered-order invoice generation is idempotent, snapshots order/customer/item financial data, and customer/admin authorization is enforced. Workflow #284 failed only because `InvoiceApiTest` used `User::factory()` but the minimal Laravel `User` model lacked `HasFactory`; the model trait and `UserFactory` are now added. M8 remains in progress until fresh CI verifies the implementation.
