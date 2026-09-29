@@ -15,7 +15,7 @@ class DeliveryNavigateCustomerScreen extends ConsumerStatefulWidget {
   const DeliveryNavigateCustomerScreen({super.key});
 
   @override
-  State<DeliveryNavigateCustomerScreen> createState() => _DeliveryNavigateCustomerScreenState();
+  ConsumerState<DeliveryNavigateCustomerScreen> createState() => _DeliveryNavigateCustomerScreenState();
 }
 
 class _DeliveryNavigateCustomerScreenState extends ConsumerState<DeliveryNavigateCustomerScreen> {
@@ -102,7 +102,7 @@ class _DeliveryNavigateCustomerScreenState extends ConsumerState<DeliveryNavigat
                                 }
                                 return Column(
                                   children: [
-                                    _NavigationMap(arrived: arrived),
+                                    _NavigationMap(assignment: assignment, arrived: arrived),
                                     const SizedBox(height: 18),
                                     _TripPanel(
                                       assignment: assignment,
@@ -139,7 +139,7 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) => Row(
         children: [
           IconButton(onPressed: () => Navigator.maybePop(context), icon: const Icon(Icons.arrow_back_rounded)),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
