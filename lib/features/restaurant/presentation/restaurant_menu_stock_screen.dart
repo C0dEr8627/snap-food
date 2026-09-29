@@ -670,27 +670,25 @@ class _Sidebar extends StatelessWidget {
 }
 
 class _Nav extends StatelessWidget {
-  const _Nav(this.label, this.icon, [this.onTap, this.selected = false]);
+  const _Nav(this.label, this.icon, [this.onTap]);
 
   final String label;
   final IconData icon;
   final VoidCallback? onTap;
-  final bool selected;
-
   @override
   Widget build(BuildContext context) {
     final child = Container(
       margin: const EdgeInsets.only(bottom: 5),
       padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 11),
       decoration: BoxDecoration(
-        color: selected ? SnapFoodColors.softYellow : Colors.transparent,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(SnapFoodRadii.md),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 19, color: selected ? SnapFoodColors.primary : SnapFoodColors.onSurfaceVariant),
+          Icon(icon, size: 19, color: SnapFoodColors.onSurfaceVariant),
           const SizedBox(width: 10),
-          Text(label, style: TextStyle(fontSize: 12, fontWeight: selected ? FontWeight.w800 : FontWeight.w600)),
+          Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
         ],
       ),
     );
