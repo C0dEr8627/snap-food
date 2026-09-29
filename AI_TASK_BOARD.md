@@ -19,7 +19,7 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 - [x] M6 — Partner assignment listing and valid pickup → out-for-delivery → delivered transitions are implemented with ownership/conflict tests and verified by Workflow #259. The explicit partner accept step remains to be finalized against the product contract.
 - [x] M7 — Active-trip GPS updates, latest-location reads, stale-state reporting and customer/admin authorization are implemented and verified by Workflow #266.
 - [x] M8 — Invoice schema, deterministic numbering, immutable snapshots and customer/admin access are implemented and verified by Workflow #301.
-- [~] M9 — Implementation and CI coverage are substantially complete; remaining release gates are formatter/static-analysis/security review, GoDaddy capability confirmation, broader end-to-end/device validation and explicit human release approval.
+- [~] M9 — Implementation and CI coverage are substantially complete; the PHP 8.3 CI now includes a Pint formatting gate (verification pending), with remaining release gates of static/security review, GoDaddy capability confirmation, broader end-to-end/device validation and explicit human release approval.
 
 ## Handoff format
 
@@ -133,7 +133,12 @@ Record decisions here only after the owner approves or they are already establis
 - GoDaddy plan-specific capability verification remains pending with the owner.
 - No deployment or production migration was performed.
 
-**Next owner/action:** Developer 1 completes any available PHP 8.3/Composer quality checks and final diff/security review; project owner confirms GoDaddy capabilities and gives explicit release approval. Developer 2/frontend integration remains a separate validation track.
+### Developer 1 task-tracking update — 2026-09-29 (quality gate)
+
+- Added a PHP 8.3 CI Pint formatting check to `.github/workflows/backend.yml` in commit `781364ba1c0d69340b488e71ac1eb9e74dbe0ff0`.
+- The PR head is now `781364ba1c0d69340b488e71ac1eb9e74dbe0ff0`; the connector has not yet returned a PR-triggered workflow run for this commit, so the formatting gate is **pending verification** and is not marked complete.
+- Static-analysis/security tooling is still not configured in CI; local PHP/Composer execution remains unavailable in the connector environment.
+- **Next owner/action:** verify the new CI formatting gate, then complete available static/security review; project owner confirms GoDaddy capabilities and gives explicit release approval. Developer 2/frontend integration remains a separate validation track.
 
 ### Developer 1 task-tracking update — 2026-09-29
 
