@@ -74,6 +74,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Consumer(builder: (context, ref, _) {
+                      final catalogue = ref.watch(catalogueControllerProvider);
+                      return CatalogueStateMessage(
+                        value: catalogue,
+                        onRetry: () => ref.read(catalogueControllerProvider.notifier).retry(),
+                      );
+                    }),
                     const Text('Search by craving', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                     const SizedBox(height: 12),
                     SizedBox(
