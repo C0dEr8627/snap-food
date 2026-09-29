@@ -7,11 +7,11 @@ use App\Models\Order;
 use App\Models\OrderAssignment;
 use App\Models\User;
 use Carbon\CarbonImmutable;
+use App\Exceptions\ConflictException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class DeliveryLocationController
 {
@@ -47,13 +47,13 @@ class DeliveryLocationController
                 Order::STATUS_PICKED_UP,
                 Order::STATUS_OUT_FOR_DELIVERY,
             ], true)) {
-                throw new ConflictHttpException('Location updates are only allowed for active delivery trips.');
+                throw new ConflictException('Location updates are only allowed for active delivery trips.');
             }
 
             $recordedAt = CarbonImmutable::parse($validated['recorded_at']);
 
             if ($recordedAt->greaterThan(now()->addMinutes(2))) {
-                throw new ConflictHttpException('Location timestamp cannot be materially in the future.');
+                throw new ConflictException('Location timestamp cannot be materially in the future.');
             }
 
             return DeliveryLocation::create([
@@ -81,13 +81,13 @@ class DeliveryLocationController
             Order::STATUS_PICKED_UP,
             Order::STATUS_OUT_FOR_DELIVERY,
         ], true)) {
-            throw new ConflictHttpException('Order tracking is not active.');
+            throw new ConflictException('Order tracking is not active.');
         }
 
         $assignment = $order->assignment;
 
         if (! $assignment) {
-            throw new ConflictHttpException('Order tracking is not available yet.');
+            throw new ConflictException('Order tracking is not available yet.');
         }
 
         $location = DeliveryLocation::query()
