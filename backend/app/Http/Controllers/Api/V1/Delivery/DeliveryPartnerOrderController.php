@@ -17,7 +17,7 @@ class DeliveryPartnerOrderController
         $partner = $request->user()->deliveryPartner;
 
         if (! $partner || ! $partner->is_active || ! $partner->is_approved) {
-            abort(403, 'Delivery partner access is not active.');
+            throw new AccessDeniedHttpException('Delivery partner access is not active.');
         }
 
         return response()->json([
