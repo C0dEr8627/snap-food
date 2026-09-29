@@ -17,7 +17,7 @@ void main() {
   test('serializes COD checkout with product ids, quantities and address', () {
     final request = CreateOrderRequest(
       items: const [
-        OrderLineRequest(productId: '15', quantity: 2),
+        OrderLineRequest(productId: 15, quantity: 2),
       ],
       deliveryAddress: address,
     );
