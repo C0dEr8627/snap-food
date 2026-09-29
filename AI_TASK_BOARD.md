@@ -345,3 +345,33 @@ The backend branch now has richer delivery/tracking and invoice endpoint documen
 4. Implement order success/detail/history, then delivery/tracking and invoice integrations from frozen schemas.
 
 No speculative API payloads, status enums, identifiers or backend changes are permitted while the contract gate remains open.
+
+
+## 2026-09-29 — CI triage and implementation checkpoint (latest)
+
+- Branch head: `74b5877e58333976774b325e9476d26d06b224bc`.
+- Flutter CI run `36591771642` reached `flutter analyze` and failed on two concrete errors: Riverpod `AsyncValue<AuthStatus>.valueOrNull` was unavailable in `lib/app/app.dart`, and `ApiClient` now requires an `ApiTransport` in `lib/features/auth/presentation/auth_controller.dart`.
+- Fixed those concrete analyzer errors only: routing now reads `authState.value`, and the auth API client is constructed with `HttpApiTransport()`.
+- Fix commits: `995a9d56f53ce9bf9e3d0408cd37e3feb009d520` and `74b5877e58333976774b325e9476d26d06b224bc`.
+- New push/PR CI runs `36592415878` and `36592421982` are currently pending; the previous runs for the intermediate commit are still in progress/cancelled as superseded. Do not mark CI green until the latest head completes analyzer, tests, and Android build.
+- Existing non-blocking analyzer warnings/info remain in the legacy UI surface; no broad cleanup was introduced during this checkpoint.
+
+### Current implementation status
+- Phase 0 [~] Static audit/documentation complete; CI verification is active, physical-device verification remains not run here.
+- Phase 1 [x] API foundation complete.
+- Phase 2 [~] Session lifecycle complete; Google SSO exchange/config and role routing remain contract/config gated.
+- Phase 3 [~] Repository/controller/state integration complete; typed catalogue mapping remains schema-gated.
+- Phase 4 [~] Local cart boundary complete; address/COD checkout, server-authoritative totals/errors, duplicate-submit protection, order success/detail/history remain contract-gated.
+- Phase 5 [ ] Customer order history/detail/status not started.
+- Phase 6/7 [~] Backend delivery lifecycle/tracking verified; Flutter delivery integration remains schema-gated and canonical route/response synchronization is still required.
+- Invoice [ ] Flutter integration not started; response schema is not frozen.
+
+### Next execution order
+1. Re-check CI for branch head `74b5877e58333976774b325e9476d26d06b224bc` and fix only newly reported concrete failures.
+2. Once CI is clean and Developer 1 synchronizes the Flutter-facing order/COD + address contract, implement typed order models.
+3. Implement order repository/controller, then cart → COD checkout with duplicate-submit protection and server-authoritative totals/errors.
+4. Implement order success/detail/history and related refresh/empty/error states.
+5. Implement delivery assignment/status/location/tracking from the frozen contract.
+6. Implement invoice model/repository/UI after its Flutter-facing response schema is frozen.
+
+No undocumented API payloads, status enums, route assumptions, or backend-owned changes are to be introduced.
