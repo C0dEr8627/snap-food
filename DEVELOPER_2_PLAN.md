@@ -236,3 +236,16 @@ Next implementation gate: freeze the documented order/COD + address contract, th
 - Runtime verification remains **NOT RUN** for formatter/analyzer/tests/APK/device because no Flutter/Dart runner is available and no Flutter CI status is reported.
 
 **Next implementation:** freeze the exact order/COD + address contract, then implement typed order models and the cart → COD checkout repository/controller → server totals → order detail/history flow. After that, implement the delivery request/assignment/tracking flow from the documented delivery contract. No undocumented API payloads will be introduced.
+
+
+## Developer 2 checkpoint — 2026-09-29 (latest continuation)
+
+- Re-checked `API_CONTRACT.md` on both `developer-2-flutter` and `frontend`. The shared/base contract still contains only endpoint-level order guidance; exact order create/list/detail and address schemas are not frozen.
+- The backend branch has added an admin delivery-assignment contract section (`POST /api/v1/admin/orders/{order}/assignment`, with `delivery_partner_id` and a 201 assignment response), but this is backend/admin-owned and is not yet present on the Flutter base contract. It does not unblock the partner/customer Flutter response schemas required for delivery flows.
+- PR #1 is still open/mergeable and currently points at branch head `b69c3965ea2a5da65b193c24b1a64aa1bb015df0`.
+- No new network DTOs or checkout/delivery API calls were added because the customer order/address and delivery-partner response contracts remain incomplete. This preserves the contract-first rule and avoids inventing payloads.
+- Completed Flutter work remains: API transport/error foundation; catalogue repository/controller/state integration; secure session storage and `/me`/logout lifecycle; auth-aware routing; local cart repository/controller with explicit product IDs and quantity tests; and contract-question documentation.
+- Backend workflow #209 remains the verified delivery-partner provisioning/approval result; backend order checkout/list/detail and server-owned status-transition/concurrency work remain verified.
+- Flutter/Dart formatting, analysis, tests, APK build and physical-device checks remain **NOT RUN** because no Flutter/Dart runner is available and no Flutter CI status is reported.
+
+**Next implementation gate:** Developer 1 must merge/freeze the complete Flutter-facing order/COD + address examples into the shared contract. Then Developer 2 will implement typed order models → checkout repository/controller → server-authoritative totals → order success/detail/history. Delivery partner request/assignment/location/tracking follows once those response schemas are documented.
