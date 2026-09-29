@@ -22,9 +22,11 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/products', [ProductController::class, 'index'])->name('api.v1.products.index');
     Route::get('/products/{product}', [ProductController::class, 'show'])->name('api.v1.products.show');
 
-    Route::get('/orders', [OrderController::class, 'index'])->name('api.v1.orders.index');
-    Route::post('/orders', [OrderController::class, 'store'])->name('api.v1.orders.store');
-    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('api.v1.orders.show');
+    Route::middleware('role:CUSTOMER')->group(function (): void {
+        Route::get('/orders', [OrderController::class, 'index'])->name('api.v1.orders.index');
+        Route::post('/orders', [OrderController::class, 'store'])->name('api.v1.orders.store');
+        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('api.v1.orders.show');
+    });
 
     Route::middleware('role:ADMIN')->group(function (): void {
         Route::post('/categories', [CategoryController::class, 'store'])->name('api.v1.categories.store');
