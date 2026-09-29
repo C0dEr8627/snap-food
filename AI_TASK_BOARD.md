@@ -12,7 +12,7 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 
 - [ ] M0 — GoDaddy plan/capabilities recorded; local development assumptions documented.
 - [ ] M1 — Laravel boots and connects to non-production MySQL.
-- [!] M2 — Google SSO end-to-end is not yet verified. Flutter session restore/revoke foundation is implemented and backend auth/authz CI is green, but the exact `/auth/google` request/response contract and public Google client configuration are still undocumented.
+- [!] M2 — Google SSO end-to-end is not yet verified. Flutter session restore/revoke foundation is implemented and backend auth/authz CI is green. The backend branch still does not freeze the exact `/auth/google` request credential field/type, successful application-token response shape, or public Google client configuration. No guessed payload/package/configuration has been added.
 - [ ] M3 — Admin product/category CRUD and customer catalogue API work end-to-end.
 - [ ] M4 — Customer creates a COD order with server-calculated totals; admin can inspect it.
 - [ ] M5 — Admin provisions delivery partners and safely assigns orders.
@@ -44,3 +44,15 @@ Record decisions here only after the owner approves or they are already establis
 - Tracking: active-trip only using HTTP updates and polling for MVP.
 - Hosting: GoDaddy; plan/capabilities unverified.
 - Restaurant Partner workflow: deferred.
+
+
+## Developer 2 checkpoint — 2026-09-29
+
+- **Branch:** `developer-2-flutter`
+- **Latest documentation commit:** `d64d81168ec27a10996ae047e243b358a8ad6b63`
+- **Completed:** API foundation; catalogue repository/controller/state foundation and existing-screen integration; secure session/token persistence; /me restoration; logout/revocation handling; auth controller tests; progress tracking documentation.
+- **Verified backend dependency:** Developer 1 auth/authz workflow #109 passed on commit `b150b2cbb6874c00fda70197d0995057b19a0e6d`.
+- **Blocked:** Google SSO exchange until backend freezes request/response fields and public client configuration.
+- **Also blocked:** typed catalogue DTO/UI mapping until successful category/product response fields are documented.
+- **Not run:** Flutter formatter/analyzer/tests/build/device checks because this environment has no local Flutter/Dart runner.
+- **Next owner action:** backend/API owner freezes the Google auth contract; then Developer 2 implements provider adapter, exchange, session establishment and go_router auth routing. If catalogue response schema is published first, Developer 2 can proceed with typed catalogue mapping before auth integration.
