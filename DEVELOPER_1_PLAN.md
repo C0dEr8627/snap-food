@@ -33,7 +33,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 | Phase 5 — Admin & assignment | **COMPLETED** | Protected admin login/dashboard, order search/detail/status/history, catalogue management, customer/partner/assignment/invoice directories, partner approval/availability controls and concurrency-safe web/API assignment are implemented. |
 | Phase 6 — Delivery tracking | **COMPLETED** | Delivery-partner assignment listing/status progression and active-trip location updates/tracking are CI-verified by Workflows #259 and #266. |
 | Phase 7 — Invoices | **COMPLETED** | Invoice schema, deterministic numbering, immutable snapshot generation and customer/admin access are implemented and verified by Workflow #301. |
-| Phase 8 — Release readiness | **IN PROGRESS** | Safe deterministic seeds, clean-MySQL CI migrations/tests, hosting/backup checklist and secret-ignore rules are complete. API response examples and Flutter integration guidance are now documented. Remaining: formatter/static-analysis/security-diff review, verify contract examples against all resource/error shapes, and confirm GoDaddy hosting capabilities with the owner. |
+| Phase 8 — Release readiness | **IN PROGRESS** | Safe deterministic seeds, clean-MySQL CI migrations/tests, hosting/backup checklist, secret-ignore rules, API contract examples and Flutter integration guidance are complete. Workflow #406 passed on the current head commit `941e9f2ee2916499fec4d60e4df1a6d37fb789b9`. Remaining: formatter/static-analysis/security-diff review, GoDaddy hosting capability confirmation and explicit human release approval. |
 
 ## Phase 0 — Inspect and establish the environment
 
@@ -152,13 +152,13 @@ Build the trusted backend and admin operations that the existing Flutter app can
 ## Phase 8 — Integration and release readiness
 
 - [x] Provide safe seed/demo data (synthetic, deterministic and idempotence-tested; never use against production).
-- [ ] Maintain API contract examples and integration guide; route audit corrected stale delivery and catalogue paths, but response/error examples still need a final pass.
+- [x] Maintain API contract examples and integration guide; route audit corrected stale delivery and catalogue paths, representative request/response/error examples were reviewed against the current Laravel route/controller behavior.
 - [ ] Run formatter/static analysis where configured.
 - [x] Run migrations from an empty MySQL CI database (verified in passing PHP 8.3/MySQL workflows).
 - [x] Run the automated test suite (latest implementation workflow #386 passed with 402 assertions; 89 warnings).
 - [x] Document backup/restore and production environment checklist in `backend/OPERATIONS.md` (hosting capability verification remains pending).
 - [x] Review tracked paths for secrets/dumps and add `backend/.gitignore` for local `.env`, vendor, logs and generated artifacts; only `.env.example` is present in the backend tree.
-- [ ] Produce final PR summary with changed files, tests and limitations after remaining checks.
+- [x] Update the PR summary with changed files, test history, limitations and current release-readiness status; remaining release gates are explicitly listed.
 
 ## Current execution status
 
@@ -282,6 +282,19 @@ A task is complete only when implementation, validation, authorization, automate
 - [x] Document the stable error envelope and common HTTP/code mapping; distinguish field validation errors from state conflicts.
 - [x] Add `backend/API_INTEGRATION.md` covering bearer-token lifecycle, response envelopes/pagination, error handling, safe retry behavior, order/assignment conflicts, delivery tracking and release gates.
 - [ ] Run `composer format -- --test` or the repository-supported Pint check in a PHP 8.3/Composer environment and record the actual result.
-- [ ] Complete a final security/secret/diff review and verify the latest branch CI after the documentation changes.
+- [ ] Complete the final security/secret/content diff review; latest branch CI verification is complete (Workflow #406 passed).
 - [ ] Confirm GoDaddy PHP extensions, Composer/build approach, database, document root, HTTPS, storage permissions and backup/restore capability with the owner.
 - [ ] Obtain human approval for release/deployment; no deployment performed by this task.
+
+
+### Phase 8 release-readiness verification update — 2026-09-29
+
+- Workflow #406 **PASSED** on current branch head `941e9f2ee2916499fec4d60e4df1a6d37fb789b9`. The configured Backend workflow completed PHP 8.3 setup, Composer dependency installation, MySQL 8.4 service startup, migrations and `composer test`.
+- The current PR #2 still targets `frontend`; the branch head is unchanged by this verification pass.
+- The API contract/integration documentation pass is complete for the representative routes and stable error behavior already implemented. No backend runtime code was changed in this documentation verification increment.
+- The repository workflow does **not** currently configure a Pint/static-analysis/security command, so those checks cannot be marked as executed from CI. Local Composer/PHP execution is not available in the connector environment; do not claim a formatter/static-analysis run.
+- Changed-file inventory was reviewed for release scope; no `.env`, credential, database-dump or Flutter-owned path was introduced by the latest documentation commits. A complete manual content/security review of all historical branch changes remains a human release gate.
+- GoDaddy plan-specific PHP extensions, Composer/build method, database, document root, HTTPS, storage permissions and backup/restore capability remain owner-verification items.
+- No deployment or production migration was performed.
+
+**Next task:** complete the remaining non-executed formatter/static-analysis/security review where a suitable PHP 8.3/Composer environment is available, confirm GoDaddy capabilities with the owner, then obtain explicit human approval before release/deployment.
