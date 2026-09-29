@@ -10,13 +10,19 @@ extension SnapFoodWindowClassX on SnapFoodWindowClass {
 }
 
 SnapFoodWindowClass windowClassForWidth(double width) {
-  if (width <= SnapFoodBreakpoints.compactMax) return SnapFoodWindowClass.compact;
+  if (width <= SnapFoodBreakpoints.compactMax)
+    return SnapFoodWindowClass.compact;
   if (width <= SnapFoodBreakpoints.mediumMax) return SnapFoodWindowClass.medium;
   return SnapFoodWindowClass.expanded;
 }
 
 class SnapFoodResponsive extends StatelessWidget {
-  const SnapFoodResponsive({required this.compact, this.medium, this.expanded, super.key});
+  const SnapFoodResponsive({
+    required this.compact,
+    this.medium,
+    this.expanded,
+    super.key,
+  });
   final Widget compact;
   final Widget? medium;
   final Widget? expanded;

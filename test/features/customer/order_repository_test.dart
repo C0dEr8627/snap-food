@@ -17,9 +17,7 @@ void main() {
 
   test('serializes COD checkout with product ids, quantities and address', () {
     final request = CreateOrderRequest(
-      items: const [
-        OrderLineRequest(productId: 15, quantity: 2),
-      ],
+      items: const [OrderLineRequest(productId: 15, quantity: 2)],
       deliveryAddress: address,
     );
 
@@ -31,41 +29,41 @@ void main() {
     expect((json['delivery_address'] as Map)['postal_code'], '400001');
   });
 
-  test('stores the checkout request and returns the server order fixture', () async {
-    const order = Order(
-      id: '1001',
-      status: OrderStatus.placed,
-      paymentMethod: 'COD',
-      paymentStatus: 'PENDING',
-      subtotal: '640.00',
-      deliveryFee: '40.00',
-      total: '680.00',
-      items: [],
-      deliveryAddress: null,
-      payload: {},
-    );
+  test(
+    'stores the checkout request and returns the server order fixture',
+    () async {
+      const order = Order(
+        id: '1001',
+        status: OrderStatus.placed,
+        paymentMethod: 'COD',
+        paymentStatus: 'PENDING',
+        subtotal: '640.00',
+        deliveryFee: '40.00',
+        total: '680.00',
+        items: [],
+        deliveryAddress: null,
+        payload: {},
+      );
 
-    final repository = FakeOrderRepository(
-      orders: const [order],
-      createdOrder: order,
-    );
+      final repository = FakeOrderRepository(
+        orders: const [order],
+        createdOrder: order,
+      );
 
-    final created = await repository.createOrder(
-      CreateOrderRequest(items: const [], deliveryAddress: address),
-    );
+      final created = await repository.createOrder(
+        CreateOrderRequest(items: const [], deliveryAddress: address),
+      );
 
-    expect(created.id, '1001');
-    expect(created.total, '680.00');
-    expect(repository.lastCreateRequest?.items, isEmpty);
-  });
+      expect(created.id, '1001');
+      expect(created.total, '680.00');
+      expect(repository.lastCreateRequest?.items, isEmpty);
+    },
+  );
 
   test('reports a missing order fixture as not found', () async {
     final repository = FakeOrderRepository();
 
-    expect(
-      () => repository.fetchOrder('missing'),
-      throwsA(isA<Exception>()),
-    );
+    expect(() => repository.fetchOrder('missing'), throwsA(isA<Exception>()));
   });
 
   test('decodes customer tracking location and stale state', () {
@@ -89,9 +87,6 @@ void main() {
 
   test('fake repository keeps tracking unimplemented', () async {
     final repository = FakeOrderRepository();
-    expect(
-      () => repository.fetchTracking('1001'),
-      throwsA(isA<Exception>()),
-    );
+    expect(() => repository.fetchTracking('1001'), throwsA(isA<Exception>()));
   });
 }

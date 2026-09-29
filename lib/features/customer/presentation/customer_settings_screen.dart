@@ -119,79 +119,66 @@ class _SettingsIntro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: SnapFoodColors.primaryContainer,
-          borderRadius: BorderRadius.circular(SnapFoodRadii.xl),
-        ),
-        child: const Row(
-          children: [
-            Icon(
-              Icons.tune_rounded,
-              size: 30,
-              color: SnapFoodColors.warmBlack,
-            ),
-            SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Make Snap Foodd yours',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Control notifications and your app experience.',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: SnapFoodColors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+    padding: const EdgeInsets.all(18),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.primaryContainer,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.xl),
+    ),
+    child: const Row(
+      children: [
+        Icon(Icons.tune_rounded, size: 30, color: SnapFoodColors.warmBlack),
+        SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Make Snap Foodd yours',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
               ),
-            ),
-          ],
+              SizedBox(height: 4),
+              Text(
+                'Control notifications and your app experience.',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: SnapFoodColors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
         ),
-      );
+      ],
+    ),
+  );
 }
 
 class _SettingsSection extends StatelessWidget {
-  const _SettingsSection({
-    required this.title,
-    required this.children,
-  });
+  const _SettingsSection({required this.title, required this.children});
 
   final String title;
   final List<Widget> children;
 
   @override
   Widget build(BuildContext context) => Container(
-        decoration: BoxDecoration(
-          color: SnapFoodColors.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(SnapFoodRadii.xl),
-          border: Border.all(color: SnapFoodColors.softBorder),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.xl),
+      border: Border.all(color: SnapFoodColors.softBorder),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: Text(
+            title,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900),
+          ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ),
-            ...children,
-          ],
-        ),
-      );
+        ...children,
+      ],
+    ),
+  );
 }
 
 class _SettingsSwitchRow extends StatelessWidget {
@@ -211,16 +198,16 @@ class _SettingsSwitchRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _SettingsRow(
-        icon: icon,
-        title: title,
-        subtitle: subtitle,
-        trailing: Switch.adaptive(
-          value: value,
-          onChanged: onChanged,
-          activeTrackColor: SnapFoodColors.primaryContainer,
-          activeThumbColor: SnapFoodColors.secondary,
-        ),
-      );
+    icon: icon,
+    title: title,
+    subtitle: subtitle,
+    trailing: Switch.adaptive(
+      value: value,
+      onChanged: onChanged,
+      activeTrackColor: SnapFoodColors.primaryContainer,
+      activeThumbColor: SnapFoodColors.secondary,
+    ),
+  );
 }
 
 class _SettingsRow extends StatelessWidget {
@@ -240,59 +227,55 @@ class _SettingsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => InkWell(
-        onTap: showChevron ? () {} : null,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-          child: Row(
-            children: [
-              Container(
-                width: 38,
-                height: 38,
-                decoration: const BoxDecoration(
-                  color: SnapFoodColors.softRed,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  icon,
-                  size: 19,
-                  color: SnapFoodColors.secondary,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      subtitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 9,
-                        color: SnapFoodColors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              trailing ??
-                  (showChevron
-                      ? const Icon(
-                          Icons.chevron_right,
-                          size: 20,
-                          color: SnapFoodColors.outline,
-                        )
-                      : const SizedBox.shrink()),
-            ],
+    onTap: showChevron ? () {} : null,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: const BoxDecoration(
+              color: SnapFoodColors.softRed,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 19, color: SnapFoodColors.secondary),
           ),
-        ),
-      );
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  subtitle,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 9,
+                    color: SnapFoodColors.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          trailing ??
+              (showChevron
+                  ? const Icon(
+                      Icons.chevron_right,
+                      size: 20,
+                      color: SnapFoodColors.outline,
+                    )
+                  : const SizedBox.shrink()),
+        ],
+      ),
+    ),
+  );
 }

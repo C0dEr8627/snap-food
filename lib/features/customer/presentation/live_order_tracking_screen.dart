@@ -5,40 +5,530 @@ import '../../../design_system/tokens/app_spacing.dart';
 
 class LiveOrderTrackingScreen extends StatefulWidget {
   const LiveOrderTrackingScreen({super.key});
-  @override State<LiveOrderTrackingScreen> createState()=>_LiveOrderTrackingScreenState();
+  @override
+  State<LiveOrderTrackingScreen> createState() =>
+      _LiveOrderTrackingScreenState();
 }
-class _LiveOrderTrackingScreenState extends State<LiveOrderTrackingScreen>{
-  int step=2;
-  static const states=['Order placed','Preparing your food','Picked up by delivery partner','On the way'];
-  @override Widget build(BuildContext context)=>Scaffold(
-    backgroundColor:SnapFoodColors.surface,
-    body:SafeArea(bottom:false,child:LayoutBuilder(builder:(context,c){
-      final wide=c.maxWidth>=1024,p=wide?24.0:16.0;
-      return Center(child:ConstrainedBox(constraints:const BoxConstraints(maxWidth:SnapFoodSpacing.desktopMaxContentWidth),child:CustomScrollView(slivers:[
-        SliverAppBar(pinned:true,backgroundColor:SnapFoodColors.surface,surfaceTintColor:Colors.transparent,leading:IconButton(onPressed:()=>Navigator.of(context).pop(),icon:const Icon(Icons.arrow_back)),title:const Text('Track Order',style:TextStyle(fontSize:18,fontWeight:FontWeight.w800))),
-        SliverPadding(padding:EdgeInsets.fromLTRB(p,8,p,112),sliver:SliverToBoxAdapter(child:wide?Row(crossAxisAlignment:CrossAxisAlignment.start,children:[const Expanded(child:_MapCard()),const SizedBox(width:18),Expanded(child:_Details(step:step,next:advance))]):Column(children:[const _MapCard(),const SizedBox(height:16),_Details(step:step,next:advance)]))),
-      ])));
-    })),
-    bottomNavigationBar:SafeArea(top:false,child:Padding(padding:const EdgeInsets.fromLTRB(16,8,16,12),child:FilledButton.icon(onPressed:(){},icon:const Icon(Icons.support_agent_outlined),label:const Text('Need help with this order?'),style:FilledButton.styleFrom(backgroundColor:SnapFoodColors.secondary,foregroundColor:Colors.white,minimumSize:const Size.fromHeight(52),shape:RoundedRectangleBorder(borderRadius:BorderRadius.circular(SnapFoodRadii.md)))))));
-  void advance(){if(step<states.length-1)setState(()=>step++);}
+
+class _LiveOrderTrackingScreenState extends State<LiveOrderTrackingScreen> {
+  int step = 2;
+  static const states = [
+    'Order placed',
+    'Preparing your food',
+    'Picked up by delivery partner',
+    'On the way',
+  ];
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: SnapFoodColors.surface,
+    body: SafeArea(
+      bottom: false,
+      child: LayoutBuilder(
+        builder: (context, c) {
+          final wide = c.maxWidth >= 1024, p = wide ? 24.0 : 16.0;
+          return Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: SnapFoodSpacing.desktopMaxContentWidth,
+              ),
+              child: CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    pinned: true,
+                    backgroundColor: SnapFoodColors.surface,
+                    surfaceTintColor: Colors.transparent,
+                    leading: IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.arrow_back),
+                    ),
+                    title: const Text(
+                      'Track Order',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  SliverPadding(
+                    padding: EdgeInsets.fromLTRB(p, 8, p, 112),
+                    sliver: SliverToBoxAdapter(
+                      child: wide
+                          ? Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Expanded(child: _MapCard()),
+                                const SizedBox(width: 18),
+                                Expanded(
+                                  child: _Details(step: step, next: advance),
+                                ),
+                              ],
+                            )
+                          : Column(
+                              children: [
+                                const _MapCard(),
+                                const SizedBox(height: 16),
+                                _Details(step: step, next: advance),
+                              ],
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    ),
+    bottomNavigationBar: SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+        child: FilledButton.icon(
+          onPressed: () {},
+          icon: const Icon(Icons.support_agent_outlined),
+          label: const Text('Need help with this order?'),
+          style: FilledButton.styleFrom(
+            backgroundColor: SnapFoodColors.secondary,
+            foregroundColor: Colors.white,
+            minimumSize: const Size.fromHeight(52),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+  void advance() {
+    if (step < states.length - 1) setState(() => step++);
+  }
 }
-class _MapCard extends StatelessWidget{const _MapCard();@override Widget build(BuildContext context)=>Container(height:300,clipBehavior:Clip.antiAlias,decoration:BoxDecoration(color:const Color(0xFFF3EEDC),borderRadius:BorderRadius.circular(SnapFoodRadii.xl),border:Border.all(color:SnapFoodColors.softBorder)),child:Stack(children:[
-  CustomPaint(size:Size.infinite,painter:_MapPainter()),
-  Positioned(top:14,left:14,child:Container(padding:const EdgeInsets.symmetric(horizontal:10,vertical:8),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(SnapFoodRadii.full)),child:const Row(mainAxisSize:MainAxisSize.min,children:[Icon(Icons.access_time,size:15,color:SnapFoodColors.secondary),SizedBox(width:5),Text('20–25 min',style:TextStyle(fontSize:10,fontWeight:FontWeight.w800))]))),
-  const Positioned(top:92,left:52,child:_Pin(Icons.restaurant,SnapFoodColors.secondary)),const Positioned(right:52,bottom:62,child:_Pin(Icons.home,SnapFoodColors.primary)),const Positioned(top:150,left:0,right:0,child:Center(child:_RiderPin())),
-]));}
-class _MapPainter extends CustomPainter{@override void paint(Canvas c,Size s){final p=Path()..moveTo(s.width*.1,s.height*.76)..cubicTo(s.width*.3,s.height*.54,s.width*.35,s.height*.72,s.width*.5,s.height*.48)..cubicTo(s.width*.63,s.height*.25,s.width*.7,s.height*.57,s.width*.9,s.height*.28);c.drawPath(p,Paint()..color=Colors.white..strokeWidth=18..strokeCap=StrokeCap.round..style=PaintingStyle.stroke);c.drawPath(p,Paint()..color=SnapFoodColors.secondary..strokeWidth=5..strokeCap=StrokeCap.round..style=PaintingStyle.stroke);}@override bool shouldRepaint(covariant CustomPainter oldDelegate)=>false;}
-class _Pin extends StatelessWidget{const _Pin(this.icon,this.color);final IconData icon;final Color color;@override Widget build(BuildContext context)=>Container(width:46,height:46,decoration:BoxDecoration(color:color,shape:BoxShape.circle,boxShadow:const[BoxShadow(color:Colors.black12,blurRadius:12,offset:Offset(0,4))]),child:Icon(icon,color:Colors.white,size:20));}
-class _RiderPin extends StatelessWidget{const _RiderPin();@override Widget build(BuildContext context)=>Container(padding:const EdgeInsets.all(8),decoration:BoxDecoration(color:Colors.white,shape:BoxShape.circle,border:Border.all(color:SnapFoodColors.secondary,width:3)),child:const Icon(Icons.two_wheeler,color:SnapFoodColors.secondary,size:22));}
-class _Details extends StatelessWidget{const _Details({required this.step,required this.next});final int step;final VoidCallback next;@override Widget build(BuildContext context)=>Column(children:[
- Container(padding:const EdgeInsets.all(16),decoration:BoxDecoration(color:SnapFoodColors.surfaceContainerLowest,borderRadius:BorderRadius.circular(SnapFoodRadii.xl),border:Border.all(color:SnapFoodColors.softBorder)),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-  const Row(children:[Expanded(child:Text('Arriving in 20–25 min',style:TextStyle(fontSize:20,fontWeight:FontWeight.w900))),_Live()]),const SizedBox(height:5),const Text('Order #SF10248  •  Mumbai Spice Kitchen',style:TextStyle(fontSize:10,color:SnapFoodColors.onSurfaceVariant)),const SizedBox(height:18),
-  for(var i=0;i<_LiveOrderTrackingScreenState.states.length;i++) _Status(_LiveOrderTrackingScreenState.states[i],i<=step,i==step,i==_LiveOrderTrackingScreenState.states.length-1),
-  if(step<_LiveOrderTrackingScreenState.states.length-1) OutlinedButton.icon(onPressed:next,icon:const Icon(Icons.play_arrow,size:17),label:const Text('Simulate next update'),style:OutlinedButton.styleFrom(foregroundColor:SnapFoodColors.secondary,minimumSize:const Size.fromHeight(42))),
- ])),const SizedBox(height:14),const _Partner(),const SizedBox(height:14),const _Order()]);}
-class _Live extends StatelessWidget{const _Live();@override Widget build(BuildContext context)=>Container(padding:const EdgeInsets.symmetric(horizontal:8,vertical:5),decoration:BoxDecoration(color:SnapFoodColors.softYellow,borderRadius:BorderRadius.circular(SnapFoodRadii.full)),child:const Text('LIVE',style:TextStyle(fontSize:8,fontWeight:FontWeight.w900)));}
-class _Status extends StatelessWidget{const _Status(this.label,this.active,this.current,this.last);final String label;final bool active,current,last;@override Widget build(BuildContext context)=>SizedBox(height:last?35:50,child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[SizedBox(width:24,child:Column(children:[Container(width:current?15:12,height:current?15:12,margin:const EdgeInsets.only(top:2),decoration:BoxDecoration(color:active?SnapFoodColors.secondary:SnapFoodColors.softBorder,shape:BoxShape.circle,border:current?Border.all(color:SnapFoodColors.softRed,width:4):null)),if(!last)Expanded(child:Container(width:2,color:active?SnapFoodColors.secondary:SnapFoodColors.softBorder))])),Expanded(child:Text(label,style:TextStyle(fontSize:11,fontWeight:current?FontWeight.w900:FontWeight.w700))),if(active)const Icon(Icons.check_circle,color:SnapFoodColors.secondary,size:16)]));}
-class _Partner extends StatelessWidget{const _Partner();@override Widget build(BuildContext context)=>Container(padding:const EdgeInsets.all(13),decoration:BoxDecoration(color:SnapFoodColors.surfaceContainerLowest,borderRadius:BorderRadius.circular(SnapFoodRadii.lg),border:Border.all(color:SnapFoodColors.softBorder)),child:const Row(children:[CircleAvatar(radius:24,backgroundColor:SnapFoodColors.softYellow,child:Icon(Icons.person_outline)),SizedBox(width:11),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('Rahul • Delivery Partner',style:TextStyle(fontSize:12,fontWeight:FontWeight.w900)),SizedBox(height:3),Text('Honda Activa  •  MH 02 AB 4821',style:TextStyle(fontSize:9,color:SnapFoodColors.onSurfaceVariant)),SizedBox(height:3),Row(children:[Icon(Icons.star,size:13,color:SnapFoodColors.primary),SizedBox(width:3),Text('4.9 rating',style:TextStyle(fontSize:9,fontWeight:FontWeight.w700))])])),_Action(Icons.call_outlined),SizedBox(width:7),_Action(Icons.chat_bubble_outline)]));}
-class _Action extends StatelessWidget{const _Action(this.icon);final IconData icon;@override Widget build(BuildContext context)=>Container(width:38,height:38,decoration:const BoxDecoration(color:SnapFoodColors.softRed,shape:BoxShape.circle),child:Icon(icon,color:SnapFoodColors.secondary,size:18));}
-class _Order extends StatelessWidget{const _Order();@override Widget build(BuildContext context)=>Container(padding:const EdgeInsets.all(13),decoration:BoxDecoration(color:SnapFoodColors.surfaceContainerLowest,borderRadius:BorderRadius.circular(SnapFoodRadii.lg),border:Border.all(color:SnapFoodColors.softBorder)),child:const Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('Your order',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)),SizedBox(height:10),_Line('Special Chicken Tikka Dum Biryani','₹320'),SizedBox(height:8),_Line('Butter Chicken & 2 Butter Naan Combo','₹280'),Padding(padding:EdgeInsets.symmetric(vertical:10),child:Divider(color:SnapFoodColors.softBorder,height:1)),Row(children:[Expanded(child:Text('Delivering to Flat 402, Andheri West',style:TextStyle(fontSize:9,color:SnapFoodColors.onSurfaceVariant))),Text('₹630 paid',style:TextStyle(fontSize:10,fontWeight:FontWeight.w900))]) ]));}
-class _Line extends StatelessWidget{const _Line(this.name,this.price);final String name,price;@override Widget build(BuildContext context)=>Row(children:[const Text('1×',style:TextStyle(fontSize:10,fontWeight:FontWeight.w900)),const SizedBox(width:8),Expanded(child:Text(name,style:const TextStyle(fontSize:10,fontWeight:FontWeight.w700))),Text(price,style:const TextStyle(fontSize:10,fontWeight:FontWeight.w800))]);}
+
+class _MapCard extends StatelessWidget {
+  const _MapCard();
+  @override
+  Widget build(BuildContext context) => Container(
+    height: 300,
+    clipBehavior: Clip.antiAlias,
+    decoration: BoxDecoration(
+      color: const Color(0xFFF3EEDC),
+      borderRadius: BorderRadius.circular(SnapFoodRadii.xl),
+      border: Border.all(color: SnapFoodColors.softBorder),
+    ),
+    child: Stack(
+      children: [
+        CustomPaint(size: Size.infinite, painter: _MapPainter()),
+        Positioned(
+          top: 14,
+          left: 14,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.access_time,
+                  size: 15,
+                  color: SnapFoodColors.secondary,
+                ),
+                SizedBox(width: 5),
+                Text(
+                  '20–25 min',
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const Positioned(
+          top: 92,
+          left: 52,
+          child: _Pin(Icons.restaurant, SnapFoodColors.secondary),
+        ),
+        const Positioned(
+          right: 52,
+          bottom: 62,
+          child: _Pin(Icons.home, SnapFoodColors.primary),
+        ),
+        const Positioned(
+          top: 150,
+          left: 0,
+          right: 0,
+          child: Center(child: _RiderPin()),
+        ),
+      ],
+    ),
+  );
+}
+
+class _MapPainter extends CustomPainter {
+  @override
+  void paint(Canvas c, Size s) {
+    final p = Path()
+      ..moveTo(s.width * .1, s.height * .76)
+      ..cubicTo(
+        s.width * .3,
+        s.height * .54,
+        s.width * .35,
+        s.height * .72,
+        s.width * .5,
+        s.height * .48,
+      )
+      ..cubicTo(
+        s.width * .63,
+        s.height * .25,
+        s.width * .7,
+        s.height * .57,
+        s.width * .9,
+        s.height * .28,
+      );
+    c.drawPath(
+      p,
+      Paint()
+        ..color = Colors.white
+        ..strokeWidth = 18
+        ..strokeCap = StrokeCap.round
+        ..style = PaintingStyle.stroke,
+    );
+    c.drawPath(
+      p,
+      Paint()
+        ..color = SnapFoodColors.secondary
+        ..strokeWidth = 5
+        ..strokeCap = StrokeCap.round
+        ..style = PaintingStyle.stroke,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _Pin extends StatelessWidget {
+  const _Pin(this.icon, this.color);
+  final IconData icon;
+  final Color color;
+  @override
+  Widget build(BuildContext context) => Container(
+    width: 46,
+    height: 46,
+    decoration: BoxDecoration(
+      color: color,
+      shape: BoxShape.circle,
+      boxShadow: const [
+        BoxShadow(color: Colors.black12, blurRadius: 12, offset: Offset(0, 4)),
+      ],
+    ),
+    child: Icon(icon, color: Colors.white, size: 20),
+  );
+}
+
+class _RiderPin extends StatelessWidget {
+  const _RiderPin();
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(8),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      shape: BoxShape.circle,
+      border: Border.all(color: SnapFoodColors.secondary, width: 3),
+    ),
+    child: const Icon(
+      Icons.two_wheeler,
+      color: SnapFoodColors.secondary,
+      size: 22,
+    ),
+  );
+}
+
+class _Details extends StatelessWidget {
+  const _Details({required this.step, required this.next});
+  final int step;
+  final VoidCallback next;
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: SnapFoodColors.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(SnapFoodRadii.xl),
+          border: Border.all(color: SnapFoodColors.softBorder),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Arriving in 20–25 min',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+                  ),
+                ),
+                _Live(),
+              ],
+            ),
+            const SizedBox(height: 5),
+            const Text(
+              'Order #SF10248  •  Mumbai Spice Kitchen',
+              style: TextStyle(
+                fontSize: 10,
+                color: SnapFoodColors.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 18),
+            for (
+              var i = 0;
+              i < _LiveOrderTrackingScreenState.states.length;
+              i++
+            )
+              _Status(
+                _LiveOrderTrackingScreenState.states[i],
+                i <= step,
+                i == step,
+                i == _LiveOrderTrackingScreenState.states.length - 1,
+              ),
+            if (step < _LiveOrderTrackingScreenState.states.length - 1)
+              OutlinedButton.icon(
+                onPressed: next,
+                icon: const Icon(Icons.play_arrow, size: 17),
+                label: const Text('Simulate next update'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: SnapFoodColors.secondary,
+                  minimumSize: const Size.fromHeight(42),
+                ),
+              ),
+          ],
+        ),
+      ),
+      const SizedBox(height: 14),
+      const _Partner(),
+      const SizedBox(height: 14),
+      const _Order(),
+    ],
+  );
+}
+
+class _Live extends StatelessWidget {
+  const _Live();
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.softYellow,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+    ),
+    child: const Text(
+      'LIVE',
+      style: TextStyle(fontSize: 8, fontWeight: FontWeight.w900),
+    ),
+  );
+}
+
+class _Status extends StatelessWidget {
+  const _Status(this.label, this.active, this.current, this.last);
+  final String label;
+  final bool active, current, last;
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    height: last ? 35 : 50,
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 24,
+          child: Column(
+            children: [
+              Container(
+                width: current ? 15 : 12,
+                height: current ? 15 : 12,
+                margin: const EdgeInsets.only(top: 2),
+                decoration: BoxDecoration(
+                  color: active
+                      ? SnapFoodColors.secondary
+                      : SnapFoodColors.softBorder,
+                  shape: BoxShape.circle,
+                  border: current
+                      ? Border.all(color: SnapFoodColors.softRed, width: 4)
+                      : null,
+                ),
+              ),
+              if (!last)
+                Expanded(
+                  child: Container(
+                    width: 2,
+                    color: active
+                        ? SnapFoodColors.secondary
+                        : SnapFoodColors.softBorder,
+                  ),
+                ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: current ? FontWeight.w900 : FontWeight.w700,
+            ),
+          ),
+        ),
+        if (active)
+          const Icon(
+            Icons.check_circle,
+            color: SnapFoodColors.secondary,
+            size: 16,
+          ),
+      ],
+    ),
+  );
+}
+
+class _Partner extends StatelessWidget {
+  const _Partner();
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(13),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+      border: Border.all(color: SnapFoodColors.softBorder),
+    ),
+    child: const Row(
+      children: [
+        CircleAvatar(
+          radius: 24,
+          backgroundColor: SnapFoodColors.softYellow,
+          child: Icon(Icons.person_outline),
+        ),
+        SizedBox(width: 11),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Rahul • Delivery Partner',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
+              ),
+              SizedBox(height: 3),
+              Text(
+                'Honda Activa  •  MH 02 AB 4821',
+                style: TextStyle(
+                  fontSize: 9,
+                  color: SnapFoodColors.onSurfaceVariant,
+                ),
+              ),
+              SizedBox(height: 3),
+              Row(
+                children: [
+                  Icon(Icons.star, size: 13, color: SnapFoodColors.primary),
+                  SizedBox(width: 3),
+                  Text(
+                    '4.9 rating',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        _Action(Icons.call_outlined),
+        SizedBox(width: 7),
+        _Action(Icons.chat_bubble_outline),
+      ],
+    ),
+  );
+}
+
+class _Action extends StatelessWidget {
+  const _Action(this.icon);
+  final IconData icon;
+  @override
+  Widget build(BuildContext context) => Container(
+    width: 38,
+    height: 38,
+    decoration: const BoxDecoration(
+      color: SnapFoodColors.softRed,
+      shape: BoxShape.circle,
+    ),
+    child: Icon(icon, color: SnapFoodColors.secondary, size: 18),
+  );
+}
+
+class _Order extends StatelessWidget {
+  const _Order();
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(13),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+      border: Border.all(color: SnapFoodColors.softBorder),
+    ),
+    child: const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Your order',
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900),
+        ),
+        SizedBox(height: 10),
+        _Line('Special Chicken Tikka Dum Biryani', '₹320'),
+        SizedBox(height: 8),
+        _Line('Butter Chicken & 2 Butter Naan Combo', '₹280'),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: Divider(color: SnapFoodColors.softBorder, height: 1),
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Delivering to Flat 402, Andheri West',
+                style: TextStyle(
+                  fontSize: 9,
+                  color: SnapFoodColors.onSurfaceVariant,
+                ),
+              ),
+            ),
+            Text(
+              '₹630 paid',
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+class _Line extends StatelessWidget {
+  const _Line(this.name, this.price);
+  final String name, price;
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      const Text(
+        '1×',
+        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900),
+      ),
+      const SizedBox(width: 8),
+      Expanded(
+        child: Text(
+          name,
+          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
+        ),
+      ),
+      Text(
+        price,
+        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800),
+      ),
+    ],
+  );
+}

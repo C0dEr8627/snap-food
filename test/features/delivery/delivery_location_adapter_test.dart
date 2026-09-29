@@ -69,16 +69,20 @@ void main() {
     final received = <DeliveryPosition>[];
 
     await adapter.start(onPosition: received.add);
-    source.controller.add(DeliveryPosition(
-      latitude: 1,
-      longitude: 2,
-      recordedAt: DateTime.utc(2026, 9, 29),
-    ));
-    source.controller.add(DeliveryPosition(
-      latitude: 3,
-      longitude: 4,
-      recordedAt: DateTime.utc(2026, 9, 29, 0, 0, 1),
-    ));
+    source.controller.add(
+      DeliveryPosition(
+        latitude: 1,
+        longitude: 2,
+        recordedAt: DateTime.utc(2026, 9, 29),
+      ),
+    );
+    source.controller.add(
+      DeliveryPosition(
+        latitude: 3,
+        longitude: 4,
+        recordedAt: DateTime.utc(2026, 9, 29, 0, 0, 1),
+      ),
+    );
     await Future<void>.delayed(const Duration(milliseconds: 5));
 
     expect(received, hasLength(1));

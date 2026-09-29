@@ -32,12 +32,7 @@ class _RestaurantOrderDetailScreenState
       note: 'Less oil',
       price: '₹280',
     ),
-    _DetailItem(
-      quantity: 1,
-      name: 'Masala Chaas',
-      note: '',
-      price: '₹30',
-    ),
+    _DetailItem(quantity: 1, name: 'Masala Chaas', note: '', price: '₹30'),
   ];
 
   @override
@@ -303,10 +298,7 @@ class _OrderDetailHeader extends StatelessWidget {
       color: SnapFoodColors.surfaceContainerLowest,
       elevation: 1,
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: wide ? 24 : 12,
-          vertical: 10,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: wide ? 24 : 12, vertical: 10),
         child: Row(
           children: [
             IconButton(
@@ -539,7 +531,10 @@ class _InfoLine extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(height: 2),
               Text(
@@ -594,7 +589,10 @@ class _ActionPanel extends StatelessWidget {
               ),
               child: Text(
                 ready ? 'Back to KDS' : 'Mark Order Ready',
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900),
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ),
           ),

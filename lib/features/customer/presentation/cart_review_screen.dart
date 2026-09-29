@@ -21,7 +21,6 @@ class CartReviewScreen extends ConsumerWidget {
     final total = subtotal + deliveryFee + taxes;
     final itemCount = cart.itemCount;
 
-
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
       body: SafeArea(
@@ -31,18 +30,34 @@ class CartReviewScreen extends ConsumerWidget {
             final wide = constraints.maxWidth >= 1024;
             return Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: SnapFoodSpacing.desktopMaxContentWidth),
+                constraints: const BoxConstraints(
+                  maxWidth: SnapFoodSpacing.desktopMaxContentWidth,
+                ),
                 child: CustomScrollView(
                   slivers: [
                     SliverAppBar(
                       pinned: true,
                       backgroundColor: SnapFoodColors.surface,
                       surfaceTintColor: Colors.transparent,
-                      leading: IconButton(onPressed: () => Navigator.of(context).pop(), icon: const Icon(Icons.arrow_back)),
-                      title: const Text('Your Cart', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                      leading: IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.arrow_back),
+                      ),
+                      title: const Text(
+                        'Your Cart',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ),
                     SliverPadding(
-                      padding: EdgeInsets.fromLTRB(wide ? 24 : 16, 8, wide ? 24 : 16, 120),
+                      padding: EdgeInsets.fromLTRB(
+                        wide ? 24 : 16,
+                        8,
+                        wide ? 24 : 16,
+                        120,
+                      ),
                       sliver: SliverToBoxAdapter(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,29 +66,68 @@ class CartReviewScreen extends ConsumerWidget {
                             const SizedBox(height: 18),
                             Row(
                               children: [
-                                Expanded(child: Text(itemCount.toString() + ' items in your cart', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800))),
+                                Expanded(
+                                  child: Text(
+                                    itemCount.toString() +
+                                        ' items in your cart',
+                                    style: const TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ),
                                 TextButton.icon(
                                   onPressed: () => Navigator.of(context).pop(),
                                   icon: const Icon(Icons.add, size: 16),
-                                  label: const Text('Add more', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
-                                  style: TextButton.styleFrom(foregroundColor: SnapFoodColors.secondary, padding: EdgeInsets.zero),
+                                  label: const Text(
+                                    'Add more',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: SnapFoodColors.secondary,
+                                    padding: EdgeInsets.zero,
+                                  ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 8),
-                            ...items.map((item) => Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: _CartItemCard(item: item, onRemove: () => ref.read(cartControllerProvider.notifier).changeQuantity(item.productId, -1), onAdd: () => ref.read(cartControllerProvider.notifier).changeQuantity(item.productId, 1)),
-                            )),
+                            ...items.map(
+                              (item) => Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: _CartItemCard(
+                                  item: item,
+                                  onRemove: () => ref
+                                      .read(cartControllerProvider.notifier)
+                                      .changeQuantity(item.productId, -1),
+                                  onAdd: () => ref
+                                      .read(cartControllerProvider.notifier)
+                                      .changeQuantity(item.productId, 1),
+                                ),
+                              ),
+                            ),
                             if (items.isEmpty) const _EmptyCart(),
                             const SizedBox(height: 8),
                             const _InstructionCard(),
                             const SizedBox(height: 14),
                             const _CouponCard(),
                             const SizedBox(height: 20),
-                            const Text('Bill details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                            const Text(
+                              'Bill details',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
                             const SizedBox(height: 10),
-                            _BillCard(itemTotal: subtotal, deliveryFee: deliveryFee, taxes: taxes, total: total),
+                            _BillCard(
+                              itemTotal: subtotal,
+                              deliveryFee: deliveryFee,
+                              taxes: taxes,
+                              total: total,
+                            ),
                             const SizedBox(height: 14),
                             const _DeliveryNote(),
                           ],
@@ -97,11 +151,21 @@ class CartReviewScreen extends ConsumerWidget {
               backgroundColor: SnapFoodColors.secondary,
               foregroundColor: Colors.white,
               minimumSize: const Size.fromHeight(52),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+              ),
             ),
             child: Row(
               children: [
-                Expanded(child: Text('Review Order  •  ₹' + total.toString(), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800))),
+                Expanded(
+                  child: Text(
+                    'Review Order  •  ₹' + total.toString(),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
                 const Icon(Icons.arrow_forward, size: 19),
               ],
             ),
@@ -121,27 +185,61 @@ class _RestaurantSummary extends StatelessWidget {
     decoration: BoxDecoration(
       color: SnapFoodColors.surfaceContainerLowest,
       borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-      boxShadow: const [BoxShadow(color: Color(0x0C000000), blurRadius: 5, offset: Offset(0, 2))],
+      boxShadow: const [
+        BoxShadow(
+          color: Color(0x0C000000),
+          blurRadius: 5,
+          offset: Offset(0, 2),
+        ),
+      ],
     ),
-    child: Row(children: [
-      Container(
-        width: 48, height: 48,
-        decoration: BoxDecoration(color: SnapFoodColors.primaryContainer, borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
-        child: const Icon(Icons.restaurant, color: SnapFoodColors.secondary, size: 25),
-      ),
-      const SizedBox(width: 10),
-      const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Mumbai Spice Kitchen', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
-        SizedBox(height: 3),
-        Text('Andheri West  •  20–25 min', style: TextStyle(fontSize: 10, color: SnapFoodColors.onSurfaceVariant)),
-      ])),
-      const Icon(Icons.verified, size: 17, color: SnapFoodColors.secondary),
-    ]),
+    child: Row(
+      children: [
+        Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            color: SnapFoodColors.primaryContainer,
+            borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+          ),
+          child: const Icon(
+            Icons.restaurant,
+            color: SnapFoodColors.secondary,
+            size: 25,
+          ),
+        ),
+        const SizedBox(width: 10),
+        const Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Mumbai Spice Kitchen',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+              ),
+              SizedBox(height: 3),
+              Text(
+                'Andheri West  •  20–25 min',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: SnapFoodColors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Icon(Icons.verified, size: 17, color: SnapFoodColors.secondary),
+      ],
+    ),
   );
 }
 
 class _CartItemCard extends StatelessWidget {
-  const _CartItemCard({required this.item, required this.onRemove, required this.onAdd});
+  const _CartItemCard({
+    required this.item,
+    required this.onRemove,
+    required this.onAdd,
+  });
   final CartItem item;
   final VoidCallback onRemove;
   final VoidCallback onAdd;
@@ -149,31 +247,84 @@ class _CartItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(color: SnapFoodColors.surfaceContainerLowest, borderRadius: BorderRadius.circular(SnapFoodRadii.lg), border: Border.all(color: SnapFoodColors.softBorder)),
-    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Container(
-        width: 62, height: 62,
-        decoration: BoxDecoration(color: item.vegetarian ? SnapFoodColors.softYellow : SnapFoodColors.softRed, borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
-        child: Icon(item.vegetarian ? Icons.eco : Icons.local_fire_department, color: item.vegetarian ? Colors.green : SnapFoodColors.secondary, size: 28),
-      ),
-      const SizedBox(width: 10),
-      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, height: 1.25, fontWeight: FontWeight.w800)),
-        const SizedBox(height: 3),
-        Text(item.description, style: const TextStyle(fontSize: 10, color: SnapFoodColors.onSurfaceVariant)),
-        const SizedBox(height: 8),
-        Row(children: [
-          Text('₹' + item.previewPrice.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
-          const Spacer(),
-          _MiniQuantity(quantity: item.quantity, onRemove: onRemove, onAdd: onAdd),
-        ]),
-      ])),
-    ]),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+      border: Border.all(color: SnapFoodColors.softBorder),
+    ),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 62,
+          height: 62,
+          decoration: BoxDecoration(
+            color: item.vegetarian
+                ? SnapFoodColors.softYellow
+                : SnapFoodColors.softRed,
+            borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+          ),
+          child: Icon(
+            item.vegetarian ? Icons.eco : Icons.local_fire_department,
+            color: item.vegetarian ? Colors.green : SnapFoodColors.secondary,
+            size: 28,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item.name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 12,
+                  height: 1.25,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                item.description,
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: SnapFoodColors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Text(
+                    '₹' + item.previewPrice.toString(),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const Spacer(),
+                  _MiniQuantity(
+                    quantity: item.quantity,
+                    onRemove: onRemove,
+                    onAdd: onAdd,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
   );
 }
 
 class _MiniQuantity extends StatelessWidget {
-  const _MiniQuantity({required this.quantity, required this.onRemove, required this.onAdd});
+  const _MiniQuantity({
+    required this.quantity,
+    required this.onRemove,
+    required this.onAdd,
+  });
   final int quantity;
   final VoidCallback onRemove;
   final VoidCallback onAdd;
@@ -181,12 +332,35 @@ class _MiniQuantity extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     height: 32,
-    decoration: BoxDecoration(color: SnapFoodColors.secondary, borderRadius: BorderRadius.circular(SnapFoodRadii.full)),
-    child: Row(mainAxisSize: MainAxisSize.min, children: [
-      IconButton(onPressed: onRemove, icon: const Icon(Icons.remove, color: Colors.white, size: 14), padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 30, minHeight: 32)),
-      Text(quantity.toString(), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Colors.white)),
-      IconButton(onPressed: onAdd, icon: const Icon(Icons.add, color: Colors.white, size: 14), padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 30, minHeight: 32)),
-    ]),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.secondary,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          onPressed: onRemove,
+          icon: const Icon(Icons.remove, color: Colors.white, size: 14),
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 30, minHeight: 32),
+        ),
+        Text(
+          quantity.toString(),
+          style: const TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
+        ),
+        IconButton(
+          onPressed: onAdd,
+          icon: const Icon(Icons.add, color: Colors.white, size: 14),
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 30, minHeight: 32),
+        ),
+      ],
+    ),
   );
 }
 
@@ -196,13 +370,24 @@ class _InstructionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.all(13),
-    decoration: BoxDecoration(color: SnapFoodColors.surfaceContainerLowest, borderRadius: BorderRadius.circular(SnapFoodRadii.lg), border: Border.all(color: SnapFoodColors.softBorder)),
-    child: const Row(children: [
-      Icon(Icons.edit_note, color: SnapFoodColors.secondary, size: 21),
-      SizedBox(width: 10),
-      Expanded(child: Text('Add cooking instructions', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700))),
-      Icon(Icons.chevron_right, size: 19, color: SnapFoodColors.outline),
-    ]),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+      border: Border.all(color: SnapFoodColors.softBorder),
+    ),
+    child: const Row(
+      children: [
+        Icon(Icons.edit_note, color: SnapFoodColors.secondary, size: 21),
+        SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            'Add cooking instructions',
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+          ),
+        ),
+        Icon(Icons.chevron_right, size: 19, color: SnapFoodColors.outline),
+      ],
+    ),
   );
 }
 
@@ -212,18 +397,39 @@ class _CouponCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
-    decoration: BoxDecoration(color: SnapFoodColors.softYellow, borderRadius: BorderRadius.circular(SnapFoodRadii.lg)),
-    child: Row(children: [
-      const Icon(Icons.local_offer_outlined, color: SnapFoodColors.secondary),
-      const SizedBox(width: 9),
-      const Expanded(child: Text('Apply a coupon', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800))),
-      TextButton(onPressed: () {}, child: const Text('View offers', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800))),
-    ]),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.softYellow,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+    ),
+    child: Row(
+      children: [
+        const Icon(Icons.local_offer_outlined, color: SnapFoodColors.secondary),
+        const SizedBox(width: 9),
+        const Expanded(
+          child: Text(
+            'Apply a coupon',
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
+          ),
+        ),
+        TextButton(
+          onPressed: () {},
+          child: const Text(
+            'View offers',
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800),
+          ),
+        ),
+      ],
+    ),
   );
 }
 
 class _BillCard extends StatelessWidget {
-  const _BillCard({required this.itemTotal, required this.deliveryFee, required this.taxes, required this.total});
+  const _BillCard({
+    required this.itemTotal,
+    required this.deliveryFee,
+    required this.taxes,
+    required this.total,
+  });
   final int itemTotal;
   final int deliveryFee;
   final int taxes;
@@ -232,31 +438,69 @@ class _BillCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(color: SnapFoodColors.surfaceContainerLowest, borderRadius: BorderRadius.circular(SnapFoodRadii.lg), border: Border.all(color: SnapFoodColors.softBorder)),
-    child: Column(children: [
-      _BillRow('Item total', '₹' + itemTotal.toString()),
-      const SizedBox(height: 8),
-      _BillRow('Delivery fee', deliveryFee == 0 ? 'FREE' : '₹' + deliveryFee.toString(), accent: deliveryFee == 0),
-      const SizedBox(height: 8),
-      _BillRow('Taxes & charges', '₹' + taxes.toString()),
-      const Padding(padding: EdgeInsets.symmetric(vertical: 11), child: Divider(color: SnapFoodColors.softBorder, height: 1)),
-      _BillRow('To pay', '₹' + total.toString(), strong: true),
-    ]),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+      border: Border.all(color: SnapFoodColors.softBorder),
+    ),
+    child: Column(
+      children: [
+        _BillRow('Item total', '₹' + itemTotal.toString()),
+        const SizedBox(height: 8),
+        _BillRow(
+          'Delivery fee',
+          deliveryFee == 0 ? 'FREE' : '₹' + deliveryFee.toString(),
+          accent: deliveryFee == 0,
+        ),
+        const SizedBox(height: 8),
+        _BillRow('Taxes & charges', '₹' + taxes.toString()),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 11),
+          child: Divider(color: SnapFoodColors.softBorder, height: 1),
+        ),
+        _BillRow('To pay', '₹' + total.toString(), strong: true),
+      ],
+    ),
   );
 }
 
 class _BillRow extends StatelessWidget {
-  const _BillRow(this.label, this.value, {this.accent = false, this.strong = false});
+  const _BillRow(
+    this.label,
+    this.value, {
+    this.accent = false,
+    this.strong = false,
+  });
   final String label;
   final String value;
   final bool accent;
   final bool strong;
 
   @override
-  Widget build(BuildContext context) => Row(children: [
-    Expanded(child: Text(label, style: TextStyle(fontSize: strong ? 13 : 11, fontWeight: strong ? FontWeight.w800 : FontWeight.w600, color: strong ? SnapFoodColors.onSurface : SnapFoodColors.onSurfaceVariant))),
-    Text(value, style: TextStyle(fontSize: strong ? 15 : 11, fontWeight: FontWeight.w800, color: accent ? Colors.green : SnapFoodColors.onSurface)),
-  ]);
+  Widget build(BuildContext context) => Row(
+    children: [
+      Expanded(
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: strong ? 13 : 11,
+            fontWeight: strong ? FontWeight.w800 : FontWeight.w600,
+            color: strong
+                ? SnapFoodColors.onSurface
+                : SnapFoodColors.onSurfaceVariant,
+          ),
+        ),
+      ),
+      Text(
+        value,
+        style: TextStyle(
+          fontSize: strong ? 15 : 11,
+          fontWeight: FontWeight.w800,
+          color: accent ? Colors.green : SnapFoodColors.onSurface,
+        ),
+      ),
+    ],
+  );
 }
 
 class _DeliveryNote extends StatelessWidget {
@@ -265,12 +509,26 @@ class _DeliveryNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(color: SnapFoodColors.surfaceContainerLow, borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
-    child: const Row(children: [
-      Icon(Icons.location_on_outlined, color: SnapFoodColors.secondary, size: 19),
-      SizedBox(width: 8),
-      Expanded(child: Text('Delivering to Andheri West, Mumbai • Flat 402', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700))),
-    ]),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+    ),
+    child: const Row(
+      children: [
+        Icon(
+          Icons.location_on_outlined,
+          color: SnapFoodColors.secondary,
+          size: 19,
+        ),
+        SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            'Delivering to Andheri West, Mumbai • Flat 402',
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
+          ),
+        ),
+      ],
+    ),
   );
 }
 
@@ -281,11 +539,19 @@ class _EmptyCart extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     width: double.infinity,
     padding: const EdgeInsets.symmetric(vertical: 34, horizontal: 20),
-    child: const Column(children: [
-      Icon(Icons.shopping_bag_outlined, size: 42, color: SnapFoodColors.outline),
-      SizedBox(height: 8),
-      Text('Your cart is empty', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
-    ]),
+    child: const Column(
+      children: [
+        Icon(
+          Icons.shopping_bag_outlined,
+          size: 42,
+          color: SnapFoodColors.outline,
+        ),
+        SizedBox(height: 8),
+        Text(
+          'Your cart is empty',
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+        ),
+      ],
+    ),
   );
 }
-

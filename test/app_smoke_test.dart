@@ -6,8 +6,7 @@ import 'package:snap_foodd/features/auth/presentation/auth_controller.dart';
 
 class _SignedOutAuthController extends AuthController {
   @override
-  Future<AuthStatus> build() async =>
-      const AuthStatus(isAuthenticated: false);
+  Future<AuthStatus> build() async => const AuthStatus(isAuthenticated: false);
 }
 
 void main() {

@@ -33,14 +33,11 @@ final orderRepositoryProvider = Provider<OrderRepository>((ref) {
 
 final orderCheckoutControllerProvider =
     AsyncNotifierProvider<OrderCheckoutController, OrderCheckoutState>(
-  OrderCheckoutController.new,
-);
+      OrderCheckoutController.new,
+    );
 
 class OrderCheckoutState {
-  const OrderCheckoutState({
-    this.isSubmitting = false,
-    this.lastOrder,
-  });
+  const OrderCheckoutState({this.isSubmitting = false, this.lastOrder});
 
   final bool isSubmitting;
   final Order? lastOrder;
@@ -55,9 +52,7 @@ class OrderCheckoutController extends AsyncNotifier<OrderCheckoutState> {
   Future<Order?> submit(CreateOrderRequest request) async {
     if (state.value?.isSubmitting == true) return null;
 
-    state = AsyncData(
-      const OrderCheckoutState(isSubmitting: true),
-    );
+    state = AsyncData(const OrderCheckoutState(isSubmitting: true));
 
     try {
       final order = await _repository.createOrder(request);
@@ -72,8 +67,8 @@ class OrderCheckoutController extends AsyncNotifier<OrderCheckoutState> {
 
 final orderHistoryControllerProvider =
     AsyncNotifierProvider<OrderHistoryController, OrderHistoryState>(
-  OrderHistoryController.new,
-);
+      OrderHistoryController.new,
+    );
 
 class OrderHistoryState {
   const OrderHistoryState({
@@ -111,9 +106,7 @@ class OrderHistoryController extends AsyncNotifier<OrderHistoryState> {
     final current = state.value;
     if (current == null || !current.hasNextPage) return;
 
-    final next = await _repository.fetchOrders(
-      page: current.currentPage + 1,
-    );
+    final next = await _repository.fetchOrders(page: current.currentPage + 1);
     state = AsyncData(
       OrderHistoryState(
         orders: [...current.orders, ...next.orders],
@@ -145,17 +138,17 @@ class OrderHistoryController extends AsyncNotifier<OrderHistoryState> {
   }
 
   OrderHistoryState _fromPage(OrderPage page) => OrderHistoryState(
-        orders: page.orders,
-        currentPage: page.currentPage,
-        lastPage: page.lastPage,
-        total: page.total,
-      );
+    orders: page.orders,
+    currentPage: page.currentPage,
+    lastPage: page.lastPage,
+    total: page.total,
+  );
 }
 
 final orderTrackingControllerProvider =
     AsyncNotifierProvider<OrderTrackingController, OrderTracking?>(
-  OrderTrackingController.new,
-);
+      OrderTrackingController.new,
+    );
 
 class OrderTrackingController extends AsyncNotifier<OrderTracking?> {
   OrderRepository get _repository => ref.read(orderRepositoryProvider);

@@ -12,7 +12,9 @@ final deliveryApiTransportProvider = Provider<HttpApiTransport>((ref) {
   return transport;
 });
 
-final deliverySessionStoreProvider = Provider<SessionStore>((ref) => SecureSessionStore());
+final deliverySessionStoreProvider = Provider<SessionStore>(
+  (ref) => SecureSessionStore(),
+);
 
 final deliveryRepositoryProvider = Provider<DeliveryRepository>((ref) {
   return RemoteDeliveryRepository(
@@ -24,16 +26,18 @@ final deliveryRepositoryProvider = Provider<DeliveryRepository>((ref) {
   );
 });
 
-final deliveryAssignmentsProvider = FutureProvider.autoDispose<DeliveryAssignmentPage>((ref) {
-  return ref.watch(deliveryRepositoryProvider).fetchAssignments();
-});
+final deliveryAssignmentsProvider =
+    FutureProvider.autoDispose<DeliveryAssignmentPage>((ref) {
+      return ref.watch(deliveryRepositoryProvider).fetchAssignments();
+    });
 
 final activeDeliveryAssignmentProvider = Provider<DeliveryAssignment?>((ref) {
   final assignments = ref.watch(deliveryAssignmentsProvider);
   return assignments.maybeWhen(
     data: (page) {
       for (final assignment in page.items) {
-        if (assignment.status == 'PICKED_UP' || assignment.status == 'OUT_FOR_DELIVERY') {
+        if (assignment.status == 'PICKED_UP' ||
+            assignment.status == 'OUT_FOR_DELIVERY') {
           return assignment;
         }
       }

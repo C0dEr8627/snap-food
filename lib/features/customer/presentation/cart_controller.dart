@@ -7,8 +7,9 @@ final cartRepositoryProvider = Provider<CartRepository>((ref) {
   return LocalCartRepository();
 });
 
-final cartControllerProvider =
-    NotifierProvider<CartController, CartSnapshot>(CartController.new);
+final cartControllerProvider = NotifierProvider<CartController, CartSnapshot>(
+  CartController.new,
+);
 
 class CartController extends Notifier<CartSnapshot> {
   CartRepository get _repository => ref.read(cartRepositoryProvider);

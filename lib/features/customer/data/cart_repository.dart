@@ -9,7 +9,7 @@ abstract interface class CartRepository {
 
 class LocalCartRepository implements CartRepository {
   LocalCartRepository({Iterable<CartItem> initialItems = const []})
-      : _items = List<CartItem>.from(initialItems);
+    : _items = List<CartItem>.from(initialItems);
 
   final List<CartItem> _items;
 
@@ -19,7 +19,9 @@ class LocalCartRepository implements CartRepository {
   @override
   CartSnapshot addItem(CartItem item) {
     if (item.productId.trim().isEmpty) return load();
-    final index = _items.indexWhere((existing) => existing.productId == item.productId);
+    final index = _items.indexWhere(
+      (existing) => existing.productId == item.productId,
+    );
     if (index < 0) {
       _items.add(item.copyWith(quantity: item.quantity.clamp(1, 99)));
     } else {

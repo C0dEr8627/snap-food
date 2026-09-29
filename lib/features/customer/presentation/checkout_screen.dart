@@ -29,7 +29,16 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   @override
   void dispose() {
-    for (final controller in [_label, _recipient, _line1, _line2, _city, _state, _postal, _country]) {
+    for (final controller in [
+      _label,
+      _recipient,
+      _line1,
+      _line2,
+      _city,
+      _state,
+      _postal,
+      _country,
+    ]) {
       controller.dispose();
     }
     super.dispose();
@@ -48,40 +57,99 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         bottom: false,
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: SnapFoodSpacing.desktopMaxContentWidth),
+            constraints: const BoxConstraints(
+              maxWidth: SnapFoodSpacing.desktopMaxContentWidth,
+            ),
             child: Form(
               key: _formKey,
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
                 children: [
-                  Row(children: [
-                    IconButton(onPressed: isSubmitting ? null : () => context.pop(), icon: const Icon(Icons.arrow_back)),
-                    const Expanded(child: Text('Checkout', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800))),
-                  ]),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: isSubmitting ? null : () => context.pop(),
+                        icon: const Icon(Icons.arrow_back),
+                      ),
+                      const Expanded(
+                        child: Text(
+                          'Checkout',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 8),
-                  const Text('Delivery address', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                  const Text(
+                    'Delivery address',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                  ),
                   const SizedBox(height: 10),
                   _field(_label, 'Label'),
                   _field(_recipient, 'Recipient name'),
                   _field(_line1, 'Address line 1'),
                   _field(_line2, 'Address line 2', requiredField: false),
-                  Row(children: [Expanded(child: _field(_city, 'City')), const SizedBox(width: 8), Expanded(child: _field(_state, 'State'))]),
-                  Row(children: [Expanded(child: _field(_postal, 'Postal code')), const SizedBox(width: 8), Expanded(child: _field(_country, 'Country'))]),
+                  Row(
+                    children: [
+                      Expanded(child: _field(_city, 'City')),
+                      const SizedBox(width: 8),
+                      Expanded(child: _field(_state, 'State')),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(child: _field(_postal, 'Postal code')),
+                      const SizedBox(width: 8),
+                      Expanded(child: _field(_country, 'Country')),
+                    ],
+                  ),
                   const SizedBox(height: 16),
-                  const Text('Payment method', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                  const Text(
+                    'Payment method',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                  ),
                   const SizedBox(height: 8),
                   const ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: Icon(Icons.payments_outlined, color: SnapFoodColors.secondary),
-                    title: Text('Cash on delivery', style: TextStyle(fontWeight: FontWeight.w800)),
-                    subtitle: Text('Payment method is fixed to COD by the current API contract.'),
-                    trailing: Icon(Icons.radio_button_checked, color: SnapFoodColors.secondary),
+                    leading: Icon(
+                      Icons.payments_outlined,
+                      color: SnapFoodColors.secondary,
+                    ),
+                    title: Text(
+                      'Cash on delivery',
+                      style: TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                    subtitle: Text(
+                      'Payment method is fixed to COD by the current API contract.',
+                    ),
+                    trailing: Icon(
+                      Icons.radio_button_checked,
+                      color: SnapFoodColors.secondary,
+                    ),
                   ),
-                  if (apiError != null) ...[const SizedBox(height: 10), _ErrorBox(error: apiError)],
+                  if (apiError != null) ...[
+                    const SizedBox(height: 10),
+                    _ErrorBox(error: apiError),
+                  ],
                   const SizedBox(height: 18),
-                  Text('${cart.itemCount} item${cart.itemCount == 1 ? '' : 's'}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                  Text(
+                    '${cart.itemCount} item${cart.itemCount == 1 ? '' : 's'}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                   const SizedBox(height: 8),
-                  const Text('Final amount is calculated by the server after checkout.', style: TextStyle(fontSize: 11, color: SnapFoodColors.onSurfaceVariant)),
+                  const Text(
+                    'Final amount is calculated by the server after checkout.',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: SnapFoodColors.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -94,7 +162,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
           child: FilledButton(
             onPressed: isSubmitting || cart.items.isEmpty ? null : _submit,
-            style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52), backgroundColor: SnapFoodColors.secondary, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SnapFoodRadii.md))),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(52),
+              backgroundColor: SnapFoodColors.secondary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+              ),
+            ),
             child: Text(isSubmitting ? 'Placing order…' : 'Place COD order'),
           ),
         ),
@@ -102,13 +177,24 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     );
   }
 
-  Widget _field(TextEditingController controller, String label, {bool requiredField = true}) => Padding(
+  Widget _field(
+    TextEditingController controller,
+    String label, {
+    bool requiredField = true,
+  }) => Padding(
     padding: const EdgeInsets.only(bottom: 9),
     child: TextFormField(
       controller: controller,
       textInputAction: TextInputAction.next,
-      validator: requiredField ? (value) => value == null || value.trim().isEmpty ? '\$label is required' : null : null,
-      decoration: InputDecoration(labelText: label, border: const OutlineInputBorder()),
+      validator: requiredField
+          ? (value) => value == null || value.trim().isEmpty
+                ? '\$label is required'
+                : null
+          : null,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+      ),
     ),
   );
 
@@ -119,37 +205,47 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     for (final item in cart.items) {
       final productId = int.tryParse(item.productId);
       if (productId == null || productId <= 0) {
-        _showMessage('Cart item ${item.name} has no valid catalogue product ID yet.');
+        _showMessage(
+          'Cart item ${item.name} has no valid catalogue product ID yet.',
+        );
         return;
       }
       if (item.quantity < 1 || item.quantity > 99) {
         _showMessage('Each item quantity must be between 1 and 99.');
         return;
       }
-      lines.add(OrderLineRequest(productId: productId, quantity: item.quantity));
+      lines.add(
+        OrderLineRequest(productId: productId, quantity: item.quantity),
+      );
     }
 
-    final order = await ref.read(orderCheckoutControllerProvider.notifier).submit(
-      CreateOrderRequest(
-        items: lines,
-        deliveryAddress: DeliveryAddress(
-          label: _label.text.trim(),
-          recipientName: _recipient.text.trim(),
-          addressLine1: _line1.text.trim(),
-          addressLine2: _line2.text.trim().isEmpty ? null : _line2.text.trim(),
-          city: _city.text.trim(),
-          state: _state.text.trim(),
-          postalCode: _postal.text.trim(),
-          country: _country.text.trim(),
-        ),
-      ),
-    );
+    final order = await ref
+        .read(orderCheckoutControllerProvider.notifier)
+        .submit(
+          CreateOrderRequest(
+            items: lines,
+            deliveryAddress: DeliveryAddress(
+              label: _label.text.trim(),
+              recipientName: _recipient.text.trim(),
+              addressLine1: _line1.text.trim(),
+              addressLine2: _line2.text.trim().isEmpty
+                  ? null
+                  : _line2.text.trim(),
+              city: _city.text.trim(),
+              state: _state.text.trim(),
+              postalCode: _postal.text.trim(),
+              country: _country.text.trim(),
+            ),
+          ),
+        );
     if (!mounted || order == null) return;
     ref.read(cartControllerProvider.notifier).clear();
     context.go('/orders/${Uri.encodeComponent(order.id)}');
   }
 
-  void _showMessage(String message) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  void _showMessage(String message) => ScaffoldMessenger.of(
+    context,
+  ).showSnackBar(SnackBar(content: Text(message)));
 }
 
 class _ErrorBox extends StatelessWidget {
@@ -158,12 +254,19 @@ class _ErrorBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final api = error is ApiException ? error as ApiException : null;
-    final message = api?.message ?? 'We could not place the order. Please try again.';
+    final message =
+        api?.message ?? 'We could not place the order. Please try again.';
     final code = api?.code;
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: SnapFoodColors.softRed, borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
-      child: Text(code == null || code.isEmpty ? message : '$message ($code)', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
+      decoration: BoxDecoration(
+        color: SnapFoodColors.softRed,
+        borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+      ),
+      child: Text(
+        code == null || code.isEmpty ? message : '$message ($code)',
+        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+      ),
     );
   }
 }

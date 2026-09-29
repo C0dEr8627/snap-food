@@ -25,8 +25,8 @@ final catalogueRepositoryProvider = Provider<CatalogueRepository>((ref) {
 
 final catalogueControllerProvider =
     AsyncNotifierProvider<CatalogueController, CatalogueSnapshot>(
-  CatalogueController.new,
-);
+      CatalogueController.new,
+    );
 
 class CatalogueController extends AsyncNotifier<CatalogueSnapshot> {
   CatalogueRepository get _repository => ref.read(catalogueRepositoryProvider);

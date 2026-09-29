@@ -12,17 +12,24 @@ final invoiceApiTransportProvider = Provider<HttpApiTransport>((ref) {
   return transport;
 });
 
-final invoiceSessionStoreProvider = Provider<SessionStore>((ref) => SecureSessionStore());
+final invoiceSessionStoreProvider = Provider<SessionStore>(
+  (ref) => SecureSessionStore(),
+);
 
-final invoiceApiClientProvider = Provider<ApiClient>((ref) => ApiClient(
-  config: ApiConfig.fromEnvironment(),
-  transport: ref.watch(invoiceApiTransportProvider),
-  tokenProvider: ref.watch(invoiceSessionStoreProvider).readToken,
-));
+final invoiceApiClientProvider = Provider<ApiClient>(
+  (ref) => ApiClient(
+    config: ApiConfig.fromEnvironment(),
+    transport: ref.watch(invoiceApiTransportProvider),
+    tokenProvider: ref.watch(invoiceSessionStoreProvider).readToken,
+  ),
+);
 
-final invoiceRepositoryProvider = Provider<InvoiceRepository>((ref) => RemoteInvoiceRepository(ref.watch(invoiceApiClientProvider)));
+final invoiceRepositoryProvider = Provider<InvoiceRepository>(
+  (ref) => RemoteInvoiceRepository(ref.watch(invoiceApiClientProvider)),
+);
 
-final invoiceControllerProvider = AsyncNotifierProvider<InvoiceController, Invoice?>(InvoiceController.new);
+final invoiceControllerProvider =
+    AsyncNotifierProvider<InvoiceController, Invoice?>(InvoiceController.new);
 
 class InvoiceController extends AsyncNotifier<Invoice?> {
   InvoiceRepository get _repository => ref.read(invoiceRepositoryProvider);

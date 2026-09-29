@@ -15,10 +15,12 @@ class DeliveryNavigateCustomerScreen extends ConsumerStatefulWidget {
   const DeliveryNavigateCustomerScreen({super.key});
 
   @override
-  ConsumerState<DeliveryNavigateCustomerScreen> createState() => _DeliveryNavigateCustomerScreenState();
+  ConsumerState<DeliveryNavigateCustomerScreen> createState() =>
+      _DeliveryNavigateCustomerScreenState();
 }
 
-class _DeliveryNavigateCustomerScreenState extends ConsumerState<DeliveryNavigateCustomerScreen> {
+class _DeliveryNavigateCustomerScreenState
+    extends ConsumerState<DeliveryNavigateCustomerScreen> {
   bool arrived = false;
 
   @override
@@ -28,12 +30,18 @@ class _DeliveryNavigateCustomerScreenState extends ConsumerState<DeliveryNavigat
       activeDeliveryAssignmentProvider,
       (_, next) => unawaited(_syncLocation(next)),
     );
-    Future.microtask(() => _syncLocation(ref.read(activeDeliveryAssignmentProvider)));
+    Future.microtask(
+      () => _syncLocation(ref.read(activeDeliveryAssignmentProvider)),
+    );
   }
 
   Future<void> _syncLocation(DeliveryAssignment? assignment) async {
-    final controller = ref.read(activeDeliveryLocationControllerProvider.notifier);
-    if (assignment == null || assignment.status == 'DELIVERED' || assignment.status == 'CANCELLED') {
+    final controller = ref.read(
+      activeDeliveryLocationControllerProvider.notifier,
+    );
+    if (assignment == null ||
+        assignment.status == 'DELIVERED' ||
+        assignment.status == 'CANCELLED') {
       await controller.stop();
       return;
     }
@@ -47,7 +55,9 @@ class _DeliveryNavigateCustomerScreenState extends ConsumerState<DeliveryNavigat
 
   @override
   void dispose() {
-    unawaited(ref.read(activeDeliveryLocationControllerProvider.notifier).stop());
+    unawaited(
+      ref.read(activeDeliveryLocationControllerProvider.notifier).stop(),
+    );
     super.dispose();
   }
 
@@ -55,7 +65,9 @@ class _DeliveryNavigateCustomerScreenState extends ConsumerState<DeliveryNavigat
   Widget build(BuildContext context) {
     final assignment = ref.watch(activeDeliveryAssignmentProvider);
     final locationState = ref.watch(activeDeliveryLocationControllerProvider);
-    final lastPublishedAt = ref.read(activeDeliveryLocationControllerProvider.notifier).lastPublishedAt;
+    final lastPublishedAt = ref
+        .read(activeDeliveryLocationControllerProvider.notifier)
+        .lastPublishedAt;
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
       body: SafeArea(
@@ -67,10 +79,15 @@ class _DeliveryNavigateCustomerScreenState extends ConsumerState<DeliveryNavigat
                 if (desktop) const _Sidebar(),
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(horizontal: desktop ? 32 : 16, vertical: 18),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: desktop ? 32 : 16,
+                      vertical: 18,
+                    ),
                     child: Center(
                       child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: SnapFoodSpacing.desktopMaxContentWidth),
+                        constraints: const BoxConstraints(
+                          maxWidth: SnapFoodSpacing.desktopMaxContentWidth,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -83,9 +100,16 @@ class _DeliveryNavigateCustomerScreenState extends ConsumerState<DeliveryNavigat
                                 final wide = inner.maxWidth >= 820;
                                 if (wide) {
                                   return Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Expanded(flex: 7, child: _NavigationMap(assignment: assignment, arrived: arrived)),
+                                      Expanded(
+                                        flex: 7,
+                                        child: _NavigationMap(
+                                          assignment: assignment,
+                                          arrived: arrived,
+                                        ),
+                                      ),
                                       const SizedBox(width: 18),
                                       Expanded(
                                         flex: 4,
@@ -102,7 +126,10 @@ class _DeliveryNavigateCustomerScreenState extends ConsumerState<DeliveryNavigat
                                 }
                                 return Column(
                                   children: [
-                                    _NavigationMap(assignment: assignment, arrived: arrived),
+                                    _NavigationMap(
+                                      assignment: assignment,
+                                      arrived: arrived,
+                                    ),
                                     const SizedBox(height: 18),
                                     _TripPanel(
                                       assignment: assignment,
@@ -137,26 +164,35 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        children: [
-          IconButton(onPressed: () => Navigator.maybePop(context), icon: const Icon(Icons.arrow_back_rounded)),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Navigate to customer', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900)),
-                SizedBox(height: 4),
-                Text(
-                  assignment == null
-                      ? 'No active delivery assignment'
-                      : 'Assignment #${assignment!.id} · Order #${assignment!.orderId ?? '—'}',
-                  style: const TextStyle(fontSize: 12, color: SnapFoodColors.onSurfaceVariant),
-                ),
-              ],
+    children: [
+      IconButton(
+        onPressed: () => Navigator.maybePop(context),
+        icon: const Icon(Icons.arrow_back_rounded),
+      ),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Navigate to customer',
+              style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900),
             ),
-          ),
-          _StatusPill(label: arrived ? 'AT CUSTOMER' : 'EN ROUTE'),
-        ],
-      );
+            SizedBox(height: 4),
+            Text(
+              assignment == null
+                  ? 'No active delivery assignment'
+                  : 'Assignment #${assignment!.id} · Order #${assignment!.orderId ?? '—'}',
+              style: const TextStyle(
+                fontSize: 12,
+                color: SnapFoodColors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+      _StatusPill(label: arrived ? 'AT CUSTOMER' : 'EN ROUTE'),
+    ],
+  );
 }
 
 class _NavigationMap extends StatelessWidget {
@@ -166,47 +202,66 @@ class _NavigationMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        height: 520,
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          color: SnapFoodColors.surfaceContainer,
-          borderRadius: BorderRadius.circular(SnapFoodRadii.xl),
-          border: Border.all(color: SnapFoodColors.softBorder),
+    height: 520,
+    clipBehavior: Clip.antiAlias,
+    decoration: BoxDecoration(
+      color: SnapFoodColors.surfaceContainer,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.xl),
+      border: Border.all(color: SnapFoodColors.softBorder),
+    ),
+    child: Stack(
+      children: [
+        CustomPaint(size: Size.infinite, painter: _CustomerRoutePainter()),
+        Positioned(
+          top: 16,
+          left: 16,
+          child: _MapBadge(
+            icon: Icons.navigation_rounded,
+            text: arrived ? 'At destination' : 'Following route',
+          ),
         ),
-        child: Stack(
-          children: [
-            CustomPaint(size: Size.infinite, painter: _CustomerRoutePainter()),
-            Positioned(top: 16, left: 16, child: _MapBadge(icon: Icons.navigation_rounded, text: arrived ? 'At destination' : 'Following route')),
-            const Positioned(top: 16, right: 16, child: _MapBadge(icon: Icons.gps_fixed_rounded, text: 'GPS')),
-            const Positioned(
-              left: 42,
-              bottom: 48,
-              child: _MapPoint(icon: Icons.delivery_dining_rounded, label: 'You', primary: true),
-            ),
-            Positioned(
-              right: 40,
-              top: 112,
-              child: _MapPoint(
-                icon: Icons.home_rounded,
-                label: assignment?.dropoffAddress ?? 'Customer destination',
-                primary: false,
-              ),
-            ),
-            Positioned(
-              left: 18,
-              bottom: 16,
-              child: Text(
-                assignment == null
-                    ? 'No active assignment'
-                    : arrived
-                        ? 'Destination reached'
-                        : 'Active assignment · customer route',
-                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: SnapFoodColors.onSurfaceVariant),
-              ),
-            ),
-          ],
+        const Positioned(
+          top: 16,
+          right: 16,
+          child: _MapBadge(icon: Icons.gps_fixed_rounded, text: 'GPS'),
         ),
-      );
+        const Positioned(
+          left: 42,
+          bottom: 48,
+          child: _MapPoint(
+            icon: Icons.delivery_dining_rounded,
+            label: 'You',
+            primary: true,
+          ),
+        ),
+        Positioned(
+          right: 40,
+          top: 112,
+          child: _MapPoint(
+            icon: Icons.home_rounded,
+            label: assignment?.dropoffAddress ?? 'Customer destination',
+            primary: false,
+          ),
+        ),
+        Positioned(
+          left: 18,
+          bottom: 16,
+          child: Text(
+            assignment == null
+                ? 'No active assignment'
+                : arrived
+                ? 'Destination reached'
+                : 'Active assignment · customer route',
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              color: SnapFoodColors.onSurfaceVariant,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _CustomerRoutePainter extends CustomPainter {
@@ -216,7 +271,10 @@ class _CustomerRoutePainter extends CustomPainter {
     for (var x = 18.0; x < size.width; x += 64) {
       for (var y = 70.0; y < size.height; y += 62) {
         canvas.drawRRect(
-          RRect.fromRectAndRadius(Rect.fromLTWH(x, y, 42, 27), const Radius.circular(5)),
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(x, y, 42, 27),
+            const Radius.circular(5),
+          ),
           blockPaint,
         );
       }
@@ -234,8 +292,22 @@ class _CustomerRoutePainter extends CustomPainter {
 
     final route = Path()
       ..moveTo(size.width * .14, size.height * .82)
-      ..cubicTo(size.width * .25, size.height * .64, size.width * .38, size.height * .68, size.width * .48, size.height * .48)
-      ..cubicTo(size.width * .58, size.height * .30, size.width * .72, size.height * .42, size.width * .87, size.height * .25);
+      ..cubicTo(
+        size.width * .25,
+        size.height * .64,
+        size.width * .38,
+        size.height * .68,
+        size.width * .48,
+        size.height * .48,
+      )
+      ..cubicTo(
+        size.width * .58,
+        size.height * .30,
+        size.width * .72,
+        size.height * .42,
+        size.width * .87,
+        size.height * .25,
+      );
 
     canvas.drawPath(route, road);
     canvas.drawPath(route, edge);
@@ -248,8 +320,16 @@ class _CustomerRoutePainter extends CustomPainter {
         ..strokeCap = StrokeCap.round,
     );
 
-    canvas.drawCircle(Offset(size.width * .87, size.height * .25), 9, Paint()..color = SnapFoodColors.foodRed);
-    canvas.drawCircle(Offset(size.width * .14, size.height * .82), 10, Paint()..color = SnapFoodColors.primary);
+    canvas.drawCircle(
+      Offset(size.width * .87, size.height * .25),
+      9,
+      Paint()..color = SnapFoodColors.foodRed,
+    );
+    canvas.drawCircle(
+      Offset(size.width * .14, size.height * .82),
+      10,
+      Paint()..color = SnapFoodColors.primary,
+    );
   }
 
   @override
@@ -257,159 +337,222 @@ class _CustomerRoutePainter extends CustomPainter {
 }
 
 class _TripPanel extends StatelessWidget {
-  const _TripPanel({required this.assignment, required this.arrived, required this.onArrived, required this.locationState, required this.lastPublishedAt});
+  const _TripPanel({
+    required this.assignment,
+    required this.arrived,
+    required this.onArrived,
+    required this.locationState,
+    required this.lastPublishedAt,
+  });
   final DeliveryAssignment? assignment;
   final bool arrived;
   final VoidCallback onArrived;
   final ActiveDeliveryLocationState locationState;
   final DateTime? lastPublishedAt;
 
-  static String _locationLabel(ActiveDeliveryLocationState state, DateTime? lastPublishedAt) {
-    final published = lastPublishedAt?.toLocal().toIso8601String().replaceFirst('T', ' ');
+  static String _locationLabel(
+    ActiveDeliveryLocationState state,
+    DateTime? lastPublishedAt,
+  ) {
+    final published = lastPublishedAt?.toLocal().toIso8601String().replaceFirst(
+      'T',
+      ' ',
+    );
     return switch (state) {
       ActiveDeliveryLocationState.idle => 'Location publishing stopped',
-      ActiveDeliveryLocationState.requestingPermission => 'Requesting location permission',
-      ActiveDeliveryLocationState.tracking => published == null ? 'Foreground GPS active; waiting for first update' : 'Last update sent $published',
-      ActiveDeliveryLocationState.permissionDenied => 'Location permission denied',
-      ActiveDeliveryLocationState.unavailable => 'GPS unavailable on this build',
+      ActiveDeliveryLocationState.requestingPermission =>
+        'Requesting location permission',
+      ActiveDeliveryLocationState.tracking =>
+        published == null
+            ? 'Foreground GPS active; waiting for first update'
+            : 'Last update sent $published',
+      ActiveDeliveryLocationState.permissionDenied =>
+        'Location permission denied',
+      ActiveDeliveryLocationState.unavailable =>
+        'GPS unavailable on this build',
       ActiveDeliveryLocationState.error => 'Last location update failed',
     };
   }
 
   @override
   Widget build(BuildContext context) => Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: SnapFoodColors.surfaceContainerLowest,
-              borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-              border: Border.all(color: SnapFoodColors.softBorder),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: SnapFoodColors.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+          border: Border.all(color: SnapFoodColors.softBorder),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    const Expanded(child: Text('Customer trip', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900))),
-                    _StatusPill(label: arrived ? 'ARRIVED' : 'ACTIVE'),
-                  ],
+                const Expanded(
+                  child: Text(
+                    'Customer trip',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                  ),
                 ),
-                const SizedBox(height: 18),
-                _InfoRow(
-                  icon: Icons.local_shipping_outlined,
-                  label: 'Assignment',
-                  value: assignment == null ? 'No active trip' : '#${assignment!.id}',
-                ),
-                const SizedBox(height: 13),
-                _InfoRow(
-                  icon: Icons.location_on_outlined,
-                  label: 'Address',
-                  value: assignment?.dropoffAddress ?? 'Customer address unavailable',
-                ),
-                const SizedBox(height: 13),
-                _InfoRow(
-                  icon: Icons.route_outlined,
-                  label: 'Status',
-                  value: assignment?.status ?? 'NO ACTIVE TRIP',
-                ),
-                const SizedBox(height: 13),
-                _InfoRow(
-                  icon: Icons.gps_fixed_rounded,
-                  label: 'Location',
-                  value: _locationLabel(locationState, lastPublishedAt),
-                ),
-                const SizedBox(height: 18),
-                const Divider(color: SnapFoodColors.softBorder),
-                const SizedBox(height: 16),
-                const Text('Delivery instructions', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900)),
-                const SizedBox(height: 8),
-                const Text(
-                  'Call the customer on arrival and hand over the order after verification.',
-                  style: TextStyle(fontSize: 11, height: 1.45, color: SnapFoodColors.onSurfaceVariant),
-                ),
-                const SizedBox(height: 18),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Calling Aarav Mehta…')),
-                        ),
-                        icon: const Icon(Icons.call_outlined, size: 17),
-                        label: const Text('Call customer'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: SnapFoodColors.warmBlack,
-                          side: const BorderSide(color: SnapFoodColors.softBorder),
-                          padding: const EdgeInsets.symmetric(vertical: 13),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: assignment == null || arrived ? null : onArrived,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: SnapFoodColors.secondary,
-                          foregroundColor: SnapFoodColors.onPrimary,
-                          disabledBackgroundColor: SnapFoodColors.primaryContainer,
-                          disabledForegroundColor: SnapFoodColors.warmBlack,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(vertical: 13),
-                        ),
-                        child: Text(assignment == null ? 'No active trip' : arrived ? 'At customer' : 'Arrived at customer'),
-                      ),
-                    ),
-                  ],
-                ),
+                _StatusPill(label: arrived ? 'ARRIVED' : 'ACTIVE'),
               ],
             ),
-          ),
-          const SizedBox(height: 14),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: SnapFoodColors.softYellow,
-              borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-              border: Border.all(color: SnapFoodColors.softBorder),
+            const SizedBox(height: 18),
+            _InfoRow(
+              icon: Icons.local_shipping_outlined,
+              label: 'Assignment',
+              value: assignment == null
+                  ? 'No active trip'
+                  : '#${assignment!.id}',
             ),
-            child: const Row(
+            const SizedBox(height: 13),
+            _InfoRow(
+              icon: Icons.location_on_outlined,
+              label: 'Address',
+              value:
+                  assignment?.dropoffAddress ?? 'Customer address unavailable',
+            ),
+            const SizedBox(height: 13),
+            _InfoRow(
+              icon: Icons.route_outlined,
+              label: 'Status',
+              value: assignment?.status ?? 'NO ACTIVE TRIP',
+            ),
+            const SizedBox(height: 13),
+            _InfoRow(
+              icon: Icons.gps_fixed_rounded,
+              label: 'Location',
+              value: _locationLabel(locationState, lastPublishedAt),
+            ),
+            const SizedBox(height: 18),
+            const Divider(color: SnapFoodColors.softBorder),
+            const SizedBox(height: 16),
+            const Text(
+              'Delivery instructions',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Call the customer on arrival and hand over the order after verification.',
+              style: TextStyle(
+                fontSize: 11,
+                height: 1.45,
+                color: SnapFoodColors.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 18),
+            Row(
               children: [
-                Icon(Icons.lock_outline_rounded, size: 21, color: SnapFoodColors.secondary),
-                SizedBox(width: 10),
                 Expanded(
-                  child: Text(
-                    'Keep the order secure until the customer verification step is completed.',
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, height: 1.4),
+                  child: OutlinedButton.icon(
+                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Calling Aarav Mehta…')),
+                    ),
+                    icon: const Icon(Icons.call_outlined, size: 17),
+                    label: const Text('Call customer'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: SnapFoodColors.warmBlack,
+                      side: const BorderSide(color: SnapFoodColors.softBorder),
+                      padding: const EdgeInsets.symmetric(vertical: 13),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: assignment == null || arrived ? null : onArrived,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: SnapFoodColors.secondary,
+                      foregroundColor: SnapFoodColors.onPrimary,
+                      disabledBackgroundColor: SnapFoodColors.primaryContainer,
+                      disabledForegroundColor: SnapFoodColors.warmBlack,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 13),
+                    ),
+                    child: Text(
+                      assignment == null
+                          ? 'No active trip'
+                          : arrived
+                          ? 'At customer'
+                          : 'Arrived at customer',
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      );
+          ],
+        ),
+      ),
+      const SizedBox(height: 14),
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: SnapFoodColors.softYellow,
+          borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+          border: Border.all(color: SnapFoodColors.softBorder),
+        ),
+        child: const Row(
+          children: [
+            Icon(
+              Icons.lock_outline_rounded,
+              size: 21,
+              color: SnapFoodColors.secondary,
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Keep the order secure until the customer verification step is completed.',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
 }
 
 class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.icon, required this.label, required this.value});
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
   final IconData icon;
   final String label;
   final String value;
 
   @override
   Widget build(BuildContext context) => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 18, color: SnapFoodColors.secondary),
-          const SizedBox(width: 10),
-          SizedBox(
-            width: 64,
-            child: Text(label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: SnapFoodColors.onSurfaceVariant)),
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Icon(icon, size: 18, color: SnapFoodColors.secondary),
+      const SizedBox(width: 10),
+      SizedBox(
+        width: 64,
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w800,
+            color: SnapFoodColors.onSurfaceVariant,
           ),
-          Expanded(child: Text(value, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800))),
-        ],
-      );
+        ),
+      ),
+      Expanded(
+        child: Text(
+          value,
+          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
+        ),
+      ),
+    ],
+  );
 }
 
 class _MapBadge extends StatelessWidget {
@@ -419,53 +562,70 @@ class _MapBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        decoration: BoxDecoration(
-          color: SnapFoodColors.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(SnapFoodRadii.full),
-          border: Border.all(color: SnapFoodColors.softBorder),
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    decoration: BoxDecoration(
+      color: SnapFoodColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+      border: Border.all(color: SnapFoodColors.softBorder),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 15, color: SnapFoodColors.secondary),
+        const SizedBox(width: 6),
+        Text(
+          text,
+          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 15, color: SnapFoodColors.secondary),
-            const SizedBox(width: 6),
-            Text(text, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),
-          ],
-        ),
-      );
+      ],
+    ),
+  );
 }
 
 class _MapPoint extends StatelessWidget {
-  const _MapPoint({required this.icon, required this.label, required this.primary});
+  const _MapPoint({
+    required this.icon,
+    required this.label,
+    required this.primary,
+  });
   final IconData icon;
   final String label;
   final bool primary;
 
   @override
   Widget build(BuildContext context) => Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(7),
-            decoration: BoxDecoration(
-              color: primary ? SnapFoodColors.primary : SnapFoodColors.foodRed,
-              shape: BoxShape.circle,
-              boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 9, spreadRadius: 2)],
-            ),
-            child: Icon(icon, size: 22, color: SnapFoodColors.warmBlack),
+    children: [
+      Container(
+        padding: const EdgeInsets.all(7),
+        decoration: BoxDecoration(
+          color: primary ? SnapFoodColors.primary : SnapFoodColors.foodRed,
+          shape: BoxShape.circle,
+          boxShadow: const [
+            BoxShadow(color: Colors.black12, blurRadius: 9, spreadRadius: 2),
+          ],
+        ),
+        child: Icon(icon, size: 22, color: SnapFoodColors.warmBlack),
+      ),
+      const SizedBox(height: 5),
+      Container(
+        constraints: const BoxConstraints(maxWidth: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        decoration: BoxDecoration(
+          color: SnapFoodColors.warmBlack,
+          borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+        ),
+        child: Text(
+          label,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w900,
+            color: SnapFoodColors.cream,
           ),
-          const SizedBox(height: 5),
-          Container(
-            constraints: const BoxConstraints(maxWidth: 150),
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-            decoration: BoxDecoration(
-              color: SnapFoodColors.warmBlack,
-              borderRadius: BorderRadius.circular(SnapFoodRadii.full),
-            ),
-            child: Text(label, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: SnapFoodColors.cream)),
-          ),
-        ],
-      );
+        ),
+      ),
+    ],
+  );
 }
 
 class _StatusPill extends StatelessWidget {
@@ -474,13 +634,18 @@ class _StatusPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-        decoration: BoxDecoration(
-          color: label == 'AT CUSTOMER' || label == 'ARRIVED' ? SnapFoodColors.primaryContainer : SnapFoodColors.softYellow,
-          borderRadius: BorderRadius.circular(SnapFoodRadii.full),
-        ),
-        child: Text(label, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900)),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+    decoration: BoxDecoration(
+      color: label == 'AT CUSTOMER' || label == 'ARRIVED'
+          ? SnapFoodColors.primaryContainer
+          : SnapFoodColors.softYellow,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+    ),
+    child: Text(
+      label,
+      style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900),
+    ),
+  );
 }
 
 class _MobileHeader extends StatelessWidget {
@@ -488,12 +653,20 @@ class _MobileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        children: [
-          IconButton(onPressed: () => Navigator.maybePop(context), icon: const Icon(Icons.arrow_back_rounded)),
-          const Expanded(child: Text('SNAP FOOD', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900))),
-          const _StatusPill(label: 'EN ROUTE'),
-        ],
-      );
+    children: [
+      IconButton(
+        onPressed: () => Navigator.maybePop(context),
+        icon: const Icon(Icons.arrow_back_rounded),
+      ),
+      const Expanded(
+        child: Text(
+          'SNAP FOOD',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+        ),
+      ),
+      const _StatusPill(label: 'EN ROUTE'),
+    ],
+  );
 }
 
 class _Sidebar extends StatelessWidget {
@@ -501,35 +674,60 @@ class _Sidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: 224,
-        height: double.infinity,
-        padding: const EdgeInsets.fromLTRB(18, 24, 14, 18),
-        decoration: const BoxDecoration(
-          color: SnapFoodColors.surfaceContainerLowest,
-          border: Border(right: BorderSide(color: SnapFoodColors.softBorder)),
-        ),
-        child: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    width: 224,
+    height: double.infinity,
+    padding: const EdgeInsets.fromLTRB(18, 24, 14, 18),
+    decoration: const BoxDecoration(
+      color: SnapFoodColors.surfaceContainerLowest,
+      border: Border(right: BorderSide(color: SnapFoodColors.softBorder)),
+    ),
+    child: const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           children: [
-            Row(
-              children: [
-                CircleAvatar(radius: 19, backgroundColor: SnapFoodColors.primaryContainer, child: Icon(Icons.delivery_dining_rounded, color: SnapFoodColors.warmBlack)),
-                SizedBox(width: 9),
-                Text('SNAP FOOD', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
-              ],
+            CircleAvatar(
+              radius: 19,
+              backgroundColor: SnapFoodColors.primaryContainer,
+              child: Icon(
+                Icons.delivery_dining_rounded,
+                color: SnapFoodColors.warmBlack,
+              ),
             ),
-            SizedBox(height: 34),
-            Text('PARTNER', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1, color: SnapFoodColors.onSurfaceVariant)),
-            SizedBox(height: 10),
-            _NavRow(Icons.inbox_outlined, 'Requests', false),
-            _NavRow(Icons.map_outlined, 'Duty map', false),
-            _NavRow(Icons.route_outlined, 'Trips', true),
-            _NavRow(Icons.account_balance_wallet_outlined, 'Earnings', false),
-            Spacer(),
-            Text('TRP-1842 • CUSTOMER', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: SnapFoodColors.primary)),
+            SizedBox(width: 9),
+            Text(
+              'SNAP FOOD',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
+            ),
           ],
         ),
-      );
+        SizedBox(height: 34),
+        Text(
+          'PARTNER',
+          style: TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1,
+            color: SnapFoodColors.onSurfaceVariant,
+          ),
+        ),
+        SizedBox(height: 10),
+        _NavRow(Icons.inbox_outlined, 'Requests', false),
+        _NavRow(Icons.map_outlined, 'Duty map', false),
+        _NavRow(Icons.route_outlined, 'Trips', true),
+        _NavRow(Icons.account_balance_wallet_outlined, 'Earnings', false),
+        Spacer(),
+        Text(
+          'TRP-1842 • CUSTOMER',
+          style: TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w900,
+            color: SnapFoodColors.primary,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _NavRow extends StatelessWidget {
@@ -540,15 +738,21 @@ class _NavRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        margin: const EdgeInsets.only(bottom: 5),
-        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 11),
-        decoration: BoxDecoration(color: selected ? SnapFoodColors.primaryContainer : null, borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
-        child: Row(
-          children: [
-            Icon(icon, size: 18, color: SnapFoodColors.warmBlack),
-            const SizedBox(width: 10),
-            Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
-          ],
+    margin: const EdgeInsets.only(bottom: 5),
+    padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 11),
+    decoration: BoxDecoration(
+      color: selected ? SnapFoodColors.primaryContainer : null,
+      borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+    ),
+    child: Row(
+      children: [
+        Icon(icon, size: 18, color: SnapFoodColors.warmBlack),
+        const SizedBox(width: 10),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
         ),
-      );
+      ],
+    ),
+  );
 }

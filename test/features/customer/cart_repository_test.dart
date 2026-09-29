@@ -6,13 +6,13 @@ import 'package:snap_foodd/features/customer/data/cart_repository.dart';
 import 'package:snap_foodd/features/customer/presentation/cart_controller.dart';
 
 CartItem _item(String id, {int quantity = 1}) => CartItem(
-      productId: id,
-      name: 'Product $id',
-      description: 'Catalogue item',
-      previewPrice: 100,
-      quantity: quantity,
-      vegetarian: false,
-    );
+  productId: id,
+  name: 'Product $id',
+  description: 'Catalogue item',
+  previewPrice: 100,
+  quantity: quantity,
+  vegetarian: false,
+);
 
 void main() {
   test('cart starts empty so checkout cannot submit placeholder IDs', () {
@@ -47,9 +47,6 @@ void main() {
     );
     addTearDown(container.dispose);
 
-    expect(
-      container.read(cartControllerProvider).items.single.productId,
-      '15',
-    );
+    expect(container.read(cartControllerProvider).items.single.productId, '15');
   });
 }

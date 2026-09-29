@@ -56,7 +56,9 @@ void main() {
     );
     addTearDown(subscription.close);
 
-    final error = await errorCompleter.future.timeout(const Duration(seconds: 5));
+    final error = await errorCompleter.future.timeout(
+      const Duration(seconds: 5),
+    );
     expect(error, isA<ApiException>());
     expect(container.read(catalogueControllerProvider).hasError, isTrue);
   });

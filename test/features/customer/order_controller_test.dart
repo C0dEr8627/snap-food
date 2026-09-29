@@ -31,77 +31,96 @@ void main() {
     country: 'India',
   );
 
-  test('checkout controller ignores duplicate submission while request is active', () async {
-    final repository = FakeOrderRepository(createdOrder: order);
-    final container = ProviderContainer(
-      overrides: [
-        orderRepositoryProvider.overrideWithValue(repository),
-      ],
-    );
-    addTearDown(container.dispose);
+  test(
+    'checkout controller ignores duplicate submission while request is active',
+    () async {
+      final repository = FakeOrderRepository(createdOrder: order);
+      final container = ProviderContainer(
+        overrides: [orderRepositoryProvider.overrideWithValue(repository)],
+      );
+      addTearDown(container.dispose);
 
-    final controller = container.read(orderCheckoutControllerProvider.notifier);
-    final request = CreateOrderRequest(
-      items: const [OrderLineRequest(productId: 15, quantity: 1)],
-      deliveryAddress: address,
-    );
+      final controller = container.read(
+        orderCheckoutControllerProvider.notifier,
+      );
+      final request = CreateOrderRequest(
+        items: const [OrderLineRequest(productId: 15, quantity: 1)],
+        deliveryAddress: address,
+      );
 
-    final first = controller.submit(request);
-    final second = controller.submit(request);
-    final results = await Future.wait([first, second]);
+      final first = controller.submit(request);
+      final second = controller.submit(request);
+      final results = await Future.wait([first, second]);
 
-    expect(results.whereType<Order>(), hasLength(1));
-    expect(repository.lastCreateRequest?.items.single.productId, 15);
-  });
+      expect(results.whereType<Order>(), hasLength(1));
+      expect(repository.lastCreateRequest?.items.single.productId, 15);
+    },
+  );
 
-  test('checkout controller surfaces validation failures without retrying automatically', () async {
-    final repository = _FailingOrderRepository(
-      const ApiException(
-        message: 'The selected product is unavailable.',
-        code: 'VALIDATION_FAILED',
-        statusCode: 422,
-      ),
-    );
-    final container = ProviderContainer(
-      overrides: [orderRepositoryProvider.overrideWithValue(repository)],
-    );
-    addTearDown(container.dispose);
+  test(
+    'checkout controller surfaces validation failures without retrying automatically',
+    () async {
+      final repository = _FailingOrderRepository(
+        const ApiException(
+          message: 'The selected product is unavailable.',
+          code: 'VALIDATION_FAILED',
+          statusCode: 422,
+        ),
+      );
+      final container = ProviderContainer(
+        overrides: [orderRepositoryProvider.overrideWithValue(repository)],
+      );
+      addTearDown(container.dispose);
 
-    final result = await container.read(orderCheckoutControllerProvider.notifier).submit(
-      CreateOrderRequest(items: const [OrderLineRequest(productId: 15, quantity: 1)], deliveryAddress: address),
-    );
+      final result = await container
+          .read(orderCheckoutControllerProvider.notifier)
+          .submit(
+            CreateOrderRequest(
+              items: const [OrderLineRequest(productId: 15, quantity: 1)],
+              deliveryAddress: address,
+            ),
+          );
 
-    expect(result, isNull);
-    final state = container.read(orderCheckoutControllerProvider);
-    expect(state.hasError, isTrue);
-    expect((state.error as ApiException).code, 'VALIDATION_FAILED');
-    expect(repository.calls, 1);
-  });
+      expect(result, isNull);
+      final state = container.read(orderCheckoutControllerProvider);
+      expect(state.hasError, isTrue);
+      expect((state.error as ApiException).code, 'VALIDATION_FAILED');
+      expect(repository.calls, 1);
+    },
+  );
 
-  test('checkout controller surfaces HTTP 409 conflicts as recoverable errors', () async {
-    final repository = _FailingOrderRepository(
-      const ApiException(
-        message: 'Order state changed. Please review your cart.',
-        code: 'CONFLICT',
-        statusCode: 409,
-      ),
-    );
-    final container = ProviderContainer(
-      overrides: [orderRepositoryProvider.overrideWithValue(repository)],
-    );
-    addTearDown(container.dispose);
+  test(
+    'checkout controller surfaces HTTP 409 conflicts as recoverable errors',
+    () async {
+      final repository = _FailingOrderRepository(
+        const ApiException(
+          message: 'Order state changed. Please review your cart.',
+          code: 'CONFLICT',
+          statusCode: 409,
+        ),
+      );
+      final container = ProviderContainer(
+        overrides: [orderRepositoryProvider.overrideWithValue(repository)],
+      );
+      addTearDown(container.dispose);
 
-    final result = await container.read(orderCheckoutControllerProvider.notifier).submit(
-      CreateOrderRequest(items: const [OrderLineRequest(productId: 15, quantity: 1)], deliveryAddress: address),
-    );
+      final result = await container
+          .read(orderCheckoutControllerProvider.notifier)
+          .submit(
+            CreateOrderRequest(
+              items: const [OrderLineRequest(productId: 15, quantity: 1)],
+              deliveryAddress: address,
+            ),
+          );
 
-    expect(result, isNull);
-    final state = container.read(orderCheckoutControllerProvider);
-    expect(state.hasError, isTrue);
-    expect((state.error as ApiException).statusCode, 409);
-    expect((state.error as ApiException).code, 'CONFLICT');
-    expect(repository.calls, 1);
-  });
+      expect(result, isNull);
+      final state = container.read(orderCheckoutControllerProvider);
+      expect(state.hasError, isTrue);
+      expect((state.error as ApiException).statusCode, 409);
+      expect((state.error as ApiException).code, 'CONFLICT');
+      expect(repository.calls, 1);
+    },
+  );
 }
 
 class _FailingOrderRepository implements OrderRepository {
@@ -116,12 +135,8 @@ class _FailingOrderRepository implements OrderRepository {
   }
 
   @override
-  Future<OrderPage> fetchOrders({int? page, int? perPage}) async => const OrderPage(
-    orders: [],
-    currentPage: 1,
-    lastPage: 1,
-    total: 0,
-  );
+  Future<OrderPage> fetchOrders({int? page, int? perPage}) async =>
+      const OrderPage(orders: [], currentPage: 1, lastPage: 1, total: 0);
 
   @override
   Future<Order> fetchOrder(String orderId) async => throw error;

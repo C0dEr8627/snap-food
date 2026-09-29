@@ -13,13 +13,22 @@ class RemoteInvoiceRepository implements InvoiceRepository {
   @override
   Future<Invoice> fetchInvoice(String orderId) async {
     final normalized = orderId.trim();
-    if (normalized.isEmpty) throw const ApiException(message: 'An order id is required.', code: 'INVALID_ORDER_ID');
-    final response = await _client.get('/orders/' + Uri.encodeComponent(normalized) + '/invoice');
+    if (normalized.isEmpty)
+      throw const ApiException(
+        message: 'An order id is required.',
+        code: 'INVALID_ORDER_ID',
+      );
+    final response = await _client.get(
+      '/orders/' + Uri.encodeComponent(normalized) + '/invoice',
+    );
     if (response is Map<String, dynamic>) {
       final data = response['data'];
       if (data is Map) return Invoice.fromJson(Map<String, dynamic>.from(data));
     }
-    throw const ApiException(message: 'The server returned an unexpected invoice response.', code: 'INVALID_RESPONSE');
+    throw const ApiException(
+      message: 'The server returned an unexpected invoice response.',
+      code: 'INVALID_RESPONSE',
+    );
   }
 }
 
@@ -29,7 +38,11 @@ class FakeInvoiceRepository implements InvoiceRepository {
 
   @override
   Future<Invoice> fetchInvoice(String orderId) async {
-    if (_invoice == null) throw const ApiException(message: 'No invoice fixture was supplied.', code: 'FIXTURE_MISSING');
+    if (_invoice == null)
+      throw const ApiException(
+        message: 'No invoice fixture was supplied.',
+        code: 'FIXTURE_MISSING',
+      );
     return _invoice;
   }
 }

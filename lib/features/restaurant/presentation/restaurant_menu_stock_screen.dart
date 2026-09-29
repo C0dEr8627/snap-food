@@ -9,7 +9,8 @@ class RestaurantMenuStockScreen extends StatefulWidget {
   const RestaurantMenuStockScreen({super.key});
 
   @override
-  State<RestaurantMenuStockScreen> createState() => _RestaurantMenuStockScreenState();
+  State<RestaurantMenuStockScreen> createState() =>
+      _RestaurantMenuStockScreenState();
 }
 
 class _RestaurantMenuStockScreenState extends State<RestaurantMenuStockScreen> {
@@ -18,21 +19,78 @@ class _RestaurantMenuStockScreenState extends State<RestaurantMenuStockScreen> {
   final Set<String> _unavailable = <String>{};
 
   static const items = <_MenuItem>[
-    _MenuItem('Chicken Tikka Dum Biryani', 'Main Course', '₹320', 'In stock', '128 sold', Icons.rice_bowl),
-    _MenuItem('Butter Chicken & 2 Naan', 'Main Course', '₹280', 'In stock', '96 sold', Icons.lunch_dining),
-    _MenuItem('Paneer Butter Masala', 'Main Course', '₹240', 'Low stock', '74 sold', Icons.restaurant_menu),
-    _MenuItem('Paneer Tikka', 'Starters', '₹210', 'In stock', '61 sold', Icons.kebab_dining),
-    _MenuItem('Fish Fry', 'Starters', '₹260', 'Low stock', '42 sold', Icons.set_meal),
-    _MenuItem('Garlic Naan', 'Breads', '₹70', 'In stock', '88 sold', Icons.bakery_dining),
-    _MenuItem('Tandoori Roti', 'Breads', '₹35', 'In stock', '82 sold', Icons.flatware),
-    _MenuItem('Masala Chaas', 'Beverages', '₹30', 'In stock', '53 sold', Icons.local_drink),
+    _MenuItem(
+      'Chicken Tikka Dum Biryani',
+      'Main Course',
+      '₹320',
+      'In stock',
+      '128 sold',
+      Icons.rice_bowl,
+    ),
+    _MenuItem(
+      'Butter Chicken & 2 Naan',
+      'Main Course',
+      '₹280',
+      'In stock',
+      '96 sold',
+      Icons.lunch_dining,
+    ),
+    _MenuItem(
+      'Paneer Butter Masala',
+      'Main Course',
+      '₹240',
+      'Low stock',
+      '74 sold',
+      Icons.restaurant_menu,
+    ),
+    _MenuItem(
+      'Paneer Tikka',
+      'Starters',
+      '₹210',
+      'In stock',
+      '61 sold',
+      Icons.kebab_dining,
+    ),
+    _MenuItem(
+      'Fish Fry',
+      'Starters',
+      '₹260',
+      'Low stock',
+      '42 sold',
+      Icons.set_meal,
+    ),
+    _MenuItem(
+      'Garlic Naan',
+      'Breads',
+      '₹70',
+      'In stock',
+      '88 sold',
+      Icons.bakery_dining,
+    ),
+    _MenuItem(
+      'Tandoori Roti',
+      'Breads',
+      '₹35',
+      'In stock',
+      '82 sold',
+      Icons.flatware,
+    ),
+    _MenuItem(
+      'Masala Chaas',
+      'Beverages',
+      '₹30',
+      'In stock',
+      '53 sold',
+      Icons.local_drink,
+    ),
   ];
 
   List<_MenuItem> get visibleItems {
     final query = _query.trim().toLowerCase();
     return items.where((item) {
       final categoryOk = _category == 'All' || item.category == _category;
-      final queryOk = query.isEmpty ||
+      final queryOk =
+          query.isEmpty ||
           item.name.toLowerCase().contains(query) ||
           item.category.toLowerCase().contains(query);
       return categoryOk && queryOk;
@@ -56,17 +114,27 @@ class _RestaurantMenuStockScreenState extends State<RestaurantMenuStockScreen> {
                       _Header(wide: wide),
                       Expanded(
                         child: SingleChildScrollView(
-                          padding: EdgeInsets.fromLTRB(wide ? 24 : 16, 20, wide ? 24 : 16, 32),
+                          padding: EdgeInsets.fromLTRB(
+                            wide ? 24 : 16,
+                            20,
+                            wide ? 24 : 16,
+                            32,
+                          ),
                           child: Center(
                             child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: SnapFoodSpacing.desktopMaxContentWidth),
+                              constraints: const BoxConstraints(
+                                maxWidth:
+                                    SnapFoodSpacing.desktopMaxContentWidth,
+                              ),
                               child: _Content(
                                 category: _category,
                                 query: _query,
                                 items: visibleItems,
                                 unavailable: _unavailable,
-                                onQueryChanged: (value) => setState(() => _query = value),
-                                onCategoryChanged: (value) => setState(() => _category = value),
+                                onQueryChanged: (value) =>
+                                    setState(() => _query = value),
+                                onCategoryChanged: (value) =>
+                                    setState(() => _category = value),
                                 onAvailabilityChanged: _setAvailability,
                                 onEdit: _showEdit,
                                 onAdd: _showAdd,
@@ -98,13 +166,19 @@ class _RestaurantMenuStockScreenState extends State<RestaurantMenuStockScreen> {
 
   void _showAdd() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Add item flow is ready for backend integration.')),
+      const SnackBar(
+        content: Text('Add item flow is ready for backend integration.'),
+      ),
     );
   }
 
   void _showEdit(_MenuItem item) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Editing ' + item.name + ' is ready for backend integration.')),
+      SnackBar(
+        content: Text(
+          'Editing ' + item.name + ' is ready for backend integration.',
+        ),
+      ),
     );
   }
 }
@@ -145,10 +219,18 @@ class _Content extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Menu & Stock', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
+                  Text(
+                    'Menu & Stock',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+                  ),
                   SizedBox(height: 5),
-                  Text('Manage menu items, pricing, and availability.',
-                      style: TextStyle(fontSize: 13, color: SnapFoodColors.onSurfaceVariant)),
+                  Text(
+                    'Manage menu items, pricing, and availability.',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: SnapFoodColors.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -164,7 +246,10 @@ class _Content extends StatelessWidget {
                 ),
               )
             else
-              IconButton(onPressed: onAdd, icon: const Icon(Icons.add_circle_outline_rounded)),
+              IconButton(
+                onPressed: onAdd,
+                icon: const Icon(Icons.add_circle_outline_rounded),
+              ),
           ],
         ),
         const SizedBox(height: 20),
@@ -213,7 +298,13 @@ class _Toolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const categories = ['All', 'Starters', 'Main Course', 'Breads', 'Beverages'];
+    const categories = [
+      'All',
+      'Starters',
+      'Main Course',
+      'Breads',
+      'Beverages',
+    ];
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -280,7 +371,11 @@ class _Summary extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, c) {
-        final count = c.maxWidth >= 850 ? 4 : c.maxWidth >= 520 ? 2 : 1;
+        final count = c.maxWidth >= 850
+            ? 4
+            : c.maxWidth >= 520
+            ? 2
+            : 1;
         final width = (c.maxWidth - (count - 1) * 12) / count;
         return Wrap(
           spacing: 12,
@@ -305,15 +400,31 @@ class _Summary extends StatelessWidget {
                           color: SnapFoodColors.softYellow,
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(item.$3, size: 20, color: SnapFoodColors.warmBlack),
+                        child: Icon(
+                          item.$3,
+                          size: 20,
+                          color: SnapFoodColors.warmBlack,
+                        ),
                       ),
                       const SizedBox(width: 11),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(item.$1, style: const TextStyle(fontSize: 10, color: SnapFoodColors.onSurfaceVariant)),
+                          Text(
+                            item.$1,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: SnapFoodColors.onSurfaceVariant,
+                            ),
+                          ),
                           const SizedBox(height: 2),
-                          Text(item.$2, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
+                          Text(
+                            item.$2,
+                            style: const TextStyle(
+                              fontSize: 19,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -360,7 +471,10 @@ class _DesktopList extends StatelessWidget {
                 Expanded(flex: 2, child: Text('CATEGORY', style: _HeadStyle())),
                 Expanded(flex: 2, child: Text('PRICE', style: _HeadStyle())),
                 Expanded(flex: 2, child: Text('STOCK', style: _HeadStyle())),
-                SizedBox(width: 82, child: Text('AVAILABLE', style: _HeadStyle())),
+                SizedBox(
+                  width: 82,
+                  child: Text('AVAILABLE', style: _HeadStyle()),
+                ),
                 SizedBox(width: 52, child: Text('ACTION', style: _HeadStyle())),
               ],
             ),
@@ -369,7 +483,8 @@ class _DesktopList extends StatelessWidget {
             _DesktopRow(
               item: item,
               available: !unavailable.contains(item.name),
-              onAvailabilityChanged: (value) => onAvailabilityChanged(item.name, value),
+              onAvailabilityChanged: (value) =>
+                  onAvailabilityChanged(item.name, value),
               onEdit: () => onEdit(item),
             ),
         ],
@@ -407,14 +522,35 @@ class _DesktopRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item.name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                Text(
+                  item.name,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
                 const SizedBox(height: 2),
-                Text(item.sold, style: const TextStyle(fontSize: 9, color: SnapFoodColors.onSurfaceVariant)),
+                Text(
+                  item.sold,
+                  style: const TextStyle(
+                    fontSize: 9,
+                    color: SnapFoodColors.onSurfaceVariant,
+                  ),
+                ),
               ],
             ),
           ),
-          Expanded(flex: 2, child: Text(item.category, style: const TextStyle(fontSize: 10))),
-          Expanded(flex: 2, child: Text(item.price, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800))),
+          Expanded(
+            flex: 2,
+            child: Text(item.category, style: const TextStyle(fontSize: 10)),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              item.price,
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
+            ),
+          ),
           Expanded(flex: 2, child: _StockBadge(item.stock)),
           SizedBox(
             width: 82,
@@ -461,7 +597,8 @@ class _MobileList extends StatelessWidget {
             child: _MobileCard(
               item: item,
               available: !unavailable.contains(item.name),
-              onAvailabilityChanged: (value) => onAvailabilityChanged(item.name, value),
+              onAvailabilityChanged: (value) =>
+                  onAvailabilityChanged(item.name, value),
               onEdit: () => onEdit(item),
             ),
           ),
@@ -504,7 +641,13 @@ class _MobileCard extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: Text(item.name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                      child: Text(
+                        item.name,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ),
                     IconButton(
                       onPressed: onEdit,
@@ -513,11 +656,23 @@ class _MobileCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                Text(item.category, style: const TextStyle(fontSize: 9, color: SnapFoodColors.onSurfaceVariant)),
+                Text(
+                  item.category,
+                  style: const TextStyle(
+                    fontSize: 9,
+                    color: SnapFoodColors.onSurfaceVariant,
+                  ),
+                ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Text(item.price, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
+                    Text(
+                      item.price,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
                     const SizedBox(width: 8),
                     _StockBadge(item.stock),
                   ],
@@ -525,13 +680,23 @@ class _MobileCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    Expanded(child: Text(item.sold, style: const TextStyle(fontSize: 9, color: SnapFoodColors.onSurfaceVariant))),
+                    Expanded(
+                      child: Text(
+                        item.sold,
+                        style: const TextStyle(
+                          fontSize: 9,
+                          color: SnapFoodColors.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
                     Text(
                       available ? 'Available' : 'Unavailable',
                       style: TextStyle(
                         fontSize: 9,
                         fontWeight: FontWeight.w800,
-                        color: available ? SnapFoodColors.primary : SnapFoodColors.secondary,
+                        color: available
+                            ? SnapFoodColors.primary
+                            : SnapFoodColors.secondary,
                       ),
                     ),
                     Switch(
@@ -562,10 +727,16 @@ class _ItemIcon extends StatelessWidget {
       width: large ? 50 : 44,
       height: large ? 50 : 44,
       decoration: BoxDecoration(
-        color: item.category == 'Starters' ? SnapFoodColors.softRed : SnapFoodColors.surfaceContainer,
+        color: item.category == 'Starters'
+            ? SnapFoodColors.softRed
+            : SnapFoodColors.surfaceContainer,
         borderRadius: BorderRadius.circular(SnapFoodRadii.md),
       ),
-      child: Icon(item.icon, size: large ? 23 : 21, color: SnapFoodColors.secondary),
+      child: Icon(
+        item.icon,
+        size: large ? 23 : 21,
+        color: SnapFoodColors.secondary,
+      ),
     );
   }
 }
@@ -611,12 +782,24 @@ class _Empty extends StatelessWidget {
       ),
       child: const Column(
         children: [
-          Icon(Icons.search_off_rounded, size: 38, color: SnapFoodColors.onSurfaceVariant),
+          Icon(
+            Icons.search_off_rounded,
+            size: 38,
+            color: SnapFoodColors.onSurfaceVariant,
+          ),
           SizedBox(height: 10),
-          Text('No menu items found', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+          Text(
+            'No menu items found',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+          ),
           SizedBox(height: 4),
-          Text('Try another search or category.',
-              style: TextStyle(fontSize: 11, color: SnapFoodColors.onSurfaceVariant)),
+          Text(
+            'Try another search or category.',
+            style: TextStyle(
+              fontSize: 11,
+              color: SnapFoodColors.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );
@@ -640,26 +823,53 @@ class _Sidebar extends StatelessWidget {
         children: [
           const Row(
             children: [
-              CircleAvatar(radius: 18, backgroundColor: SnapFoodColors.secondary, child: Icon(Icons.restaurant, color: Colors.white, size: 19)),
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: SnapFoodColors.secondary,
+                child: Icon(Icons.restaurant, color: Colors.white, size: 19),
+              ),
               SizedBox(width: 9),
-              Text('SNAP FOODD', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+              Text(
+                'SNAP FOODD',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+              ),
             ],
           ),
           const SizedBox(height: 32),
-          _Nav('Dashboard', Icons.dashboard_rounded, () => context.go('/restaurant/dashboard')),
-          _Nav('Live Orders / KDS', Icons.receipt_long_rounded, () => context.go('/restaurant/kds')),
+          _Nav(
+            'Dashboard',
+            Icons.dashboard_rounded,
+            () => context.go('/restaurant/dashboard'),
+          ),
+          _Nav(
+            'Live Orders / KDS',
+            Icons.receipt_long_rounded,
+            () => context.go('/restaurant/kds'),
+          ),
           const _Nav('Menu & Stock', Icons.restaurant_menu_rounded),
           const _Nav('Analytics', Icons.analytics_outlined),
           const _Nav('Settings', Icons.settings_outlined),
           const Spacer(),
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: SnapFoodColors.softYellow, borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
+            decoration: BoxDecoration(
+              color: SnapFoodColors.softYellow,
+              borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+            ),
             child: const Row(
               children: [
-                Icon(Icons.support_agent, size: 20, color: SnapFoodColors.primary),
+                Icon(
+                  Icons.support_agent,
+                  size: 20,
+                  color: SnapFoodColors.primary,
+                ),
                 SizedBox(width: 8),
-                Expanded(child: Text('Partner support\nAvailable 24×7', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700))),
+                Expanded(
+                  child: Text(
+                    'Partner support\nAvailable 24×7',
+                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
+                  ),
+                ),
               ],
             ),
           ),
@@ -688,14 +898,21 @@ class _Nav extends StatelessWidget {
         children: [
           Icon(icon, size: 19, color: SnapFoodColors.onSurfaceVariant),
           const SizedBox(width: 10),
-          Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+          ),
         ],
       ),
     );
 
     return onTap == null
         ? child
-        : InkWell(onTap: onTap, borderRadius: BorderRadius.circular(SnapFoodRadii.md), child: child);
+        : InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+            child: child,
+          );
   }
 }
 
@@ -722,21 +939,35 @@ class _Header extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Menu & Stock', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                  const Text(
+                    'Menu & Stock',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                  ),
                   if (wide)
-                    const Text('Manage your menu and item availability',
-                        style: TextStyle(fontSize: 11, color: SnapFoodColors.onSurfaceVariant)),
+                    const Text(
+                      'Manage your menu and item availability',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: SnapFoodColors.onSurfaceVariant,
+                      ),
+                    ),
                 ],
               ),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-              decoration: BoxDecoration(color: SnapFoodColors.softYellow, borderRadius: BorderRadius.circular(SnapFoodRadii.full)),
+              decoration: BoxDecoration(
+                color: SnapFoodColors.softYellow,
+                borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+              ),
               child: const Row(
                 children: [
                   Icon(Icons.circle, size: 8, color: Color(0xFF2E7D32)),
                   SizedBox(width: 6),
-                  Text('OPEN', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),
+                  Text(
+                    'OPEN',
+                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900),
+                  ),
                 ],
               ),
             ),
@@ -744,7 +975,11 @@ class _Header extends StatelessWidget {
             const CircleAvatar(
               radius: 18,
               backgroundColor: SnapFoodColors.primaryContainer,
-              child: Icon(Icons.storefront, size: 19, color: SnapFoodColors.warmBlack),
+              child: Icon(
+                Icons.storefront,
+                size: 19,
+                color: SnapFoodColors.warmBlack,
+              ),
             ),
           ],
         ),
@@ -754,7 +989,14 @@ class _Header extends StatelessWidget {
 }
 
 class _MenuItem {
-  const _MenuItem(this.name, this.category, this.price, this.stock, this.sold, this.icon);
+  const _MenuItem(
+    this.name,
+    this.category,
+    this.price,
+    this.stock,
+    this.sold,
+    this.icon,
+  );
 
   final String name;
   final String category;
@@ -765,5 +1007,11 @@ class _MenuItem {
 }
 
 class _HeadStyle extends TextStyle {
-  const _HeadStyle() : super(fontSize: 9, fontWeight: FontWeight.w900, color: SnapFoodColors.onSurfaceVariant, letterSpacing: 0.5);
+  const _HeadStyle()
+    : super(
+        fontSize: 9,
+        fontWeight: FontWeight.w900,
+        color: SnapFoodColors.onSurfaceVariant,
+        letterSpacing: 0.5,
+      );
 }

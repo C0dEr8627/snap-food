@@ -14,12 +14,7 @@ class DeliveryPosition {
   final double? accuracy;
 }
 
-enum DeliveryLocationPermission {
-  granted,
-  denied,
-  deniedForever,
-  unavailable,
-}
+enum DeliveryLocationPermission { granted, denied, deniedForever, unavailable }
 
 abstract interface class DeliveryLocationSource {
   Future<DeliveryLocationPermission> requestPermission();
@@ -39,8 +34,8 @@ class ForegroundDeliveryLocationAdapter {
   ForegroundDeliveryLocationAdapter({
     required DeliveryLocationSource source,
     Duration updateInterval = const Duration(seconds: 5),
-  })  : _source = source,
-        _updateInterval = updateInterval;
+  }) : _source = source,
+       _updateInterval = updateInterval;
 
   final DeliveryLocationSource _source;
   final Duration _updateInterval;

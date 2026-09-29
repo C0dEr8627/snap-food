@@ -39,10 +39,13 @@ class RemoteOrderRepository implements OrderRepository {
         code: 'INVALID_ORDER_ID',
       );
     }
-    final response = await _client.get('/orders/' + Uri.encodeComponent(orderId) + '/tracking');
+    final response = await _client.get(
+      '/orders/' + Uri.encodeComponent(orderId) + '/tracking',
+    );
     if (response is Map<String, dynamic>) {
       final data = response['data'];
-      if (data is Map) return OrderTracking.fromJson(Map<String, dynamic>.from(data));
+      if (data is Map)
+        return OrderTracking.fromJson(Map<String, dynamic>.from(data));
       if (response['status'] != null) return OrderTracking.fromJson(response);
     }
     throw const ApiException(
@@ -119,11 +122,9 @@ class RemoteOrderRepository implements OrderRepository {
 }
 
 class FakeOrderRepository implements OrderRepository {
-  FakeOrderRepository({
-    Iterable<Order> orders = const [],
-    Order? createdOrder,
-  })  : _orders = List.unmodifiable(orders),
-        _createdOrder = createdOrder;
+  FakeOrderRepository({Iterable<Order> orders = const [], Order? createdOrder})
+    : _orders = List.unmodifiable(orders),
+      _createdOrder = createdOrder;
 
   final List<Order> _orders;
   final Order? _createdOrder;
@@ -153,7 +154,10 @@ class FakeOrderRepository implements OrderRepository {
 
   @override
   Future<OrderTracking> fetchTracking(String orderId) async {
-    throw const ApiException(message: 'Tracking is not available in the local fixture.', code: 'FIXTURE_MISSING');
+    throw const ApiException(
+      message: 'Tracking is not available in the local fixture.',
+      code: 'FIXTURE_MISSING',
+    );
   }
 
   @override

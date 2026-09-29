@@ -21,13 +21,13 @@ class CartItem {
   final bool vegetarian;
 
   CartItem copyWith({int? quantity}) => CartItem(
-        productId: productId,
-        name: name,
-        description: description,
-        previewPrice: previewPrice,
-        quantity: quantity ?? this.quantity,
-        vegetarian: vegetarian,
-      );
+    productId: productId,
+    name: name,
+    description: description,
+    previewPrice: previewPrice,
+    quantity: quantity ?? this.quantity,
+    vegetarian: vegetarian,
+  );
 }
 
 class CartSnapshot {

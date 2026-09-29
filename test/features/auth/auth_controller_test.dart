@@ -6,11 +6,11 @@ import 'package:snap_foodd/features/auth/data/auth_models.dart';
 import 'package:snap_foodd/features/auth/data/auth_repository.dart';
 import 'package:snap_foodd/features/auth/presentation/auth_controller.dart';
 
-
 class _FakeRepository implements AuthRepository {
   _FakeRepository({this.token});
   String? token;
-  AuthUser user = const AuthUser({});  bool logoutCalled = false;
+  AuthUser user = const AuthUser({});
+  bool logoutCalled = false;
 
   @override
   Future<AuthUser> fetchCurrentUser() async {
@@ -46,8 +46,7 @@ void main() {
     );
     addTearDown(container.dispose);
 
-    final state =
-        await container.read(authControllerProvider.future);
+    final state = await container.read(authControllerProvider.future);
 
     expect(state.isAuthenticated, isTrue);
     expect(state.user, isNotNull);
@@ -60,8 +59,7 @@ void main() {
     );
     addTearDown(container.dispose);
 
-    final state =
-        await container.read(authControllerProvider.future);
+    final state = await container.read(authControllerProvider.future);
 
     expect(state.isAuthenticated, isFalse);
     expect(repository.token, isNull);

@@ -11,17 +11,17 @@ enum OrderStatus {
   unknown;
 
   static OrderStatus fromWire(Object? value) => switch (value?.toString()) {
-        'PLACED' => placed,
-        'ACCEPTED' => accepted,
-        'PREPARING' => preparing,
-        'READY_FOR_PICKUP' => readyForPickup,
-        'ASSIGNED' => assigned,
-        'PICKED_UP' => pickedUp,
-        'OUT_FOR_DELIVERY' => outForDelivery,
-        'DELIVERED' => delivered,
-        'CANCELLED' => cancelled,
-        _ => unknown,
-      };
+    'PLACED' => placed,
+    'ACCEPTED' => accepted,
+    'PREPARING' => preparing,
+    'READY_FOR_PICKUP' => readyForPickup,
+    'ASSIGNED' => assigned,
+    'PICKED_UP' => pickedUp,
+    'OUT_FOR_DELIVERY' => outForDelivery,
+    'DELIVERED' => delivered,
+    'CANCELLED' => cancelled,
+    _ => unknown,
+  };
 }
 
 class DeliveryAddress {
@@ -50,21 +50,22 @@ class DeliveryAddress {
   final double? longitude;
 
   Map<String, Object?> toJson() => {
-        'label': label,
-        'recipient_name': recipientName,
-        'address_line1': addressLine1,
-        'address_line2': addressLine2,
-        'city': city,
-        'state': state,
-        'postal_code': postalCode,
-        'country': country,
-        'latitude': latitude,
-        'longitude': longitude,
-      };
+    'label': label,
+    'recipient_name': recipientName,
+    'address_line1': addressLine1,
+    'address_line2': addressLine2,
+    'city': city,
+    'state': state,
+    'postal_code': postalCode,
+    'country': country,
+    'latitude': latitude,
+    'longitude': longitude,
+  };
 
   factory DeliveryAddress.fromJson(Map<String, dynamic> json) {
-    double? number(Object? value) =>
-        value is num ? value.toDouble() : double.tryParse(value?.toString() ?? '');
+    double? number(Object? value) => value is num
+        ? value.toDouble()
+        : double.tryParse(value?.toString() ?? '');
 
     return DeliveryAddress(
       label: json['label']?.toString() ?? '',
@@ -82,18 +83,15 @@ class DeliveryAddress {
 }
 
 class OrderLineRequest {
-  const OrderLineRequest({
-    required this.productId,
-    required this.quantity,
-  });
+  const OrderLineRequest({required this.productId, required this.quantity});
 
   final int productId;
   final int quantity;
 
   Map<String, Object> toJson() => {
-        'product_id': productId,
-        'quantity': quantity,
-      };
+    'product_id': productId,
+    'quantity': quantity,
+  };
 }
 
 class CreateOrderRequest {
@@ -108,10 +106,10 @@ class CreateOrderRequest {
   final String paymentMethod;
 
   Map<String, Object?> toJson() => {
-        'items': items.map((item) => item.toJson()).toList(growable: false),
-        'delivery_address': deliveryAddress.toJson(),
-        'payment_method': paymentMethod,
-      };
+    'items': items.map((item) => item.toJson()).toList(growable: false),
+    'delivery_address': deliveryAddress.toJson(),
+    'payment_method': paymentMethod,
+  };
 }
 
 class OrderItem {
@@ -128,8 +126,9 @@ class OrderItem {
   factory OrderItem.fromJson(Map<String, dynamic> json) {
     final rawQuantity = json['quantity'];
     final rawProduct = json['product'];
-    final nestedProductId =
-        rawProduct is Map ? rawProduct['id']?.toString() : null;
+    final nestedProductId = rawProduct is Map
+        ? rawProduct['id']?.toString()
+        : null;
     return OrderItem(
       productId: (json['product_id'] ?? nestedProductId ?? '').toString(),
       quantity: rawQuantity is num
@@ -169,9 +168,11 @@ class Order {
     final rawItems = json['items'];
     final items = rawItems is List
         ? rawItems
-            .whereType<Map>()
-            .map((item) => OrderItem.fromJson(Map<String, dynamic>.from(item)))
-            .toList(growable: false)
+              .whereType<Map>()
+              .map(
+                (item) => OrderItem.fromJson(Map<String, dynamic>.from(item)),
+              )
+              .toList(growable: false)
         : const <OrderItem>[];
 
     final rawAddress = json['delivery_address_snapshot'];

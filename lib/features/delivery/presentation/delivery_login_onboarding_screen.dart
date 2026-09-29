@@ -44,7 +44,9 @@ class _DeliveryLoginOnboardingScreenState
       if (!mounted) return;
       setState(() => _submitting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('OTP flow is ready for backend integration.')),
+        const SnackBar(
+          content: Text('OTP flow is ready for backend integration.'),
+        ),
       );
     });
   }

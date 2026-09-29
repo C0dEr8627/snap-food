@@ -18,13 +18,18 @@ class DeliveryAssignment {
   final DateTime? updatedAt;
 
   factory DeliveryAssignment.fromJson(Map<String, dynamic> json) {
-    int? integer(Object? value) => value is num ? value.toInt() : int.tryParse(value?.toString() ?? '');
+    int? integer(Object? value) =>
+        value is num ? value.toInt() : int.tryParse(value?.toString() ?? '');
     return DeliveryAssignment(
       id: integer(json['id']) ?? 0,
       orderId: integer(json['order_id']),
       status: json['status']?.toString() ?? '',
-      pickupAddress: json['pickup_address']?.toString() ?? json['restaurant_address']?.toString(),
-      dropoffAddress: json['dropoff_address']?.toString() ?? json['customer_address']?.toString(),
+      pickupAddress:
+          json['pickup_address']?.toString() ??
+          json['restaurant_address']?.toString(),
+      dropoffAddress:
+          json['dropoff_address']?.toString() ??
+          json['customer_address']?.toString(),
       createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),
       updatedAt: DateTime.tryParse(json['updated_at']?.toString() ?? ''),
     );
@@ -32,7 +37,11 @@ class DeliveryAssignment {
 }
 
 class DeliveryAssignmentPage {
-  const DeliveryAssignmentPage({required this.items, this.currentPage = 1, this.lastPage = 1});
+  const DeliveryAssignmentPage({
+    required this.items,
+    this.currentPage = 1,
+    this.lastPage = 1,
+  });
   final List<DeliveryAssignment> items;
   final int currentPage;
   final int lastPage;
@@ -40,9 +49,18 @@ class DeliveryAssignmentPage {
   factory DeliveryAssignmentPage.fromJson(Map<String, dynamic> json) {
     final raw = json['data'];
     final items = raw is List
-        ? raw.whereType<Map>().map((item) => DeliveryAssignment.fromJson(Map<String, dynamic>.from(item))).toList()
+        ? raw
+              .whereType<Map>()
+              .map(
+                (item) => DeliveryAssignment.fromJson(
+                  Map<String, dynamic>.from(item),
+                ),
+              )
+              .toList()
         : <DeliveryAssignment>[];
-    int integer(Object? value, int fallback) => value is num ? value.toInt() : int.tryParse(value?.toString() ?? '') ?? fallback;
+    int integer(Object? value, int fallback) => value is num
+        ? value.toInt()
+        : int.tryParse(value?.toString() ?? '') ?? fallback;
     return DeliveryAssignmentPage(
       items: items,
       currentPage: integer(json['current_page'], 1),
@@ -52,7 +70,12 @@ class DeliveryAssignmentPage {
 }
 
 class DeliveryLocationUpdate {
-  const DeliveryLocationUpdate({required this.latitude, required this.longitude, required this.recordedAt, this.accuracy});
+  const DeliveryLocationUpdate({
+    required this.latitude,
+    required this.longitude,
+    required this.recordedAt,
+    this.accuracy,
+  });
   final double latitude;
   final double longitude;
   final DateTime recordedAt;

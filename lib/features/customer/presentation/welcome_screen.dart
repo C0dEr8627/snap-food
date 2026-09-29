@@ -129,7 +129,11 @@ class _MobileWelcome extends StatelessWidget {
   Widget build(BuildContext context) {
     final compact = height < 680;
     final veryCompact = height < 600;
-    final heroSize = veryCompact ? 188.0 : compact ? 220.0 : 252.0;
+    final heroSize = veryCompact
+        ? 188.0
+        : compact
+        ? 220.0
+        : 252.0;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -139,10 +143,7 @@ class _MobileWelcome extends StatelessWidget {
           animation: heroAnimation,
           child: _FoodHero(maxSize: heroSize),
         ),
-        _AnimatedSection(
-          animation: copyAnimation,
-          child: const _WelcomeCopy(),
-        ),
+        _AnimatedSection(animation: copyAnimation, child: const _WelcomeCopy()),
         _AnimatedSection(
           animation: benefitsAnimation,
           child: const _BenefitStrip(),
@@ -193,23 +194,17 @@ class _DesktopWelcome extends StatelessWidget {
                 children: [
                   _AnimatedSection(
                     animation: copyAnimation,
-                    child: const _WelcomeCopy(
-                      alignStart: true,
-                    ),
+                    child: const _WelcomeCopy(alignStart: true),
                   ),
                   const SizedBox(height: 34),
                   _AnimatedSection(
                     animation: benefitsAnimation,
-                    child: const _BenefitStrip(
-                      alignStart: true,
-                    ),
+                    child: const _BenefitStrip(alignStart: true),
                   ),
                   const SizedBox(height: 34),
                   _AnimatedSection(
                     animation: actionsAnimation,
-                    child: const _WelcomeActions(
-                      alignStart: true,
-                    ),
+                    child: const _WelcomeActions(alignStart: true),
                   ),
                 ],
               ),
@@ -224,10 +219,7 @@ class _DesktopWelcome extends StatelessWidget {
 }
 
 class _AnimatedSection extends StatelessWidget {
-  const _AnimatedSection({
-    required this.animation,
-    required this.child,
-  });
+  const _AnimatedSection({required this.animation, required this.child});
 
   final Animation<double> animation;
   final Widget child;
@@ -267,18 +259,18 @@ class _BrandHeader extends StatelessWidget {
               TextSpan(
                 text: 'SNAP ',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.4,
-                      color: SnapFoodColors.warmBlack,
-                    ),
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.4,
+                  color: SnapFoodColors.warmBlack,
+                ),
               ),
               TextSpan(
                 text: 'FOODD',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.4,
-                      color: SnapFoodColors.foodRed,
-                    ),
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.4,
+                  color: SnapFoodColors.foodRed,
+                ),
               ),
             ],
           ),
@@ -314,9 +306,9 @@ class _MumbaiLabel extends StatelessWidget {
             Text(
               'Made for Mumbai',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: SnapFoodColors.warmBlack,
-                    fontWeight: FontWeight.w700,
-                  ),
+                color: SnapFoodColors.warmBlack,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ],
         ),
@@ -326,9 +318,7 @@ class _MumbaiLabel extends StatelessWidget {
 }
 
 class _FoodHero extends StatelessWidget {
-  const _FoodHero({
-    this.maxSize,
-  });
+  const _FoodHero({this.maxSize});
 
   final double? maxSize;
 
@@ -339,8 +329,10 @@ class _FoodHero extends StatelessWidget {
         final available = constraints.maxWidth.isFinite
             ? constraints.maxWidth
             : (maxSize ?? 320);
-        final size = (maxSize ?? (available >= 600 ? 420.0 : 320.0))
-            .clamp(0.0, available);
+        final size = (maxSize ?? (available >= 600 ? 420.0 : 320.0)).clamp(
+          0.0,
+          available,
+        );
 
         return SizedBox(
           width: double.infinity,
@@ -497,17 +489,16 @@ class _FoodBubble extends StatelessWidget {
 }
 
 class _WelcomeCopy extends StatelessWidget {
-  const _WelcomeCopy({
-    this.alignStart = false,
-  });
+  const _WelcomeCopy({this.alignStart = false});
 
   final bool alignStart;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final alignment =
-        alignStart ? CrossAxisAlignment.start : CrossAxisAlignment.center;
+    final alignment = alignStart
+        ? CrossAxisAlignment.start
+        : CrossAxisAlignment.center;
     final textAlign = alignStart ? TextAlign.left : TextAlign.center;
 
     return Column(
@@ -539,9 +530,7 @@ class _WelcomeCopy extends StatelessWidget {
 }
 
 class _BenefitStrip extends StatelessWidget {
-  const _BenefitStrip({
-    this.alignStart = false,
-  });
+  const _BenefitStrip({this.alignStart = false});
 
   final bool alignStart;
 
@@ -606,10 +595,7 @@ class _Benefit extends StatelessWidget {
           Container(
             width: 30,
             height: 30,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             child: Icon(icon, size: 16, color: SnapFoodColors.warmBlack),
           ),
           const SizedBox(width: 8),
@@ -619,15 +605,15 @@ class _Benefit extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      color: SnapFoodColors.warmBlack,
-                    ),
+                  fontWeight: FontWeight.w800,
+                  color: SnapFoodColors.warmBlack,
+                ),
               ),
               Text(
                 detail,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: SnapFoodColors.onSurfaceVariant,
-                    ),
+                  color: SnapFoodColors.onSurfaceVariant,
+                ),
               ),
             ],
           ),
@@ -638,9 +624,7 @@ class _Benefit extends StatelessWidget {
 }
 
 class _WelcomeActions extends StatelessWidget {
-  const _WelcomeActions({
-    this.alignStart = false,
-  });
+  const _WelcomeActions({this.alignStart = false});
 
   final bool alignStart;
 
@@ -651,8 +635,9 @@ class _WelcomeActions extends StatelessWidget {
     return SizedBox(
       width: buttonWidth,
       child: Column(
-        crossAxisAlignment:
-            alignStart ? CrossAxisAlignment.start : CrossAxisAlignment.stretch,
+        crossAxisAlignment: alignStart
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.stretch,
         children: [
           SizedBox(
             height: 52,
@@ -671,10 +656,7 @@ class _WelcomeActions extends StatelessWidget {
                 children: [
                   Text(
                     'Explore food',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                    ),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
                   ),
                   SizedBox(width: 8),
                   Icon(Icons.arrow_forward_rounded, size: 19),
@@ -695,8 +677,8 @@ class _WelcomeActions extends StatelessWidget {
               text: TextSpan(
                 text: 'Already have an account? ',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: SnapFoodColors.onSurfaceVariant,
-                    ),
+                  color: SnapFoodColors.onSurfaceVariant,
+                ),
                 children: const [
                   TextSpan(
                     text: 'Sign in',
@@ -723,9 +705,9 @@ class _FooterHint extends StatelessWidget {
     return Text(
       'Local food. Simple ordering. One happy delivery.',
       textAlign: TextAlign.center,
-      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: SnapFoodColors.outline,
-          ),
+      style: Theme.of(
+        context,
+      ).textTheme.labelSmall?.copyWith(color: SnapFoodColors.outline),
     );
   }
 }

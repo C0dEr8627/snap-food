@@ -12,8 +12,9 @@ class OrderTrackingLocation {
   final double? accuracy;
 
   factory OrderTrackingLocation.fromJson(Map<String, dynamic> json) {
-    double? number(Object? value) =>
-        value is num ? value.toDouble() : double.tryParse(value?.toString() ?? '');
+    double? number(Object? value) => value is num
+        ? value.toDouble()
+        : double.tryParse(value?.toString() ?? '');
     return OrderTrackingLocation(
       latitude: number(json['latitude']) ?? 0,
       longitude: number(json['longitude']) ?? 0,
@@ -40,7 +41,9 @@ class OrderTracking {
       status: json['status']?.toString() ?? '',
       isStale: json['is_stale'] == true,
       latestLocation: rawLocation is Map
-          ? OrderTrackingLocation.fromJson(Map<String, dynamic>.from(rawLocation))
+          ? OrderTrackingLocation.fromJson(
+              Map<String, dynamic>.from(rawLocation),
+            )
           : null,
     );
   }

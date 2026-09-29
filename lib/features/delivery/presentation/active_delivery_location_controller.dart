@@ -16,7 +16,8 @@ enum ActiveDeliveryLocationState {
   error,
 }
 
-class ActiveDeliveryLocationController extends Notifier<ActiveDeliveryLocationState> {
+class ActiveDeliveryLocationController
+    extends Notifier<ActiveDeliveryLocationState> {
   late DeliveryRepository _repository;
   late ForegroundDeliveryLocationAdapter _adapter;
   int? _assignmentId;
@@ -54,11 +55,13 @@ class ActiveDeliveryLocationController extends Notifier<ActiveDeliveryLocationSt
     );
 
     state = switch (permission) {
-      DeliveryLocationPermission.granted => ActiveDeliveryLocationState.tracking,
+      DeliveryLocationPermission.granted =>
+        ActiveDeliveryLocationState.tracking,
       DeliveryLocationPermission.denied ||
       DeliveryLocationPermission.deniedForever =>
         ActiveDeliveryLocationState.permissionDenied,
-      DeliveryLocationPermission.unavailable => ActiveDeliveryLocationState.unavailable,
+      DeliveryLocationPermission.unavailable =>
+        ActiveDeliveryLocationState.unavailable,
     };
   }
 
@@ -94,17 +97,18 @@ class ActiveDeliveryLocationController extends Notifier<ActiveDeliveryLocationSt
   }
 }
 
-final deliveryLocationAdapterProvider = Provider<ForegroundDeliveryLocationAdapter>((ref) {
-  return ForegroundDeliveryLocationAdapter(
-    source: UnavailableDeliveryLocationSource(),
-  );
-});
+final deliveryLocationAdapterProvider =
+    Provider<ForegroundDeliveryLocationAdapter>((ref) {
+      return ForegroundDeliveryLocationAdapter(
+        source: UnavailableDeliveryLocationSource(),
+      );
+    });
 
-final activeDeliveryLocationControllerProvider = NotifierProvider<
-    ActiveDeliveryLocationController,
-    ActiveDeliveryLocationState>(
-  ActiveDeliveryLocationController.new,
-);
+final activeDeliveryLocationControllerProvider =
+    NotifierProvider<
+      ActiveDeliveryLocationController,
+      ActiveDeliveryLocationState
+    >(ActiveDeliveryLocationController.new);
 
 class UnavailableDeliveryLocationSource implements DeliveryLocationSource {
   @override

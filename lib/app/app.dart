@@ -63,36 +63,146 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(path: '/', name: 'splash', builder: (context, state) => const SplashScreen()),
-      GoRoute(path: '/welcome', name: 'welcome', builder: (context, state) => const WelcomeScreen()),
-      GoRoute(path: '/home', name: 'customer-home', builder: (context, state) => const HomeFeedScreen()),
-      GoRoute(path: '/search', name: 'customer-search', builder: (context, state) => const SearchScreen()),
-      GoRoute(path: '/orders', name: 'customer-orders', builder: (context, state) => const OrdersScreen()),
-      GoRoute(path: '/orders/:orderId', name: 'customer-order-detail', builder: (context, state) => OrderDetailScreen(orderId: state.pathParameters['orderId'] ?? '')),
-      GoRoute(path: '/orders/:orderId/invoice', name: 'customer-invoice', builder: (context, state) => InvoiceScreen(orderId: state.pathParameters['orderId'] ?? '')),
-      GoRoute(path: '/favorites', name: 'customer-favorites', builder: (context, state) => const FavoritesScreen()),
-      GoRoute(path: '/restaurant', name: 'restaurant-menu', builder: (context, state) => const RestaurantMenuScreen()),
-      GoRoute(path: '/cart', name: 'cart-review', builder: (context, state) => const CartReviewScreen()),
-      GoRoute(path: '/checkout', name: 'checkout', builder: (context, state) => const CheckoutScreen()),
-      GoRoute(path: '/order-tracking', name: 'order-tracking', builder: (context, state) => const LiveOrderTrackingScreen()),
-      GoRoute(path: '/profile', name: 'customer-profile', builder: (context, state) => const CustomerProfileScreen()),
-      GoRoute(path: '/settings', name: 'customer-settings', builder: (context, state) => const CustomerSettingsScreen()),
-      GoRoute(path: '/restaurant/dashboard', name: 'restaurant-dashboard', builder: (context, state) => const RestaurantDashboardScreen()),
-      GoRoute(path: '/restaurant/kds', name: 'restaurant-kds', builder: (context, state) => const RestaurantKdsScreen()),
-      GoRoute(path: '/restaurant/orders/:orderId', name: 'restaurant-order-detail', builder: (context, state) => RestaurantOrderDetailScreen(orderId: state.pathParameters['orderId'] ?? 'SF10248')),
-      GoRoute(path: '/restaurant/menu-stock', name: 'restaurant-menu-stock', builder: (context, state) => const RestaurantMenuStockScreen()),
-      GoRoute(path: '/delivery/login', name: 'delivery-login', builder: (context, state) => const DeliveryLoginOnboardingScreen()),
-      GoRoute(path: '/delivery/requests', name: 'delivery-requests', builder: (context, state) => const DeliveryRequestsScreen()),
-      GoRoute(path: '/delivery/duty-map', name: 'delivery-duty-map', builder: (context, state) => const DeliveryDutyMapScreen()),
-      GoRoute(path: '/delivery/navigate-restaurant', name: 'delivery-navigate-restaurant', builder: (context, state) => const DeliveryNavigateRestaurantScreen()),
-      GoRoute(path: '/delivery/pickup-verification', name: 'delivery-pickup-verification', builder: (context, state) => const DeliveryPickupVerificationScreen()),
-      GoRoute(path: '/delivery/navigate-customer', name: 'delivery-navigate-customer', builder: (context, state) => const DeliveryNavigateCustomerScreen()),
-      GoRoute(path: '/delivery/verification', name: 'delivery-verification', builder: (context, state) => const DeliveryVerificationScreen()),
-      GoRoute(path: '/delivery/earnings', name: 'delivery-earnings', builder: (context, state) => const DeliveryEarningsHistoryScreen()),
+      GoRoute(
+        path: '/',
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/welcome',
+        name: 'welcome',
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/home',
+        name: 'customer-home',
+        builder: (context, state) => const HomeFeedScreen(),
+      ),
+      GoRoute(
+        path: '/search',
+        name: 'customer-search',
+        builder: (context, state) => const SearchScreen(),
+      ),
+      GoRoute(
+        path: '/orders',
+        name: 'customer-orders',
+        builder: (context, state) => const OrdersScreen(),
+      ),
+      GoRoute(
+        path: '/orders/:orderId',
+        name: 'customer-order-detail',
+        builder: (context, state) =>
+            OrderDetailScreen(orderId: state.pathParameters['orderId'] ?? ''),
+      ),
+      GoRoute(
+        path: '/orders/:orderId/invoice',
+        name: 'customer-invoice',
+        builder: (context, state) =>
+            InvoiceScreen(orderId: state.pathParameters['orderId'] ?? ''),
+      ),
+      GoRoute(
+        path: '/favorites',
+        name: 'customer-favorites',
+        builder: (context, state) => const FavoritesScreen(),
+      ),
+      GoRoute(
+        path: '/restaurant',
+        name: 'restaurant-menu',
+        builder: (context, state) => const RestaurantMenuScreen(),
+      ),
+      GoRoute(
+        path: '/cart',
+        name: 'cart-review',
+        builder: (context, state) => const CartReviewScreen(),
+      ),
+      GoRoute(
+        path: '/checkout',
+        name: 'checkout',
+        builder: (context, state) => const CheckoutScreen(),
+      ),
+      GoRoute(
+        path: '/order-tracking',
+        name: 'order-tracking',
+        builder: (context, state) => const LiveOrderTrackingScreen(),
+      ),
+      GoRoute(
+        path: '/profile',
+        name: 'customer-profile',
+        builder: (context, state) => const CustomerProfileScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        name: 'customer-settings',
+        builder: (context, state) => const CustomerSettingsScreen(),
+      ),
+      GoRoute(
+        path: '/restaurant/dashboard',
+        name: 'restaurant-dashboard',
+        builder: (context, state) => const RestaurantDashboardScreen(),
+      ),
+      GoRoute(
+        path: '/restaurant/kds',
+        name: 'restaurant-kds',
+        builder: (context, state) => const RestaurantKdsScreen(),
+      ),
+      GoRoute(
+        path: '/restaurant/orders/:orderId',
+        name: 'restaurant-order-detail',
+        builder: (context, state) => RestaurantOrderDetailScreen(
+          orderId: state.pathParameters['orderId'] ?? 'SF10248',
+        ),
+      ),
+      GoRoute(
+        path: '/restaurant/menu-stock',
+        name: 'restaurant-menu-stock',
+        builder: (context, state) => const RestaurantMenuStockScreen(),
+      ),
+      GoRoute(
+        path: '/delivery/login',
+        name: 'delivery-login',
+        builder: (context, state) => const DeliveryLoginOnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/delivery/requests',
+        name: 'delivery-requests',
+        builder: (context, state) => const DeliveryRequestsScreen(),
+      ),
+      GoRoute(
+        path: '/delivery/duty-map',
+        name: 'delivery-duty-map',
+        builder: (context, state) => const DeliveryDutyMapScreen(),
+      ),
+      GoRoute(
+        path: '/delivery/navigate-restaurant',
+        name: 'delivery-navigate-restaurant',
+        builder: (context, state) => const DeliveryNavigateRestaurantScreen(),
+      ),
+      GoRoute(
+        path: '/delivery/pickup-verification',
+        name: 'delivery-pickup-verification',
+        builder: (context, state) => const DeliveryPickupVerificationScreen(),
+      ),
+      GoRoute(
+        path: '/delivery/navigate-customer',
+        name: 'delivery-navigate-customer',
+        builder: (context, state) => const DeliveryNavigateCustomerScreen(),
+      ),
+      GoRoute(
+        path: '/delivery/verification',
+        name: 'delivery-verification',
+        builder: (context, state) => const DeliveryVerificationScreen(),
+      ),
+      GoRoute(
+        path: '/delivery/earnings',
+        name: 'delivery-earnings',
+        builder: (context, state) => const DeliveryEarningsHistoryScreen(),
+      ),
       GoRoute(
         path: '/food/:itemId',
         name: 'food-item-details',
-        builder: (context, state) => FoodItemDetailsScreen(itemId: state.pathParameters['itemId'] ?? 'biryani'),
+        builder: (context, state) => FoodItemDetailsScreen(
+          itemId: state.pathParameters['itemId'] ?? 'biryani',
+        ),
       ),
     ],
   );
@@ -103,9 +213,9 @@ class SnapFoodApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
-        title: 'Snap Foodd',
-        debugShowCheckedModeBanner: false,
-        theme: SnapFoodTheme.light,
-        routerConfig: ref.watch(appRouterProvider),
-      );
+    title: 'Snap Foodd',
+    debugShowCheckedModeBanner: false,
+    theme: SnapFoodTheme.light,
+    routerConfig: ref.watch(appRouterProvider),
+  );
 }

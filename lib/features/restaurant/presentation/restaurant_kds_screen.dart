@@ -44,9 +44,7 @@ class _RestaurantKdsScreenState extends State<RestaurantKdsScreen> {
       time: '1 min ago',
       customer: 'Rohan Patil',
       status: 'New',
-      items: [
-        _KdsItem(name: 'Chicken Tikka Dum Biryani', quantity: 1),
-      ],
+      items: [_KdsItem(name: 'Chicken Tikka Dum Biryani', quantity: 1)],
       total: '₹320',
     ),
     _KdsOrder(
@@ -100,7 +98,8 @@ class _RestaurantKdsScreenState extends State<RestaurantKdsScreen> {
                           child: Center(
                             child: ConstrainedBox(
                               constraints: const BoxConstraints(
-                                maxWidth: SnapFoodSpacing.desktopMaxContentWidth,
+                                maxWidth:
+                                    SnapFoodSpacing.desktopMaxContentWidth,
                               ),
                               child: _KdsContent(
                                 orders: _orders,
@@ -187,8 +186,8 @@ class _KdsContent extends StatelessWidget {
               final columns = constraints.maxWidth >= 900
                   ? 3
                   : constraints.maxWidth >= 560
-                      ? 2
-                      : 1;
+                  ? 2
+                  : 1;
               const gap = 14.0;
               final width =
                   (constraints.maxWidth - (columns - 1) * gap) / columns;
@@ -219,13 +218,16 @@ class _KdsSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final newCount = orders.where((order) => order.status == 'New').length;
-    final preparingCount =
-        orders.where((order) => order.status == 'Preparing').length;
+    final preparingCount = orders
+        .where((order) => order.status == 'Preparing')
+        .length;
     final readyCount = orders.where((order) => order.status == 'Ready').length;
 
     return Row(
       children: [
-        Expanded(child: _SummaryTile(label: 'New', value: newCount.toString())),
+        Expanded(
+          child: _SummaryTile(label: 'New', value: newCount.toString()),
+        ),
         const SizedBox(width: 10),
         Expanded(
           child: _SummaryTile(
@@ -466,8 +468,8 @@ class _KdsOrderCard extends StatelessWidget {
                   order.status == 'New'
                       ? 'Accept & Start'
                       : order.status == 'Preparing'
-                          ? 'Mark Ready'
-                          : 'View Order',
+                      ? 'Mark Ready'
+                      : 'View Order',
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w900,
@@ -532,10 +534,7 @@ class _KdsHeader extends StatelessWidget {
       color: SnapFoodColors.surfaceContainerLowest,
       elevation: 1,
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: wide ? 24 : 16,
-          vertical: 12,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: wide ? 24 : 16, vertical: 12),
         child: Row(
           children: [
             if (!wide)
@@ -609,9 +608,7 @@ class _KdsSidebar extends StatelessWidget {
       width: 224,
       decoration: const BoxDecoration(
         color: SnapFoodColors.surfaceContainerLowest,
-        border: Border(
-          right: BorderSide(color: SnapFoodColors.softBorder),
-        ),
+        border: Border(right: BorderSide(color: SnapFoodColors.softBorder)),
       ),
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       child: Column(
@@ -646,14 +643,8 @@ class _KdsSidebar extends StatelessWidget {
             label: 'Menu & Stock',
             icon: Icons.restaurant_menu_rounded,
           ),
-          const _KdsNav(
-            label: 'Analytics',
-            icon: Icons.analytics_outlined,
-          ),
-          const _KdsNav(
-            label: 'Settings',
-            icon: Icons.settings_outlined,
-          ),
+          const _KdsNav(label: 'Analytics', icon: Icons.analytics_outlined),
+          const _KdsNav(label: 'Settings', icon: Icons.settings_outlined),
           const Spacer(),
           Container(
             padding: const EdgeInsets.all(12),

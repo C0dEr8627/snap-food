@@ -2,16 +2,21 @@ class CatalogueCategory {
   const CatalogueCategory({required this.id, required this.name});
   final int id;
   final String name;
-  factory CatalogueCategory.fromJson(Map<String, dynamic> json) => CatalogueCategory(
-    id: _requiredInt(json['id'], 'category.id'),
-    name: _requiredString(json['name'], 'category.name'),
-  );
+  factory CatalogueCategory.fromJson(Map<String, dynamic> json) =>
+      CatalogueCategory(
+        id: _requiredInt(json['id'], 'category.id'),
+        name: _requiredString(json['name'], 'category.name'),
+      );
 }
 
 class CatalogueProduct {
   const CatalogueProduct({
-    required this.id, required this.categoryId, required this.name,
-    required this.price, required this.isActive, required this.isAvailable,
+    required this.id,
+    required this.categoryId,
+    required this.name,
+    required this.price,
+    required this.isActive,
+    required this.isAvailable,
     this.category,
   });
   final int id;
@@ -40,8 +45,11 @@ class CatalogueProduct {
 
 class CataloguePage {
   const CataloguePage({
-    required this.items, required this.currentPage, required this.lastPage,
-    required this.perPage, required this.total,
+    required this.items,
+    required this.currentPage,
+    required this.lastPage,
+    required this.perPage,
+    required this.total,
   });
   final List<CatalogueProduct> items;
   final int currentPage;
@@ -67,7 +75,8 @@ int _requiredInt(Object? value, String field) {
 
 String _requiredString(Object? value, String field) {
   final text = value?.toString().trim();
-  if (text == null || text.isEmpty) throw FormatException('Missing or invalid $field.');
+  if (text == null || text.isEmpty)
+    throw FormatException('Missing or invalid $field.');
   return text;
 }
 
