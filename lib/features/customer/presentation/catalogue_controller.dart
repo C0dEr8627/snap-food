@@ -1,13 +1,27 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/network/api_client.dart';
+import '../../../core/network/api_transport.dart';
+
 import '../../../core/network/api_exception.dart';
 import '../data/catalogue_models.dart';
 import '../data/catalogue_repository.dart';
 
-final catalogueRepositoryProvider = Provider<CatalogueRepository>((ref) {
-  throw UnimplementedError(
-    'Configure catalogueRepositoryProvider with a real or fake repository.',
+final catalogueApiTransportProvider = Provider<HttpApiTransport>((ref) {
+  final transport = HttpApiTransport();
+  ref.onDispose(transport.close);
+  return transport;
+});
+
+final catalogueApiClientProvider = Provider<ApiClient>((ref) {
+  return ApiClient(
+    config: ApiConfig.fromEnvironment(),
+    transport: ref.watch(catalogueApiTransportProvider),
   );
+});
+
+final catalogueRepositoryProvider = Provider<CatalogueRepository>((ref) {
+  return RemoteCatalogueRepository(ref.watch(catalogueApiClientProvider));
 });
 
 final catalogueControllerProvider =
