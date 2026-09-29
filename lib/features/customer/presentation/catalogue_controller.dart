@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_transport.dart';
-
 import '../../../core/network/api_exception.dart';
 import '../data/catalogue_models.dart';
 import '../data/catalogue_repository.dart';
@@ -36,14 +35,14 @@ class CatalogueController extends AsyncNotifier<CatalogueSnapshot> {
   Future<CatalogueSnapshot> build() => _load();
 
   Future<CatalogueSnapshot> _load() async {
-    final results = await Future.wait([
+    final results = await Future.wait<Object>([
       _repository.fetchCategories(),
       _repository.fetchProducts(),
     ]);
 
     return CatalogueSnapshot(
-      categories: results[0],
-      products: results[1],
+      categories: results[0] as List<CatalogueCategory>,
+      products: results[1] as CataloguePage,
     );
   }
 
@@ -53,15 +52,8 @@ class CatalogueController extends AsyncNotifier<CatalogueSnapshot> {
   }
 
   Future<void> refresh() async {
-    final previous = state;
     state = const AsyncLoading<CatalogueSnapshot>();
     state = await AsyncValue.guard(_load);
-    if (state.hasError && previous.hasValue) {
-      state = AsyncValue.error(
-        state.error!,
-        state.stackTrace ?? StackTrace.current,
-      );
-    }
   }
 
   String messageFor(Object error) {
