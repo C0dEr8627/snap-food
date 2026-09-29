@@ -16,6 +16,8 @@ class CartController extends Notifier<CartSnapshot> {
   @override
   CartSnapshot build() => _repository.load();
 
+  void addItem(CartItem item) => state = _repository.addItem(item);
+
   void clear() => state = _repository.clear();
 
   void changeQuantity(String productId, int delta) {
