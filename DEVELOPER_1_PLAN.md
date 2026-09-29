@@ -26,7 +26,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 | Phase | Status | Completed / remaining |
 |---|---|---|
 | Phase 0 — Environment & repository baseline | **PARTIAL** | Repository/docs inspected; PHP 8.3 target recorded; hosting checklist and safe env example documented. Actual GoDaddy Composer/MySQL capability remains unverified. |
-| Phase 1 — Backend foundation | **IN PROGRESS** | Laravel API skeleton, `/api/v1` routing, health endpoint, PHPUnit config/test, PHP 8.3 CI and Sanctum dependency are present. MySQL config is now added. CI still needs a successful dependency install/test run. |
+| Phase 1 — Backend foundation | **IN PROGRESS** | Laravel API skeleton, routing, health endpoint, PHPUnit config/test, PHP 8.3 CI, Sanctum, MySQL config and the Laravel 13 baseline are present. Composer dependency installation now succeeds in CI; the latest test run exposed and the branch fixed a missing Laravel bootstrap cache directory. A fresh workflow run must confirm PHPUnit passes. |
 | Phase 2 — Identity & authorization | **NOT STARTED** | Google verification, users, Sanctum tokens, roles, ownership and auth tests remain. |
 | Phase 3 — Catalogue | **NOT STARTED** | Categories/products schema, models, validation, catalogue APIs, admin CRUD and tests remain. |
 | Phase 4 — Orders & COD | **NOT STARTED** | Order snapshots, totals, COD state, transitions, history and tests remain. |
@@ -60,11 +60,11 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Align application configuration with the current Laravel skeleton structure.
 - [x] Align PHPUnit configuration with the Laravel 13/PHPUnit 12 baseline.
 - [x] Update framework baseline from Laravel 11 to Laravel 13 because Laravel 11 security support ended March 12, 2026; Laravel 13 requires PHP 8.3.
-- [ ] Obtain a successful `composer install` in CI.
-- [ ] Run the PHPUnit health test successfully in CI.
+- [x] Verify CI can resolve and install the Laravel 13 dependency set on PHP 8.3.
+- [ ] Confirm the health PHPUnit test passes in the next CI run.
 - [ ] Add request validation, rate limiting where appropriate, logging without credentials and consistent error responses.
 
-**Current CI blocker:** workflow run #13 reached PHP 8.3.35 and installed the required extensions and Composer 2.10.3, but dependency resolution stopped because the Laravel 11 constraint selected versions blocked by current security advisories. The dependency baseline has now been moved to Laravel 13/PHP 8.3. A new CI run must verify the corrected manifest.
+**Latest CI verification:** workflow run #21 installed PHP 8.3.35, all configured extensions, Composer 2.10.3, Laravel 13.33.0 and PHPUnit 12.5.36 successfully. The test command then failed because `backend/bootstrap/cache` did not exist. Commit `63caeb8a66d8b4045f57b08cb2a8268a629a97a8` adds `backend/bootstrap/cache/.gitignore`; a new workflow run is required to verify the health test.
 
 ## Phase 2 — Identity and authorization
 
@@ -157,10 +157,12 @@ Build the trusted backend and admin operations that the existing Flutter app can
 8. CI dependency blocker identified: Laravel 11 is now outside its security-support window and Composer blocks the affected framework versions.
 9. Laravel baseline upgraded to `^13.17`, with PHP `^8.3`, current Sanctum compatibility, PHPUnit 12, Pint 1.27 and Collision 8.9.
 10. Laravel-style application config and environment-driven MySQL config added.
+11. CI verified dependency resolution and installation successfully on PHP 8.3.
+12. CI bootstrap failure diagnosed; required `backend/bootstrap/cache` directory is now preserved in Git.
 
 ### Not yet verified
 
-- Composer dependency installation after the Laravel 13 change.
+- Health PHPUnit test after the bootstrap-cache fix.
 - PHPUnit execution.
 - MySQL migration execution.
 - Any real Google credential verification.
@@ -168,7 +170,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Immediate next task
 
-**Foundation verification:** run the GitHub Actions workflow against the corrected Laravel 13/PHP 8.3 dependency manifest. If dependency installation and the health test pass, proceed immediately to the database foundation for `users`, `addresses`, `categories` and `products`, using `DATABASE.md` as the schema contract.
+**Foundation verification:** confirm the next GitHub Actions run passes `composer test` after the bootstrap-cache fix. If the health test passes, proceed to the database foundation for `users`, `addresses`, `categories` and `products`, using `DATABASE.md` as the schema contract.
 
 ## Developer 1 definition of done
 
