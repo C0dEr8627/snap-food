@@ -184,18 +184,19 @@ class _MenuSection extends StatelessWidget {
       for (final item in items)
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
-          child: _MenuItemCard(item: item, quantity: quantities[item.id] ?? 0, onAdd: onAdd == null ? () {} : () => onAdd!(item.id), onRemove: onRemove == null ? () {} : () => onRemove!(item.id)),
+          child: _MenuItemCard(item: item, quantity: quantities[item.id] ?? 0, onAdd: onAdd == null ? () {} : () => onAdd!(item.id), onRemove: onRemove == null ? () {} : () => onRemove!(item.id), onTap: () => context.push('/food/' + item.id)),
         ),
     ]),
   );
 }
 
 class _MenuItemCard extends StatelessWidget {
-  const _MenuItemCard({required this.item, required this.quantity, required this.onAdd, required this.onRemove});
+  const _MenuItemCard({required this.item, required this.quantity, required this.onAdd, required this.onRemove, required this.onTap});
   final MenuItemData item;
   final int quantity;
   final VoidCallback onAdd;
   final VoidCallback onRemove;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) => InkWell(
