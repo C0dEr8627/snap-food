@@ -15,7 +15,12 @@ class OrderDetailScreen extends ConsumerStatefulWidget {
 
 class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   @override
-  void initState() { super.initState(); Future.microtask(() => ref.read(orderHistoryControllerProvider.notifier).loadDetail(widget.orderId)); }
+  void initState() { super.initState(); Future.microtask(() async {
+      final order = await ref.read(orderHistoryControllerProvider.notifier).loadDetail(widget.orderId);
+      if (mounted && order != null && order.status != OrderStatus.delivered && order.status != OrderStatus.cancelled) {
+        await ref.read(orderTrackingControllerProvider.notifier).load(widget.orderId);
+      }
+    }); }
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(orderHistoryControllerProvider);
