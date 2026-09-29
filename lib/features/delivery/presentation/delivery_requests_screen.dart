@@ -4,8 +4,6 @@ import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../../../design_system/tokens/app_spacing.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../data/delivery_models.dart';
-import '../data/delivery_repository.dart';
 import 'delivery_controller.dart';
 
 class DeliveryRequestsScreen extends ConsumerStatefulWidget {
