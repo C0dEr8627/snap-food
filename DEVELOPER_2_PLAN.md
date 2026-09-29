@@ -1245,3 +1245,40 @@ No backend/Laravel-owned files were modified.
 - Google auth platform/runtime verification remains pending.
 - Local Flutter/Dart execution is unavailable; GitHub Actions is the available Flutter execution environment.
 - No backend/Laravel-owned files were modified, and no merge/deployment was performed.
+
+
+## Developer 2 continuation checkpoint — 2026-09-30 (CI #249 smoke timing correction)
+
+- Flutter CI #249 (run `36614487710`) completed with **failure**. Dependency resolution, formatting, formatting check and analyzer all passed; 36 tests passed before `test/app_smoke_test.dart` failed because the welcome copy was still absent after the 1400 ms splash wait. Android debug build was skipped because tests failed.
+- The failure remains isolated to the smoke-test timing boundary; no production Flutter analyzer error was reported. The splash implementation navigates from `/` to `/welcome` after a 1350 ms timer, followed by router processing and the welcome route's first-frame work.
+- Updated the smoke test wait from 1400 ms to 1800 ms before settling, giving the documented 1350 ms splash transition additional deterministic headroom without changing production behavior.
+- **Fix commit:** `56eca872e37f4dd65ee7e401c8336ba4af868a97` (`test(flutter): allow splash transition settling in smoke test`).
+- No backend/Laravel-owned files, API contracts, platform credentials, GPS/Maps dependencies or production routing were changed.
+
+### Authoritative task board
+
+| Area | Status | Current state |
+|---|---|---|
+| Phase 0 — audit/verification | [~] | CI #249 isolated a smoke timing boundary; correction committed; fresh CI pending |
+| Phase 1 — API foundation | [x] | Complete |
+| Phase 2 — auth/session | [~] | Session lifecycle and auth-aware routing complete; Google platform/runtime verification pending |
+| Phase 3 — catalogue/cart | [x] | Typed catalogue, real product IDs, cart integration and tests complete; runtime verification pending |
+| Phase 4 — COD checkout | [x] | Server-backed COD flow, validation, duplicate protection, server-authoritative totals/errors and success navigation complete; runtime verification pending |
+| Phase 5 — customer orders/tracking | [x] | Order history/detail/tracking integration complete; runtime/E2E verification pending |
+| Phase 6 — delivery lifecycle | [x] | Assignment/status/location integration complete; concrete platform GPS verification pending |
+| Phase 7 — active GPS/Maps | [~] | Adapter/controller/lifecycle/freshness complete; approved platform GPS + Maps dependency/configuration unavailable |
+| Invoice | [x] | Contract frozen and Flutter model/repository/controller/UI plus delivered-order route implemented; CI/runtime verification pending |
+| Release verification | [ ] | Green current-head CI, Android debug APK, physical-device checks and full E2E remain |
+
+### Next execution order
+1. Verify fresh CI after commit `56eca872...`; only fix the next concrete current-head failure.
+2. If CI becomes green, confirm an approved Android/iOS location package and Google Maps configuration before adding any dependency.
+3. Wire the approved platform GPS source behind the existing location adapter/controller boundary.
+4. Verify physical permission/revocation, GPS freshness/error, throttling and location publishing for active delivery trips.
+5. Run full COD → order → delivery → tracking → delivered → invoice E2E and final PR readiness.
+
+### Current blockers
+- No approved concrete GPS/Maps dependency or platform configuration is documented in the repository.
+- Google auth platform/runtime verification remains pending.
+- Local Flutter/Dart execution is unavailable; GitHub Actions is the available Flutter execution environment.
+- No backend/Laravel-owned files were modified, and no merge/deployment was performed.
