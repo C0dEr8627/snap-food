@@ -16,10 +16,10 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 - [x] M3 — Admin product/category CRUD and customer catalogue API work end-to-end, including deterministic seed/demo data verified by workflow #146.
 - [x] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history, server-owned admin status transitions, and concurrency-safe delivery assignment are implemented and CI-verified through Workflows #189, #204 and #386.
 - [x] M5 — Delivery-partner provisioning/approval, protected Laravel admin web operations, catalogue management, partner controls, directories, dashboard counts and web/API assignment are implemented and CI-verified through Workflows #209, #244, #324, #349, #363, #371 and #386.
-- [x] M6 — Partner assignment listing and valid pickup → out-for-delivery → delivered transitions are implemented with ownership/conflict tests and verified by Workflow #259. The explicit partner accept step remains to be finalized against the product contract.
+- [x] M6 — Partner assignment listing and valid pickup → out-for-delivery → delivered transitions are implemented with ownership/conflict tests and verified by Workflow #259. No separate partner accept endpoint is part of the current product contract; assignment is server-created by ADMIN.
 - [x] M7 — Active-trip GPS updates, latest-location reads, stale-state reporting and customer/admin authorization are implemented and verified by Workflow #266.
 - [x] M8 — Invoice schema, deterministic numbering, immutable snapshots and customer/admin access are implemented and verified by Workflow #301.
-- [~] M9 — Implementation and CI coverage are substantially complete; the PHP 8.3 CI now includes a Pint formatting gate. Workflow #413 failed at the new formatting check with 29 style issues across 101 files; migrations/tests were skipped. Commit `d7042331b8da04a0ca8b8960761b30aa9c5f03a7` adds a push-only formatter workflow to apply Pint and commit formatting on `developer-1-backend-admin`. Remaining gates are fresh formatting/test verification, static/security review, GoDaddy capability confirmation, broader end-to-end/device validation and explicit human release approval.
+- [~] M9 — Implementation and CI coverage are substantially complete. Backend workflow #423 passed the current branch head with PHP 8.3, Composer, Pint, MySQL migrations and PHPUnit. Remaining gates are external GoDaddy capability confirmation, broader end-to-end/device validation and explicit human release approval.
 
 ## Handoff format
 
@@ -182,3 +182,14 @@ Record decisions here only after the owner approves or they are already establis
 - No deployment or production migration has been performed.
 
 **Next implementation task:** perform the final backend security/content/diff review and document any findings before release approval.
+
+
+### Developer 1 status — final security/content review — 2026-09-29
+
+- Backend workflow **#423 PASSED** on the current branch head `ceea963758533a8cb7a84030d7fce053503e6398`.
+- The current CI gate is verified end-to-end: PHP 8.3, Composer dependencies, Laravel Pint formatting, clean MySQL migrations and PHPUnit all completed successfully.
+- Final manual backend review covered route/middleware authorization, Google credential verification and token handling, admin web session protection, order/checkout invariants, delivery assignment/status/location ownership, invoice/tracking access, request validation, environment/secret handling, and the PR changed-file scope.
+- **Review result:** no blocking security/content/diff finding was identified in the reviewed backend paths. This is a repository review result, not a claim of absolute security.
+- No Flutter-owned files were changed. No deployment or production migration was performed.
+- Remaining release gates are now external/integration gates: GoDaddy capability confirmation, broader Flutter/device/E2E validation, and explicit human release approval.
+- **Next owner/action:** owner confirms hosting capabilities and release readiness; Developer 2 completes frontend/device/E2E validation. Developer 1 should only make further backend changes if those validations uncover a concrete backend issue.
