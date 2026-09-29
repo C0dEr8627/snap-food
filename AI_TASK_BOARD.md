@@ -14,8 +14,8 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 - [ ] M1 — Laravel boots and connects to non-production MySQL.
 - [x] M2 — Google SSO backend authentication/authorization slice is implemented and verified through workflow #146; end-to-end Flutter session restoration/revocation remains a separate integration check.
 - [x] M3 — Admin product/category CRUD and customer catalogue API work end-to-end, including deterministic seed/demo data verified by workflow #146.
-- [~] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history and server-owned admin status transitions are CI-verified. Workflow #204 passed PHP 8.3/MySQL migrations and the PHPUnit suite for the transition increment; delivery assignment remains.
-- [~] M5 — Delivery-partner provisioning/approval is CI-verified by Workflow #209 behind ADMIN API authorization. Protected Laravel web authentication/dashboard foundation is implemented; safe order assignment and fresh CI verification remain.
+- [~] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history, server-owned admin status transitions, and delivery assignment are implemented. Workflow #204 verified status transitions; assignment verification is pending.
+- [~] M5 — Delivery-partner provisioning/approval is CI-verified by Workflow #209 behind ADMIN API authorization. Protected Laravel web authentication and concurrency-safe order assignment are implemented; latest CI verification and broader dashboard operations remain.
 - [ ] M6 — Partner accepts, confirms pickup, and completes delivery through valid state transitions.
 - [ ] M7 — Active-trip GPS updates are authorized and customer map shows fresh/stale location states.
 - [ ] M8 — Invoice generation and access rules are tested.
@@ -84,3 +84,5 @@ Record decisions here only after the owner approves or they are already establis
 - Delivery-partner provisioning/approval is implemented with admin-only authorization, transactional user-role provisioning, approval/revocation state, and regression tests. Workflow #205 **FAILED** because duplicate/admin conflicts returned 500 instead of 409; generic conflict handling was corrected and Workflow #209 **PASSED** on PHP 8.3/MySQL with the full PHPUnit suite.
 - Protected Laravel admin web authentication/dashboard foundation is now implemented on `developer-1-backend-admin` with Google credential verification, web-session login, ADMIN-only access, logout/session invalidation, and rate limiting; Workflow #221 is the current verification gate.
 - Admin role bootstrap remains operator-controlled; web login only permits already-provisioned active ADMIN users.
+
+- New implementation: `POST /api/v1/admin/orders/{order}/assignment` uses a transaction with `lockForUpdate()` on both the order and delivery partner, requires `READY_FOR_PICKUP` and approved/active/available partner state, prevents duplicate assignment, and records `ASSIGNED` status history with the admin actor. Fresh CI verification is pending.
