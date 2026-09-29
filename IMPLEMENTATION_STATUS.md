@@ -308,3 +308,31 @@ No backend/Laravel-owned files were modified. No merge or deployment was perform
 - Add invoice model/repository/UI from the frozen invoice response.
 
 No backend/Laravel-owned files were modified.
+## Developer 2 implementation checkpoint — 2026-09-29 (customer order UI)
+
+### Completed in this increment
+- Connected the existing customer Orders screen to `OrderHistoryController` instead of hard-coded order fixtures.
+- Added loading, empty, error/retry, pull-to-refresh and pagination states for customer order history.
+- Added server-backed order status/payment/total display without recalculating financial totals.
+- Added customer order-detail screen backed by `GET /orders/{order}`.
+- Added order-detail route `/orders/:orderId`.
+- Added server-provided delivery-address snapshot and financial fields to the detail UI.
+
+### Checkout boundary retained
+- The COD repository/controller foundation remains implemented, including duplicate-submit protection.
+- The current local cart still contains placeholder product identifiers, so this checkpoint does not submit those fixtures to the backend or invent a product-ID mapping.
+- The existing checkout screen still contains legacy payment/total presentation and must be converted to the server-authoritative COD flow once cart/product IDs are backed by the catalogue.
+
+### Verification
+- PR #1 is open and currently reported mergeable by GitHub.
+- The latest Flutter CI run for the previous head is pending; a fresh result for these UI commits is required before marking CI green.
+- Local Flutter/Dart commands are unavailable in this GitHub-connected environment; no local analyzer/test/APK result is claimed.
+
+### Next execution order
+1. Run/inspect current-head CI and fix only concrete failures.
+2. Replace legacy checkout totals/payment choices with COD-only server-backed submission and editable/validated address input.
+3. Clear the cart only after a successful server-created order and navigate to order detail using the returned order ID.
+4. Add delivery tracking to order detail using the frozen `/orders/{order}/tracking` contract.
+5. Implement delivery partner assignment/status/location UI and then invoice integration.
+
+No backend/Laravel-owned files were modified.
