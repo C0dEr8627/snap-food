@@ -46,13 +46,14 @@ Record decisions here only after the owner approves or they are already establis
 - Restaurant Partner workflow: deferred.
 
 
-## Developer 2 checkpoint — 2026-09-29
+## Developer 2 checkpoint — 2026-09-29 (refreshed)
 
 - **Branch:** `developer-2-flutter`
-- **Latest implementation/documentation commits:** `0ba538f4846db2459ce15e5233b45e289eda585e`, `c3623da7e745f23e783ccbbae7c05d9af50e6c7a`
-- **Completed:** API foundation; catalogue repository/controller/state foundation and existing-screen integration; secure session/token persistence; /me restoration; logout/revocation handling; auth controller tests; Riverpod-aware go_router redirects; progress tracking documentation.
-- **Verified backend dependency:** Developer 1 auth/authz workflow #109 passed on commit `b150b2cbb6874c00fda70197d0995057b19a0e6d`; the latest backend branch is `01be74815ac6e4403409309972eb77eb69ca6ffc` and still needs fresh CI verification after the catalogue authorization fix.
-- **Blocked:** Google SSO exchange until backend freezes request/response fields and public client configuration.
-- **Also blocked:** typed catalogue DTO/UI mapping until successful category/product response fields are documented.
-- **Not run:** Flutter formatter/analyzer/tests/build/device checks because this environment has no local Flutter/Dart runner.
-- **Next owner action:** backend/API owner freezes the Google auth contract; then Developer 2 implements provider adapter and exact exchange. Role-specific route separation follows the documented user-role shape. If catalogue response schema is published first, Developer 2 can proceed with typed catalogue mapping before auth integration.
+- **Current Flutter work:** API foundation, catalogue repository/controller/state integration, secure session/token persistence, `/me` restoration, logout/revocation handling, auth controller tests, and Riverpod-aware go_router redirects are implemented.
+- **Latest Developer 2 documentation:** this checkpoint, `DEVELOPER_2_PLAN.md`, and `docs/AUTH_CONTRACT_HANDOFF.md` are synchronized with the latest inspected backend state.
+- **Backend checkpoint:** Developer 1 latest inspected commit is `aaa75903c5b723aa4d307afa6691f6ab0c535ab7`. Workflow #142 exposed four stale assertions expecting `error.code`; fixes landed in `53cbf6e01ebed21cf295f3700809e2877aaccc26` and `28053a9ff26f854cc70301920b97844dad8c72c9`. Fresh CI after those fixes is still pending.
+- **Shared contract status:** `API_CONTRACT.md` still documents only `POST /auth/google` at endpoint level; `AUTH.md` still does not define the exact Google credential field/type, successful application-token response shape, or public Google client configuration. Catalogue successful response fields are also not documented.
+- **M2:** `[!]` Google SSO end-to-end remains blocked; secure session restoration/revocation foundation is complete.
+- **M3:** `[ ]` Catalogue integration is implemented on Flutter behind repository/controller boundaries, but end-to-end admin-to-customer verification and deterministic backend seed/CI remain incomplete.
+- **Flutter runtime verification:** formatter/analyzer/tests/build/device checks are **NOT RUN** because this GitHub-connected environment has no local Flutter/Dart runner.
+- **Next owner/action:** Developer 1 verifies corrected backend CI and publishes the missing Google/catalogue response contract. Developer 2 then implements exact Google provider/exchange; if catalogue response fields are published first, typed catalogue DTO/UI mapping proceeds first. After those gates: cart/COD/orders, delivery, then active-trip tracking.
