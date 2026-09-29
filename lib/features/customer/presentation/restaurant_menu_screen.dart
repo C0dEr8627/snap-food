@@ -126,7 +126,7 @@ class _RestaurantMenuScreenState extends ConsumerState<RestaurantMenuScreen> {
                 side: BorderSide.none,
               ),
             ))),
-            SliverToBoxAdapter(child: _MenuSection(title: '🔥 Best Sellers', subtitle: '3 crave-worthy picks', items: items, quantities: quantities, onAdd: (id) { final product = catalogue.value?.products.items.where((p) => p.id.toString() == id).firstOrNull; if (product != null && product.isActive && product.isAvailable) add(product); }, onRemove: remove)),
+            SliverToBoxAdapter(child: _MenuSection(title: '🔥 Best Sellers', subtitle: '3 crave-worthy picks', items: items, quantities: quantities, onAdd: (id) { CatalogueProduct? product; for (final candidate in catalogue.value?.products.items ?? const <CatalogueProduct>[]) { if (candidate.id.toString() == id) { product = candidate; break; } } if (product != null && product.isActive && product.isAvailable) add(product); }, onRemove: remove)),
             const SliverToBoxAdapter(child: _MenuSection(
               title: 'Tandoori & Starters',
               subtitle: 'Fresh Cut Daily',
