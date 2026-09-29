@@ -29,8 +29,9 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Hosting information is unavailable: local/staging setup remains portable and the blocker is recorded; no hosting capability is assumed.
 - [x] Create a safe local environment example at `backend/.env.example` with placeholders only.
 - [x] Document setup, migration, seed, test and deployment discovery/setup guidance in `backend/README.md`.
+- [x] Check available agent execution environment: PHP CLI 8.4.23 exists, Composer and MySQL CLI are absent. This does not verify the user's local machine or hosting environment.
 
-**Gate:** NOT YET PASSED. The repository has no Laravel application, Composer manifest or PHP test configuration, and the local PHP/Composer toolchain plus a non-production MySQL database have not been verified. Do not proceed to feature implementation until a Laravel environment can boot and connect to a non-production database.
+**Gate:** NOT YET PASSED. No Laravel application, Composer manifest or PHP test configuration exists. Composer is unavailable in the agent execution container, and no non-production MySQL server/connection or target hosting compatibility has been verified. Do not scaffold by guessing a Laravel version or proceed to feature implementation until the supported PHP/Laravel version and a usable dependency/database setup are established.
 
 ## Phase 1 — Backend foundation
 
