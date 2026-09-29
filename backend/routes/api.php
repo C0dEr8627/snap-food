@@ -31,6 +31,9 @@ Route::middleware('auth:sanctum')->group(function (): void {
 
     Route::middleware('role:ADMIN')->group(function (): void {
         Route::patch('/admin/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('api.v1.admin.orders.status');
+        Route::get('/admin/delivery-partners', [\App\Http\Controllers\Api\V1\Admin\DeliveryPartnerController::class, 'index'])->name('api.v1.admin.delivery-partners.index');
+        Route::post('/admin/delivery-partners', [\App\Http\Controllers\Api\V1\Admin\DeliveryPartnerController::class, 'store'])->name('api.v1.admin.delivery-partners.store');
+        Route::patch('/admin/delivery-partners/{deliveryPartner}/approval', [\App\Http\Controllers\Api\V1\Admin\DeliveryPartnerController::class, 'updateApproval'])->name('api.v1.admin.delivery-partners.approval');
         Route::post('/categories', [CategoryController::class, 'store'])->name('api.v1.categories.store');
         Route::patch('/categories/{category}', [CategoryController::class, 'update'])->name('api.v1.categories.update');
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('api.v1.categories.destroy');

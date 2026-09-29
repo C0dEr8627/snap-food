@@ -27,7 +27,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 |---|---|---|
 | Phase 0 — Environment & repository baseline | **PARTIAL** | Repository/docs inspected; PHP 8.3 target recorded; hosting checklist and safe env example documented. Actual GoDaddy Composer/MySQL capability remains unverified. |
 | Phase 1 — Backend foundation | **COMPLETED** | Laravel API skeleton, routing, health endpoint, PHPUnit config/test, PHP 8.3 CI, Sanctum, MySQL config, Laravel 13 baseline and required Git-preserved directories are complete. Workflow #30 passed the foundation suite. Initial MySQL schema/models and CI migration verification also passed in workflow #48. |
-| Phase 2 — Identity & authorization | **COMPLETED** | Google verification service, login, Sanctum token storage, `/me`, logout, role middleware, resource policies and negative/cross-user authorization tests are implemented and verified by Workflow #146. Rate limiting, credential-safe logging and standardized API errors are also covered. Delivery-partner/admin provisioning remains a later operations task. |
+| Phase 2 — Identity & authorization | **COMPLETED** | Google verification service, login, Sanctum token storage, `/me`, logout, role middleware, resource policies and negative/cross-user authorization tests are implemented and verified by Workflow #146. Server-side delivery-partner provisioning/approval is now implemented and CI-verified by Workflow #205. Admin role provisioning remains operator-controlled until the protected admin web bootstrap flow is defined. |
 | Phase 3 — Catalogue | **COMPLETED** | Customer category/product reads, search/pagination, admin create/update/deactivate APIs, validation, regression tests and deterministic seed/demo data are implemented and verified by Workflow #146. |
 | Phase 4 — Orders & COD | **IN PROGRESS** | Checkout/list/detail and server-owned admin status transitions are implemented; latest CI verification is pending. Concurrency/state-conflict coverage is now included; delivery-partner-specific transitions remain in Phases 5–6. |
 | Phase 5 — Admin & assignment | **NOT STARTED** | Protected admin web dashboard and delivery assignment operations remain. |
@@ -75,7 +75,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Implement Sanctum application tokens/session flow and token storage migration.
 - [x] Implement login, `GET /api/v1/me`, logout/revocation; role middleware/policies remain.
 - [x] Define role constants for `CUSTOMER`, `DELIVERY_PARTNER`, `ADMIN`; no Restaurant Partner scope.
-- [ ] Provision/approve delivery partners and admins server-side only.
+- [x] Provision/approve delivery partners server-side only; admin role bootstrap remains operator-controlled and clients cannot self-elevate.
 - [x] Enforce address resource ownership through a Laravel policy; admin access is explicit through policy `before` handling.
 - [x] Add invalid credential, inactive account, token revocation and role-escalation regression tests.
 - [x] Add explicit role middleware, register the `role` middleware alias, register resource policies and add cross-user authorization tests.
@@ -110,7 +110,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Return `ORDER_STATE_CONFLICT` with HTTP 409 for invalid/repeated transitions.
 - [x] Add admin/customer authorization and state-conflict regression tests.
 
-**Current Phase 4 gate:** Workflow #189 passed the corrected authorization fix on PHP 8.3 with MySQL. The initial checkout/list/detail slice is now CI-verified. The next implementation increment adds server-owned admin status transitions, transactional `lockForUpdate()` protection, actor history, and `ORDER_STATE_CONFLICT` HTTP 409 handling; fresh CI verification is required before this transition increment is marked complete.
+**Current Phase 4 gate:** Workflow #204 passed on PHP 8.3 with MySQL after the server-owned admin status-transition implementation. The transition slice is CI-verified; M4 remains in progress until delivery assignment/partner workflow is integrated.
 
 **Milestone:** Flutter-compatible request creates a real MySQL COD order and customer can retrieve it.
 
@@ -207,6 +207,9 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ### Latest verification result
 
+- Workflow #204 **PASSED**: PHP 8.3 setup, dependency installation, MySQL migrations and the PHPUnit suite all completed successfully on commit `d9c09af670b3e3a6ea0d00afd0e16b57b254fafe`; this verifies the server-owned admin order status transition increment already present on the branch.
+- Workflow #205 **PENDING**: delivery-partner provisioning/approval increment added in the current commit; the next CI run must verify the new migration, authorization and regression tests before this Phase 2 checkbox is considered complete.
+
 - Workflow #109 passed the prior authentication + authorization implementation.
 - Workflow #134 ran the combined latest branch state and **failed in the catalogue test suite**: 7 tests failed after the application boot, dependency installation and MySQL migrations all succeeded.
 - The concrete Workflow #142 failure was four stale test assertions expecting `error.code`; the API contract and exception/middleware implementations return `code` at the top level. MySQL migrations and the test suite booted successfully, and the earlier controller authorization issue was no longer present.
@@ -220,7 +223,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Immediate next task
 
-**Verify the new server-owned status-transition increment in CI.** If green, mark the transition slice verified and continue with delivery assignment/partner authorization and concurrency coverage in Phase 5/6. If CI fails, fix the concrete failure before advancing.
+**Verify the delivery-partner provisioning/approval increment in CI.** If green, continue with protected Laravel admin web authentication and delivery assignment concurrency work. If CI fails, fix the concrete failure before advancing.
 
 ## Developer 1 definition of done
 

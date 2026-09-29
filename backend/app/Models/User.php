@@ -45,4 +45,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Address::class);
     }
+
+    public function deliveryPartner()
+    {
+        return $this->hasOne(DeliveryPartner::class);
+    }
 }
