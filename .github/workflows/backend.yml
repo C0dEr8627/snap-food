@@ -55,6 +55,9 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
+      - name: Check PHP formatting
+        run: composer format -- --test
+
       - name: Run database migrations
         run: php artisan migrate --force
 
