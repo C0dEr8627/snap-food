@@ -125,7 +125,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Implement concurrency-safe delivery assignment with transactional order/partner row locking.
 - [x] Record current assignment and status history actor.
 - [x] Add authorization and conflict tests for delivery assignment.
-- [ ] Add broader admin dashboard/order operations, including catalogue writes and partner approval/activation controls from the web UI.
+- [x] Add broader admin dashboard/order operations, including catalogue writes, partner approval/activation controls and order assignment from the web UI.
 
 ## Phase 6 — Delivery APIs and active tracking
 
@@ -169,6 +169,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 49. Added protected customer, delivery-partner, assignment and issued-invoice directory pages with bounded search/state filters and pagination, plus dashboard counts/navigation for all operations directories. Workflow #349 passed on PHP 8.3 with MySQL and the full PHPUnit suite (358 assertions; 82 warnings). The first CI attempt failed only because the test fixture used `name` instead of the invoice snapshot contract's `product_name`; the fixture was corrected before the passing run.
 50. Added protected Laravel web catalogue management for category/product search, create, update and soft-deactivation; deactivating products also disables availability. Category option lists remain independent from search filters. Workflow #363 passed on PHP 8.3 with MySQL and the full PHPUnit suite (375 assertions; 85 warnings).
 51. Added protected web controls for delivery-partner approval/revocation and active/available state changes. Approval metadata records the acting admin; revoking approval and deactivation clear availability, and making a partner available requires approved and active user/partner state. Workflow #371 passed on PHP 8.3 with MySQL and the full PHPUnit suite (389 assertions; 87 warnings).
+52. Added a protected assignment form to admin order detail for READY_FOR_PICKUP orders with no current assignment. The form lists only approved/active/available partners and delegates to the concurrency-safe OrderAssignmentService. Successful assignment marks the partner unavailable; ineligible or stale assignment attempts return HTTP 409. Workflow #386 passed on PHP 8.3 with MySQL and the full PHPUnit suite (402 assertions; 89 warnings).
 
 1. Repository and backend documentation baseline established.
 2. PHP 8.3 production target recorded.
