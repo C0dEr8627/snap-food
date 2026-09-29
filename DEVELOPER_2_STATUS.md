@@ -393,3 +393,37 @@ No merge or deployment performed.
 3. Implement active-assignment state and location adapter with permission/freshness/error handling, without background GPS.
 4. Connect delivery navigation screens to assignment/order data.
 5. Implement invoice model/repository/UI.
+
+
+## Developer 2 implementation checkpoint — 2026-09-29 (delivery lifecycle)
+
+### Completed
+- Added a Riverpod delivery repository/controller boundary for assignment retrieval and active-assignment discovery.
+- Refined Delivery Requests actions to follow the documented server lifecycle: unstarted assignment -> PICKED_UP -> OUT_FOR_DELIVERY -> DELIVERED.
+- Removed the previous hard-coded request fallback when the assignment API fails; API errors now surface instead of presenting stale mock requests as real data.
+- Added typed delivery model tests covering assignment decoding and location payload serialization.
+- Kept the existing delivery UI structure and navigation intact.
+- No background GPS, geofencing, WebSockets, or backend/Laravel changes introduced.
+
+### Verification
+- Local Flutter/Dart commands remain NOT RUN because the GitHub-connected environment has no Flutter/Dart runner.
+- Current-head CI/device verification is still required before claiming the implementation verified.
+
+### Updated task status
+- Phase 0: [~] static audit complete; runtime/CI verification pending.
+- Phase 1: [x] API foundation complete.
+- Phase 2: [~] session lifecycle complete; Google SSO exchange/config and final role routing remain contract/config gated.
+- Phase 3: [x/~] catalogue -> menu/detail -> cart integration implemented; runtime verification pending.
+- Phase 4: [x/~] cart/COD checkout foundation implemented; runtime verification pending.
+- Phase 5: [x/~] order history/detail/tracking source integration implemented; runtime verification pending.
+- Phase 6: [~] delivery assignment retrieval + lifecycle transitions implemented; active trip/navigation/location flow remains.
+- Phase 7: [~] customer tracking implemented; partner location adapter, permission/freshness handling and maps integration remain.
+- Invoice: [ ] not started.
+- Release verification: [ ] CI/device/E2E pending.
+
+### Next implementation
+1. Implement active-trip location adapter with permission/error/freshness handling and throttled foreground updates only.
+2. Connect partner navigation/trip screen to the active assignment instead of static trip data.
+3. Send location updates only for the active assignment and stop them on completion/exit.
+4. Add invoice repository/model/UI.
+5. Run current-head CI and device/E2E verification when tooling is available.
