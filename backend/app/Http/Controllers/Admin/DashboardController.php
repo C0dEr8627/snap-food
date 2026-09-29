@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
 use App\Models\Category;
+use App\Models\DeliveryPartner;
+use App\Models\Invoice;
+use App\Models\Order;
+use App\Models\OrderAssignment;
 use App\Models\Product;
 use App\Models\User;
-use App\Models\DeliveryPartner;
-use App\Models\OrderAssignment;
-use App\Models\Invoice;
 use Illuminate\Contracts\View\View;
 
 class DashboardController extends Controller

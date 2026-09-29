@@ -4,12 +4,12 @@ namespace App\Providers;
 
 use App\Models\Address;
 use App\Models\Category;
-use App\Models\Product;
 use App\Models\Order;
+use App\Models\Product;
 use App\Policies\AddressPolicy;
 use App\Policies\CategoryPolicy;
-use App\Policies\ProductPolicy;
 use App\Policies\OrderPolicy;
+use App\Policies\ProductPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\Auth\GoogleCredentialVerifier;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,7 @@ use RuntimeException;
 
 class AuthController extends Controller
 {
-    public function create(): \Illuminate\Contracts\View\View
+    public function create(): View
     {
         return view('admin.auth.login');
     }

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\V1\Delivery;
 
+use App\Exceptions\ConflictException;
 use App\Models\DeliveryLocation;
 use App\Models\Order;
 use App\Models\OrderAssignment;
 use App\Models\User;
 use Carbon\CarbonImmutable;
-use App\Exceptions\ConflictException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -32,7 +32,7 @@ class DeliveryLocationController
             throw new AccessDeniedHttpException('Delivery partner access is not active.');
         }
 
-        $location = DB::transaction(function () use ($assignment, $partner, $validated, $request): DeliveryLocation {
+        $location = DB::transaction(function () use ($assignment, $partner, $validated): DeliveryLocation {
             $lockedAssignment = OrderAssignment::query()
                 ->lockForUpdate()
                 ->findOrFail($assignment->id);

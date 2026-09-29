@@ -17,7 +17,7 @@ class RequestValidationTest extends TestCase
 
     public function test_address_rules_accept_valid_coordinates_and_reject_out_of_range_values(): void
     {
-        $request = new StoreAddressRequest();
+        $request = new StoreAddressRequest;
 
         $valid = Validator::make([
             'label' => 'Home',
@@ -50,7 +50,7 @@ class RequestValidationTest extends TestCase
 
     public function test_category_rules_validate_slug_and_sort_order(): void
     {
-        $request = new StoreCategoryRequest();
+        $request = new StoreCategoryRequest;
 
         $valid = Validator::make([
             'name' => 'Burgers',
@@ -78,7 +78,7 @@ class RequestValidationTest extends TestCase
             'slug' => 'burgers',
         ]);
 
-        $request = new StoreProductRequest();
+        $request = new StoreProductRequest;
 
         $valid = Validator::make([
             'category_id' => $category->id,
@@ -110,7 +110,7 @@ class RequestValidationTest extends TestCase
         $customer = new User(['role' => 'CUSTOMER']);
         $admin = new User(['role' => 'ADMIN']);
 
-        foreach ([new StoreCategoryRequest(), new StoreProductRequest()] as $request) {
+        foreach ([new StoreCategoryRequest, new StoreProductRequest] as $request) {
             $request->setUserResolver(fn () => $customer);
             $this->assertFalse($request->authorize());
 

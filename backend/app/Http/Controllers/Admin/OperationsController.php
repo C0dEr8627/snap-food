@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\DeliveryPartner;
 use App\Models\Invoice;
+use App\Models\Order;
 use App\Models\OrderAssignment;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OperationsController extends Controller
 {
@@ -148,7 +149,7 @@ class OperationsController extends Controller
 
         return view('admin.assignments.index', [
             'assignments' => $query->paginate(20)->withQueryString(),
-            'statuses' => array_keys(\App\Models\Order::allowedTransitions()),
+            'statuses' => array_keys(Order::allowedTransitions()),
             'filters' => $validated,
         ]);
     }

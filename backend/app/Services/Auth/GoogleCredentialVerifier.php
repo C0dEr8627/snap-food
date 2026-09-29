@@ -15,7 +15,7 @@ class GoogleCredentialVerifier
             throw new RuntimeException('Google OAuth client ID is not configured.');
         }
 
-        $client = new GoogleClient();
+        $client = new GoogleClient;
         $client->setClientId($clientId);
 
         $payload = $client->verifyIdToken($credential);

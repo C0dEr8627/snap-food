@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\V1\Orders;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
 use App\Models\Order;
 use App\Services\Orders\OrderCheckoutService;

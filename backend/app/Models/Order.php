@@ -13,16 +13,25 @@ class Order extends Model
     use HasFactory;
 
     public const STATUS_PLACED = 'PLACED';
+
     public const STATUS_ACCEPTED = 'ACCEPTED';
+
     public const STATUS_PREPARING = 'PREPARING';
+
     public const STATUS_READY_FOR_PICKUP = 'READY_FOR_PICKUP';
+
     public const STATUS_ASSIGNED = 'ASSIGNED';
+
     public const STATUS_PICKED_UP = 'PICKED_UP';
+
     public const STATUS_OUT_FOR_DELIVERY = 'OUT_FOR_DELIVERY';
+
     public const STATUS_DELIVERED = 'DELIVERED';
+
     public const STATUS_CANCELLED = 'CANCELLED';
 
     public const PAYMENT_METHOD_COD = 'COD';
+
     public const PAYMENT_STATUS_PENDING = 'PENDING';
 
     protected $fillable = [
@@ -61,7 +70,7 @@ class Order extends Model
         return $this->hasOne(Invoice::class);
     }
 
-    public function assignment(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function assignment(): HasOne
     {
         return $this->hasOne(OrderAssignment::class);
     }

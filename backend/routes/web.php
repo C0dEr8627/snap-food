@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\Admin\OperationsController;
 use App\Http\Controllers\Admin\CatalogueController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\OperationsController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Middleware\EnsureAdminWebUser;
 use Illuminate\Support\Facades\Route;
 

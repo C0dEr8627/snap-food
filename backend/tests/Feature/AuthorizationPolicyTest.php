@@ -18,7 +18,7 @@ class AuthorizationPolicyTest extends TestCase
 
     public function test_role_middleware_allows_required_role_and_rejects_other_roles(): void
     {
-        $middleware = new EnsureUserHasRole();
+        $middleware = new EnsureUserHasRole;
 
         $admin = User::create([
             'google_subject' => 'google-role-admin',
@@ -55,7 +55,7 @@ class AuthorizationPolicyTest extends TestCase
 
     public function test_role_middleware_rejects_inactive_users(): void
     {
-        $middleware = new EnsureUserHasRole();
+        $middleware = new EnsureUserHasRole;
 
         $user = User::create([
             'google_subject' => 'google-role-inactive',

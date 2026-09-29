@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\ConflictException;
 use App\Models\Invoice;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,7 @@ class InvoiceService
                 ->findOrFail($order->id);
 
             if ($order->status !== Order::STATUS_DELIVERED) {
-                throw new \App\Exceptions\ConflictException('Invoice is available only after delivery.');
+                throw new ConflictException('Invoice is available only after delivery.');
             }
 
             $invoice = Invoice::query()->where('order_id', $order->id)->first();

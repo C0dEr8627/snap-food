@@ -4,18 +4,18 @@ use App\Exceptions\ConflictException;
 use App\Exceptions\OrderStateConflictException;
 use App\Http\Middleware\EnsureAdminWebUser;
 use App\Http\Middleware\EnsureUserHasRole;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Throwable;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -38,7 +38,10 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (ConflictException $e, Request $request) {
-            if (! $request->is('api/v1/*')) return null;
+            if (! $request->is('api/v1/*')) {
+                return null;
+            }
+
             return response()->json(['message' => $e->getMessage(), 'errors' => (object) [], 'code' => 'CONFLICT'], 409);
         });
 

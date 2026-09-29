@@ -248,5 +248,4 @@ class AuthenticationTest extends TestCase
             ->assertJsonStructure(['message', 'errors', 'code'])
             ->assertJsonPath('code', 'NOT_FOUND');
     }
-
 }

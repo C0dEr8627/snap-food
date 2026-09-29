@@ -2,9 +2,9 @@
 
 namespace App\Services\Orders;
 
+use App\Exceptions\OrderStateConflictException;
 use App\Models\Order;
 use App\Models\User;
-use App\Exceptions\OrderStateConflictException;
 use Illuminate\Support\Facades\DB;
 
 class OrderStatusService
@@ -15,7 +15,7 @@ class OrderStatusService
             $locked = Order::query()->lockForUpdate()->findOrFail($order->id);
 
             if ($locked->status === $targetStatus || ! $locked->canTransitionTo($targetStatus)) {
-                throw new OrderStateConflictException();
+                throw new OrderStateConflictException;
             }
 
             $fromStatus = $locked->status;

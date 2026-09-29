@@ -15,7 +15,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'google_subject' => 'factory-' . $this->faker->unique()->uuid(),
+            'google_subject' => 'factory-'.$this->faker->unique()->uuid(),
             'name' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
             'role' => User::ROLE_CUSTOMER,
