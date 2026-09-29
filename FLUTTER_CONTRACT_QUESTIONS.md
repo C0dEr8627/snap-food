@@ -88,3 +88,19 @@ Developer 2 will continue to use local repositories/fakes only where the API con
 6. Invoice success response with invoice identifier/number and immutable financial/address/item snapshot fields.
 
 Until these are synchronized, Developer 2 will not infer field names, status values, identifiers or payload shapes.
+
+
+## 2026-09-29 continuation re-check
+
+- Re-read the shared contract on `developer-2-flutter`: it still contains only high-level endpoint declarations for auth, catalogue, orders and delivery, without the complete Flutter-facing success schemas needed for typed integration.
+- Re-read `developer-1-backend-admin/API_CONTRACT.md`: delivery assignment/lifecycle/tracking and invoice behavior are documented there, but the richer backend documentation is not synchronized into the shared/base contract with complete Flutter response examples.
+- Backend verification #209/#259/#266 is therefore useful evidence for readiness, but it does not remove the shared-schema gate.
+- Developer 2 will keep the next order/COD implementation contract-first and will not infer identifiers, status values, DTO fields, payloads or invoice snapshot shapes from backend implementation details.
+
+### Required before the next implementation slice
+1. Order create/list/detail request and response examples, stable IDs/status values and authoritative totals.
+2. Address request/response shape plus validation and ownership behavior.
+3. Google auth credential exchange, application session/token and user-role response.
+4. Catalogue success fields, IDs, money/availability representation and pagination/search.
+5. Delivery assignment/list/status/location/tracking request and response examples, including freshness fields.
+6. Invoice success response, identifier/number fields and immutable snapshot fields.
