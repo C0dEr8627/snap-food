@@ -27,7 +27,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 |---|---|---|
 | Phase 0 — Environment & repository baseline | **PARTIAL** | Repository/docs inspected; PHP 8.3 target recorded; hosting checklist and safe env example documented. Actual GoDaddy Composer/MySQL capability remains unverified. |
 | Phase 1 — Backend foundation | **COMPLETED** | Laravel API skeleton, routing, health endpoint, PHPUnit config/test, PHP 8.3 CI, Sanctum, MySQL config, Laravel 13 baseline and required Git-preserved directories are complete. Workflow #30 passed the foundation suite. Initial MySQL schema/models and CI migration verification also passed in workflow #48. |
-| Phase 2 — Identity & authorization | **PARTIAL** | Google verification service, login, Sanctum token storage, `/me`, logout and negative auth tests are implemented; final CI verification and role middleware/policies remain. |
+| Phase 2 — Identity & authorization | **PARTIAL** | Google verification service, login, Sanctum token storage, `/me`, logout and negative auth tests are implemented. CI verification is blocked by a missing Laravel application `Controller` base class, now fixed; role middleware/policies and cross-user authorization remain. |
 | Phase 3 — Catalogue | **PARTIAL** | Categories/products schema, models, casts and initial request validation are implemented. Catalogue APIs, resources, pagination/search, deterministic seeds, admin CRUD and endpoint tests remain. |
 | Phase 4 — Orders & COD | **NOT STARTED** | Order snapshots, totals, COD state, transitions, history and tests remain. |
 | Phase 5 — Admin & assignment | **NOT STARTED** | Protected admin web dashboard and delivery assignment operations remain. |
@@ -171,12 +171,13 @@ Build the trusted backend and admin operations that the existing Flutter app can
 18. Workflow #58 passed the relationship/request-validation slice.
 19. Google credential verification service, auth controller, Sanctum token storage, `/me`, logout and authentication regression tests implemented.
 20. Workflow #79 exposed that the authentication routes had not been persisted into `routes/api.php`; the missing route registration was corrected in commit `8df16414dd31f5eb0901d09dd94b43fca1707d72`.
-21. Workflow #80 is currently running against the corrected route registration.
-20. `DEVELOPER_1_PLAN.md` and `backend/README.md` updated to reflect the verified database foundation and current authentication implementation status.
+21. Workflow #81 ran against the corrected routes but failed because `App\Http\Controllers\Controller` was missing from the Laravel 13 application skeleton.
+22. Added the application controller base class in commit `d01b6de139d819b4b0e2572f0e8dc22b6a6d5c12`; the next CI run will verify the authentication slice again.
+23. Progress documentation is being updated to record the actual CI failure/fix rather than the stale workflow #73/#80 status.
 
 ### Not yet verified
 
-- The Google SSO/Sanctum implementation had a route-registration CI failure in workflow #79; the missing API route registration has now been corrected and workflow #80 is pending.
+- Workflow #81 failed after reaching the authentication tests: all 7 authentication tests that exercised `AuthController` hit `Class "App\\Http\\Controllers\\Controller" not found`. This is now fixed by adding the missing application base controller in commit `d01b6de139d819b4b0e2572f0e8dc22b6a6d5c12`.
 - A real production Google credential has not been used; tests mock the verifier to avoid external identity-provider calls.
 - GoDaddy Composer/extensions/database/document-root/SSH capabilities.
 
