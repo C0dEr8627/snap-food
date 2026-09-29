@@ -145,7 +145,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Protect customer/admin invoice access.
 - [x] Add totals, numbering uniqueness and unauthorized-access tests.
 
-**Current Phase 7 gate:** Workflow #284 failed only because `User::factory()` was unavailable in the minimal Laravel skeleton. The factory support fix is committed; fresh CI verification is required before M8 can be marked complete.
+**Current Phase 7 gate:** Workflow #284 failed because `User::factory()` was unavailable in the minimal Laravel skeleton. After adding user factory support, Workflow #288 exposed the next missing test factory: `Order::factory()` (and `OrderItem::factory()`). Order/OrderItem factory support is now committed; fresh CI verification is required before M8 can be marked complete.
 
 ## Phase 8 — Integration and release readiness
 
@@ -210,6 +210,8 @@ Build the trusted backend and admin operations that the existing Flutter app can
 46. Workflow #189 passed the corrected authorization fix on PHP 8.3 with MySQL, verifying the initial Phase 4 checkout/list/detail slice.
 47. Implemented server-owned admin order status transitions through `PATCH /api/v1/admin/orders/{order}/status`, with role/policy authorization, transactional `lockForUpdate()`, status-history actor recording, and `ORDER_STATE_CONFLICT` HTTP 409 handling. Added regression coverage for valid transitions, invalid/repeated transitions, and customer denial.
 48. Implemented concurrency-safe admin delivery assignment through `POST /api/v1/admin/orders/{order}/assignment`; the service locks the order and delivery-partner rows in one transaction, requires READY_FOR_PICKUP plus approved/active/available partner state, prevents duplicate assignment and records the ASSIGNED status actor history.
+49. Implemented invoice generation/access control and immutable financial snapshots for delivered orders; Workflow #284 exposed missing User factory support, which was added in `f1bd21a98dadcf69f22be015550cf6a338dcb4b2` and `17e332a518584c182a5228e9a6c3744f4083898c`.
+50. Workflow #288 then exposed missing `Order::factory()` support in `InvoiceApiTest` (7 failures after migrations passed). Added `HasFactory` to `Order` and `OrderItem`, plus `OrderFactory` and `OrderItemFactory` in commits `9556db4bfbc856057803e68fc8295676da8eed71`, `c19ae83506277de5b58ed692bdb842d55cc24840`, `f99f81e9b0071ac9703de73c2c039ef1a10c7832`, and `87276644e9bb5a65f7b99e0a780fe3ac57cee595`.
 
 ### Latest verification result
 
