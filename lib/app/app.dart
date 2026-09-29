@@ -48,7 +48,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return publicRoutes.contains(location) ? null : '/welcome';
       }
 
-      final isAuthenticated = authState.valueOrNull?.isAuthenticated ?? false;
+      final isAuthenticated = authState.value?.isAuthenticated ?? false;
       if (!isAuthenticated && !publicRoutes.contains(location)) {
         return '/welcome';
       }
