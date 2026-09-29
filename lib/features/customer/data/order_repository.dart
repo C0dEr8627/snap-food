@@ -1,11 +1,13 @@
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_exception.dart';
 import 'order_models.dart';
+import 'order_tracking_models.dart';
 
 abstract interface class OrderRepository {
   Future<Order> createOrder(CreateOrderRequest request);
   Future<OrderPage> fetchOrders({int? page, int? perPage});
   Future<Order> fetchOrder(String orderId);
+  Future<OrderTracking> fetchTracking(String orderId);
 }
 
 class RemoteOrderRepository implements OrderRepository {
@@ -27,6 +29,26 @@ class RemoteOrderRepository implements OrderRepository {
     };
     final response = await _client.get('/orders', queryParameters: query);
     return _decodePage(response);
+  }
+
+  @override
+  Future<OrderTracking> fetchTracking(String orderId) async {
+    if (orderId.trim().isEmpty) {
+      throw const ApiException(
+        message: 'An order id is required.',
+        code: 'INVALID_ORDER_ID',
+      );
+    }
+    final response = await _client.get('/orders/' + Uri.encodeComponent(orderId) + '/tracking');
+    if (response is Map<String, dynamic>) {
+      final data = response['data'];
+      if (data is Map) return OrderTracking.fromJson(Map<String, dynamic>.from(data));
+      if (response['status'] != null) return OrderTracking.fromJson(response);
+    }
+    throw const ApiException(
+      message: 'The server returned an unexpected tracking response.',
+      code: 'INVALID_RESPONSE',
+    );
   }
 
   @override
@@ -127,6 +149,11 @@ class FakeOrderRepository implements OrderRepository {
       lastPage: 1,
       total: _orders.length,
     );
+  }
+
+  @override
+  Future<OrderTracking> fetchTracking(String orderId) async {
+    throw const ApiException(message: 'Tracking is not available in the local fixture.', code: 'FIXTURE_MISSING');
   }
 
   @override
