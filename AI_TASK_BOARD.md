@@ -86,3 +86,5 @@ Record decisions here only after the owner approves or they are already establis
 - Admin role bootstrap remains operator-controlled; web login only permits already-provisioned active ADMIN users.
 
 - New implementation: `POST /api/v1/admin/orders/{order}/assignment` uses a transaction with `lockForUpdate()` on both the order and delivery partner, requires `READY_FOR_PICKUP` and approved/active/available partner state, prevents duplicate assignment, and records `ASSIGNED` status history with the admin actor. Fresh CI verification is pending.
+
+- Backend Workflow #234 failed on the admin-web test slice because the minimal Laravel skeleton lacked Blade compiled-view/session runtime configuration; the failure was concrete (`Please provide a valid cache path`). Runtime configuration and required framework directories were added on `developer-1-backend-admin`; fresh CI verification is pending.
