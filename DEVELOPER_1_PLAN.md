@@ -321,3 +321,14 @@ A task is complete only when implementation, validation, authorization, automate
 - No Flutter-owned files, deployment, or production migration were changed.
 
 **Next task:** verify workflow #420. If it passes formatting, migrations and PHPUnit, mark the formatting/CI gate verified; then proceed to final manual security/content review, GoDaddy capability confirmation and broader integration/release validation.
+
+
+### Release-readiness update — 2026-09-29
+
+- **Backend workflow #421 PASSED** on branch head `e7f9b346c8d9f0bf32f684d087a14e8d900ff3ec`.
+- The complete CI gate passed: PHP 8.3 setup, Composer dependency installation, **Laravel Pint formatting check**, MySQL database migrations, and the PHPUnit test suite.
+- This closes the previously blocked formatter/CI verification gate. The earlier 29 Pint issues are now resolved by generated formatting commit `fe67a57f07500f06443b8978d8ad42906132edd7`.
+- Release-readiness is **not yet complete**: remaining work is final manual security/diff review, confirmation of GoDaddy production capabilities, broader Flutter/device/end-to-end integration validation, and explicit human release approval.
+- No deployment or production migration has been performed.
+
+**Next implementation task:** perform the final backend security/content/diff review and document any findings before release approval.
