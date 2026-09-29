@@ -107,7 +107,7 @@ class OrderHistoryController extends AsyncNotifier<OrderHistoryState> {
   }
 
   Future<void> loadNextPage() async {
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current == null || !current.hasNextPage) return;
 
     final next = await _repository.fetchOrders(
