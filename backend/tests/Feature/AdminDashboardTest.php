@@ -39,7 +39,20 @@ class AdminDashboardTest extends TestCase
             ->assertSee('Active orders')
             ->assertSee('Preparing')
             ->assertSee('Awaiting delivery')
-            ->assertSee('Active delivery');
+            ->assertSee('Active delivery')
+            ->assertSee('Operations directory')
+            ->assertSee('Customers')
+            ->assertSee('Delivery partners')
+            ->assertSee('Assignments')
+            ->assertSee('Invoices issued')
+            ->assertViewHas('directoryCounts', [
+                'categories' => 0,
+                'products' => 0,
+                'customers' => 0,
+                'delivery_partners' => 0,
+                'assignments' => 0,
+                'invoices' => 0,
+            ]);
     }
 
     public function test_customer_cannot_access_dashboard_counts(): void
