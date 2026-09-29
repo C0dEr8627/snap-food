@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import 'catalogue_controller.dart';
 import 'catalogue_state_message.dart';
+import '../data/catalogue_models.dart';
+import '../data/cart_models.dart';
+import 'cart_controller.dart';
 import '../../../design_system/tokens/app_radii.dart';
 
 class RestaurantMenuScreen extends ConsumerStatefulWidget {
@@ -15,22 +18,41 @@ class RestaurantMenuScreen extends ConsumerStatefulWidget {
 
 class _RestaurantMenuScreenState extends ConsumerState<RestaurantMenuScreen> {
   int selectedCategory = 0;
-  final quantities = <String, int>{'biryani': 1, 'butter': 1};
+  final quantities = <String, int>{};
 
-  void add(String id) => setState(() => quantities[id] = (quantities[id] ?? 0) + 1);
-  void remove(String id) => setState(() {
+  void add(CatalogueProduct product) {
+    final id = product.id.toString();
+    final next = (quantities[id] ?? 0) + 1;
+    setState(() => quantities[id] = next > 99 ? 99 : next);
+    ref.read(cartControllerProvider.notifier).addItem(CartItem(
+      productId: id,
+      name: product.name,
+      description: product.category?.name ?? 'Catalogue item',
+      previewPrice: int.tryParse(product.price.split('.').first) ?? 0,
+      quantity: 1,
+      vegetarian: product.category?.name.toLowerCase().contains('veg') == true,
+    ));
+  }
+  void remove(String id) {
     final q = quantities[id] ?? 0;
-    if (q > 0) quantities[id] = q - 1;
-  });
+    if (q <= 0) return;
+    setState(() => quantities[id] = q - 1);
+    ref.read(cartControllerProvider.notifier).changeQuantity(id, -1);
+  }
 
   @override
   Widget build(BuildContext context) {
     const categories = ['🔥 Best Sellers', 'Biryani & Rice', 'Tandoori & Starters', 'Curries & Breads', 'Beverages'];
-    const items = [
-      MenuItemData('Special Chicken Tikka Dum Biryani', 'Slow-cooked fragrant basmati rice with marinated chicken & aromatic saffron spice.', 320, 360, 'biryani', false, true),
-      MenuItemData('Butter Chicken & 2 Butter Naan Combo', 'Boneless roasted chicken in creamy makhani gravy served with soft butter naans.', 280, null, 'butter', false),
-      MenuItemData('Pure Veg Paneer Butter Masala & Kulcha', 'Fresh cottage cheese cubes in rich tomato cashew gravy.', 240, 280, 'paneer', true),
-    ];
+    final catalogue = ref.watch(catalogueControllerProvider);
+    final items = catalogue.value?.products.items.map((product) => MenuItemData(
+      product.name,
+      'Freshly prepared ' + product.name.toLowerCase() + ' from the current catalogue.',
+      int.tryParse(product.price.split('.').first) ?? 0,
+      null,
+      product.id.toString(),
+      product.category?.name.toLowerCase().contains('veg') == true,
+      false,
+    )).toList() ?? const <MenuItemData>[];
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
       body: SafeArea(
@@ -104,7 +126,7 @@ class _RestaurantMenuScreenState extends ConsumerState<RestaurantMenuScreen> {
                 side: BorderSide.none,
               ),
             ))),
-            SliverToBoxAdapter(child: _MenuSection(title: '🔥 Best Sellers', subtitle: '3 crave-worthy picks', items: items, quantities: quantities, onAdd: add, onRemove: remove)),
+            SliverToBoxAdapter(child: _MenuSection(title: '🔥 Best Sellers', subtitle: '3 crave-worthy picks', items: items, quantities: quantities, onAdd: (id) { final product = catalogue.value?.products.items.where((p) => p.id.toString() == id).firstOrNull; if (product != null && product.isActive && product.isAvailable) add(product); }, onRemove: remove)),
             const SliverToBoxAdapter(child: _MenuSection(
               title: 'Tandoori & Starters',
               subtitle: 'Fresh Cut Daily',
@@ -112,7 +134,7 @@ class _RestaurantMenuScreenState extends ConsumerState<RestaurantMenuScreen> {
             )),
             const SliverToBoxAdapter(child: SizedBox(height: 120)),
           ]),
-          Positioned(left: 16, right: 16, bottom: 12, child: _CartBar(items: (quantities['biryani'] ?? 0) + (quantities['butter'] ?? 0), total: (quantities['biryani'] ?? 0) * 320 + (quantities['butter'] ?? 0) * 280)),
+          Positioned(left: 16, right: 16, bottom: 12, child: Builder(builder: (context) { final cart = ref.watch(cartControllerProvider); return _CartBar(items: cart.itemCount, total: cart.previewSubtotal, onTap: () => context.push('/cart')); })),
         ]),
       ),
     );
