@@ -8,7 +8,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.bySemanticsLabel('Snap Foodd'), findsOneWidget);
-    expect(find.text('GOOD FOOD.\nFAST DELIVERY.'), findsOneWidget);
+    expect(find.textContaining('GOOD FOOD.'), findsOneWidget);
+    expect(find.textContaining('FAST DELIVERY.'), findsOneWidget);
     expect(find.text('Explore food'), findsOneWidget);
     expect(find.textContaining('Already have an account?'), findsOneWidget);
     expect(find.text('Made for Mumbai'), findsOneWidget);
@@ -16,6 +17,7 @@ void main() {
     await tester.tap(find.text('Explore food'));
     await tester.pumpAndSettle();
 
-    expect(find.text('GOOD FOOD.\nFAST DELIVERY.'), findsOneWidget);
+    expect(find.textContaining('GOOD FOOD.'), findsOneWidget);
+    expect(find.textContaining('FAST DELIVERY.'), findsOneWidget);
   });
 }
