@@ -7,11 +7,9 @@ use App\Models\Address;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
-use App\Policies\AddressPolicy;
-use App\Policies\CategoryPolicy;
-use App\Policies\ProductPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Tests\TestCase;
 
 class AuthorizationPolicyTest extends TestCase
@@ -117,14 +115,12 @@ class AuthorizationPolicyTest extends TestCase
             'country' => 'India',
         ]);
 
-        $policy = new AddressPolicy();
-
-        $this->assertTrue($policy->view($owner, $address));
-        $this->assertFalse($policy->view($other, $address));
-        $this->assertTrue($policy->view($admin, $address));
-        $this->assertTrue($policy->update($owner, $address));
-        $this->assertFalse($policy->update($other, $address));
-        $this->assertTrue($policy->delete($admin, $address));
+        $this->assertTrue(Gate::forUser($owner)->allows('view', $address));
+        $this->assertFalse(Gate::forUser($other)->allows('view', $address));
+        $this->assertTrue(Gate::forUser($admin)->allows('view', $address));
+        $this->assertTrue(Gate::forUser($owner)->allows('update', $address));
+        $this->assertFalse(Gate::forUser($other)->allows('update', $address));
+        $this->assertTrue(Gate::forUser($admin)->allows('delete', $address));
     }
 
     public function test_category_and_product_write_policies_are_admin_only(): void
@@ -157,17 +153,14 @@ class AuthorizationPolicyTest extends TestCase
             'price' => '299.00',
         ]);
 
-        $categoryPolicy = new CategoryPolicy();
-        $productPolicy = new ProductPolicy();
+        $this->assertTrue(Gate::forUser($admin)->allows('create', Category::class));
+        $this->assertFalse(Gate::forUser($customer)->allows('create', Category::class));
+        $this->assertTrue(Gate::forUser($admin)->allows('update', $category));
+        $this->assertFalse(Gate::forUser($customer)->allows('update', $category));
 
-        $this->assertTrue($categoryPolicy->create($admin));
-        $this->assertFalse($categoryPolicy->create($customer));
-        $this->assertTrue($categoryPolicy->update($admin, $category));
-        $this->assertFalse($categoryPolicy->update($customer, $category));
-
-        $this->assertTrue($productPolicy->create($admin));
-        $this->assertFalse($productPolicy->create($customer));
-        $this->assertTrue($productPolicy->delete($admin, $product));
-        $this->assertFalse($productPolicy->delete($customer, $product));
+        $this->assertTrue(Gate::forUser($admin)->allows('create', Product::class));
+        $this->assertFalse(Gate::forUser($customer)->allows('create', Product::class));
+        $this->assertTrue(Gate::forUser($admin)->allows('delete', $product));
+        $this->assertFalse(Gate::forUser($customer)->allows('delete', $product));
     }
 }
