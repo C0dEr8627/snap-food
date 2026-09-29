@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
+import 'catalogue_controller.dart';
+import 'catalogue_state_message.dart';
 import '../../../design_system/tokens/app_radii.dart';
 
-class FoodItemDetailsScreen extends StatefulWidget {
+class FoodItemDetailsScreen extends ConsumerStatefulWidget {
   const FoodItemDetailsScreen({super.key, this.itemId = 'biryani'});
   final String itemId;
 
   @override
-  State<FoodItemDetailsScreen> createState() => _FoodItemDetailsScreenState();
+  ConsumerState<FoodItemDetailsScreen> createState() => _FoodItemDetailsScreenState();
 }
 
-class _FoodItemDetailsScreenState extends State<FoodItemDetailsScreen> {
+class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
   int quantity = 1;
 
   String get itemName => widget.itemId == 'butter'
