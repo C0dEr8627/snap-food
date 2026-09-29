@@ -800,3 +800,15 @@ No backend/Laravel-owned files were modified. No merge or deployment was perform
 - Google auth platform/runtime verification remains pending.
 - Local Flutter/Dart execution is unavailable; GitHub Actions is the available Flutter execution environment.
 - No backend/Laravel-owned files were modified, and no merge/deployment was performed.
+
+
+## Developer 2 continuation checkpoint — 2026-09-30 (current-head CI test failure triage)
+
+- **Branch:** `developer-2-flutter`; **PR:** #1 → `frontend`, still open.
+- **Current implementation:** catalogue/cart, COD checkout, customer order history/detail/tracking, delivery lifecycle, foreground active-trip location boundary, and invoice model/repository/UI are present in the branch. The invoice response schema is now frozen in `API_CONTRACT.md`.
+- **Latest CI:** run `36615074843` executed against PR merge commit `5479e4090b4a12356bf3926bc4d5663fb8ace65d`. Dependency resolution, Dart formatting and `flutter analyze` **passed**. `flutter test` **failed** only in `test/app_smoke_test.dart`; Android build was skipped because the test step failed.
+- **Concrete failure:** the smoke test tapped the welcome-screen “Explore food” action, which correctly navigates to `/home`, but then incorrectly expected welcome-screen text. This is a stale test assertion, not a production navigation failure.
+- **Fix committed:** `3470e72773de7130485028633562f020c9d3a2d7` updates the smoke test to assert the existing home-screen text `What are you craving today?` after navigation. No production UI/navigation or backend-owned files were changed.
+- **Verification:** the fix itself has **not yet been executed by CI** at this checkpoint. Local Flutter/Dart execution is unavailable here.
+- **Remaining product/runtime work:** approved concrete Android/iOS location + Maps dependency/configuration and physical-device verification remain pending; Google SSO still requires the public platform client configuration/runtime sign-in wiring; role-specific routing requires consuming the documented role field safely.
+- **Next task:** inspect the CI run for commit `3470e72773de7130485028633562f020c9d3a2d7`; if green, proceed with the approved GPS/Maps platform integration or the next explicitly unblocked authentication configuration task. Do not claim CI green until the run completes.
