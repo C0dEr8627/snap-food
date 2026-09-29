@@ -27,8 +27,8 @@ Build the trusted backend and admin operations that the existing Flutter app can
 |---|---|---|
 | Phase 0 — Environment & repository baseline | **PARTIAL** | Repository/docs inspected; PHP 8.3 target recorded; hosting checklist and safe env example documented. Actual GoDaddy Composer/MySQL capability remains unverified. |
 | Phase 1 — Backend foundation | **COMPLETED** | Laravel API skeleton, routing, health endpoint, PHPUnit config/test, PHP 8.3 CI, Sanctum, MySQL config, Laravel 13 baseline and required Git-preserved directories are complete. Workflow #30 passed the foundation suite. Initial MySQL schema/models and CI migration verification also passed in workflow #48. |
-| Phase 2 — Identity & authorization | **PARTIAL** | Google verification service, login, Sanctum token storage, `/me`, logout, role middleware, resource policies and negative/cross-user authorization tests are implemented. CI verification remains pending after workflow #85 exposed a test-container guard-cache issue. |
-| Phase 3 — Catalogue | **PARTIAL** | Categories/products schema, models, casts and initial request validation are implemented. Catalogue APIs, resources, pagination/search, deterministic seeds, admin CRUD and endpoint tests remain. |
+| Phase 2 — Identity & authorization | **PARTIAL** | Google verification service, login, Sanctum token storage, `/me`, logout, role middleware, resource policies and negative/cross-user authorization tests are implemented. Rate limiting and credential-safe logging are also implemented. Latest combined authorization/API-hardening CI verification remains pending. |
+| Phase 3 — Catalogue | **PARTIAL** | Customer category/product read APIs, search/pagination, admin create/update/deactivate APIs, update validation and endpoint regression tests are now implemented. Deterministic seed data and final CI verification remain. |
 | Phase 4 — Orders & COD | **NOT STARTED** | Order snapshots, totals, COD state, transitions, history and tests remain. |
 | Phase 5 — Admin & assignment | **NOT STARTED** | Protected admin web dashboard and delivery assignment operations remain. |
 | Phase 6 — Delivery tracking | **NOT STARTED** | Partner workflow, pickup/completion, location updates and tracking authorization remain. |
@@ -86,11 +86,12 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 - [x] Add initial categories and products migrations/models/casts.
 - [x] Add initial category/product request validation and admin authorization checks.
-- [ ] Define and enforce final catalogue write policy/resources at endpoint level.
-- [ ] Implement customer catalogue reads.
-- [ ] Implement admin category/product CRUD and deactivate/delete policy.
-- [ ] Add pagination, search/filter and deterministic seed data.
-- [ ] Add inactive-product and admin-only endpoint tests.
+- [x] Define and enforce final catalogue write policy at endpoint level; admin writes are protected by role middleware and model policies.
+- [x] Implement customer catalogue reads for active categories/products.
+- [x] Implement admin category/product create/update/deactivate endpoints.
+- [x] Add pagination and search/filter query handling.
+- [x] Add inactive-product visibility and admin-only endpoint tests.
+- [ ] Add deterministic seed data and final CI verification for the catalogue slice.
 
 **Milestone:** admin creates/updates a product; customer catalogue API returns it.
 
@@ -178,8 +179,11 @@ Build the trusted backend and admin operations that the existing Flutter app can
 25. Added role constants/helpers, `EnsureUserHasRole`, the `role` middleware alias, explicit Address/Category/Product policies and Gate registration.
 26. Added middleware and cross-user/role policy coverage in `AuthorizationPolicyTest.php`; final CI verification is pending for this combined authz slice.
 27. Added Google sign-in rate limiting, credential-safe failure logging, and consistent `/api/v1` exception/error responses with regression tests.
-28. The current backend branch has not yet produced a CI result for the latest API-hardening changes; the next CI run is the verification gate.
-29. Progress documentation is maintained against actual CI results rather than assuming implementation is verified.
+28. Implemented customer catalogue category/product reads with active-item filtering, search, pagination and authenticated access.
+29. Implemented admin category/product create/update/deactivate endpoints, update validation and endpoint regression tests; inactive products are hidden from customer reads.
+30. Corrected catalogue policies so active customers can read categories/products while admin-only write operations remain protected.
+31. The current backend branch has not yet produced a CI result for the latest API-hardening + catalogue changes; the new catalogue tests are therefore not yet CI-verified.
+32. Progress documentation is maintained against actual CI results rather than assuming implementation is verified.
 
 ### Not yet verified
 
