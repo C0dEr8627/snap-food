@@ -31,8 +31,8 @@ class InvoiceApiTest extends TestCase
         OrderItem::factory()->create([
             'order_id' => $order->id,
             'product_id' => null,
-            'product_name_snapshot' => 'Pizza',
-            'unit_price_snapshot' => '100.00',
+            'product_name' => 'Pizza',
+            'unit_price' => '100.00',
             'quantity' => 1,
             'line_total' => '100.00',
         ]);
