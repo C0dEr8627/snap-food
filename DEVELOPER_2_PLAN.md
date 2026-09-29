@@ -30,7 +30,7 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 
 ## Current execution status
 
-> **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. Latest catalogue UI, auth-session foundation, and progress documentation are on the branch; PR #1 tracks the current head. PR #1 targets `frontend` and remains open.
+> **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. Latest catalogue UI, auth-session foundation, auth-aware go_router redirects, and progress documentation are on the branch; PR #1 tracks the current head. PR #1 targets `frontend` and remains open.
 >
 > **Verified complete in source control:** Phase 0 static Flutter audit, screen-to-contract mapping, platform/dependency inventory, API transport/client foundation, normalized API errors, environment API URL documentation, API-client fake-transport tests, the first catalogue repository boundary with a remote implementation plus deterministic fake repository, the catalogue Riverpod controller/state layer with retry/error handling and controller tests, configured repository wiring, catalogue loading/empty/error/retry UI integration across the existing customer catalogue screens with widget coverage, and the initial auth/session foundation with secure token storage, `/me` hydration and logout handling.
 >
@@ -60,7 +60,7 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 - [x] Securely persist the application session/token using `flutter_secure_storage` behind `SessionStore`.
 - [x] Hydrate current user through `GET /api/v1/me`; unauthorized restoration clears the stored token.
 - [x] Implement logout/revocation via `POST /api/v1/auth/logout` and clear local session state.
-- [ ] Integrate Riverpod auth state with go_router redirects. **Auth controller is ready; route wiring remains.**
+- [x] Integrate Riverpod auth state with go_router redirects. **Unauthenticated protected routes return to `/welcome`; session restoration/loading is held at `/`; authenticated sessions leave `/` and `/welcome` for `/home`. Role-specific customer/delivery routing remains pending the documented user-role response shape and Google SSO integration.**
 - [ ] Keep customer and approved delivery partner navigation separated; admin remains web-only.
 - [x] Add controller tests for startup restoration, expired session cleanup and logout. **Google cancellation/login failure remain pending the provider integration.**
 
