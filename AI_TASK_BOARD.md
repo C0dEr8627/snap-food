@@ -451,3 +451,26 @@ No undocumented API payloads, status enums, route assumptions, or backend-owned 
 6. Implement delivery assignment/status/location/tracking, then invoice integration, from frozen schemas.
 
 No backend/Laravel-owned files were modified. No merge or deployment was performed.
+
+## Developer 2 implementation checkpoint — 2026-09-29 (typed order foundation)
+
+### Completed in this increment
+- Synchronized the Flutter-facing API contract with the current backend implementation for Google auth, catalogue pagination, COD checkout, order history/detail, address snapshot, canonical delivery/tracking routes, invoice access and error codes.
+- Added typed order/domain models for order status, inline delivery address, checkout line requests, order items, server-authoritative totals and paginated order results.
+- Added RemoteOrderRepository for POST /orders, GET /orders, and GET /orders/{order} with strict envelope validation and normalized ApiException failures.
+- Added OrderCheckoutController with duplicate-submit protection and authenticated API access through secure session-token storage.
+- Added OrderHistoryController with paginated history loading, refresh, next-page loading and order-detail loading.
+- Added repository/controller tests covering COD payload serialization, server-authoritative order data, missing-order behavior and duplicate-submit protection.
+
+### Verification
+- Flutter CI for the current branch is not yet green/complete; a fresh run is required after the implementation commits.
+- Local Flutter/Dart commands are unavailable in this GitHub-connected environment, so local analyzer/test/APK results are not claimed.
+
+### Remaining order work
+- Wire the checkout controller into the existing cart/address UI.
+- Add server validation/conflict presentation without recalculating totals client-side.
+- Implement customer order success/detail/history screens and states.
+- Add tracking and delivery-partner Flutter flows from the now-frozen canonical routes.
+- Add invoice model/repository/UI from the frozen invoice response.
+
+No backend/Laravel-owned files were modified.
