@@ -19,8 +19,6 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
   int nav = 0;
   final favorites = <int>{};
 
-  static const filterNames = ['Filters', 'Under 25 mins', 'Rating 4.5+', 'Great Offers', 'Pure Veg'];
-
   static const restaurants = [
     RestaurantMock('Mumbai Spice Kitchen • Andheri West', '4.8', '(1.2k+)', 'North Indian, Biryani, Mughlai', '20–25 mins', '1.8 km', 'Free Delivery on ₹249+', 'Special Butter Chicken & Naan Combo', '₹340', Icons.restaurant, 'https://lh3.googleusercontent.com/aida-public/AB6AXuCI8nFpldvx74-Of_l9s9jlewdgZKH18nVcu_GjT5unSeQsgHmaE2cDY_AjhVM5ogkaeDrk8hmiMl_QCntZj0ecfBVFpzMbiZNbAv5ugrK5FYsMx5XAHCEnWuE30jPap1Mz_rfQeFZvmnrA0qq-QD3fnmMPXuSdEI_yS_f2VeDedcwg2oUUPYPtT3miN-Dil1_weROneWtrTKK9s6ZOOHV9tuQotGSVPR0cfbmVdNzMH5tOzDMRLAcb'),
     RestaurantMock('The Bombay Tiffin • Juhu', '4.9', '(2.1k+)', 'Maharashtrian, Mumbai Street Food', '25–30 mins', '2.4 km', 'Free Extra Pav on ₹199+', 'Special Butter Pav Bhaji (2 Pav)', '₹140', Icons.lunch_dining, 'https://lh3.googleusercontent.com/aida-public/AB6AXuBbdGjfpMkfgJSqTJT4ni_7blK_IdTaFAbuDHIW2z_EnpYpUEt5ggg1eh7TcCOmakuIfPMUPHZxPp4Wxl5pv1YESdGqNNkbQ-zjTse61hJCjo7J3RShtExpfH6IwexkRHb7uBWimoc3iKFv3-f3g5LWkYJ9RE_3p-1Lg95gcRqZyko7jEmCmd0ws2aw7AtQYlzziRR1bb4QfamSkpnlFXMbHCngbWe7A2Y1TwheNwVqPO-IFzzjKz1C6'),
