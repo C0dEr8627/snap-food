@@ -853,3 +853,17 @@ No backend/Laravel-owned files were modified. No merge or deployment was perform
 - Use fake repositories where a backend response is not yet available.
 - Do not modify Laravel/backend-owned files.
 - Do not merge or deploy from this branch.
+
+
+## Developer 2 continuation checkpoint — 2026-09-30 (local smoke-test failure)
+
+- **Reported failure:** local `flutter test` fails in `test/app_smoke_test.dart` at the welcome copy assertion (`GOOD FOOD.` not found). Other tests shown in the supplied output continue passing; the smoke test is the reported failure.
+- **Cause identified from current code:** the test begins advancing the splash timer immediately after `pumpWidget`, while the overridden signed-out auth controller resolves asynchronously. `appRouterProvider` watches auth state, so auth restoration can rebuild the router and restart the splash route/timer during that initial wait.
+- **Correction committed:** `74886bcd8e958f0183e6cff64817614a4d8b8378` adds an initial `pumpAndSettle()` before advancing the 1800 ms splash wait, allowing the signed-out auth state/router refresh to settle before waiting for the splash transition.
+- **Verification:** this environment cannot execute Flutter/Dart locally. The correction is committed to `developer-2-flutter`; current-head CI must verify it. Do not mark the test or CI as passed until a fresh run completes.
+- **Ownership:** no production UI, routing, backend/Laravel files, API contract, platform config, or production infrastructure changed in this correction.
+
+### Immediate next steps
+1. Inspect fresh CI for commit `74886bcd8e958f0183e6cff64817614a4d8b8378`.
+2. If the smoke test still fails, fix the underlying router lifecycle deterministically rather than extending arbitrary test delays.
+3. Once tests pass, verify the Android debug build and update release-readiness status based on actual CI results.
