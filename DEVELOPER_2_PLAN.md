@@ -40,9 +40,9 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 >
 > **Cross-branch contract check (2026-09-29):** Developer 1's execution plan reports the Google verifier, auth login, Sanctum token storage, `/me`, logout and authentication regression tests implemented on `developer-1-backend-admin`. However, the checked-in `API_CONTRACT.md` and `AUTH.md` on that branch still do not specify the exact `POST /auth/google` request field/credential type or successful token response shape. Flutter therefore remains correctly blocked from guessing the exchange payload. No shared contract file was changed from the Flutter branch.
 >
-> **Current first incomplete implementation task:** complete Google SSO credential exchange and session routing after the backend documents the `/auth/google` request/response contract. A Flutter-side contract handoff has now been added at `docs/AUTH_CONTRACT_HANDOFF.md`; it lists the required backend fields without inventing a payload. The secure session foundation and `/me` restoration are implemented.
+> **Current first incomplete implementation task:** complete Google SSO credential exchange and session routing after the backend auth CI is green and the backend documents the `/auth/google` request/response contract. A Flutter-side contract handoff has now been added at `docs/AUTH_CONTRACT_HANDOFF.md`; it lists the required backend fields without inventing a payload. The secure session foundation and `/me` restoration are implemented.
 >
-> **Next implementation sequence:** confirm `/auth/google` request/response fields → integrate platform Google sign-in and credential exchange → connect auth state to go_router → complete catalogue typed DTOs once catalogue response fields are documented → orders/checkout → delivery → active-trip tracking.
+> **Next implementation sequence:** backend fixes the failing auth CI slice → backend documents the exact `/auth/google` request/response contract and public Google client configuration → integrate platform Google sign-in and credential exchange → connect auth state to go_router → complete catalogue typed DTOs once catalogue response fields are documented → orders/checkout → delivery → active-trip tracking.
 
 ## Phase 1 — API foundation
 
@@ -55,7 +55,7 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 
 ## Phase 2 — Google SSO and session state
 
-- [ ] Implement Google sign-in using platform-appropriate public client configuration. **Session foundation is ready; credential provider/exchange remains blocked on the undocumented `/auth/google` request/response shape and platform client configuration.**
+- [ ] Implement Google sign-in using platform-appropriate public client configuration. **Session foundation is ready; credential provider/exchange remains blocked on the undocumented `/auth/google` request/response shape, public client configuration, and the backend auth CI failure.**
 - [ ] Send credential to Laravel `POST /api/v1/auth/google` according to the contract. **Blocked until request/response fields are documented.**
 - [x] Securely persist the application session/token using `flutter_secure_storage` behind `SessionStore`.
 - [x] Hydrate current user through `GET /api/v1/me`; unauthorized restoration clears the stored token.
