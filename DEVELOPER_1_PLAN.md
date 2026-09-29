@@ -26,7 +26,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 | Phase | Status | Completed / remaining |
 |---|---|---|
 | Phase 0 — Environment & repository baseline | **PARTIAL** | Repository/docs inspected; PHP 8.3 target recorded; hosting checklist and safe env example documented. Actual GoDaddy Composer/MySQL capability remains unverified. |
-| Phase 1 — Backend foundation | **IN PROGRESS** | Laravel API skeleton, routing, health endpoint, PHPUnit config/test, PHP 8.3 CI, Sanctum, MySQL config and the Laravel 13 baseline are present. Composer dependency installation now succeeds in CI; the latest test run exposed and the branch fixed a missing Laravel bootstrap cache directory. The latest workflow run reached PHPUnit but failed because `backend/tests/Unit` was missing. The branch now preserves that test directory; a fresh workflow run must confirm the health test passes. |
+| Phase 1 — Backend foundation | **COMPLETED** | Laravel API skeleton, routing, health endpoint, PHPUnit config/test, PHP 8.3 CI, Sanctum, MySQL config, Laravel 13 baseline, bootstrap cache preservation and PHPUnit test-directory preservation are complete. Workflow #30 passed `composer test` on PHP 8.3.35. Database CI verification is now part of the next slice. |
 | Phase 2 — Identity & authorization | **NOT STARTED** | Google verification, users, Sanctum tokens, roles, ownership and auth tests remain. |
 | Phase 3 — Catalogue | **NOT STARTED** | Categories/products schema, models, validation, catalogue APIs, admin CRUD and tests remain. |
 | Phase 4 — Orders & COD | **NOT STARTED** | Order snapshots, totals, COD state, transitions, history and tests remain. |
@@ -61,10 +61,10 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Align PHPUnit configuration with the Laravel 13/PHPUnit 12 baseline.
 - [x] Update framework baseline from Laravel 11 to Laravel 13 because Laravel 11 security support ended March 12, 2026; Laravel 13 requires PHP 8.3.
 - [x] Verify CI can resolve and install the Laravel 13 dependency set on PHP 8.3.
-- [ ] Confirm the health PHPUnit test passes after preserving `backend/tests/Unit`.
+- [x] Confirm the health PHPUnit test passes after preserving `backend/tests/Unit`.
 - [ ] Add request validation, rate limiting where appropriate, logging without credentials and consistent error responses.
 
-**Latest CI verification:** workflow run #21 installed PHP 8.3.35, all configured extensions, Composer 2.10.3, Laravel 13.33.0 and PHPUnit 12.5.36 successfully. The test command first failed because `backend/bootstrap/cache` did not exist; commit `63caeb8a66d8b4045f57b08cb2a8268a629a97a8` fixed that. Workflow #26 then reached PHPUnit but failed because `backend/tests/Unit` was missing. Commit `160626d2bbb09b3b0560b7b61ed5f05f6ca473bd` preserves the Unit test directory; a new workflow run is required to verify the health test.
+**Foundation CI verification:** workflow #30 passed PHP 8.3 setup, dependency installation and the full `composer test` command. The health test and PHPUnit suite now pass after preserving the Laravel bootstrap cache and PHPUnit Unit directory.\n\n**Earlier CI verification:** workflow run #21 installed PHP 8.3.35, all configured extensions, Composer 2.10.3, Laravel 13.33.0 and PHPUnit 12.5.36 successfully. The test command first failed because `backend/bootstrap/cache` did not exist; commit `63caeb8a66d8b4045f57b08cb2a8268a629a97a8` fixed that. Workflow #26 then reached PHPUnit but failed because `backend/tests/Unit` was missing. Commit `160626d2bbb09b3b0560b7b61ed5f05f6ca473bd` preserves the Unit test directory; a new workflow run is required to verify the health test.
 
 ## Phase 2 — Identity and authorization
 
@@ -160,7 +160,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 11. CI verified dependency resolution and installation successfully on PHP 8.3.
 12. CI bootstrap failure diagnosed; required `backend/bootstrap/cache` directory is now preserved in Git.
 13. Workflow #26 confirmed Laravel boots and PHPUnit starts after the cache fix; the remaining failure is the missing `backend/tests/Unit` directory.
-14. PHPUnit test-directory failure fixed by preserving `backend/tests/Unit` in Git.
+14. PHPUnit test-directory failure fixed by preserving `backend/tests/Unit` in Git.\n15. Workflow #30 passed the complete PHPUnit suite after the Unit-directory fix.\n16. Initial `users`, `addresses`, `categories` and `products` migrations/models added from `DATABASE.md`; schema assertions and a MySQL service were added to CI, pending their first run.
 
 ### Not yet verified
 
@@ -172,7 +172,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Immediate next task
 
-**Foundation verification:** confirm the next GitHub Actions run passes `composer test` after the Unit-directory fix. If the health test passes, proceed to the database foundation for `users`, `addresses`, `categories` and `products`, using `DATABASE.md` as the schema contract.
+**Database foundation verification:** run the new MySQL-backed GitHub Actions workflow, confirm migrations and `DatabaseSchemaTest` pass, then proceed to model/relationship and validation tests. Authentication remains gated on verified Google credential handling and the selected Sanctum flow.
 
 ## Developer 1 definition of done
 
