@@ -67,3 +67,12 @@ Record decisions here only after the owner approves or they are already establis
 - Preserved: existing cart UI, route, and navigation.
 - Not implemented: backend order submission, address API, server totals, order response DTOs; those remain contract-gated.
 - Verification: Flutter/Dart commands remain NOT RUN because no local Flutter/Dart runner is available.
+
+
+## Developer 2 checkpoint — 2026-09-29 (cart boundary hardening)
+
+- Branch: developer-2-flutter
+- Cart boundary hardened after source review: corrected the cart vegetarian field binding and replaced the un-managed controller construction test with a real Riverpod ProviderContainer test.
+- Cart product-ID/quantity task is now explicitly tracked as complete at the local boundary.
+- API-backed checkout remains blocked by missing exact order/address request/response examples in API_CONTRACT.md.
+- Flutter runtime verification remains NOT RUN because no Dart/Flutter runner is available.
