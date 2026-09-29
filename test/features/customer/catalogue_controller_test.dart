@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:snap_foodd/core/network/api_exception.dart';
 import 'package:snap_foodd/features/customer/data/catalogue_models.dart';
 import 'package:snap_foodd/features/customer/data/catalogue_repository.dart';
 import 'package:snap_foodd/features/customer/presentation/catalogue_controller.dart';
