@@ -35,5 +35,6 @@ Route::middleware(EnsureAdminWebUser::class)->group(function (): void {
     Route::get('/admin/invoices', [OperationsController::class, 'invoices'])->name('admin.invoices.index');
     Route::get('/admin/orders/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
     Route::post('/admin/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.status');
+    Route::post('/admin/orders/{order}/assignment', [OrderController::class, 'assignDelivery'])->name('admin.orders.assignment');
     Route::post('/admin/logout', [AuthController::class, 'destroy'])->name('admin.logout');
 });
