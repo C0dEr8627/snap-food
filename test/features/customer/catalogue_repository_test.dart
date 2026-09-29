@@ -1,47 +1,41 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:snap_foodd/features/customer/data/catalogue_models.dart';
-import 'package:snap_foodd/features/customer/data/catalogue_repository.dart';
 
 void main() {
-  group('FakeCatalogueRepository', () {
-    test('returns supplied category and product fixtures', () async {
-      final repository = FakeCatalogueRepository(
-        categories: const [
-          CatalogueRecord(payload: {'fixture': 'category'}),
-        ],
-        products: const [
-          CatalogueRecord(payload: {'id': 'p1', 'fixture': 'product'}),
-        ],
-      );
-
-      expect(
-        (await repository.fetchCategories()).single.payload['fixture'],
-        'category',
-      );
-      expect(
-        (await repository.fetchProducts()).single.payload['id'],
-        'p1',
-      );
+  test('maps documented product fields without recalculating money', () {
+    final product = CatalogueProduct.fromJson({
+      'id': 15,
+      'category_id': 2,
+      'name': 'Chicken Biryani',
+      'price': '320.00',
+      'is_active': true,
+      'is_available': true,
+      'category': {'id': 2, 'name': 'Biryani'},
     });
 
-    test('finds a product by fixture id', () async {
-      final repository = FakeCatalogueRepository(
-        products: const [
-          CatalogueRecord(payload: {'id': 'p1'}),
-        ],
-      );
+    expect(product.id, 15);
+    expect(product.categoryId, 2);
+    expect(product.name, 'Chicken Biryani');
+    expect(product.price, '320.00');
+    expect(product.category?.name, 'Biryani');
+  });
 
-      expect((await repository.fetchProduct('p1')).payload['id'], 'p1');
-    });
+  test('rejects missing required product fields', () {
+    expect(
+      () => CatalogueProduct.fromJson({'id': 15}),
+      throwsA(isA<FormatException>()),
+    );
+  });
 
-    test('reports a missing fixture product as not found', () async {
-      final repository = FakeCatalogueRepository();
-
-      expect(
-        () => repository.fetchProduct('missing'),
-        throwsA(isA<Exception>()),
-      );
-    });
+  test('exposes pagination metadata', () {
+    final page = CataloguePage(
+      items: const [],
+      currentPage: 1,
+      lastPage: 3,
+      perPage: 20,
+      total: 55,
+    );
+    expect(page.hasNextPage, isTrue);
   });
 }
