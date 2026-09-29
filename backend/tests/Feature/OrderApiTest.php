@@ -161,6 +161,93 @@ class OrderApiTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_admin_can_transition_order_and_history_records_actor(): void
+    {
+        $customer = $this->user('transition-customer');
+        $admin = $this->user('transition-admin', User::ROLE_ADMIN);
+        $product = $this->product();
+
+        $this->actingAs($customer, 'sanctum')
+            ->postJson('/api/v1/orders', $this->checkoutPayload($product, 1))
+            ->assertCreated();
+
+        $order = Order::firstOrFail();
+
+        $this->actingAs($admin, 'sanctum')
+            ->patchJson('/api/v1/admin/orders/'.$order->id.'/status', ['status' => Order::STATUS_ACCEPTED])
+            ->assertOk()
+            ->assertJsonPath('data.status', Order::STATUS_ACCEPTED);
+
+        $this->assertDatabaseHas('order_status_histories', [
+            'order_id' => $order->id,
+            'from_status' => Order::STATUS_PLACED,
+            'to_status' => Order::STATUS_ACCEPTED,
+            'actor_id' => $admin->id,
+        ]);
+    }
+
+    public function test_invalid_order_transition_returns_order_state_conflict(): void
+    {
+        $customer = $this->user('conflict-customer');
+        $admin = $this->user('conflict-admin', User::ROLE_ADMIN);
+        $product = $this->product();
+
+        $this->actingAs($customer, 'sanctum')
+            ->postJson('/api/v1/orders', $this->checkoutPayload($product, 1))
+            ->assertCreated();
+
+        $order = Order::firstOrFail();
+
+        $this->actingAs($admin, 'sanctum')
+            ->patchJson('/api/v1/admin/orders/'.$order->id.'/status', ['status' => Order::STATUS_DELIVERED])
+            ->assertStatus(409)
+            ->assertJsonPath('code', 'ORDER_STATE_CONFLICT');
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'status' => Order::STATUS_PLACED,
+        ]);
+    }
+
+    public function test_customer_cannot_transition_order(): void
+    {
+        $customer = $this->user('customer-transition-denied');
+        $product = $this->product();
+
+        $this->actingAs($customer, 'sanctum')
+            ->postJson('/api/v1/orders', $this->checkoutPayload($product, 1))
+            ->assertCreated();
+
+        $order = Order::firstOrFail();
+
+        $this->actingAs($customer, 'sanctum')
+            ->patchJson('/api/v1/admin/orders/'.$order->id.'/status', ['status' => Order::STATUS_ACCEPTED])
+            ->assertForbidden()
+            ->assertJsonPath('code', 'FORBIDDEN');
+    }
+
+    public function test_repeated_transition_is_a_state_conflict(): void
+    {
+        $customer = $this->user('repeat-customer');
+        $admin = $this->user('repeat-admin', User::ROLE_ADMIN);
+        $product = $this->product();
+
+        $this->actingAs($customer, 'sanctum')
+            ->postJson('/api/v1/orders', $this->checkoutPayload($product, 1))
+            ->assertCreated();
+
+        $order = Order::firstOrFail();
+
+        $this->actingAs($admin, 'sanctum')
+            ->patchJson('/api/v1/admin/orders/'.$order->id.'/status', ['status' => Order::STATUS_ACCEPTED])
+            ->assertOk();
+
+        $this->actingAs($admin, 'sanctum')
+            ->patchJson('/api/v1/admin/orders/'.$order->id.'/status', ['status' => Order::STATUS_ACCEPTED])
+            ->assertStatus(409)
+            ->assertJsonPath('code', 'ORDER_STATE_CONFLICT');
+    }
+
     public function test_order_transition_rules_reject_invalid_jumps(): void
     {
         $order = new Order(['status' => Order::STATUS_PLACED]);
