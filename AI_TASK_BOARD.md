@@ -10,16 +10,16 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 
 ## Shared milestones
 
-- [ ] M0 — GoDaddy plan/capabilities recorded; local development assumptions documented.
-- [ ] M1 — Laravel boots and connects to non-production MySQL.
+- [~] M0 — Local development assumptions are documented; GoDaddy plan/capabilities are still owner-verification pending.
+- [x] M1 — Laravel boots and connects to non-production MySQL; clean MySQL migrations/tests are verified by the Backend CI workflow.
 - [x] M2 — Google SSO backend authentication/authorization slice is implemented and verified through workflow #146; end-to-end Flutter session restoration/revocation remains a separate integration check.
 - [x] M3 — Admin product/category CRUD and customer catalogue API work end-to-end, including deterministic seed/demo data verified by workflow #146.
-- [~] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history, server-owned admin status transitions, and delivery assignment are implemented. Workflow #204 verified status transitions; assignment verification remains tied to the broader admin/order integration.
-- [~] M5 — Delivery-partner provisioning/approval is CI-verified by Workflow #209 behind ADMIN API authorization. Protected Laravel web authentication and concurrency-safe order assignment are implemented and Workflow #244 has passed the PHPUnit suite; broader dashboard operations remain.
+- [x] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history, server-owned admin status transitions, and concurrency-safe delivery assignment are implemented and CI-verified through Workflows #189, #204 and #386.
+- [x] M5 — Delivery-partner provisioning/approval, protected Laravel admin web operations, catalogue management, partner controls, directories, dashboard counts and web/API assignment are implemented and CI-verified through Workflows #209, #244, #324, #349, #363, #371 and #386.
 - [x] M6 — Partner assignment listing and valid pickup → out-for-delivery → delivered transitions are implemented with ownership/conflict tests and verified by Workflow #259. The explicit partner accept step remains to be finalized against the product contract.
 - [x] M7 — Active-trip GPS updates, latest-location reads, stale-state reporting and customer/admin authorization are implemented and verified by Workflow #266.
 - [x] M8 — Invoice schema, deterministic numbering, immutable snapshots and customer/admin access are implemented and verified by Workflow #301.
-- [ ] M9 — Security, Android device, end-to-end and deployment-readiness checks pass.
+- [~] M9 — Implementation and CI coverage are substantially complete; remaining release gates are formatter/static-analysis/security review, GoDaddy capability confirmation, broader end-to-end/device validation and explicit human release approval.
 
 ## Handoff format
 
@@ -120,3 +120,17 @@ Record decisions here only after the owner approves or they are already establis
 - Started the next Phase 5 increment: protected admin dashboard order-operation counts for PLACED (new), ACCEPTED (active), PREPARING, READY_FOR_PICKUP/ASSIGNED (awaiting delivery), and PICKED_UP/OUT_FOR_DELIVERY (active delivery).
 - Added `AdminDashboardTest` coverage for the counts and admin-only access. CI verification for this dashboard increment is pending.
 - Next implementation: admin order search/filter/detail/status workflow, followed by broader admin dashboard operations.
+
+
+### Developer 1 release-readiness status — 2026-09-29
+
+- Current branch: `developer-1-backend-admin`
+- Current head: `941e9f2ee2916499fec4d60e4df1a6d37fb789b9`
+- PR: #2 → `frontend`
+- Workflow #406: **PASSED**. The configured Backend workflow ran PHP 8.3, Composer install, MySQL 8.4 migrations and `composer test`.
+- Phase 8 documentation/contract integration work is complete: route audit, representative request/response examples, stable error mapping and `backend/API_INTEGRATION.md`.
+- No formatter/static-analysis/security command is configured in the current Backend workflow. Those checks remain unexecuted rather than being inferred from the passing PHPUnit workflow.
+- GoDaddy plan-specific capability verification remains pending with the owner.
+- No deployment or production migration was performed.
+
+**Next owner/action:** Developer 1 completes any available PHP 8.3/Composer quality checks and final diff/security review; project owner confirms GoDaddy capabilities and gives explicit release approval. Developer 2/frontend integration remains a separate validation track.
