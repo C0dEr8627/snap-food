@@ -1,0 +1,52 @@
+name: Backend Format
+
+on:
+  push:
+    branches:
+      - developer-1-backend-admin
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-format.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout backend branch
+        uses: actions/checkout@v4
+        with:
+          ref: developer-1-backend-admin
+
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Apply Laravel Pint formatting
+        run: composer format
+
+      - name: Commit formatted backend files
+        working-directory: .
+        run: |
+          if git diff --quiet -- backend; then
+            echo "Backend formatting is already clean."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend
+          git commit -m "style(backend): apply Laravel Pint formatting"
+          git push origin HEAD:developer-1-backend-admin
