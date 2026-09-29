@@ -76,3 +76,12 @@ Record decisions here only after the owner approves or they are already establis
 - Cart product-ID/quantity task is now explicitly tracked as complete at the local boundary.
 - API-backed checkout remains blocked by missing exact order/address request/response examples in API_CONTRACT.md.
 - Flutter runtime verification remains NOT RUN because no Dart/Flutter runner is available.
+
+
+## Developer 2 checkpoint — 2026-09-29 (contract integration gate documented)
+
+- Added `FLUTTER_CONTRACT_QUESTIONS.md` to explicitly track the remaining API contract fields required for safe Flutter integration.
+- No undocumented order, address, auth, catalogue or delivery payloads were implemented.
+- Current completed Flutter boundary remains the local cart repository/controller with explicit product IDs and quantity tests.
+- Next owner/action: Developer 1 freezes exact order/COD + address examples and completes delivery-partner provisioning verification; Developer 2 then implements typed order models and checkout/history integration.
+- Flutter runtime verification remains NOT RUN because no Dart/Flutter runner is available.
