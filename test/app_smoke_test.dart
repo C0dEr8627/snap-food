@@ -7,7 +7,7 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: SnapFoodApp()));
     await tester.pumpAndSettle();
 
-    expect(find.text('SNAP FOODD'), findsOneWidget);
+    expect(find.bySemanticsLabel('Snap Foodd'), findsOneWidget);
     expect(find.text('GOOD FOOD.\nFAST DELIVERY.'), findsOneWidget);
     expect(find.text('Explore food'), findsOneWidget);
     expect(find.textContaining('Already have an account?'), findsOneWidget);
