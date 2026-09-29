@@ -30,6 +30,6 @@ class FakeInvoiceRepository implements InvoiceRepository {
   @override
   Future<Invoice> fetchInvoice(String orderId) async {
     if (_invoice == null) throw const ApiException(message: 'No invoice fixture was supplied.', code: 'FIXTURE_MISSING');
-    return _invoice!;
+    return _invoice;
   }
 }
