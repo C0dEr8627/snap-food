@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:snap_foodd/features/customer/data/order_models.dart';
+import 'package:snap_foodd/features/customer/data/order_tracking_models.dart';
 import 'package:snap_foodd/features/customer/data/order_repository.dart';
 
 void main() {
@@ -25,7 +26,7 @@ void main() {
     final json = request.toJson();
 
     expect(json['payment_method'], 'COD');
-    expect((json['items'] as List).single['product_id'], '15');
+    expect((json['items'] as List).single['product_id'], 15);
     expect((json['items'] as List).single['quantity'], 2);
     expect((json['delivery_address'] as Map)['postal_code'], '400001');
   });
@@ -63,6 +64,33 @@ void main() {
 
     expect(
       () => repository.fetchOrder('missing'),
+      throwsA(isA<Exception>()),
+    );
+  });
+
+  test('decodes customer tracking location and stale state', () {
+    final tracking = OrderTracking.fromJson({
+      'status': 'OUT_FOR_DELIVERY',
+      'is_stale': false,
+      'latest_location': {
+        'latitude': 19.076,
+        'longitude': 72.8777,
+        'recorded_at': '2026-09-29T12:00:00Z',
+        'accuracy': 8.5,
+      },
+    });
+
+    expect(tracking.status, 'OUT_FOR_DELIVERY');
+    expect(tracking.isStale, isFalse);
+    expect(tracking.latestLocation?.latitude, 19.076);
+    expect(tracking.latestLocation?.longitude, 72.8777);
+    expect(tracking.latestLocation?.accuracy, 8.5);
+  });
+
+  test('fake repository keeps tracking unimplemented', () async {
+    final repository = FakeOrderRepository();
+    expect(
+      () => repository.fetchTracking('1001'),
       throwsA(isA<Exception>()),
     );
   });
