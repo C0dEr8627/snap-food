@@ -82,3 +82,25 @@ There are no separate accept/pickup/complete endpoints. Customer tracking is `GE
 
 ### Error handling
 Use the documented top-level `code` plus field-level `errors`. Important codes include `UNAUTHORIZED`, `FORBIDDEN`, `VALIDATION_FAILED`, `NOT_FOUND`, `CONFLICT`, `ORDER_STATE_CONFLICT`, `RATE_LIMITED`, `INVALID_GOOGLE_CREDENTIAL`, and `ACCOUNT_INACTIVE`. Treat HTTP 409 as a recoverable stale-state/business conflict rather than blindly replaying a mutation.
+
+### Invoice Flutter-facing success schema
+
+`GET /orders/{order}/invoice` returns `data` with these fields synchronized from the backend invoice controller: `id`, `order_id`, `invoice_number`, `customer_name`, `customer_email`, `delivery_address_snapshot`, `items`, `subtotal`, `delivery_fee`, `total`, `payment_method`, `payment_status`, `issued_at`, and `file_reference`.
+
+Invoice items contain `product_id`, `product_name`, `unit_price`, `quantity`, and `line_total`. `customer_email`, `delivery_address_snapshot`, `issued_at`, and `file_reference` may be null. Financial values and item monetary values are serialized as strings. Flutter treats the invoice as server-authoritative read-only data and does not calculate invoice totals.
+
+Example:
+```json
+{
+  "data": {
+    "id": 7,
+    "order_id": 42,
+    "invoice_number": "INV-2026-00000042",
+    "customer_name": "Demo Customer",
+    "customer_email": "demo@example.com",
+    "delivery_address_snapshot": {"label":"Home","recipient_name":"Demo Customer","address_line1":"10 Example Road","address_line2":null,"city":"Mumbai","state":"Maharashtra","postal_code":"400001","country":"India","latitude":19.076,"longitude":72.8777},
+    "items": [{"product_id":15,"product_name":"Biryani","unit_price":"240.00","quantity":2,"line_total":"480.00"}],
+    "subtotal":"480.00","delivery_fee":"40.00","total":"520.00","payment_method":"COD","payment_status":"PENDING","issued_at":"2026-09-29T12:00:00+00:00","file_reference":null
+  }
+}
+```
