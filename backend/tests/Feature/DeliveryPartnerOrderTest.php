@@ -67,14 +67,14 @@ class DeliveryPartnerOrderTest extends TestCase
 
         $mine = $this->order($customer, Order::STATUS_ASSIGNED);
         $otherOrder = $this->order($customer, Order::STATUS_ASSIGNED);
-        OrderAssignment::create(['order_id' => $mine->id, 'delivery_partner_id' => $partner->id, 'assigned_by' => $this->admin()->id, 'assigned_at' => now()]);
+        $mineAssignment = OrderAssignment::create(['order_id' => $mine->id, 'delivery_partner_id' => $partner->id, 'assigned_by' => $this->admin()->id, 'assigned_at' => now()]);
         OrderAssignment::create(['order_id' => $otherOrder->id, 'delivery_partner_id' => $other->id, 'assigned_by' => $this->admin()->id, 'assigned_at' => now()]);
 
         $this->actingAs($partnerUser, 'sanctum')
             ->getJson('/api/v1/delivery/assignments')
             ->assertOk()
             ->assertJsonCount(1, 'data.data')
-            ->assertJsonPath('data.data.0.id', $mine->id);
+            ->assertJsonPath('data.data.0.id', $mineAssignment->id);
     }
 
     public function test_partner_can_progress_owned_assignment_to_delivered(): void
