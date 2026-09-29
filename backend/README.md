@@ -32,11 +32,11 @@ The authoritative implementation checklist is `DEVELOPER_1_PLAN.md`. It contains
 - the immediate next task;
 - the required end-of-task reporting format.
 
-Current phase: **Phase 1 — Backend foundation (in progress)**.
+Current phase: **Phase 2 — Identity & authorization (not started); Phase 1 foundation is complete.**
 
-Latest CI verification: Composer successfully resolved and installed Laravel 13.33.0, Sanctum 4.3.3 and PHPUnit 12.5.36 on PHP 8.3.35. Workflow #26 then reached PHPUnit successfully after the bootstrap-cache fix, but failed because `backend/tests/Unit` was absent. Commit `160626d2bbb09b3b0560b7b61ed5f05f6ca473bd` now preserves that directory.
+Latest foundation CI verification: workflow #30 successfully completed PHP 8.3 setup, dependency installation and `composer test`. The health test and PHPUnit suite now pass. The branch also contains the initial `users`, `addresses`, `categories` and `products` schema/models plus a MySQL-backed CI migration check; that new database slice is awaiting its first workflow run.
 
-Immediate next task: confirm the health PHPUnit test passes after the Unit-directory fix. After that passes, implement the database foundation for users, addresses, categories and products.
+Immediate next task: verify the new MySQL-backed migration workflow, then add model relationship/validation coverage. Authentication remains the next major phase after the database foundation.
 
 ## Local setup
 
@@ -65,4 +65,4 @@ Do not point development tests at production. Use a separate non-production MySQ
 
 ## Next implementation slice
 
-After the PHPUnit test-directory fix is confirmed by the health test, implement the MySQL migrations/models for users, addresses, categories and products, then add the corresponding validation and tests. Authentication remains gated on verified Google credential handling and the selected Sanctum flow.
+Verify the MySQL-backed migrations and `DatabaseSchemaTest` in CI. Then add relationship/validation coverage for users, addresses, categories and products. Authentication remains gated on verified Google credential handling and the selected Sanctum flow.
