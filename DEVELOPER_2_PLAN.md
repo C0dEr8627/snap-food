@@ -22,17 +22,17 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 
 ## Current execution status
 
-> **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. PR #1 targets `frontend` and remains open. The latest documented Flutter head is `b32a6fb666f76ad2c09efc16c00ae90fcd1fec43`.
+> **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. PR #1 targets `frontend` and remains open. The latest documented Flutter head is `c98f3d42d1beb1f6b06bae5f5b8f2c36a660a603`.
 >
 > **Verified complete in source control:** Phase 0 static Flutter audit, screen-to-contract mapping, platform/dependency inventory, API transport/client foundation, normalized API errors, environment API URL documentation, API-client fake-transport tests, the first catalogue repository boundary with a remote implementation plus deterministic fake repository, the catalogue Riverpod controller/state layer with retry/error handling and controller tests, configured repository wiring, catalogue loading/empty/error/retry UI integration across the existing customer catalogue screens with widget coverage, and the initial auth/session foundation with secure token storage, `/me` hydration, logout handling and auth-aware route redirects.
 >
-> **Backend checkpoint refreshed:** Developer 1's branch has documented fixes after workflow #179: `bf2febe...` corrected the status-history assertion, `a0f9b47...` restored the order-list `data` envelope, and `cf5236d...` added explicit customer-role middleware. Commit `a1fcc5c...` documents these Phase 4 corrections. These changes are not treated as verified integration until a fresh green Phase 4 workflow is observed.
+> **Backend checkpoint refreshed:** workflow #184 exposed the final cross-customer order-detail 500-vs-403 mismatch. Commit `032e4144e5fba9e0b24a16418b82a23b1dbc2d52` added explicit `AccessDeniedHttpException` → `403/FORBIDDEN` mapping, and workflow #186 completed successfully after MySQL migrations and the PHPUnit suite. The initial checkout/list/detail slice is therefore CI-green; server-owned status transitions/concurrency and exact Flutter-facing order examples are still pending.
 >
 > **Catalogue contract limitation:** `API_CONTRACT.md` still documents catalogue endpoints without defining successful category/product response fields or a common success envelope. The repository therefore preserves JSON payloads without inventing field names. Typed DTO/UI mapping must wait for documented response fields or an explicitly approved backend response shape.
 >
 > **Auth contract limitation:** `API_CONTRACT.md` / `AUTH.md` still do not define the exact Google credential request field/type, successful application-token response shape, public Google client configuration, or sufficiently explicit role response shape. The Flutter auth foundation is ready, but the real provider/exchange must wait for that contract.
 >
-> **Not verified because the GitHub-connected environment has no local Flutter/Dart runner:** `dart format`, `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --debug`, and physical-device checks. These remain **NOT RUN**, not passed.
+> **Flutter runtime verification remains unavailable because the GitHub-connected environment has no local Flutter/Dart runner:** `dart format`, `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --debug`, and physical-device checks. These remain **NOT RUN**, not passed.
 
 ## Phase 0 — Inspect current app
 
@@ -81,13 +81,13 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 - [ ] Review current cart implementation and preserve usable UI.
 - [ ] Ensure cart quantities reference product IDs; local subtotal is preview only.
 - [ ] Implement address selection/entry based on agreed contract.
-- [ ] Add COD checkout request and submit only product IDs, quantities and required address data. **Blocked until backend Phase 4 is green and request/response examples are frozen.**
+- [ ] Add COD checkout request and submit only product IDs, quantities and required address data. **Backend checkout/list/detail is now CI-green in workflow #186; Flutter implementation remains blocked until exact request/response examples are documented in the shared contract.**
 - [ ] Display server-calculated totals and server validation errors.
 - [ ] Prevent duplicate taps/submissions and show pending/success/failure states.
 - [ ] Route successful order to order detail/status screen.
 - [ ] Test empty cart, changed price, unavailable product, request timeout and duplicate submit.
 
-**Milestone:** customer places a real COD order once backend is verified and documented.
+**Milestone:** customer places a real COD order once the verified backend contract examples are documented and Flutter integration is tested.
 
 ## Phase 5 — Customer orders/profile
 
