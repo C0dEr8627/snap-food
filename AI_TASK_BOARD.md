@@ -85,3 +85,14 @@ Record decisions here only after the owner approves or they are already establis
 - Current completed Flutter boundary remains the local cart repository/controller with explicit product IDs and quantity tests.
 - Next owner/action: Developer 1 freezes exact order/COD + address examples and completes delivery-partner provisioning verification; Developer 2 then implements typed order models and checkout/history integration.
 - Flutter runtime verification remains NOT RUN because no Dart/Flutter runner is available.
+
+
+## Developer 2 checkpoint — 2026-09-29 (backend delivery gate refresh)
+
+- Branch: `developer-2-flutter`
+- Backend workflow #209 is now passing, verifying delivery-partner provisioning/approval. The earlier workflow #205 failure is no longer an active blocker.
+- Flutter order/COD and address integration remains contract-gated because `API_CONTRACT.md` still lacks exact request/response examples.
+- Flutter delivery implementation is also contract-gated until assignment/request/location/tracking response examples are documented, despite backend provisioning now being verified.
+- No backend files or undocumented API payloads were changed by Developer 2.
+- Flutter/Dart runtime verification remains NOT RUN because no local runner is available.
+- Next action: Developer 1 freezes order/COD + address examples; Developer 2 implements typed order models and checkout/history, then delivery flows from the documented assignment/tracking contract.
