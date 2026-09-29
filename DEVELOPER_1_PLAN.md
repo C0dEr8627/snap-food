@@ -151,14 +151,14 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Phase 8 — Integration and release readiness
 
-- [ ] Provide safe seed/demo data.
-- [ ] Maintain API contract examples and integration guide.
+- [x] Provide safe seed/demo data (synthetic, deterministic and idempotence-tested; never use against production).
+- [ ] Maintain API contract examples and integration guide; route audit corrected stale delivery and catalogue paths, but response/error examples still need a final pass.
 - [ ] Run formatter/static analysis where configured.
-- [ ] Run migrations from an empty MySQL database.
-- [ ] Run the automated test suite.
-- [ ] Document backup/restore and production environment checklist.
-- [ ] Verify no secrets or sensitive data are committed.
-- [ ] Produce final PR summary with changed files, tests and limitations.
+- [x] Run migrations from an empty MySQL CI database (verified in passing PHP 8.3/MySQL workflows).
+- [x] Run the automated test suite (latest implementation workflow #386 passed with 402 assertions; 89 warnings).
+- [x] Document backup/restore and production environment checklist in `backend/OPERATIONS.md` (hosting capability verification remains pending).
+- [x] Review tracked paths for secrets/dumps and add `backend/.gitignore` for local `.env`, vendor, logs and generated artifacts; only `.env.example` is present in the backend tree.
+- [ ] Produce final PR summary with changed files, tests and limitations after remaining checks.
 
 ## Current execution status
 
@@ -170,6 +170,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 50. Added protected Laravel web catalogue management for category/product search, create, update and soft-deactivation; deactivating products also disables availability. Category option lists remain independent from search filters. Workflow #363 passed on PHP 8.3 with MySQL and the full PHPUnit suite (375 assertions; 85 warnings).
 51. Added protected web controls for delivery-partner approval/revocation and active/available state changes. Approval metadata records the acting admin; revoking approval and deactivation clear availability, and making a partner available requires approved and active user/partner state. Workflow #371 passed on PHP 8.3 with MySQL and the full PHPUnit suite (389 assertions; 87 warnings).
 52. Added a protected assignment form to admin order detail for READY_FOR_PICKUP orders with no current assignment. The form lists only approved/active/available partners and delegates to the concurrency-safe OrderAssignmentService. Successful assignment marks the partner unavailable; ineligible or stale assignment attempts return HTTP 409. Workflow #386 passed on PHP 8.3 with MySQL and the full PHPUnit suite (402 assertions; 89 warnings).
+53. Audited API_CONTRACT.md against actual Laravel routes and corrected stale catalogue CRUD and delivery lifecycle paths. Added backend/.gitignore, refreshed backend/README.md to current phase status, and documented hosting, backup/restore and release checks in backend/OPERATIONS.md. Formatting/static analysis and final response/error examples remain outstanding.
 
 1. Repository and backend documentation baseline established.
 2. PHP 8.3 production target recorded.
