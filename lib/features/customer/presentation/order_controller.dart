@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/network/api_transport.dart';
+import '../../auth/data/session_store.dart';
 import '../data/order_models.dart';
 import '../data/order_repository.dart';
 
@@ -12,10 +13,16 @@ final orderApiTransportProvider = Provider<HttpApiTransport>((ref) {
   return transport;
 });
 
+final orderSessionStoreProvider = Provider<SessionStore>((ref) {
+  return SecureSessionStore();
+});
+
 final orderApiClientProvider = Provider<ApiClient>((ref) {
+  final sessionStore = ref.watch(orderSessionStoreProvider);
   return ApiClient(
     config: ApiConfig.fromEnvironment(),
     transport: ref.watch(orderApiTransportProvider),
+    tokenProvider: sessionStore.readToken,
   );
 });
 
@@ -45,7 +52,7 @@ class OrderCheckoutController extends AsyncNotifier<OrderCheckoutState> {
   Future<OrderCheckoutState> build() async => const OrderCheckoutState();
 
   Future<Order?> submit(CreateOrderRequest request) async {
-    if (state.valueOrNull?.isSubmitting == true) return null;
+    if (state.value?.isSubmitting == true) return null;
 
     state = AsyncData(
       const OrderCheckoutState(isSubmitting: true),
