@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
+use App\Exceptions\OrderStateConflictException;
 
 class OrderController extends Controller
 {
@@ -78,7 +79,11 @@ class OrderController extends Controller
             'status' => ['required', 'string', 'in:ACCEPTED,PREPARING,READY_FOR_PICKUP,ASSIGNED,PICKED_UP,OUT_FOR_DELIVERY,DELIVERED,CANCELLED'],
         ]);
 
-        $statusService->transition($order, $validated['status'], $request->user());
+        try {
+            $statusService->transition($order, $validated['status'], $request->user());
+        } catch (OrderStateConflictException $e) {
+            abort(409, $e->getMessage());
+        }
 
         return redirect()
             ->route('admin.orders.show', $order)
