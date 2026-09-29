@@ -32,12 +32,13 @@ The authoritative implementation checklist is `DEVELOPER_1_PLAN.md`. It contains
 - the immediate next task;
 - the required end-of-task reporting format.
 
-Current phase: **Database foundation verified; catalogue schema/model/validation slice is implemented. Phase 2 identity/authentication is the next major implementation phase after the latest CI run is verified.**
+Current phase: **Phase 2 identity/authentication is partially implemented. Google SSO verification, Sanctum tokens, `/me`, logout and auth regression coverage are in place; workflow #73 is pending verification.**
 
 Latest CI verification:
 - Workflow #30 passed the Laravel 13 foundation test suite on PHP 8.3.
 - Workflow #48 passed MySQL 8.4 startup, migrations, schema assertions and the test suite for the initial database foundation.
-- The latest relationship/request-validation commits are awaiting their post-change CI run.
+- Workflow #58 passed the relationship/request-validation slice.
+- Workflow #73 is queued for the Google SSO/Sanctum implementation.
 
 ## Local setup
 
@@ -70,8 +71,9 @@ Do not point development tests at production. Use a separate non-production MySQ
 - MySQL-backed migration/schema verification is green in workflow #48.
 - Eloquent relationship tests cover user/address and category/product ownership.
 - Address/category/product FormRequests define baseline validation and admin-only write authorization.
-- Customer catalogue endpoints, admin CRUD, authentication and order logic are not implemented yet.
+- Google SSO/Sanctum authentication implementation is present, pending workflow #73 verification.
+- Customer catalogue endpoints, admin CRUD and order logic are not implemented yet.
 
 ## Next implementation slice
 
-Verify the latest relationship/request-validation CI run. Then proceed to Google SSO/Sanctum authentication and its negative authorization tests.
+Verify workflow #73. If green, finish role middleware/policies and cross-user authorization tests, then implement customer catalogue reads and admin category/product CRUD.
