@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\DeliveryPartner;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -94,6 +95,74 @@ class AdminOrderWebTest extends TestCase
             'id' => $order->id,
             'status' => Order::STATUS_DELIVERED,
         ]);
+    }
+
+    public function test_admin_can_assign_eligible_partner_from_order_detail(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $customer = User::factory()->create();
+        $partnerUser = User::factory()->deliveryPartner()->create(['name' => 'Available Rider']);
+        $partner = DeliveryPartner::create([
+            'user_id' => $partnerUser->id,
+            'is_approved' => true,
+            'is_active' => true,
+            'is_available' => true,
+            'approved_at' => now(),
+            'approved_by' => $admin->id,
+        ]);
+        $order = Order::factory()->create([
+            'customer_id' => $customer->id,
+            'status' => Order::STATUS_READY_FOR_PICKUP,
+        ]);
+
+        $this->actingAs($admin, 'web')
+            ->get('/admin/orders/'.$order->id)
+            ->assertOk()
+            ->assertSee('Assign delivery')
+            ->assertSee('Available Rider');
+
+        $this->actingAs($admin, 'web')
+            ->post('/admin/orders/'.$order->id.'/assignment', [
+                'delivery_partner_id' => $partner->id,
+            ])
+            ->assertRedirect('/admin/orders/'.$order->id)
+            ->assertSessionHas('status', 'Delivery partner assigned.');
+
+        $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => Order::STATUS_ASSIGNED]);
+        $this->assertDatabaseHas('order_assignments', [
+            'order_id' => $order->id,
+            'delivery_partner_id' => $partner->id,
+            'assigned_by' => $admin->id,
+        ]);
+        $this->assertDatabaseHas('delivery_partners', ['id' => $partner->id, 'is_available' => false]);
+        $this->assertDatabaseHas('order_status_histories', [
+            'order_id' => $order->id,
+            'from_status' => Order::STATUS_READY_FOR_PICKUP,
+            'to_status' => Order::STATUS_ASSIGNED,
+            'actor_id' => $admin->id,
+        ]);
+    }
+
+    public function test_admin_web_assignment_rejects_ineligible_partner(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $partnerUser = User::factory()->deliveryPartner()->create();
+        $partner = DeliveryPartner::create([
+            'user_id' => $partnerUser->id,
+            'is_approved' => false,
+            'is_active' => true,
+            'is_available' => true,
+        ]);
+        $order = Order::factory()->create(['status' => Order::STATUS_READY_FOR_PICKUP]);
+
+        $this->actingAs($admin, 'web')
+            ->post('/admin/orders/'.$order->id.'/assignment', [
+                'delivery_partner_id' => $partner->id,
+            ])
+            ->assertConflict();
+
+        $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => Order::STATUS_READY_FOR_PICKUP]);
+        $this->assertDatabaseMissing('order_assignments', ['order_id' => $order->id]);
     }
 
     public function test_non_admin_cannot_access_admin_orders(): void
