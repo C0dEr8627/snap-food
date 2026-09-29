@@ -6,9 +6,7 @@ import '../../../design_system/tokens/app_spacing.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/delivery_models.dart';
 import '../data/delivery_repository.dart';
-import '../../../core/network/api_client.dart';
-import '../../../core/network/api_transport.dart';
-import '../../auth/data/session_store.dart';
+import 'delivery_controller.dart';
 
 class DeliveryRequestsScreen extends ConsumerStatefulWidget {
   const DeliveryRequestsScreen({super.key});
@@ -20,20 +18,7 @@ class DeliveryRequestsScreen extends ConsumerStatefulWidget {
 class _DeliveryRequestsScreenState extends ConsumerState<DeliveryRequestsScreen> {
   String filter = 'All';
 
-  late final deliveryRepositoryProvider = Provider<DeliveryRepository>((ref) => RemoteDeliveryRepository(
-    ApiClient(
-      config: ApiConfig.fromEnvironment(),
-      transport: ref.watch(deliveryApiTransportProvider),
-      tokenProvider: ref.watch(deliverySessionStoreProvider).readToken,
-    ),
-  ));
 
-  final requests = const [
-    ['TRP-1842', 'Mumbai Spice Kitchen', 'Andheri East', 'Powai', '4.8 km', '18 min', '₹128', 'Standard'],
-    ['TRP-1841', 'The Bombay Bowl', 'Marol', 'Vikhroli', '6.2 km', '24 min', '₹156', 'Priority'],
-    ['TRP-1840', 'Green Leaf Cafe', 'Powai', 'Ghatkopar', '5.1 km', '21 min', '₹142', 'Standard'],
-    ['TRP-1839', 'Curry House', 'Sakinaka', 'Kurla West', '3.6 km', '16 min', '₹116', 'Quick'],
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +32,7 @@ class _DeliveryRequestsScreenState extends ConsumerState<DeliveryRequestsScreen>
             final desktop = c.maxWidth >= 900;
             final visible = assignments.when(
               loading: () => const <List<String>>[],
-              error: (_, __) => requests,
+              error: (_, __) => const <List<String>>[],
               data: (page) => page.items.map((r) => [r.id.toString(), r.orderId?.toString() ?? 'Order', r.pickupAddress ?? 'Pickup', r.dropoffAddress ?? 'Dropoff', '—', '—', '—', r.status]).toList(),
             );
             return Row(
@@ -185,14 +170,23 @@ class _RequestCard extends StatelessWidget {
             width: double.infinity,
             height: 46,
             child: ElevatedButton(
-              onPressed: () => onStatus('PICKED_UP'),
+              onPressed: () => onStatus(switch (data[7]) {
+                'PICKED_UP' => 'OUT_FOR_DELIVERY',
+                'OUT_FOR_DELIVERY' => 'DELIVERED',
+                _ => 'PICKED_UP',
+              }),
               style: ElevatedButton.styleFrom(
                 backgroundColor: SnapFoodColors.secondary,
                 foregroundColor: SnapFoodColors.onPrimary,
                 elevation: 0,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SnapFoodRadii.full)),
               ),
-              child: const Text('Accept request', style: TextStyle(fontWeight: FontWeight.w900)),
+              child: Text(switch (data[7]) {
+                'PICKED_UP' => 'Start delivery',
+                'OUT_FOR_DELIVERY' => 'Mark delivered',
+                'DELIVERED' => 'Completed',
+                _ => 'Pick up order',
+              }, style: const TextStyle(fontWeight: FontWeight.w900)),
             ),
           ),
         ],
