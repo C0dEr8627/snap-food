@@ -1207,3 +1207,41 @@ No backend/Laravel-owned files were modified.
 - No approved concrete GPS/Maps dependency or platform Maps configuration is documented in the repository.
 - Google auth platform/runtime verification remains pending.
 - Local Flutter/Dart execution remains unavailable; GitHub Actions is the available Flutter execution environment.
+
+
+## Developer 2 continuation checkpoint — 2026-09-30 (current-head verification + platform dependency gate)
+
+- Rechecked PR #1 on `developer-2-flutter`: head remains `e1a4e767def775351a7bdc28e163cd8d9a09ba6c`, PR targets `frontend`, is open and GitHub reports it mergeable.
+- Flutter CI #247 (`36614126505`) was cancelled while the Analyze step was starting. Dependency resolution, formatting and formatting check had passed; tests and Android build did not run. This run is **not** counted as a pass or failure.
+- Fresh CI #248 (`36614159360`) is currently **in progress** against the latest documentation head. Flutter setup is running; dependency resolution, analyzer, tests and Android debug build have not completed. No green CI result is claimed.
+- Re-inspected the platform dependency boundary before making the next implementation change. `pubspec.yaml` contains no concrete location or Google Maps package, the Android manifest contains no location permissions or Maps metadata, and repository search found no approved GPS/Maps package or configuration to adopt. Therefore no speculative dependency was added.
+- The frozen invoice implementation is already present: typed model/repository/controller/UI, delivered-order route and order-detail entry are complete; remaining work is CI/runtime verification.
+- The previous auth-bootstrap correction remains the latest application behavior change: public splash/welcome routes stay reachable during async session restoration while protected routes remain gated.
+
+### Authoritative task board
+
+| Area | Status | Current state |
+|---|---|---|
+| Phase 0 — audit/verification | [~] | CI #247 cancelled before tests; CI #248 in progress; Android/device verification still pending |
+| Phase 1 — API foundation | [x] | Complete |
+| Phase 2 — auth/session | [~] | Session lifecycle and auth-aware routing complete; Google platform/runtime verification pending |
+| Phase 3 — catalogue/cart | [x] | Typed catalogue, real product IDs, cart integration and tests complete; runtime verification pending |
+| Phase 4 — COD checkout | [x] | Server-backed COD flow, validation, duplicate protection, server-authoritative totals/errors and success navigation complete; runtime verification pending |
+| Phase 5 — customer orders/tracking | [x] | Order history/detail/tracking integration complete; runtime/E2E verification pending |
+| Phase 6 — delivery lifecycle | [x] | Assignment/status/location integration complete; concrete platform GPS verification pending |
+| Phase 7 — active GPS/Maps | [~] | Adapter/controller/lifecycle/freshness complete; approved platform GPS + Maps dependency/configuration is still unavailable |
+| Invoice | [x] | Contract frozen and Flutter model/repository/controller/UI plus delivered-order route implemented; CI/runtime verification pending |
+| Release verification | [ ] | Green current-head CI, Android debug APK, physical-device checks and full E2E remain |
+
+### Next execution order
+1. Finish and inspect CI #248; fix only concrete current-head failures and record the actual test/build result.
+2. If CI is green, obtain/confirm the approved Android/iOS location package and Google Maps configuration from project requirements before adding any dependency.
+3. Wire that approved platform GPS source behind the existing location adapter/controller boundary; do not change API contracts or invent a package.
+4. Perform physical permission/revocation, GPS freshness/error, throttling and location-publish verification for active delivery trips.
+5. Run the full COD → order → delivery → tracking → delivered → invoice E2E path and final PR readiness review.
+
+### Current blockers
+- No approved concrete GPS/Maps dependency or platform configuration is documented in the repository.
+- Google auth platform/runtime verification remains pending.
+- Local Flutter/Dart execution is unavailable; GitHub Actions is the available Flutter execution environment.
+- No backend/Laravel-owned files were modified, and no merge/deployment was performed.
