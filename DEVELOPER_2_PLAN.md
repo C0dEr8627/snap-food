@@ -30,24 +30,26 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 
 ## Current execution status
 
-> **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. Latest committed API foundation: `51aa0aec5cbae21b737c69d559ea995a2d50557f`. PR #1 targets `frontend` and remains open.
+> **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. Latest repository-layer commit is `ba1319d784b68e54c899b4f4426aa96624635271`. PR #1 targets `frontend` and remains open.
 >
-> **Verified complete in source control:** Phase 0 static Flutter audit, screen-to-contract mapping, platform/dependency inventory, API transport/client foundation, normalized API errors, environment API URL documentation, and API-client fake-transport unit tests.
+> **Verified complete in source control:** Phase 0 static Flutter audit, screen-to-contract mapping, platform/dependency inventory, API transport/client foundation, normalized API errors, environment API URL documentation, API-client fake-transport tests, and the first catalogue repository boundary with a remote implementation plus deterministic fake repository.
+>
+> **Catalogue contract limitation:** `API_CONTRACT.md` documents the catalogue endpoints but does not define successful category/product response fields or a common success envelope. The repository therefore preserves JSON payloads without inventing field names. A typed DTO and UI mapping must wait for documented response fields or an explicitly approved backend response shape.
 >
 > **Not verified because the GitHub-connected environment has no local Flutter/Dart runner:** `dart format`, `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --debug`, and physical-device checks. These remain **NOT RUN**, not passed.
 >
-> **Current first incomplete implementation task:** repository interfaces/implementations behind the existing Flutter UI. Catalogue integration is the first scoped feature, but typed catalogue models must not invent response fields absent from `API_CONTRACT.md`. If backend response examples remain missing, use documented assumptions/fakes rather than an incompatible payload.
+> **Current first incomplete implementation task:** catalogue loading/error/empty/retry state integration behind the existing customer screens. Repository boundaries are now in place; the next implementation should add a Riverpod controller/state layer and connect catalogue data to the existing home/search/menu/details UI without redesigning it.
 >
-> **Next implementation sequence:** repository layer → catalogue loading/error/empty states → auth/session contract coordination → Google SSO/session persistence → orders/checkout → delivery → active-trip tracking.
+> **Next implementation sequence:** catalogue state/controller + UI integration → typed catalogue DTOs once the API response shape is documented → auth/session contract coordination → Google SSO/session persistence → orders/checkout → delivery → active-trip tracking.
 
 ## Phase 1 — API foundation
 
 - [x] Add a single configured API client with environment-specific base URL.
 - [x] Centralize JSON serialization, timeouts, auth headers, normalized API errors and safe logging (sensitive payloads are not logged).
-- [ ] Add repository interfaces/implementations using the current architecture. **Next task.**
-- [ ] Add loading, empty, error, retry and offline/degraded-network states. **Starts with catalogue repositories/screens.**
+- [x] Add repository interfaces/implementations using the current architecture. **Catalogue repository boundary implemented; UI integration remains.**
+- [ ] Add loading, empty, error, retry and offline/degraded-network states. **Next task; starts with catalogue.**
 - [x] Keep secrets out of source; document how API URL and public client keys are configured per environment.
-- [x] Use a fake transport for API client unit tests; feature repository fakes remain to be added as repositories are introduced.
+- [x] Use a fake transport for API client unit tests; feature repository fakes are now present for catalogue.
 
 ## Phase 2 — Google SSO and session state
 
@@ -64,12 +66,12 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 
 ## Phase 3 — Customer catalogue
 
-- [ ] Define typed models for categories/products and API response/error envelopes.
-- [ ] Replace mock catalogue repository behind existing UI.
+- [ ] Define typed models for categories/products and API response/error envelopes. **Blocked on missing successful response schema in API_CONTRACT.md.**
+- [ ] Replace mock catalogue repository behind existing UI. **Repository boundary added; UI replacement remains.**
 - [ ] Connect home, category, search/filter and product details to real API responses.
 - [ ] Handle empty catalogue, unavailable product, image failure and loading/error states.
 - [ ] Keep displayed price informational; checkout total comes from backend response.
-- [ ] Add repository/controller/widget tests with fakes.
+- [x] Add repository fake coverage for catalogue fixtures. Controller/widget tests remain pending.
 
 **Milestone:** admin-created products appear in customer app when backend is integrated.
 
