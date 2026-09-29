@@ -430,3 +430,29 @@ No undocumented API payloads will be introduced, and no Laravel/backend-owned fi
 2. Developer 1 synchronizes the exact Flutter-facing order/COD + address contract and resolves canonical delivery routes.
 3. Implement typed order models/repository/controller, then COD checkout with duplicate-submit protection and server-authoritative totals/errors.
 4. Implement order success/detail/history, then delivery/tracking and invoice from frozen schemas.
+
+
+## Developer 2 checkpoint — 2026-09-29 (CI remediation run in progress)
+
+- Current branch head is `4c7570bd6aa064643d868e1984286fd85dc364d8`; PR #1 remains open, mergeable and targets `frontend`.
+- Flutter CI run `36591111357` for the previous formatting-remediation commit was cancelled because the branch advanced to the formatting-remediation commit; this is not a test failure and is not evidence of a passing build.
+- The new Flutter CI run `36591122454` is currently **in progress** against the current branch head. Job `109484505605` has completed checkout successfully and is currently installing Flutter; formatter/analyzer/tests/Android build have not completed yet.
+- Therefore Phase 0 runtime verification and Phase 8 release verification remain **pending**, not passed.
+- The shared `API_CONTRACT.md` remains incomplete for Google auth exchange/session fields, catalogue success fields, order/COD + address request/response examples, delivery canonical routes/response schemas, and invoice response/snapshot fields. No speculative API implementation was added.
+
+### Current task status
+- **Phase 0:** [~] static audit complete; CI verification is now running, with no final result yet.
+- **Phase 1:** [x] API foundation complete.
+- **Phase 2:** [~] session lifecycle complete; Google SSO exchange/config and role routing remain contract/config gated.
+- **Phase 3:** [~] repository/controller/state integration complete; typed catalogue mapping remains schema-gated.
+- **Phase 4:** [~] local cart boundary complete; address/COD checkout and order integration remain schema-gated.
+- **Phase 5:** [ ] order history/detail/status not started.
+- **Phase 6/7:** [~] backend delivery lifecycle/tracking verified; Flutter integration remains schema-gated and delivery route variants still require canonicalization.
+- **Invoice:** [ ] Flutter integration not started; response schema not frozen.
+- **Release verification:** [ ] pending successful CI plus physical-device/integration verification.
+
+### Next executable work
+1. Complete and inspect CI run `36591122454`; fix only concrete formatter/analyzer/test/build failures if they occur.
+2. Developer 1 synchronizes the exact Flutter-facing order/COD + address contract and canonical delivery routes/responses.
+3. Implement typed order models/repository/controller, then COD checkout with duplicate-submit protection and server-authoritative totals/errors.
+4. Implement order success/detail/history, then delivery/tracking and invoice from frozen schemas.
