@@ -8,6 +8,7 @@ use App\Models\OrderAssignment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class DeliveryPartnerOrderController
 {
@@ -58,11 +59,7 @@ class DeliveryPartnerOrderController
                 ->findOrFail($assignment->id);
 
             if ((int) $lockedAssignment->delivery_partner_id !== (int) $partner->id) {
-                return response()->json([
-                    'message' => 'This assignment does not belong to the authenticated delivery partner.',
-                    'errors' => [],
-                    'code' => 'FORBIDDEN',
-                ], 403);
+                throw new AccessDeniedHttpException('This assignment does not belong to the authenticated delivery partner.');
             }
 
             $order = Order::query()->lockForUpdate()->findOrFail($lockedAssignment->order_id);
