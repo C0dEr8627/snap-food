@@ -6,9 +6,11 @@ import '../../../design_system/tokens/app_colors.dart';
 import 'catalogue_controller.dart';
 import 'catalogue_state_message.dart';
 import '../../../design_system/tokens/app_radii.dart';
+import '../data/catalogue_models.dart';
+import 'cart_controller.dart';
 
 class FoodItemDetailsScreen extends ConsumerStatefulWidget {
-  const FoodItemDetailsScreen({super.key, this.itemId = 'biryani'});
+  const FoodItemDetailsScreen({super.key, required this.itemId});
   final String itemId;
 
   @override
@@ -17,6 +19,30 @@ class FoodItemDetailsScreen extends ConsumerStatefulWidget {
 
 class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
   int quantity = 1;
+
+  CatalogueProduct? _findProduct(CatalogueSnapshot snapshot) {
+    final id = int.tryParse(widget.itemId);
+    if (id == null || id <= 0) return null;
+    for (final product in snapshot.products.items) {
+      if (product.id == id) return product;
+    }
+    return null;
+  }
+
+  void _addToCart(CatalogueProduct product) {
+    final previewPrice = int.tryParse(product.price.split('.').first) ?? 0;
+    ref.read(cartControllerProvider.notifier).addItem(
+      CartItem(
+        productId: product.id.toString(),
+        name: product.name,
+        description: product.category?.name ?? 'Catalogue item',
+        previewPrice: previewPrice,
+        quantity: quantity,
+        vegetarian: product.category?.name.toLowerCase().contains('veg') == true,
+      ),
+    );
+    context.push('/cart');
+  }
 
   String get itemName => widget.itemId == 'butter'
       ? 'Butter Chicken & 2 Butter Naan Combo'
@@ -34,128 +60,128 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final catalogue = ref.watch(catalogueControllerProvider);
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
       body: SafeArea(
         bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              pinned: true,
-              backgroundColor: SnapFoodColors.surface,
-              surfaceTintColor: Colors.transparent,
-              leading: IconButton(onPressed: () => Navigator.of(context).pop(), icon: const Icon(Icons.arrow_back)),
-              title: const Text('Food Details', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-              actions: [
-                IconButton(onPressed: () {}, icon: const Icon(Icons.share_outlined)),
-                IconButton(onPressed: () {}, icon: const Icon(Icons.favorite_border)),
-              ],
+        child: catalogue.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => Padding(
+            padding: const EdgeInsets.all(16),
+            child: CatalogueStateMessage(
+              value: catalogue,
+              onRetry: () => ref.read(catalogueControllerProvider.notifier).retry(),
             ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                child: _FoodHero(itemId: widget.itemId),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Consumer(builder: (context, ref, _) {
-                final catalogue = ref.watch(catalogueControllerProvider);
-                return Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: CatalogueStateMessage(
-                    value: catalogue,
-                    onRetry: () => ref.read(catalogueControllerProvider.notifier).retry(),
-                  ),
-                );
-              }),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 18, 16, 120),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-                          decoration: BoxDecoration(color: SnapFoodColors.softRed, borderRadius: BorderRadius.circular(SnapFoodRadii.full)),
-                          child: const Text('BESTSELLER', style: TextStyle(fontSize: 8, fontWeight: FontWeight.w800, color: SnapFoodColors.secondary)),
+          ),
+          data: (snapshot) {
+            final product = _findProduct(snapshot);
+            if (product == null) {
+              return const Center(
+                child: Text('This food item is not available in the current catalogue.'),
+              );
+            }
+            final previewPrice = int.tryParse(product.price.split('.').first) ?? 0;
+            final vegetarian = product.category?.name.toLowerCase().contains('veg') == true;
+            return Column(
+              children: [
+                Expanded(
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverAppBar(
+                        pinned: true,
+                        backgroundColor: SnapFoodColors.surface,
+                        surfaceTintColor: Colors.transparent,
+                        leading: IconButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(Icons.arrow_back),
                         ),
-                        const SizedBox(height: 8),
-                        Text(itemName, style: const TextStyle(fontSize: 24, height: 1.1, fontWeight: FontWeight.w800)),
-                      ])),
+                        title: const Text('Food Details', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                          child: _FoodHero(itemId: product.id.toString(), vegetarian: vegetarian, categoryName: product.category?.name),
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 18, 16, 120),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                Expanded(child: Text(product.name, style: const TextStyle(fontSize: 24, height: 1.1, fontWeight: FontWeight.w800))),
+                                const SizedBox(width: 12),
+                                Text('₹' + product.price, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
+                              ]),
+                              const SizedBox(height: 12),
+                              Row(children: [
+                                Icon(product.isAvailable ? Icons.check_circle : Icons.remove_circle, size: 17, color: product.isAvailable ? Colors.green : SnapFoodColors.secondary),
+                                const SizedBox(width: 5),
+                                Text(product.isAvailable ? 'Available now' : 'Currently unavailable', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                                const SizedBox(width: 12),
+                                Text(product.category?.name ?? 'Food', style: const TextStyle(fontSize: 11, color: SnapFoodColors.onSurfaceVariant)),
+                              ]),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Freshly prepared ' + product.name.toLowerCase() + ' from the current Snap Foodd catalogue.',
+                                style: const TextStyle(fontSize: 13, height: 1.5, color: SnapFoodColors.onSurfaceVariant),
+                              ),
+                              const SizedBox(height: 18),
+                              const Divider(color: SnapFoodColors.softBorder),
+                              const SizedBox(height: 16),
+                              const Text('About this dish', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                              const SizedBox(height: 10),
+                              const Wrap(spacing: 8, runSpacing: 8, children: [
+                                _Tag(icon: Icons.eco_outlined, label: 'Catalogue verified'),
+                                _Tag(icon: Icons.restaurant_outlined, label: 'Chef prepared'),
+                                _Tag(icon: Icons.local_fire_department_outlined, label: 'Fresh'),
+                              ]),
+                              const SizedBox(height: 24),
+                              const Text(
+                                'The displayed price is a catalogue preview. The server remains authoritative during checkout.',
+                                style: TextStyle(fontSize: 11, height: 1.4, fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                    child: Row(children: [
+                      _QuantityControl(
+                        quantity: quantity,
+                        onRemove: quantity > 1 ? () => setState(() => quantity--) : null,
+                        onAdd: quantity < 99 ? () => setState(() => quantity++) : null,
+                      ),
                       const SizedBox(width: 12),
-                      Text('₹' + price.toString(), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
+                      Expanded(
+                        child: FilledButton(
+                          onPressed: product.isActive && product.isAvailable ? () => _addToCart(product) : null,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: SnapFoodColors.secondary,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size.fromHeight(50),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
+                          ),
+                          child: Text(
+                            'Add ' + quantity.toString() + (quantity == 1 ? ' item' : ' items') + '  •  ₹' + (previewPrice * quantity).toString(),
+                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                      ),
                     ]),
-                    const SizedBox(height: 10),
-                    const Row(children: [
-                      Icon(Icons.star, size: 17, color: SnapFoodColors.primary),
-                      SizedBox(width: 4),
-                      Text('4.8', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
-                      SizedBox(width: 4),
-                      Text('(320 ratings)', style: TextStyle(fontSize: 11, color: SnapFoodColors.onSurfaceVariant)),
-                      SizedBox(width: 10),
-                      Text('•', style: TextStyle(color: SnapFoodColors.outline)),
-                      SizedBox(width: 10),
-                      Text('20–25 min', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
-                    ]),
-                    const SizedBox(height: 16),
-                    Text(description, style: const TextStyle(fontSize: 13, height: 1.5, color: SnapFoodColors.onSurfaceVariant)),
-                    const SizedBox(height: 18),
-                    const Divider(color: SnapFoodColors.softBorder),
-                    const SizedBox(height: 16),
-                    const Text('About this dish', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-                    const SizedBox(height: 10),
-                    const Wrap(spacing: 8, runSpacing: 8, children: [
-                      _Tag(icon: Icons.eco_outlined, label: 'Fresh ingredients'),
-                      _Tag(icon: Icons.restaurant_outlined, label: 'Chef prepared'),
-                      _Tag(icon: Icons.local_fire_department_outlined, label: 'Serves 1'),
-                    ]),
-                    const SizedBox(height: 24),
-                    Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(color: SnapFoodColors.surfaceContainerLow, borderRadius: BorderRadius.circular(SnapFoodRadii.lg)),
-                      child: const Row(children: [
-                        Icon(Icons.info_outline, size: 19, color: SnapFoodColors.secondary),
-                        SizedBox(width: 10),
-                        Expanded(child: Text('Prices and availability may vary during peak hours.', style: TextStyle(fontSize: 11, height: 1.4, fontWeight: FontWeight.w600))),
-                      ]),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-          child: Row(children: [
-            _QuantityControl(
-              quantity: quantity,
-              onRemove: quantity > 1 ? () => setState(() => quantity--) : null,
-              onAdd: () => setState(() => quantity++),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton(
-                onPressed: () => context.push('/cart'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: SnapFoodColors.secondary,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
-                ),
-                child: Text(
-                  'Add ' + quantity.toString() + (quantity == 1 ? ' item' : ' items') + '  •  ₹' + (price * quantity).toString(),
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
-                ),
-              ),
-            ),
-          ]),
+              ],
+            );
+          },
         ),
       ),
     );
