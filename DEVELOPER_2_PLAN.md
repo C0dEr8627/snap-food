@@ -183,6 +183,17 @@ Next implementation gate: freeze the documented order/COD + address contract, th
 
 ## Developer 2 checkpoint — 2026-09-29 (contract integration gate documented)
 
+## Developer 2 checkpoint — 2026-09-29 (backend delivery gate refresh)
+
+- Re-checked the backend execution plan after the latest Developer 1 update.
+- Workflow #209 now passes, so delivery-partner provisioning/approval is CI-verified on the backend. This removes the previously recorded provisioning blocker, but it does not yet provide the Flutter delivery request/assignment/tracking response schemas required by the contract-first gate.
+- The Flutter order/COD implementation remains blocked because `API_CONTRACT.md` still does not contain exact request/response examples for order creation, order list/detail, or address handling.
+- Google SSO remains blocked on the exact `/auth/google` credential request/response and public client configuration. Catalogue typed mapping remains blocked on successful response field definitions.
+- No backend-owned files were modified by Developer 2, and no undocumented API payloads were introduced.
+- Flutter runtime verification remains **NOT RUN** because the GitHub-connected environment has no Dart/Flutter runner.
+
+**Next implementation gate:** consume the frozen order/address contract as soon as Developer 1 publishes it, then implement typed order models and the cart → COD checkout → server totals → order detail/history flow. Delivery Flutter can follow the documented assignment/tracking contract now that backend provisioning is verified.
+
 - Added `FLUTTER_CONTRACT_QUESTIONS.md` to make the remaining backend-to-Flutter integration requirements explicit without inventing API fields.
 - The document covers order create/list/detail, address handling, Google auth exchange, catalogue success schemas, and delivery response/verification requirements.
 - No API DTOs or network calls were added because `API_CONTRACT.md` still lacks the exact response/request examples needed for safe implementation.
