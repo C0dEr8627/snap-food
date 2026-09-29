@@ -138,7 +138,7 @@ class FakeOrderRepository implements OrderRepository {
         code: 'FIXTURE_MISSING',
       );
     }
-    return _createdOrder!;
+    return _createdOrder;
   }
 
   @override
