@@ -23,6 +23,10 @@ void main() {
 
     expect(find.byType(SvgPicture), findsOneWidget);
 
+    // Resolve the asynchronous signed-out auth state first. The router is
+    // refreshed when auth restoration completes, which can restart the splash
+    // route and its navigation timer.
+    await tester.pumpAndSettle();
     await tester.pump(const Duration(milliseconds: 1800));
     await tester.pumpAndSettle();
 
