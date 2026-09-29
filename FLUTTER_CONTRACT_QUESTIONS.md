@@ -55,3 +55,18 @@ Until these examples are frozen in the shared contract, Flutter will not guess f
 
 ## Invoice integration gate
 The backend branch now documents `GET /api/v1/orders/{order}/invoice` for customer-owned delivered orders and the corresponding admin route, including deterministic/idempotent invoice numbering. Before Flutter invoice work begins, the shared contract must document the complete Flutter-facing invoice success response, financial/address/item snapshot fields, invoice identifier/number fields, authorization errors and generation/error behavior. Developer 2 will not infer these response fields from the backend implementation.
+
+
+## 2026-09-29 contract re-check
+
+The backend branch now documents delivery assignment/lifecycle/tracking and invoice endpoints, and backend workflows #209/#259/#266 are recorded as passing. These backend facts do not yet unblock Flutter because the shared contract still lacks the complete Flutter-facing success response schemas.
+
+Still required in the shared/base contract before implementation:
+- Order create/list/detail request and response examples, including stable order ID/status and authoritative totals.
+- Address resource or inline-snapshot request/response shape and validation behavior.
+- Google auth credential exchange and application-session/user-role response.
+- Catalogue category/product success fields and pagination/search representation.
+- Delivery assignment/list/status/location/tracking request and response examples, including location freshness fields.
+- Invoice success response with invoice identifier/number and immutable financial/address/item snapshot fields.
+
+Developer 2 will continue to use local repositories/fakes only where the API contract is incomplete and will not infer missing fields from backend implementation details.
