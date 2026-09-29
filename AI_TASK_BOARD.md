@@ -14,8 +14,8 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 - [ ] M1 — Laravel boots and connects to non-production MySQL.
 - [x] M2 — Google SSO backend authentication/authorization slice is implemented and verified through workflow #146; end-to-end Flutter session restoration/revocation remains a separate integration check.
 - [x] M3 — Admin product/category CRUD and customer catalogue API work end-to-end, including deterministic seed/demo data verified by workflow #146.
-- [~] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history and server-owned admin status transitions are implemented. Workflow #204 passed PHP 8.3/MySQL migrations and the PHPUnit suite for the transition increment; delivery assignment remains.
-- [~] M5 — Delivery-partner provisioning/approval is implemented behind ADMIN API authorization; safe order assignment and protected admin web operations remain.
+- [~] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history and server-owned admin status transitions are CI-verified. Workflow #204 passed PHP 8.3/MySQL migrations and the PHPUnit suite for the transition increment; delivery assignment remains.
+- [~] M5 — Delivery-partner provisioning/approval is CI-verified by Workflow #209 behind ADMIN API authorization. Protected Laravel web authentication/dashboard foundation is implemented; safe order assignment and fresh CI verification remain.
 - [ ] M6 — Partner accepts, confirms pickup, and completes delivery through valid state transitions.
 - [ ] M7 — Active-trip GPS updates are authorized and customer map shows fresh/stale location states.
 - [ ] M8 — Invoice generation and access rules are tested.
@@ -81,5 +81,6 @@ Record decisions here only after the owner approves or they are already establis
 - New Phase 4 increment: `PATCH /api/v1/admin/orders/{order}/status` is implemented for ADMIN users only. It validates target states, locks the order row with `lockForUpdate()`, enforces the server transition matrix, records actor history, and returns `ORDER_STATE_CONFLICT`/409 for invalid or repeated transitions.
 - Regression tests cover valid admin transition, invalid jump, repeated transition conflict, and customer denial.
 - Workflow #204 **PASSED**: PHP 8.3, MySQL migrations and PHPUnit suite verified the server-owned admin status-transition increment.
-- Delivery-partner provisioning/approval is implemented with admin-only authorization, transactional user-role provisioning, approval/revocation state, and regression tests. Workflow #205 **FAILED** because duplicate/admin conflicts returned 500 instead of 409; generic conflict handling is now corrected and fresh CI verification is the next gate.
-- Admin role bootstrap remains operator-controlled until the protected admin web authentication/bootstrap flow is defined.
+- Delivery-partner provisioning/approval is implemented with admin-only authorization, transactional user-role provisioning, approval/revocation state, and regression tests. Workflow #205 **FAILED** because duplicate/admin conflicts returned 500 instead of 409; generic conflict handling was corrected and Workflow #209 **PASSED** on PHP 8.3/MySQL with the full PHPUnit suite.
+- Protected Laravel admin web authentication/dashboard foundation is now implemented on `developer-1-backend-admin` with Google credential verification, web-session login, ADMIN-only access, logout/session invalidation, and rate limiting; Workflow #221 is the current verification gate.
+- Admin role bootstrap remains operator-controlled; web login only permits already-provisioned active ADMIN users.
