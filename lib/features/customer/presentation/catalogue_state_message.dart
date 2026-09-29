@@ -22,11 +22,11 @@ class CatalogueStateMessage extends StatelessWidget {
       return _CatalogueMessage(icon: Icons.cloud_off_outlined, title: 'Catalogue unavailable', subtitle: message, action: onRetry, actionLabel: 'Retry');
     }
     final snapshot = value.value;
-    if (snapshot != null && snapshot.categories.isEmpty && snapshot.products.isEmpty) {
+    if (snapshot != null && snapshot.categories.isEmpty && snapshot.products.items.isEmpty) {
       return const _CatalogueMessage(icon: Icons.inventory_2_outlined, title: 'No catalogue items yet', subtitle: 'Products and categories will appear here when available.');
     }
     if (showWhenLoaded && snapshot != null) {
-      return _CatalogueMessage(icon: Icons.check_circle_outline, title: 'Catalogue connected', subtitle: '${snapshot.categories.length} categories • ${snapshot.products.length} products');
+      return _CatalogueMessage(icon: Icons.check_circle_outline, title: 'Catalogue connected', subtitle: '${snapshot.categories.length} categories • ${snapshot.products.items.length} products');
     }
     return const SizedBox.shrink();
   }
