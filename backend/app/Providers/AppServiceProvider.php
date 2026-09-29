@@ -33,5 +33,9 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('auth-google', function (Request $request): Limit {
             return Limit::perMinute(10)->by($request->ip());
         });
+
+        RateLimiter::for('admin-login', function (Request $request): Limit {
+            return Limit::perMinute(10)->by($request->ip());
+        });
     }
 }
