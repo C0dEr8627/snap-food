@@ -31,7 +31,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 | Phase 3 — Catalogue | **COMPLETED** | Customer category/product reads, search/pagination, admin create/update/deactivate APIs, validation, regression tests and deterministic seed/demo data are implemented and verified by Workflow #146. |
 | Phase 4 — Orders & COD | **IN PROGRESS** | Checkout/list/detail and server-owned admin status transitions are CI-verified; delivery assignment/partner workflow remains. |
 | Phase 5 — Admin & assignment | **IN PROGRESS** | Protected Laravel web authentication/dashboard foundation and concurrency-safe delivery assignment are implemented; latest CI verifies the suite, while broader admin dashboard/order operations remain. |
-| Phase 6 — Delivery tracking | **IN PROGRESS** | Delivery-partner assignment listing and owned status progression (pickup → out-for-delivery → delivered) are implemented; location updates/tracking remain. |
+| Phase 6 — Delivery tracking | **IN PROGRESS** | Delivery-partner assignment listing and owned status progression are CI-verified; active-trip location updates/tracking are implemented and pending fresh CI verification. |
 | Phase 7 — Invoices | **NOT STARTED** | Numbering decision, invoice generation and access control remain. |
 | Phase 8 — Release readiness | **NOT STARTED** | Seeds, contract examples, clean-DB migration run, automated tests, security review and deployment checklist remain. |
 
@@ -243,3 +243,10 @@ A task is complete only when implementation, validation, authorization, automate
 - Security/authorization considerations:
 - Remaining blockers:
 - Next task:
+
+
+### Delivery lifecycle verification
+
+- Workflow #259 passed the corrected delivery-partner assignment/status authorization paths on PHP 8.3 with MySQL.
+- Delivery partner assignment listing and owned PICKED_UP → OUT_FOR_DELIVERY → DELIVERED progression are now CI-verified.
+- The explicit accept step remains a contract decision/future increment; current assignment is server-created by ADMIN and becomes active for the assigned partner.
