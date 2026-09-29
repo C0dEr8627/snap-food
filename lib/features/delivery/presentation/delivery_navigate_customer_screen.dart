@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../data/delivery_models.dart';
+import 'delivery_controller.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../../../design_system/tokens/app_spacing.dart';
 
-class DeliveryNavigateCustomerScreen extends StatefulWidget {
+class DeliveryNavigateCustomerScreen extends ConsumerStatefulWidget {
   const DeliveryNavigateCustomerScreen({super.key});
 
   @override
   State<DeliveryNavigateCustomerScreen> createState() => _DeliveryNavigateCustomerScreenState();
 }
 
-class _DeliveryNavigateCustomerScreenState extends State<DeliveryNavigateCustomerScreen> {
+class _DeliveryNavigateCustomerScreenState extends ConsumerState<DeliveryNavigateCustomerScreen> {
   bool arrived = false;
 
   @override
   Widget build(BuildContext context) {
+    final assignment = ref.watch(activeDeliveryAssignmentProvider);
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
       body: SafeArea(
@@ -36,7 +41,7 @@ class _DeliveryNavigateCustomerScreenState extends State<DeliveryNavigateCustome
                           children: [
                             if (!desktop) const _MobileHeader(),
                             if (!desktop) const SizedBox(height: 18),
-                            _Header(arrived: arrived),
+                            _Header(assignment: assignment, arrived: arrived),
                             const SizedBox(height: 18),
                             LayoutBuilder(
                               builder: (context, inner) {
@@ -45,11 +50,12 @@ class _DeliveryNavigateCustomerScreenState extends State<DeliveryNavigateCustome
                                   return Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Expanded(flex: 7, child: _NavigationMap(arrived: arrived)),
+                                      Expanded(flex: 7, child: _NavigationMap(assignment: assignment, arrived: arrived)),
                                       const SizedBox(width: 18),
                                       Expanded(
                                         flex: 4,
                                         child: _TripPanel(
+                                          assignment: assignment,
                                           arrived: arrived,
                                           onArrived: () => setState(() => arrived = true),
                                         ),
@@ -62,6 +68,7 @@ class _DeliveryNavigateCustomerScreenState extends State<DeliveryNavigateCustome
                                     _NavigationMap(arrived: arrived),
                                     const SizedBox(height: 18),
                                     _TripPanel(
+                                      assignment: assignment,
                                       arrived: arrived,
                                       onArrived: () => setState(() => arrived = true),
                                     ),
@@ -85,7 +92,8 @@ class _DeliveryNavigateCustomerScreenState extends State<DeliveryNavigateCustome
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.arrived});
+  const _Header({required this.assignment, required this.arrived});
+  final DeliveryAssignment? assignment;
   final bool arrived;
 
   @override
@@ -98,7 +106,12 @@ class _Header extends StatelessWidget {
               children: [
                 Text('Navigate to customer', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900)),
                 SizedBox(height: 4),
-                Text('TRP-1842 · Order #SF10248', style: TextStyle(fontSize: 12, color: SnapFoodColors.onSurfaceVariant)),
+                Text(
+                  assignment == null
+                      ? 'No active delivery assignment'
+                      : 'Assignment #${assignment!.id} · Order #${assignment!.orderId ?? '—'}',
+                  style: const TextStyle(fontSize: 12, color: SnapFoodColors.onSurfaceVariant),
+                ),
               ],
             ),
           ),
@@ -108,7 +121,8 @@ class _Header extends StatelessWidget {
 }
 
 class _NavigationMap extends StatelessWidget {
-  const _NavigationMap({required this.arrived});
+  const _NavigationMap({required this.assignment, required this.arrived});
+  final DeliveryAssignment? assignment;
   final bool arrived;
 
   @override
@@ -133,13 +147,21 @@ class _NavigationMap extends StatelessWidget {
             Positioned(
               right: 40,
               top: 112,
-              child: _MapPoint(icon: Icons.home_rounded, label: 'Aarav · Andheri East', primary: false),
+              child: _MapPoint(
+                icon: Icons.home_rounded,
+                label: assignment?.dropoffAddress ?? 'Customer destination',
+                primary: false,
+              ),
             ),
             Positioned(
               left: 18,
               bottom: 16,
               child: Text(
-                arrived ? 'Andheri East · Destination reached' : 'Powai → Andheri East · Customer route',
+                assignment == null
+                    ? 'No active assignment'
+                    : arrived
+                        ? 'Destination reached'
+                        : 'Active assignment · customer route',
                 style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: SnapFoodColors.onSurfaceVariant),
               ),
             ),
@@ -196,7 +218,8 @@ class _CustomerRoutePainter extends CustomPainter {
 }
 
 class _TripPanel extends StatelessWidget {
-  const _TripPanel({required this.arrived, required this.onArrived});
+  const _TripPanel({required this.assignment, required this.arrived, required this.onArrived});
+  final DeliveryAssignment? assignment;
   final bool arrived;
   final VoidCallback onArrived;
 
@@ -220,13 +243,29 @@ class _TripPanel extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 18),
-                const _InfoRow(icon: Icons.person_outline_rounded, label: 'Customer', value: 'Aarav Mehta'),
+                _InfoRow(
+                  icon: Icons.local_shipping_outlined,
+                  label: 'Assignment',
+                  value: assignment == null ? 'No active trip' : '#${assignment!.id}',
+                ),
                 const SizedBox(height: 13),
-                const _InfoRow(icon: Icons.location_on_outlined, label: 'Address', value: 'Andheri East, Mumbai'),
+                _InfoRow(
+                  icon: Icons.location_on_outlined,
+                  label: 'Address',
+                  value: assignment?.dropoffAddress ?? 'Customer address unavailable',
+                ),
                 const SizedBox(height: 13),
-                const _InfoRow(icon: Icons.route_outlined, label: 'Distance', value: '4.8 km'),
+                _InfoRow(
+                  icon: Icons.route_outlined,
+                  label: 'Status',
+                  value: assignment?.status ?? 'NO ACTIVE TRIP',
+                ),
                 const SizedBox(height: 13),
-                const _InfoRow(icon: Icons.schedule_outlined, label: 'ETA', value: '16 min'),
+                const _InfoRow(
+                  icon: Icons.gps_fixed_rounded,
+                  label: 'Location',
+                  value: 'Foreground updates only',
+                ),
                 const SizedBox(height: 18),
                 const Divider(color: SnapFoodColors.softBorder),
                 const SizedBox(height: 16),
@@ -256,7 +295,7 @@ class _TripPanel extends StatelessWidget {
                     const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: arrived ? null : onArrived,
+                        onPressed: assignment == null || arrived ? null : onArrived,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: SnapFoodColors.secondary,
                           foregroundColor: SnapFoodColors.onPrimary,
@@ -265,7 +304,7 @@ class _TripPanel extends StatelessWidget {
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(vertical: 13),
                         ),
-                        child: Text(arrived ? 'At customer' : 'Arrived at customer'),
+                        child: Text(assignment == null ? 'No active trip' : arrived ? 'At customer' : 'Arrived at customer'),
                       ),
                     ),
                   ],
