@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../data/invoice_models.dart';
+import '../data/order_models.dart';
 import 'invoice_controller.dart';
 
 class InvoiceScreen extends ConsumerStatefulWidget {
@@ -101,7 +102,7 @@ class _InvoiceBody extends StatelessWidget {
     address.label, address.recipientName, address.addressLine1,
     if (address.addressLine2 != null && address.addressLine2!.isNotEmpty) address.addressLine2!,
     address.city, address.state, address.postalCode, address.country,
-  ].where((part) => part.trim().isNotEmpty).join(', ');
+  ].whereType<String>().where((part) => part.trim().isNotEmpty).join(', ');
 }
 
 class _Section extends StatelessWidget {
