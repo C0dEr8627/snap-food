@@ -125,7 +125,7 @@ Record decisions here only after the owner approves or they are already establis
 ### Developer 1 release-readiness status — 2026-09-29
 
 - Current branch: `developer-1-backend-admin`
-- Current head: `941e9f2ee2916499fec4d60e4df1a6d37fb789b9`
+- CI verification head: `941e9f2ee2916499fec4d60e4df1a6d37fb789b9` (documentation-only tracking commits followed)
 - PR: #2 → `frontend`
 - Workflow #406: **PASSED**. The configured Backend workflow ran PHP 8.3, Composer install, MySQL 8.4 migrations and `composer test`.
 - Phase 8 documentation/contract integration work is complete: route audit, representative request/response examples, stable error mapping and `backend/API_INTEGRATION.md`.
