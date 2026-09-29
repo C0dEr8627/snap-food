@@ -195,3 +195,22 @@ Record decisions here only after the owner approves or they are already establis
 - **Invoice:** backend implementation is documented, but Flutter invoice UI/repository/model work is not started and remains contract-gated.
 
 **Next implementation sequence:** (1) Developer 1 freezes the complete shared order/COD + address + relevant delivery response examples; (2) Developer 2 implements typed order models; (3) cart → COD checkout repository/controller with duplicate-submit protection; (4) server-authoritative totals/error handling; (5) order success/detail/history; (6) delivery request/assignment/status/location/tracking; (7) invoice integration once its Flutter-facing response schema is frozen. No undocumented payloads will be invented.
+
+
+## Developer 2 status checkpoint — 2026-09-29 (latest)
+
+- M2 [~] Google SSO — session persistence, /me restoration, logout and auth-aware routing are implemented; exact Google credential exchange, success session/token shape, public client configuration and role response remain contract/config gated.
+- M3 [~] Catalogue — repository/controller/state and loading/empty/error/retry integration are implemented; typed category/product mapping remains blocked by missing successful response fields in the shared contract.
+- M4 [~] Orders/COD — backend checkout/list/detail and server-owned status/concurrency work are verified; Flutter local cart boundary is complete, while address, typed order models, COD submission, server totals/errors and order history/detail remain blocked by missing shared schemas.
+- M5 [~] Delivery — backend provisioning/approval, assignment/status progression and active-trip location/tracking are verified by Workflows #209/#259/#266; Flutter delivery integration remains blocked by missing shared assignment/location/tracking response examples.
+- Invoice [ ] Backend invoice scope is documented on developer-1-backend-admin; Flutter invoice work has not started because the shared contract lacks the complete invoice response schema.
+- Phase 0 [~] static baseline/documentation complete; Flutter/Dart runtime verification is NOT RUN because no Flutter/Dart runner or Flutter CI result is available.
+- Developer 2 has not introduced speculative DTOs, payloads, status enums or API calls. Backend-owned files remain untouched.
+
+### Next implementation queue
+1. Developer 1 freezes and synchronizes the complete Flutter-facing order/COD + address contract in the shared/base branch.
+2. Developer 2 implements typed order models and repository/controller boundaries.
+3. Implement cart → COD checkout with duplicate-submit protection and server-authoritative totals/errors.
+4. Implement order success/detail/history and refresh/error/empty states.
+5. Implement delivery assignment/status/location/tracking from the frozen schemas.
+6. Implement invoice model/repository/UI once the Flutter-facing invoice response schema is frozen.
