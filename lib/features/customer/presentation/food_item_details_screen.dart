@@ -189,30 +189,31 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
 }
 
 class _FoodHero extends StatelessWidget {
-  const _FoodHero({required this.itemId});
+  const _FoodHero({required this.itemId, required this.vegetarian, this.categoryName});
   final String itemId;
+  final bool vegetarian;
+  final String? categoryName;
 
   @override
   Widget build(BuildContext context) {
-    final veg = itemId == 'paneer';
     return AspectRatio(
       aspectRatio: 1.45,
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: veg ? [SnapFoodColors.softYellow, SnapFoodColors.primaryContainer] : [SnapFoodColors.softRed, SnapFoodColors.primaryContainer],
+            colors: vegetarian ? [SnapFoodColors.softYellow, SnapFoodColors.primaryContainer] : [SnapFoodColors.softRed, SnapFoodColors.primaryContainer],
           ),
           borderRadius: BorderRadius.circular(SnapFoodRadii.xl),
         ),
         child: Stack(children: [
-          Center(child: Icon(veg ? Icons.eco : Icons.restaurant, size: 110, color: veg ? Colors.green.withAlpha(100) : SnapFoodColors.secondary.withAlpha(80))),
+          Center(child: Icon(vegetarian ? Icons.eco : Icons.restaurant, size: 110, color: vegetarian ? Colors.green.withAlpha(100) : SnapFoodColors.secondary.withAlpha(80))),
           Positioned(
             left: 14,
             bottom: 14,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
               decoration: BoxDecoration(color: SnapFoodColors.surface.withAlpha(235), borderRadius: BorderRadius.circular(SnapFoodRadii.full)),
-              child: const Text('Mumbai Spice Kitchen', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800)),
+              child: Text(categoryName ?? 'Catalogue', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800)),
             ),
           ),
         ]),
