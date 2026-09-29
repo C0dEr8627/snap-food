@@ -51,7 +51,7 @@ void main() {
     final results = await Future.wait([first, second]);
 
     expect(results.whereType<Order>(), hasLength(1));
-    expect(repository.lastCreateRequest?.items.single.productId, '15');
+    expect(repository.lastCreateRequest?.items.single.productId, 15);
   });
 
   test('checkout controller surfaces validation failures without retrying automatically', () async {
