@@ -18,7 +18,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(orderHistoryControllerProvider);
-    final order = state.valueOrNull?.selectedOrder;
+    final order = state.value?.selectedOrder;
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
       appBar: AppBar(title: Text('Order #' + widget.orderId), backgroundColor: SnapFoodColors.surface, surfaceTintColor: Colors.transparent),
