@@ -9,6 +9,7 @@ use App\Services\Auth\GoogleCredentialVerifier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 class AuthController extends Controller
@@ -20,11 +21,14 @@ class AuthController extends Controller
         try {
             $identity = $verifier->verify($request->string('credential')->toString());
         } catch (RuntimeException) {
+            Log::warning('Google credential verification failed.', [
+                'route' => $request->route()?->getName(),
+            ]);
+
             return response()->json([
-                'error' => [
-                    'code' => 'INVALID_GOOGLE_CREDENTIAL',
-                    'message' => 'The Google credential could not be verified.',
-                ],
+                'message' => 'The Google credential could not be verified.',
+                'errors' => (object) [],
+                'code' => 'INVALID_GOOGLE_CREDENTIAL',
             ], 401);
         }
 
@@ -63,10 +67,9 @@ class AuthController extends Controller
 
         if (! $user->is_active) {
             return response()->json([
-                'error' => [
-                    'code' => 'ACCOUNT_INACTIVE',
-                    'message' => 'This account is inactive.',
-                ],
+                'message' => 'This account is inactive.',
+                'errors' => (object) [],
+                'code' => 'ACCOUNT_INACTIVE',
             ], 403);
         }
 
@@ -88,10 +91,9 @@ class AuthController extends Controller
             $request->user()->currentAccessToken()?->delete();
 
             return response()->json([
-                'error' => [
-                    'code' => 'ACCOUNT_INACTIVE',
-                    'message' => 'This account is inactive.',
-                ],
+                'message' => 'This account is inactive.',
+                'errors' => (object) [],
+                'code' => 'ACCOUNT_INACTIVE',
             ], 403);
         }
 
