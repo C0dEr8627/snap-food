@@ -182,7 +182,7 @@ class DeliveryLocationTest extends TestCase
         ]);
 
         $this->actingAs($this->admin(), 'sanctum')
-            ->getJson('/api/v1/orders/'.$assignment->order_id.'/tracking')
+            ->getJson('/api/v1/admin/orders/'.$assignment->order_id.'/tracking')
             ->assertOk();
     }
 }
