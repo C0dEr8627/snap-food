@@ -9,6 +9,7 @@
     <header>
         <h1>Snap Foodd Admin</h1>
         <p>Signed in as {{ auth('web')->user()->email ?? auth('web')->user()->name }}</p>
+        <nav><a href="{{ route('admin.orders.index') }}">Orders</a> · <a href="{{ route('admin.customers.index') }}">Customers</a> · <a href="{{ route('admin.delivery-partners.index') }}">Delivery partners</a> · <a href="{{ route('admin.assignments.index') }}">Assignments</a> · <a href="{{ route('admin.invoices.index') }}">Invoices</a></nav>
         <form method="POST" action="{{ route('admin.logout') }}">
             @csrf
             <button type="submit">Sign out</button>
@@ -44,15 +45,27 @@
             </dl>
         </section>
 
+        <section aria-labelledby="directory-summary">
+            <h3 id="directory-summary">Operations directory</h3>
+            <dl>
+                <div><dt>Categories</dt><dd>{{ $directoryCounts['categories'] }}</dd></div>
+                <div><dt>Products</dt><dd>{{ $directoryCounts['products'] }}</dd></div>
+                <div><dt>Customers</dt><dd>{{ $directoryCounts['customers'] }}</dd></div>
+                <div><dt>Delivery partners</dt><dd>{{ $directoryCounts['delivery_partners'] }}</dd></div>
+                <div><dt>Assignments</dt><dd>{{ $directoryCounts['assignments'] }}</dd></div>
+                <div><dt>Invoices issued</dt><dd>{{ $directoryCounts['invoices'] }}</dd></div>
+            </dl>
+        </section>
+
         <section aria-labelledby="operations">
             <h3 id="operations">Operations</h3>
             <ul>
-                <li>Catalogue</li>
-                <li>Orders</li>
-                <li>Customers</li>
-                <li>Delivery partners</li>
-                <li>Assignments</li>
-                <li>Invoices</li>
+                <li>Catalogue management is available through the protected admin API.</li>
+                <li><a href="{{ route('admin.orders.index') }}">Orders</a></li>
+                <li><a href="{{ route('admin.customers.index') }}">Customers</a></li>
+                <li><a href="{{ route('admin.delivery-partners.index') }}">Delivery partners</a></li>
+                <li><a href="{{ route('admin.assignments.index') }}">Assignments</a></li>
+                <li><a href="{{ route('admin.invoices.index') }}">Invoices</a></li>
             </ul>
         </section>
     </main>
