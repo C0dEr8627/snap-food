@@ -28,8 +28,11 @@ Common HTTP/code mapping: 401 `UNAUTHORIZED` (invalid Google credential uses `IN
 
 ## Orders
 `POST /orders` · `GET /orders` · `GET /orders/{order}` · `GET /orders/{order}/tracking` · `GET /orders/{order}/invoice`.
-`GET /admin/orders/{order}/invoice` is ADMIN-only.
+ADMIN operations include `PATCH /admin/orders/{order}/status`, `POST /admin/orders/{order}/assignment`, `GET /admin/orders/{order}/tracking` and `GET /admin/orders/{order}/invoice`.
 Checkout sends product IDs, quantities and address data; Laravel resolves prices, availability, fees and totals.
+
+### PATCH /api/v1/admin/orders/{order}/status
+ADMIN only. Request body: `{ "status": "ACCEPTED" }`. Allowed requested statuses are `ACCEPTED`, `PREPARING`, `READY_FOR_PICKUP`, `ASSIGNED`, `PICKED_UP`, `OUT_FOR_DELIVERY`, `DELIVERED`, and `CANCELLED`; the order transition service enforces the actual from/to transition graph and returns HTTP 409 when a transition is not allowed. Success returns `{ "data": <updated order> }`. The server records the actor and status history.
 
 ## Delivery
 Actual delivery-partner API routes are:
