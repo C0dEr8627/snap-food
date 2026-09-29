@@ -39,6 +39,20 @@ class AuthController extends Controller
 
         $user = User::where('google_subject', $identity['sub'])->first();
 
+        // Local development bootstrap: bind the configured pre-provisioned ADMIN
+        // account to its verified Google subject on first successful sign-in.
+        if ($user === null && app()->environment('local')) {
+            $bootstrapEmail = config('services.google.admin_bootstrap_email');
+
+            if ($bootstrapEmail !== null && strcasecmp((string) $identity['email'], $bootstrapEmail) === 0) {
+                $user = User::where('email', $bootstrapEmail)->first();
+
+                if ($user !== null && $user->is_active && $user->hasRole(User::ROLE_ADMIN)) {
+                    $user->forceFill(['google_subject' => $identity['sub']])->save();
+                }
+            }
+        }
+
         if ($user === null || ! $user->is_active || ! $user->hasRole(User::ROLE_ADMIN)) {
             return back()
                 ->withErrors(['credential' => 'This account is not authorized for the admin dashboard.'])
