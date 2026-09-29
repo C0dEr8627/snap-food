@@ -260,3 +260,15 @@ Next implementation gate: freeze the documented order/COD + address contract, th
 - **Implementation decision:** no speculative order/address DTOs, status enums, checkout payloads or delivery network calls were added. This is intentional contract-first behavior, not an implementation failure.
 - **Verification:** Flutter/Dart formatting, analyzer, tests, APK build and physical-device checks remain **NOT RUN** because this GitHub-connected environment has no local Flutter/Dart runner; no Flutter CI status is reported.
 - **Next task after contract freeze:** implement typed order models → checkout repository/controller → server-authoritative totals/error handling → order success/detail/history, preserving the existing UI. After the delivery schemas are frozen in the shared contract, implement delivery request/assignment/status/tracking flows.
+
+
+## Developer 2 checkpoint — 2026-09-29 (latest backend verification / implementation gate)
+
+- Re-checked the shared Flutter contract and backend branch before selecting the next implementation.
+- Backend workflow #259 is documented as passing the delivery-partner assignment listing and owned `PICKED_UP → OUT_FOR_DELIVERY → DELIVERED` progression on PHP 8.3 with MySQL. This supersedes the older delivery-lifecycle blocker recorded in earlier checkpoints.
+- The backend branch also documents partner location updates and customer/admin tracking routes, but the shared/base `API_CONTRACT.md` still lacks complete Flutter-facing request/response examples required to safely implement those calls.
+- The next Phase 4 customer task remains blocked: exact order create/list/detail request/response examples and address request/response fields are still missing from the shared contract. No order DTOs, address payloads, status enums, or checkout network calls will be invented.
+- Google SSO remains blocked on the exact credential exchange/configuration and role response shape; catalogue typed mapping remains blocked on documented success fields.
+- Completed Flutter work remains the API transport/error foundation, catalogue repository/controller/state integration, secure session storage and session lifecycle, auth-aware routing, and the local cart repository/controller with explicit product IDs and quantity tests.
+- Flutter/Dart formatter, analyzer, tests, APK build and physical-device checks remain **NOT RUN** because no Flutter/Dart runner is available; no Flutter CI status is reported.
+- **Next implementation:** once Developer 1 freezes the shared order/COD + address contract, implement typed order models → checkout repository/controller → server-authoritative totals/errors → order success/detail/history. Then consume the frozen delivery schemas for assignment/status/location/tracking UI.
