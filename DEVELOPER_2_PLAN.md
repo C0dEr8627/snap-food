@@ -393,3 +393,13 @@ No undocumented API payloads will be introduced, and no Laravel/backend-owned fi
 - Invoice: **[ ]** backend scope exists; Flutter response schema is not frozen.
 
 **Next executable implementation:** after Developer 1 synchronizes the complete Flutter-facing order/COD + address contract, implement typed order models and repository/controller boundaries, then cart → COD checkout with duplicate-submit protection and server-authoritative totals/errors. Do not bypass the contract gate.
+
+## Developer 2 checkpoint — 2026-09-29 (Flutter CI workflow)
+
+- Added `.github/workflows/flutter-ci.yml` to automate Flutter dependency resolution, Dart formatting validation, static analysis, unit/widget tests and Android debug APK compilation.
+- The workflow is configured for relevant Flutter changes on `developer-2-flutter`, pull requests targeting `frontend`, and manual dispatch.
+- Workflow definition commit: `785ab5f4a1a68fa7bf2a11ff2c0a549eb558d5fa`.
+- **Verification state:** the workflow has not yet been confirmed passing. Do not mark Phase 0 runtime verification or Phase 8 release verification complete until an actual run succeeds. Local Flutter/Dart commands remain NOT RUN in this environment.
+- No Flutter API DTOs/network calls were added because the shared contract remains incomplete; backend-owned files were not changed.
+
+**Next task:** inspect the workflow run and address any real failures first. In parallel, Developer 1 must synchronize exact Flutter-facing API examples and canonical delivery routes into the shared contract. Once order/address schemas are frozen, continue with typed order models and repository/controller boundaries, followed by COD checkout, order history/detail, delivery/tracking and invoice integration.
