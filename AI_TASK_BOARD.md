@@ -14,11 +14,11 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 - [ ] M1 — Laravel boots and connects to non-production MySQL.
 - [x] M2 — Google SSO backend authentication/authorization slice is implemented and verified through workflow #146; end-to-end Flutter session restoration/revocation remains a separate integration check.
 - [x] M3 — Admin product/category CRUD and customer catalogue API work end-to-end, including deterministic seed/demo data verified by workflow #146.
-- [~] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history, server-owned admin status transitions, and delivery assignment are implemented. Workflow #204 verified status transitions; assignment verification is pending.
+- [~] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history, server-owned admin status transitions, and delivery assignment are implemented. Workflow #204 verified status transitions; assignment verification remains tied to the broader admin/order integration.
 - [~] M5 — Delivery-partner provisioning/approval is CI-verified by Workflow #209 behind ADMIN API authorization. Protected Laravel web authentication and concurrency-safe order assignment are implemented and Workflow #244 has passed the PHPUnit suite; broader dashboard operations remain.
 - [x] M6 — Partner assignment listing and valid pickup → out-for-delivery → delivered transitions are implemented with ownership/conflict tests and verified by Workflow #259. The explicit partner accept step remains to be finalized against the product contract.
 - [x] M7 — Active-trip GPS updates, latest-location reads, stale-state reporting and customer/admin authorization are implemented and verified by Workflow #266.
-- [~] M8 — Invoice schema, deterministic numbering, immutable snapshots and customer/admin access are implemented; CI verification is pending after Workflow #288 exposed missing Order/OrderItem factory support.
+- [x] M8 — Invoice schema, deterministic numbering, immutable snapshots and customer/admin access are implemented and verified by Workflow #301.
 - [ ] M9 — Security, Android device, end-to-end and deployment-readiness checks pass.
 
 ## Handoff format
@@ -111,3 +111,12 @@ Record decisions here only after the owner approves or they are already establis
 - Workflow #284 failed because `InvoiceApiTest` used `User::factory()` while the minimal Laravel `User` model lacked `HasFactory`; User factory support was added.
 - Workflow #288 then failed after dependency installation and MySQL migrations passed: 7 invoice tests called `Order::factory()` and the minimal `Order`/`OrderItem` models lacked factory support. Added `HasFactory`, `OrderFactory`, and `OrderItemFactory`.
 - M8 remains in progress until a fresh CI run passes the full PHPUnit suite. Next action: rerun/verify invoice CI, then continue with the next incomplete plan item.
+
+
+### Developer 1 status — invoice verification and admin dashboard — 2026-09-29
+
+- Workflow #301 **PASSED** on the invoice authorization fix. PHP 8.3 setup, dependency installation, MySQL migrations and PHPUnit all completed successfully.
+- M8 is now CI-verified complete.
+- Started the next Phase 5 increment: protected admin dashboard order-operation counts for PLACED (new), ACCEPTED (active), PREPARING, READY_FOR_PICKUP/ASSIGNED (awaiting delivery), and PICKED_UP/OUT_FOR_DELIVERY (active delivery).
+- Added `AdminDashboardTest` coverage for the counts and admin-only access. CI verification for this dashboard increment is pending.
+- Next implementation: admin order search/filter/detail/status workflow, followed by broader admin dashboard operations.
