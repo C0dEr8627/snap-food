@@ -13,7 +13,7 @@ MySQL is authoritative; Laravel migrations are the schema source of truth.
 - `delivery_partners`: user, approval and availability state.
 - `order_assignments`: order, partner, assigning admin and assignment timestamp.
 - `delivery_locations`: assignment, latitude, longitude, optional accuracy and recorded timestamp; indexed for latest-location reads and retained as location history.
-- `invoices`: order, invoice number, financial snapshots, issue time and file reference.
+- `invoices`: unique order, deterministic invoice number, customer/address/item/financial snapshots, payment snapshot, issue time and optional file reference.
 
 ## Integrity
 Use foreign keys/indexes, transactions for checkout/assignment, decimal-safe money and consistent timestamps. Historical order/invoice values must not depend on mutable products. Define location retention before long-term history.
