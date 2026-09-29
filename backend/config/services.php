@@ -3,5 +3,6 @@
 return [
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
+        'admin_bootstrap_email' => env('ADMIN_BOOTSTRAP_EMAIL'),
     ],
 ];
