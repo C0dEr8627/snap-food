@@ -26,7 +26,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: flutter-ci-${{ github.workflow }}-${{ github.ref }}
@@ -53,6 +53,23 @@ jobs:
 
       - name: Resolve dependencies
         run: flutter pub get
+
+      - name: Format Dart sources
+        run: dart format .
+
+      - name: Commit formatting changes on developer branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/developer-2-flutter'
+        run: |
+          if git diff --quiet; then
+            echo "No formatting changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- '*.dart'
+          git commit -m "style(flutter): apply dart formatting"
+          git push origin HEAD:developer-2-flutter
 
       - name: Check Dart formatting
         run: dart format --output=none --set-exit-if-changed .
