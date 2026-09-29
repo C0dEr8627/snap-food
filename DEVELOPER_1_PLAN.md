@@ -30,8 +30,8 @@ Build the trusted backend and admin operations that the existing Flutter app can
 | Phase 2 — Identity & authorization | **COMPLETED** | Google verification service, login, Sanctum token storage, `/me`, logout, role middleware, resource policies and negative/cross-user authorization tests are implemented and verified by Workflow #146. Server-side delivery-partner provisioning/approval is now implemented and CI-verified by Workflow #209. Admin role provisioning remains operator-controlled until the protected admin web bootstrap flow is defined. |
 | Phase 3 — Catalogue | **COMPLETED** | Customer category/product reads, search/pagination, admin create/update/deactivate APIs, validation, regression tests and deterministic seed/demo data are implemented and verified by Workflow #146. |
 | Phase 4 — Orders & COD | **IN PROGRESS** | Checkout/list/detail and server-owned admin status transitions are CI-verified; delivery assignment/partner workflow remains. |
-| Phase 5 — Admin & assignment | **IN PROGRESS** | Protected Laravel web authentication/dashboard foundation and concurrency-safe delivery assignment are implemented; CI verification and broader admin dashboard/order operations remain. |
-| Phase 6 — Delivery tracking | **NOT STARTED** | Partner workflow, pickup/completion, location updates and tracking authorization remain. |
+| Phase 5 — Admin & assignment | **IN PROGRESS** | Protected Laravel web authentication/dashboard foundation and concurrency-safe delivery assignment are implemented; latest CI verifies the suite, while broader admin dashboard/order operations remain. |
+| Phase 6 — Delivery tracking | **IN PROGRESS** | Delivery-partner assignment listing and owned status progression (pickup → out-for-delivery → delivered) are implemented; location updates/tracking remain. |
 | Phase 7 — Invoices | **NOT STARTED** | Numbering decision, invoice generation and access control remain. |
 | Phase 8 — Release readiness | **NOT STARTED** | Seeds, contract examples, clean-DB migration run, automated tests, security review and deployment checklist remain. |
 
@@ -116,13 +116,14 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Phase 5 — Admin operations and delivery assignment
 
-- [ ] Create protected Laravel web login/authorization for admins.
+- [x] Create protected Laravel web login/authorization for admins.
 - [ ] Build dashboard for catalogue, orders, customers, partners, assignments and invoices.
 - [ ] Implement order search/filter/detail/status actions.
-- [ ] Provision/approve/deactivate delivery partners.
+- [x] Provision/approve/deactivate delivery partners.
 - [x] Implement concurrency-safe delivery assignment with transactional order/partner row locking.
 - [x] Record current assignment and status history actor.
-- [ ] Add authorization and race/conflict tests.
+- [x] Add authorization and conflict tests for delivery assignment.
+- [ ] Add broader admin dashboard/order operations.
 
 ## Phase 6 — Delivery APIs and active tracking
 
@@ -226,7 +227,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Immediate next task
 
-**Verify the restored protected Laravel admin web authentication and delivery-assignment increments.** Workflow #240 exposed that the web routes were not present on the branch even though the controllers/views/runtime config existed. Restored `backend/routes/web.php` and registered the admin web middleware alias in `bootstrap/app.php`; Workflow #243 is now running against commit `cc08d4ff61540fdd4e5786d82821e43dc53b1377`. Do not mark either task complete until that workflow passes. If green, continue with the remaining admin dashboard/order operations and delivery-partner lifecycle APIs. If it fails, fix the concrete failure before advancing.
+**Continue Phase 6 delivery workflow with location/tracking APIs.** Partner assignment listing and delivery-state progression are implemented, and Workflow #244 is green on tests/migrations (the run is still finishing container cleanup). The next increment is partner-owned latest-location updates with coordinate/timestamp validation, persistence/history, stale-location handling, and customer/admin authorized tracking reads. Do not mark this increment complete until its automated tests pass.
 
 ## Developer 1 definition of done
 
