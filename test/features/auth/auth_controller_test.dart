@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:snap_foodd/core/network/api_exception.dart';
 import 'package:snap_foodd/features/auth/data/auth_models.dart';
 import 'package:snap_foodd/features/auth/data/auth_repository.dart';
-import 'package:snap_foodd/features/auth/data/session_store.dart';
 import 'package:snap_foodd/features/auth/presentation/auth_controller.dart';
 
 class _FakeStore implements SessionStore {
@@ -18,10 +17,9 @@ class _FakeStore implements SessionStore {
 }
 
 class _FakeRepository implements AuthRepository {
-  _FakeRepository({this.token, this.user = const AuthUser({})});
+  _FakeRepository({this.token});
   String? token;
-  AuthUser user;
-  bool logoutCalled = false;
+  AuthUser user = const AuthUser({});  bool logoutCalled = false;
 
   @override
   Future<AuthUser> fetchCurrentUser() async {
