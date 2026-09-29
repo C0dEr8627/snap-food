@@ -36,4 +36,9 @@ class OrderPolicy
     {
         return $user->hasRole(User::ROLE_ADMIN);
     }
+
+    public function viewAdmin(User $user, Order $order): bool
+    {
+        return $user->hasRole(User::ROLE_ADMIN);
+    }
 }
