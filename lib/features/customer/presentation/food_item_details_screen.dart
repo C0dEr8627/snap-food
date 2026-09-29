@@ -244,7 +244,7 @@ class _QuantityControl extends StatelessWidget {
   const _QuantityControl({required this.quantity, required this.onRemove, required this.onAdd});
   final int quantity;
   final VoidCallback? onRemove;
-  final VoidCallback onAdd;
+  final VoidCallback? onAdd;
 
   @override
   Widget build(BuildContext context) => Container(
