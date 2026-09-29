@@ -127,7 +127,7 @@ class OrderHistoryController extends AsyncNotifier<OrderHistoryState> {
   Future<Order?> loadDetail(String orderId) async {
     try {
       final order = await _repository.fetchOrder(orderId);
-      final current = state.valueOrNull ?? const OrderHistoryState();
+      final current = state.value ?? const OrderHistoryState();
       state = AsyncData(
         OrderHistoryState(
           orders: current.orders,
