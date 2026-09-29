@@ -735,3 +735,19 @@ No backend/Laravel-owned files were modified.
 3. Perform physical permission/GPS verification.
 4. Implement invoice integration only after the exact Flutter-facing invoice response fields are frozen.
 5. Finish E2E/release verification.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (current-head CI analyzer follow-up)
+
+- CI run `36603659984` (run #187) against the prior current head passed dependency resolution and formatting but stopped at `flutter analyze` because `StreamController` was missing from `test/features/delivery/delivery_location_adapter_test.dart`.
+- Fixed the concrete test compile/analyzer error by restoring the `dart:async` import in commit `ea88f35202db2153570aa149b51b8b805df07bcc`.
+- The latest shared contract is now synchronized for Google auth, catalogue, orders/COD, address, delivery/tracking and invoice. Invoice implementation is therefore no longer contract-blocked.
+- `pubspec.yaml` still contains no concrete Maps/location dependency. Do not add a package until the approved platform choice/configuration is confirmed.
+- Runtime/device verification remains pending.
+
+### Next execution order
+1. Inspect CI for `ea88f35202db2153570aa149b51b8b805df07bcc` and fix only concrete failures.
+2. Identify the approved Android/iOS location and Maps configuration.
+3. Implement invoice model/repository/UI from the frozen contract.
+4. Verify real GPS permission/revocation and Maps behavior on physical devices.
+5. Complete E2E/release verification and update PR readiness.
