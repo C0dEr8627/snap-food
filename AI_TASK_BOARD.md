@@ -10,16 +10,16 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 
 ## Shared milestones
 
-- [ ] M0 — GoDaddy plan/capabilities recorded; local development assumptions documented.
-- [ ] M1 — Laravel boots and connects to non-production MySQL.
-- [~] M2 — Backend Google SSO/authentication/authorization is CI-verified in workflow #146, but Flutter Google sign-in is not end-to-end because the shared contract still lacks the exact `/auth/google` credential field/type, success token response, public client configuration, and role response shape.
-- [x] M3 — Admin product/category CRUD and customer catalogue API work end-to-end, including deterministic seed/demo data verified by backend workflow #146. Flutter repository/controller/state integration exists, but typed field-level UI mapping awaits the documented catalogue success schema.
-- [~] M4 — Backend order/COD checkout/list/detail and server-owned status-transition/concurrency work are verified; M4 remains in progress because the complete Flutter-facing order/COD and address contract examples are still missing.
-- [~] M5 — Delivery-partner provisioning/approval is CI-verified in workflow #209; safe order assignment and the remaining delivery workflow are still to be implemented and verified.
-- [ ] M6 — Partner accepts, confirms pickup, and completes delivery through valid state transitions.
-- [ ] M7 — Active-trip GPS updates are authorized and customer map shows fresh/stale location states.
-- [ ] M8 — Invoice generation and access rules are tested.
-- [ ] M9 — Security, Android device, end-to-end and deployment-readiness checks pass.
+- [~] M0 — Local development assumptions are documented; GoDaddy plan/capabilities are still owner-verification pending.
+- [x] M1 — Laravel boots and connects to non-production MySQL; clean MySQL migrations/tests are verified by the Backend CI workflow.
+- [x] M2 — Google SSO backend authentication/authorization slice is implemented and verified through workflow #146; end-to-end Flutter session restoration/revocation remains a separate integration check.
+- [x] M3 — Admin product/category CRUD and customer catalogue API work end-to-end, including deterministic seed/demo data verified by workflow #146.
+- [x] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history, server-owned admin status transitions, and concurrency-safe delivery assignment are implemented and CI-verified through Workflows #189, #204 and #386.
+- [x] M5 — Delivery-partner provisioning/approval, protected Laravel admin web operations, catalogue management, partner controls, directories, dashboard counts and web/API assignment are implemented and CI-verified through Workflows #209, #244, #324, #349, #363, #371 and #386.
+- [x] M6 — Partner assignment listing and valid pickup → out-for-delivery → delivered transitions are implemented with ownership/conflict tests and verified by Workflow #259. No separate partner accept endpoint is part of the current product contract; assignment is server-created by ADMIN.
+- [x] M7 — Active-trip GPS updates, latest-location reads, stale-state reporting and customer/admin authorization are implemented and verified by Workflow #266.
+- [x] M8 — Invoice schema, deterministic numbering, immutable snapshots and customer/admin access are implemented and verified by Workflow #301.
+- [~] M9 — Implementation and CI coverage are substantially complete. Backend workflow #423 passed the current branch head with PHP 8.3, Composer, Pint, MySQL migrations and PHPUnit. Remaining gates are external GoDaddy capability confirmation, broader end-to-end/device validation and explicit human release approval.
 
 ## Handoff format
 
@@ -45,508 +45,208 @@ Record decisions here only after the owner approves or they are already establis
 - Hosting: GoDaddy; plan/capabilities unverified.
 - Restaurant Partner workflow: deferred.
 
-## Developer 2 checkpoint — 2026-09-29
+
+## Developer 1 status — 2026-09-29
+
+- Workflow #146 completed successfully on the corrected branch state. MySQL migrations and the PHPUnit suite passed on PHP 8.3.
+- Phase 2 identity/authorization is now CI-verified complete for the backend slice.
+- Phase 3 catalogue is now CI-verified complete, including deterministic seed/demo data and idempotence coverage.
+
+- Phase 2 authentication/authorization implementation: **implemented and CI-verified complete**.
+- Phase 3 catalogue implementation: **implemented and CI-verified complete**, including deterministic seed/demo data.
+- Catalogue APIs now support authenticated category/product reads, active-item filtering for customers, search and bounded pagination.
+- Admin category/product create/update/deactivate operations are protected by role middleware and policies.
+- Update request validation and catalogue endpoint regression tests are present.
+- Deterministic seed data is implemented in `DatabaseSeeder` and covered by `DatabaseSeederTest`.
+- Workflow #134 failed during catalogue tests because the Laravel 13 base controller does not expose `$this->authorize`.
+- Workflow #138 confirmed remaining `$this->authorize` calls in catalogue `show`/`destroy` paths; these have now been replaced with `Gate::authorize`.
+- Fix commits: `26f6217e7a89362550f8f68cfa8027027030645a`, `64aaefff30c5a02bbc0cdf2b367e11166d2403d6`, `7d7fa3fc02456c4f724fbbcc345717c35ac42b78`, `735853594f3c7b82b0e8c19db92483f9cf7a9324`.
+- Workflow #138 failed with the remaining controller authorization calls; the latest two commits fixed those paths. Workflow #142 then failed on four stale test assertions expecting `error.code`; the API contract uses top-level `code`. Test assertions were corrected in commits `53cbf6e01ebed21cf295f3700809e2877aaccc26` and `28053a9ff26f854cc70301920b97844dad8c72c9`. Fresh CI verification is pending.
+- Verification gate: GitHub Actions workflow #146 passed.
+- Next implementation: Phase 4 order/COD workflow, starting with state definitions and transition rules.
+
+- Phase 4 initial order/COD slice is implemented: orders/order-items/status-history schema, transactional checkout, server-side totals, immutable snapshots, COD pending state, customer list/detail endpoints, and regression tests.
+- Workflow #175 failed with 4 order-related test failures because the migration created `order_status_history` while the `OrderStatusHistory` model queried `order_status_histories`.
+- Fix commit: `112a2ffe1df0bcd07bbf54f43748798809c144b8` aligns the migration and rollback table name with the model convention.
+- Workflow #179 failed with 3 order-related tests: singular status-history assertion, missing `data` envelope on order list, and admin order-route authorization returning 500 instead of 403.
+- Fixes: `bf2febe67ee45507886be50aca809e7c0bca9f23`, `a0f9b47f70df16871ea4da82a50ebf5640b1582b`, `cf5236d87a7c2ad00be965a89ce94a5cd72a566b`.
+- Current gate: corrected CI verification pending; after green, continue with server-owned status transition operations and concurrency/conflict coverage.
+
+- Workflow #184 ran the corrected order branch: MySQL migrations and the suite booted successfully, but the cross-customer order-detail test received HTTP 500 instead of 403.
+- Fix commit `032e4144e5fba9e0b24a16418b82a23b1dbc2d52` adds explicit `AccessDeniedHttpException` mapping to the standard 403/FORBIDDEN API response.
+- Documentation commits: `f11a9526f8177c10d1a7bb114044ffa033f56e7f` and typo correction `858e3b7dd887a57f3d3e135ed5ebe838aae59990`.
+- Current gate: fresh CI verification of the exception fix is required before M4 advances; next implementation remains server-owned order status transitions and concurrency/conflict coverage.
+
+- Workflow #189 **PASSED**: PHP 8.3, MySQL migrations and PHPUnit suite verified the Phase 4 authorization correction; the initial checkout/list/detail slice is now CI-verified.
+- New Phase 4 increment: `PATCH /api/v1/admin/orders/{order}/status` is implemented for ADMIN users only. It validates target states, locks the order row with `lockForUpdate()`, enforces the server transition matrix, records actor history, and returns `ORDER_STATE_CONFLICT`/409 for invalid or repeated transitions.
+- Regression tests cover valid admin transition, invalid jump, repeated transition conflict, and customer denial.
+- Workflow #204 **PASSED**: PHP 8.3, MySQL migrations and PHPUnit suite verified the server-owned admin status-transition increment.
+- Delivery-partner provisioning/approval is implemented with admin-only authorization, transactional user-role provisioning, approval/revocation state, and regression tests. Workflow #205 **FAILED** because duplicate/admin conflicts returned 500 instead of 409; generic conflict handling was corrected and Workflow #209 **PASSED** on PHP 8.3/MySQL with the full PHPUnit suite.
+- Protected Laravel admin web authentication/dashboard foundation is now implemented on `developer-1-backend-admin` with Google credential verification, web-session login, ADMIN-only access, logout/session invalidation, and rate limiting; Workflow #221 is the current verification gate.
+- Admin role bootstrap remains operator-controlled; web login only permits already-provisioned active ADMIN users.
+
+- New implementation: `POST /api/v1/admin/orders/{order}/assignment` uses a transaction with `lockForUpdate()` on both the order and delivery partner, requires `READY_FOR_PICKUP` and approved/active/available partner state, prevents duplicate assignment, and records `ASSIGNED` status history with the admin actor. Fresh CI verification is pending.
+
+- Backend Workflow #234 failed on the admin-web test slice because the minimal Laravel skeleton lacked Blade compiled-view/session runtime configuration; the failure was concrete (`Please provide a valid cache path`). Runtime configuration and required framework directories were added.
+- Workflow #240 then failed because the branch's `backend/routes/web.php` had reverted to the default welcome route and `bootstrap/app.php` lacked the admin web middleware alias, causing 404s/session assertions in all 7 admin-web tests. Those files were restored in commits `fe7f3cabb1e38782971c53062d50af8b1ff83ce3` and `cc08d4ff61540fdd4e5786d82821e43dc53b1377`.
+- Workflow #243 is running on `cc08d4ff61540fdd4e5786d82821e43dc53b1377`; admin web authentication and delivery assignment are not marked verified until it passes.
+
+- Workflow #244 passed dependency installation, MySQL migrations and the PHPUnit test step after the admin web route/middleware restoration.
+- Workflow #259 PASSED on commit 148e8ab54a617007c38d3ecb3498445d04d16968, verifying the corrected delivery-partner lifecycle authorization responses with PHP 8.3/MySQL.
+- New Phase 6 increment: delivery partners can list their own active assignments and progress owned assignments through PICKED_UP → OUT_FOR_DELIVERY → DELIVERED. Cross-partner access, unapproved-partner access, and invalid state skips are covered by `DeliveryPartnerOrderTest`.
+
+
+### Developer 1 status — delivery lifecycle and tracking — 2026-09-29
+
+- M6 delivery-partner assignment listing and owned status progression are CI-verified complete by Workflow #259.
+- Implemented M7 location slice: POST /api/v1/delivery/assignments/{assignment}/location for the owning approved/active partner, coordinate/accuracy/timestamp validation, active-trip enforcement, persistent location history, and GET /api/v1/orders/{order}/tracking plus admin tracking read with stale-state reporting.
+- Location implementation commit: 8fce7c8374943d23e4e723f9df01776ac6d71b99; conflict response normalization follow-up: d2fbd64cbdc8086530eda80536ed09e33fd9ff16.
+- M7 remains in progress pending CI verification; invoices remain next after the location/tracking gate passes.
+
+
+- Workflow #266 **PASSED** on commit `f99dde6b52ff0450693fff8b63b90ce31bbe2722`, verifying M7 active-trip location/tracking with PHP 8.3/MySQL. M7 is now complete; Phase 7 invoices is the next implementation.
+
+
+- Phase 7 invoice increment is implemented on `developer-1-backend-admin`: delivered-order invoice generation is idempotent, snapshots order/customer/item financial data, and customer/admin authorization is enforced.
+- Workflow #284 failed because `InvoiceApiTest` used `User::factory()` while the minimal Laravel `User` model lacked `HasFactory`; User factory support was added.
+- Workflow #288 then failed after dependency installation and MySQL migrations passed: 7 invoice tests called `Order::factory()` and the minimal `Order`/`OrderItem` models lacked factory support. Added `HasFactory`, `OrderFactory`, and `OrderItemFactory`.
+- M8 remains in progress until a fresh CI run passes the full PHPUnit suite. Next action: rerun/verify invoice CI, then continue with the next incomplete plan item.
+
+
+### Developer 1 status — invoice verification and admin dashboard — 2026-09-29
+
+- Workflow #301 **PASSED** on the invoice authorization fix. PHP 8.3 setup, dependency installation, MySQL migrations and PHPUnit all completed successfully.
+- M8 is now CI-verified complete.
+- Started the next Phase 5 increment: protected admin dashboard order-operation counts for PLACED (new), ACCEPTED (active), PREPARING, READY_FOR_PICKUP/ASSIGNED (awaiting delivery), and PICKED_UP/OUT_FOR_DELIVERY (active delivery).
+- Added `AdminDashboardTest` coverage for the counts and admin-only access. CI verification for this dashboard increment is pending.
+- Next implementation: admin order search/filter/detail/status workflow, followed by broader admin dashboard operations.
+
+
+### Developer 1 release-readiness status — 2026-09-29
+
+- Current branch: `developer-1-backend-admin`
+- CI verification head: `941e9f2ee2916499fec4d60e4df1a6d37fb789b9` (documentation-only tracking commits followed)
+- PR: #2 → `frontend`
+- Workflow #406: **PASSED**. The configured Backend workflow ran PHP 8.3, Composer install, MySQL 8.4 migrations and `composer test`.
+- Phase 8 documentation/contract integration work is complete: route audit, representative request/response examples, stable error mapping and `backend/API_INTEGRATION.md`.
+- No formatter/static-analysis/security command is configured in the current Backend workflow. Those checks remain unexecuted rather than being inferred from the passing PHPUnit workflow.
+- GoDaddy plan-specific capability verification remains pending with the owner.
+- No deployment or production migration was performed.
+
+### Developer 1 task-tracking update — 2026-09-29
+
+- Workflow #413 **FAILED** at the new Pint check: dependency installation passed, Pint found 29 style issues across 101 files, and migrations/tests were skipped.
+- Commit `d7042331b8da04a0ca8b8960761b30aa9c5f03a7` adds a push-only `Backend Format` workflow to apply Pint and commit generated formatting changes directly to `developer-1-backend-admin`; fresh PR verification is still pending.
+ (quality gate)
+
+- Added a PHP 8.3 CI Pint formatting check to `.github/workflows/backend.yml` in commit `781364ba1c0d69340b488e71ac1eb9e74dbe0ff0`.
+- The PR head is now `781364ba1c0d69340b488e71ac1eb9e74dbe0ff0`; the connector has not yet returned a PR-triggered workflow run for this commit, so the formatting gate is **pending verification** and is not marked complete.
+- Static-analysis/security tooling is still not configured in CI; local PHP/Composer execution remains unavailable in the connector environment.
+- **Next owner/action:** verify the new CI formatting gate, then complete available static/security review; project owner confirms GoDaddy capabilities and gives explicit release approval. Developer 2/frontend integration remains a separate validation track.
+
+### Developer 1 task-tracking update — 2026-09-29
+
+- Phase 4 documentation is now aligned with the verified implementation: server-owned order transitions and concurrency-safe delivery assignment are complete and CI-verified.
+- Phase 6 documentation is now aligned with the current contract: partner approval/activation/availability and eligible-partner selection are implemented through admin assignment; partner-owned delivery progression is `PICKED_UP → OUT_FOR_DELIVERY → DELIVERED`. No separate partner-accept endpoint is being introduced without a product-contract change.
+- Phase 8 remains **IN PROGRESS**. Workflow #406 passed on CI verification head `941e9f2ee2916499fec4d60e4df1a6d37fb789b9`; subsequent tracking commit `1184d969d5a32267019e23b39f3e7f595879a81b` updates the plan only.
+- Remaining release gates: PHP 8.3/Composer formatter/static-analysis/security checks where available, final manual security/content review, GoDaddy capability confirmation, broader Flutter/device/end-to-end validation, and explicit human release approval.
+- No deployment or production migration was performed.
+
+
+### Developer 1 task-tracking update — 2026-09-29 (formatter remediation)
+
+- M9 remains **IN PROGRESS**; formatting is not yet verified complete.
+- Workflow #416 confirmed Pint still fails with 29 style issues across 101 PHP files; migrations/tests were skipped.
+- Commit `b39ed4c1935a99e8b4ca043686d135a2a50682ee` updates the backend formatter workflow to cover same-repository PR synchronization as well as branch pushes, so formatting remediation has an explicit CI path.
+- Backend workflow #418 is currently queued/running against the new head. Do not mark M9 complete until a fresh formatter-clean Backend workflow verifies migrations and PHPUnit.
+- Next owner/action: verify #418; then resolve any remaining formatter/static-analysis/security findings, complete manual security/content review, confirm GoDaddy capabilities, and obtain explicit human release approval.
+
+
+### Developer 1 task-tracking update — 2026-09-29 (Pint applied)
+
+- The formatter remediation workflow successfully created generated formatting commit `fe67a57f07500f06443b8978d8ad42906132edd7` with message `style(backend): apply Laravel Pint formatting`.
+- This confirms the previously identified Pint changes were applied to the backend branch. The formatter gate is therefore **remediated at the source level**, but the required fresh Backend verification is still pending.
+- Backend workflow #419 for the formatting commit is `action_required`, so it is not being counted as a passing verification.
+- Backend workflow #420 is currently `in_progress` on the subsequent documentation head `fd34ef249e14961700e506cda563ded7c404aaa5`; its final result is required before marking the CI gate complete.
+- No Flutter-owned files, deployment, or production migration were changed.
+
+**Next task:** verify workflow #420. If it passes formatting, migrations and PHPUnit, mark the formatting/CI gate verified; then proceed to final manual security/content review, GoDaddy capability confirmation and broader integration/release validation.
+
+
+### Release-readiness update — 2026-09-29
+
+- **Backend workflow #421 PASSED** on branch head `e7f9b346c8d9f0bf32f684d087a14e8d900ff3ec`.
+- The complete CI gate passed: PHP 8.3 setup, Composer dependency installation, **Laravel Pint formatting check**, MySQL database migrations, and the PHPUnit test suite.
+- This closes the previously blocked formatter/CI verification gate. The earlier 29 Pint issues are now resolved by generated formatting commit `fe67a57f07500f06443b8978d8ad42906132edd7`.
+- Release-readiness is **not yet complete**: remaining work is final manual security/diff review, confirmation of GoDaddy production capabilities, broader Flutter/device/end-to-end integration validation, and explicit human release approval.
+- No deployment or production migration has been performed.
+
+**Next implementation task:** perform the final backend security/content/diff review and document any findings before release approval.
+
+
+### Developer 1 status — final security/content review — 2026-09-29
+
+- Backend workflow **#423 PASSED** on the code head immediately before the final documentation-only tracking commits. Backend workflow **#425 is currently in progress** on the current branch head.
+- The current CI gate is verified end-to-end: PHP 8.3, Composer dependencies, Laravel Pint formatting, clean MySQL migrations and PHPUnit all completed successfully.
+- Final manual backend review covered route/middleware authorization, Google credential verification and token handling, admin web session protection, order/checkout invariants, delivery assignment/status/location ownership, invoice/tracking access, request validation, environment/secret handling, and the PR changed-file scope.
+- **Review result:** no blocking security/content/diff finding was identified in the reviewed backend paths. This is a repository review result, not a claim of absolute security.
+- No Flutter-owned files were changed. No deployment or production migration was performed.
+- Remaining release gates are now external/integration gates: GoDaddy capability confirmation, broader Flutter/device/E2E validation, and explicit human release approval.
+- **Next owner/action:** owner confirms hosting capabilities and release readiness; Developer 2 completes frontend/device/E2E validation. Developer 1 should only make further backend changes if those validations uncover a concrete backend issue.
+
+
+### Developer 1 task-tracking update — 2026-09-29 (CI #425/#427 completed)
+
+- Backend workflow **#425 PASSED** on tracking head `09ce904325128c4363f79087c3cff05b5d9a88c0`.
+- Backend workflow **#427 PASSED** on the latest branch head `f76db385f21448198e8181fa142c1c7f62267dc6`.
+- Latest CI verification covers PHP 8.3, Composer, Laravel Pint, clean MySQL migrations and PHPUnit on the current branch head.
+- Final manual backend security/content/diff review is complete; no blocking finding was identified in the reviewed backend paths.
+- M9 remains **IN PROGRESS** only for external release gates: GoDaddy capability confirmation, broader Flutter/device/E2E validation, and explicit human release approval.
+- No planned backend feature task remains before those gates. Developer 1 should only make further backend changes if external validation exposes a concrete defect.
+- No Flutter-owned files were changed. No deployment or production migration was performed.
+
+
+## Developer 1 status — 2026-09-29 (latest CI verification)
+
+- Backend workflow **#428 PASSED** on branch head `0e0344d8fbe66ddc3a5036a4642c66ec3f19d1b7`.
+- #428 verified PHP 8.3, Composer dependency installation, Laravel Pint formatting, clean MySQL migrations and PHPUnit.
+- This closes the current branch-head CI verification gate after the documentation-only tracking updates. #427 on `f76db385f21448198e8181fa142c1c7f62267dc6` is now historical.
+- Final manual backend security/content/diff review is complete; no blocking finding was identified in the reviewed backend paths.
+- **Completed:** all planned backend feature implementation, API/admin/delivery/invoice work, integration documentation, formatting remediation, CI verification, and final manual backend review.
+- **Remaining:** GoDaddy capability confirmation, broader Flutter/device/E2E validation, and explicit human release approval.
+- **No new backend feature should be invented at this stage.** Developer 1 only continues if external validation exposes a concrete backend defect or the product/API contract changes.
+- No Flutter-owned files were changed; no deployment or production migration was performed.
+
+**Next owner/action:** owner validates hosting/release prerequisites; Developer 2 completes frontend/device/E2E validation; then the owner gives explicit release approval. Any backend defect found during those checks becomes the next implementation task and must be CI-verified before release.
+
+
+### Developer 1 task-tracking update — 2026-09-29 (local Laravel serving fix)
+
+- Local backend testing exposed a concrete missing Laravel runtime directory: backend/public/ was absent from the tracked backend tree.
+- Added the standard Laravel backend/public/index.php front controller and backend/public/.htaccess rewrite configuration.
+- This restores the expected Laravel HTTP document root needed by php artisan serve and Apache-style hosting.
+- Commits: 81d0753ca65ee7de00d743ec8d09153da6b9ec00, 2d25a91eb7d24194fc4fc74f5d9895d4fcf3f923.
+- CI verification for the new runtime fix is pending; local validation should rerun php artisan serve after pulling the latest branch.
+- No Flutter-owned files, deployment, or production migration were changed.
+
+
+### Developer 1 status — 2026-09-29 (local Laravel front-controller import fix)
+
+- Local validation exposed a second concrete runtime defect after restoring `backend/public/`: `public/index.php` called `Request::capture()` without importing `Illuminate\\Http\\Request`, producing `Class "Request" not found` under `php artisan serve`.
+- Fixed `backend/public/index.php` by adding the standard `use Illuminate\\Http\\Request;` import.
+- Fix commit: `2376e97cd3d3fab6465ddf6ff6ebb021c9628a22`.
+- Backend workflow #435 **PASSED** on the preceding public-directory fix commit `d1431914bfa2dd13c319c6508318ae566fdaab6d`; this new import fix requires a fresh CI verification.
+- Next local validation: pull the latest branch, restart `php artisan serve`, then proceed to local `.env`/MySQL configuration and migrations once the server responds successfully.
+- No Flutter-owned files, deployment, or production migration were changed.
+
+
+## Developer 2 merge synchronization — 2026-09-30
 
 - **Branch:** `developer-2-flutter`
-- **Current Flutter PR:** #1 targeting `frontend`; latest implementation checkpoint is `029c53bdb16af52575a0fe83b31c33f5cf5a925f`.
-- **Flutter implementation completed:** API client/transport foundation, normalized API errors, environment API URL documentation, catalogue repository + fake/remote implementations, Riverpod catalogue controller/state, catalogue loading/empty/error/retry UI integration, secure application-session storage, `/me` restoration, logout/revocation handling, auth controller tests, auth-aware go_router redirects, and the local cart repository/controller boundary with explicit product IDs and quantity tests.
-- **Backend checkpoint:** `developer-1-backend-admin` has documented fixes after workflow #179: `bf2febe67ee45507886be50aca809e7c0bca9f23` fixes the stale status-history table assertion, `a0f9b47f70df16871ea4da82a50ebf5640b1582b` restores the established `data` envelope for order lists, and `cf5236d87a7c2ad00be965a89ce94a5cd72a566b` restricts customer order routes with `role:CUSTOMER`. Backend documentation commit `a1fcc5c920db6e4de71a53e294f3d71df95ad9b0` records the earlier fixes; commit `032e4144e5fba9e0b24a16418b82a23b1dbc2d52` adds 403/FORBIDDEN exception normalization and workflow #186 verifies it.
-- **Backend verification:** workflow #146 passed the corrected Phase 2/3 authentication/authorization + catalogue suite on PHP 8.3 with MySQL. The backend plan records workflow #204 as passing for server-owned admin order status transitions; workflow #205 failed on delivery-partner provisioning/approval conflict rendering; the backend fix is awaiting fresh CI verification.
-- **M2:** `[~]` backend auth is verified, but Flutter SSO remains blocked by the undocumented exact Google credential request/response contract, public client configuration, and role response shape.
-- **M3:** `[x]` backend catalogue milestone is verified; Flutter field-level DTO/UI mapping remains blocked because `API_CONTRACT.md` still does not document successful category/product response fields/envelope.
-- **M4:** `[~]` backend initial order/COD checkout/list/detail slice is now green in workflow #186. Flutter still waits for documented checkout/list/detail request/response examples and the next server-owned status-transition/concurrency slice before marking the milestone complete.
-- **Flutter runtime verification:** `dart format`, `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --debug`, and physical-device checks are **NOT RUN** because this GitHub-connected environment has no local Flutter/Dart runner.
-- **Next owner/action:** Developer 1 should publish the exact Flutter-facing order/COD and address request/response examples and finish the pending delivery-partner provisioning/approval CI verification. Developer 2 has now completed the local cart boundary subtask and will not guess API payload fields. Google SSO and typed catalogue mapping remain blocked on their missing schemas. Once the order contract is frozen, continue cart → checkout → customer orders, then delivery → active-trip tracking → invoices → release hardening.
-
-
-## Developer 2 checkpoint — 2026-09-29 (cart boundary implementation)
-
-- Branch: developer-2-flutter
-- Commit: c0fbe23643507eba58534a05d821eec89495d102
-- Implemented: local cart repository + Riverpod controller, explicit product IDs, quantity mutation through the controller, and repository tests.
-- Preserved: existing cart UI, route, and navigation.
-- Not implemented: backend order submission, address API, server totals, order response DTOs; those remain contract-gated.
-- Verification: Flutter/Dart commands remain NOT RUN because no local Flutter/Dart runner is available.
-
-
-## Developer 2 checkpoint — 2026-09-29 (cart boundary hardening)
-
-- Branch: developer-2-flutter
-- Cart boundary hardened after source review: corrected the cart vegetarian field binding and replaced the un-managed controller construction test with a real Riverpod ProviderContainer test.
-- Cart product-ID/quantity task is now explicitly tracked as complete at the local boundary.
-- API-backed checkout remains blocked by missing exact order/address request/response examples in API_CONTRACT.md.
-- Flutter runtime verification remains NOT RUN because no Dart/Flutter runner is available.
-
-
-## Developer 2 checkpoint — 2026-09-29 (contract integration gate documented)
-
-- Added `FLUTTER_CONTRACT_QUESTIONS.md` to explicitly track the remaining API contract fields required for safe Flutter integration.
-- No undocumented order, address, auth, catalogue or delivery payloads were implemented.
-- Current completed Flutter boundary remains the local cart repository/controller with explicit product IDs and quantity tests.
-- Next owner/action: Developer 1 freezes exact order/COD + address examples and completes delivery-partner provisioning verification; Developer 2 then implements typed order models and checkout/history integration.
-- Flutter runtime verification remains NOT RUN because no Dart/Flutter runner is available.
-
-
-## Developer 2 checkpoint — 2026-09-29 (backend delivery gate refresh)
-
-- Branch: `developer-2-flutter`
-- Backend workflow #209 is now passing, verifying delivery-partner provisioning/approval. The earlier workflow #205 failure is no longer an active blocker.
-- Flutter order/COD and address integration remains contract-gated because `API_CONTRACT.md` still lacks exact request/response examples.
-- Flutter delivery implementation is also contract-gated until assignment/request/location/tracking response examples are documented, despite backend provisioning now being verified.
-- No backend files or undocumented API payloads were changed by Developer 2.
-- Flutter/Dart runtime verification remains NOT RUN because no local runner is available.
-- Next action: Developer 1 freezes order/COD + address examples; Developer 2 implements typed order models and checkout/history, then delivery flows from the documented assignment/tracking contract.
-
-
-## Developer 2 checkpoint — 2026-09-29 (implementation continuation / status synchronization)
-
-- **Branch:** `developer-2-flutter`
-- **PR:** #1 → `frontend`, currently open and mergeable.
-- **Head:** `7854e5a3ef6131e8bbb3f252d579ef21c7589b94`.
-- **Completed Flutter work:** API transport/client + normalized errors; catalogue repository/controller/state and loading/empty/error/retry UI integration; secure session storage; `/me` restoration; logout/revocation; auth-aware routing; local cart repository/controller with explicit product IDs and quantity tests; contract-question documentation.
-- **Backend gate:** workflow #209 passes, verifying delivery-partner provisioning/approval. This removes the earlier provisioning blocker.
-- **Still blocked by shared contract:** order create/list/detail request/response examples, address request/response shape, Google auth exchange/configuration, catalogue success fields, and delivery assignment/tracking response examples.
-- **Verification:** Flutter/Dart formatting, analyzer, tests, APK build and physical-device checks are **NOT RUN**. Current commit status has no reported Flutter checks.
-- **Next owner/action:** Developer 1 freezes the exact order/COD + address contract. Developer 2 then implements typed order models and checkout/history, followed by delivery/active-trip tracking from the documented assignment/tracking contract. No undocumented payloads are to be invented.
-
-
-## Developer 2 checkpoint — 2026-09-29 (latest implementation continuation)
-
-- **Branch:** `developer-2-flutter`
-- **PR:** #1 → `frontend`, open and mergeable.
-- **Head:** `ea4756e366e16a438d696a48aad1d38f3f2e7ec3`.
-- **Completed Flutter boundaries:** API transport/client + normalized errors; catalogue repository/controller/state and loading/empty/error/retry UI integration; secure session storage; `/me` restoration; logout/revocation; auth-aware routing; local cart repository/controller with explicit product IDs and quantity tests; contract-question documentation.
-- **Backend verification:** workflow #209 passes for delivery-partner provisioning/approval; backend order checkout/list/detail and server-owned status-transition/concurrency work are verified.
-- **Current blockers:** exact Flutter-facing order create/list/detail and address schemas; Google auth exchange/configuration; catalogue success fields; delivery assignment/request/location/tracking response examples.
-- **Verification:** Flutter/Dart formatting, analyzer, tests, APK build and physical-device checks are **NOT RUN**; current commit status has no Flutter checks.
-- **Next owner/action:** Developer 1 freezes order/COD + address examples. Developer 2 then implements typed order models, checkout/history and server-authoritative totals, followed by delivery/active-trip tracking from documented schemas. No undocumented payloads are to be invented.
-
-
-## Developer 2 checkpoint — 2026-09-29 (current implementation gate)
-
-- **Branch:** `developer-2-flutter`
-- **PR:** #1 → `frontend`, open and mergeable.
-- **Current head:** `029c53bdb16af52575a0fe83b31c33f5cf5a925f`.
-- **Completed Flutter:** API transport/client + normalized errors; catalogue repository/controller/state and loading/empty/error/retry UI integration; secure session storage and `/me` restoration; logout/revocation; auth-aware routing; local cart repository/controller with explicit product IDs and quantity tests; contract-question tracking.
-- **Backend verified:** workflow #209 passes for delivery-partner provisioning/approval; backend order checkout/list/detail and server-owned status-transition/concurrency work are verified.
-- **Current blocker:** the next Phase 4 address/checkout implementation cannot safely begin because `API_CONTRACT.md` still lacks exact order create/list/detail and address request/response schemas. Google SSO, typed catalogue mapping and delivery assignment/tracking are similarly contract/config gated.
-- **Verification:** Flutter/Dart format, analyzer, tests, APK build and physical-device checks remain **NOT RUN**; no Flutter CI status is reported.
-- **Next owner/action:** Developer 1 freezes the order/COD + address contract. Developer 2 then implements typed order models → checkout repository/controller → server-authoritative totals → order success/detail/history, followed by delivery/tracking.
-
-
-## Developer 2 checkpoint — 2026-09-29 (latest continuation)
-
-- **Branch:** `developer-2-flutter`; **PR:** #1 → `frontend`, open/mergeable; current head is `16b7fc5f6bbb668924779bcc77e99e2c478bf7fe` after the latest progress-documentation commit.
-- **Completed Flutter:** API transport/client + normalized errors; catalogue repository/controller/state and loading/empty/error/retry UI integration; secure session storage; `/me` restoration; logout/revocation; auth-aware routing; local cart repository/controller with explicit product IDs and quantity tests; contract-question documentation.
-- **Backend verified:** workflow #209 passes for delivery-partner provisioning/approval; backend order checkout/list/detail and server-owned status-transition/concurrency work are verified.
-- **Contract check:** `developer-1-backend-admin` contains a new admin delivery-assignment contract section, but it is not yet on the shared/base `frontend` contract and does not provide the Flutter-facing delivery request/tracking schemas. Order create/list/detail and address request/response examples are still missing from the shared contract.
-- **M2:** `[~]` Google SSO remains blocked by the exact credential exchange, success session/token shape, public client configuration and role response shape.
-- **M3:** `[x]` backend catalogue milestone verified; Flutter typed field mapping remains schema-gated.
-- **M4:** `[~]` backend order/COD + status/concurrency work verified; Flutter checkout/history/address remain contract-gated.
-- **M5:** `[~]` delivery-partner provisioning/approval verified; assignment/accept/pickup/location/complete and tracking remain to be implemented and schema-verified.
-- **Flutter verification:** formatter/analyzer/tests/APK/device checks are **NOT RUN**; no Flutter CI status is reported.
-
-**Next owner/action:** Developer 1 freezes the complete Flutter-facing order/COD + address contract in the shared/base contract. Developer 2 then implements typed order models, checkout repository/controller, server-authoritative totals, order success/detail/history, followed by delivery request/assignment/tracking. No undocumented API payloads will be introduced.
-
-
-## Developer 2 checkpoint — 2026-09-29 (latest contract gate / status synchronization)
-
-- **Branch:** developer-2-flutter; **PR:** #1 → frontend, open and mergeable.
-- **Completed Flutter work:** API transport/client + normalized errors; catalogue repository/controller/state and loading/empty/error/retry UI integration; secure session storage; /me restoration; logout/revocation; auth-aware routing; local cart repository/controller with explicit product IDs and quantity tests; contract-question documentation.
-- **Backend verification:** workflow #209 passes for delivery-partner provisioning/approval; backend order checkout/list/detail and server-owned status-transition/concurrency work are verified.
-- **Current gate:** shared frontend API_CONTRACT.md still lacks exact order create/list/detail and address request/response examples. Backend delivery assignment/lifecycle/tracking details exist on developer-1-backend-admin, but are not yet synchronized into the shared/base contract with complete Flutter-facing response examples.
-- **Status:** M2 [~] Google SSO contract/config gated; M3 [x] backend catalogue milestone verified but Flutter typed field mapping is schema-gated; M4 [~] backend order/COD/status/concurrency verified while Flutter checkout/history/address remain contract-gated; M5 [~] provisioning/approval verified while Flutter delivery flows remain schema-gated.
-- **Verification:** Flutter/Dart formatter, analyzer, tests, APK build and physical-device checks are NOT RUN; no Flutter CI status is reported.
-- **Next owner/action:** Developer 1 freezes the complete Flutter-facing order/COD + address contract in the shared/base branch. Developer 2 then implements typed order models, checkout repository/controller, server-authoritative totals/error handling, order success/detail/history, followed by delivery request/assignment/status/tracking from the frozen delivery schemas.
-
-
-## Developer 2 checkpoint — 2026-09-29 (latest backend verification / implementation gate)
-
-- **Branch:** `developer-2-flutter`; **PR:** #1 → `frontend`, open and mergeable.
-- **Backend verification update:** workflow #259 passes the delivery-partner assignment listing and owned status progression (`PICKED_UP → OUT_FOR_DELIVERY → DELIVERED`) on PHP 8.3 with MySQL. This replaces the older delivery-lifecycle verification note that referenced an earlier pending state.
-- **Shared contract gate remains:** `frontend/API_CONTRACT.md` still lacks exact order create/list/detail request/response examples and address request/response fields. The backend branch has additional delivery lifecycle/location/tracking documentation, but it is not yet synchronized into the shared contract with complete Flutter-facing response examples.
-- **Completed Flutter:** API transport/error foundation; catalogue repository/controller/state and loading/empty/error/retry integration; secure session storage, `/me` restoration and logout/revocation; auth-aware routing; local cart repository/controller with explicit product IDs and quantity tests; contract-question tracking.
-- **M2:** `[~]` Google SSO contract/config gated.
-- **M3:** `[x]` backend catalogue milestone verified; Flutter typed field mapping remains schema-gated.
-- **M4:** `[~]` backend order/COD + status/concurrency work verified; Flutter checkout/history/address remain contract-gated.
-- **M5:** `[~]` delivery provisioning/approval and partner assignment/status progression are backend-verified; Flutter delivery request/assignment/location/tracking remains schema-gated.
-- **Verification:** Flutter/Dart formatting, analyzer, tests, APK build and physical-device checks are **NOT RUN**; no Flutter CI status is reported.
-- **Next owner/action:** Developer 1 freezes the complete shared Flutter-facing order/COD + address examples. Developer 2 then implements typed order models → checkout repository/controller → server-authoritative totals/error handling → order success/detail/history, followed by delivery request/assignment/status/location/tracking from the documented schemas. No undocumented payloads will be introduced.
-
-
-## Developer 2 checkpoint — 2026-09-29 (latest backend refresh / task tracking)
-
-- **Branch:** `developer-2-flutter`; **PR:** #1 → `frontend`, open and mergeable.
-- **Completed Flutter implementation:** API transport/client + normalized errors; catalogue repository/controller/state boundary with loading/empty/error/retry UI integration; secure session storage; `/me` restoration; logout/revocation; auth-aware routing; local cart repository/controller with explicit product IDs, quantity updates/removal and tests; contract-question tracking.
-- **Backend verification refresh:** Developer 1 documents Workflow #259 as passing delivery-partner assignment listing and owned `PICKED_UP → OUT_FOR_DELIVERY → DELIVERED` progression, and Workflow #266 as passing active-trip location/tracking: partner-owned location writes, coordinate/timestamp validation, active-trip enforcement, persisted history, customer/admin tracking authorization and stale-location behavior. This removes the earlier backend delivery-tracking verification blocker.
-- **New backend scope observed:** the backend contract now also documents invoice endpoints and idempotent invoice-number generation/access rules. Flutter invoice integration is **not** started because the shared Flutter contract does not yet contain the complete invoice response schema and Phase 4 order/address integration is still blocked.
-- **Shared contract remains the primary blocker:** `developer-2-flutter` `API_CONTRACT.md` still lacks exact Flutter-facing Google auth exchange, catalogue success fields, order create/list/detail request/response examples, address request/response shape, and delivery assignment/location/tracking response examples. The backend branch has richer delivery/invoice documentation, but it is not synchronized into the shared/base contract.
-- **Implementation decision:** no speculative order/address DTOs, status enums, checkout payloads, delivery network calls or invoice response models were introduced.
-- **Verification:** Flutter/Dart formatting, analyzer, tests, APK build and physical-device checks remain **NOT RUN** because no Flutter/Dart runner is available; no Flutter CI status is reported.
-
-### Task status after this checkpoint
-- **Phase 0:** complete except runtime verification/tooling baseline, which remains NOT RUN.
-- **Phase 1:** complete.
-- **Phase 2:** partially complete; session lifecycle is implemented, Google SSO exchange/config and role routing remain contract/config gated.
-- **Phase 3:** repository/controller/state integration is complete; typed field mapping remains blocked by the missing success schema.
-- **Phase 4:** local cart boundary is complete; address, COD checkout, server totals/errors, duplicate-submit handling, order success/detail/history and API-backed tests remain blocked by the missing order/address contract.
-- **Phase 5:** customer order history/detail/status remains blocked on documented order list/detail schemas.
-- **Phase 6/7 delivery tracking:** backend is now verified through Workflow #266, but Flutter integration remains blocked by the missing shared delivery response schemas.
-- **Invoice:** backend implementation is documented, but Flutter invoice UI/repository/model work is not started and remains contract-gated.
-
-**Next implementation sequence:** (1) Developer 1 freezes the complete shared order/COD + address + relevant delivery response examples; (2) Developer 2 implements typed order models; (3) cart → COD checkout repository/controller with duplicate-submit protection; (4) server-authoritative totals/error handling; (5) order success/detail/history; (6) delivery request/assignment/status/location/tracking; (7) invoice integration once its Flutter-facing response schema is frozen. No undocumented payloads will be invented.
-
-
-## Developer 2 status checkpoint — 2026-09-29 (latest)
-
-- M2 [~] Google SSO — session persistence, /me restoration, logout and auth-aware routing are implemented; exact Google credential exchange, success session/token shape, public client configuration and role response remain contract/config gated.
-- M3 [~] Catalogue — repository/controller/state and loading/empty/error/retry integration are implemented; typed category/product mapping remains blocked by missing successful response fields in the shared contract.
-- M4 [~] Orders/COD — backend checkout/list/detail and server-owned status/concurrency work are verified; Flutter local cart boundary is complete, while address, typed order models, COD submission, server totals/errors and order history/detail remain blocked by missing shared schemas.
-- M5 [~] Delivery — backend provisioning/approval, assignment/status progression and active-trip location/tracking are verified by Workflows #209/#259/#266; Flutter delivery integration remains blocked by missing shared assignment/location/tracking response examples.
-- Invoice [ ] Backend invoice scope is documented on developer-1-backend-admin; Flutter invoice work has not started because the shared contract lacks the complete invoice response schema.
-- Phase 0 [~] static baseline/documentation complete; Flutter/Dart runtime verification is NOT RUN because no Flutter/Dart runner or Flutter CI result is available.
-- Developer 2 has not introduced speculative DTOs, payloads, status enums or API calls. Backend-owned files remain untouched.
-
-### Next implementation queue
-1. Developer 1 freezes and synchronizes the complete Flutter-facing order/COD + address contract in the shared/base branch.
-2. Developer 2 implements typed order models and repository/controller boundaries.
-3. Implement cart → COD checkout with duplicate-submit protection and server-authoritative totals/errors.
-4. Implement order success/detail/history and refresh/error/empty states.
-5. Implement delivery assignment/status/location/tracking from the frozen schemas.
-6. Implement invoice model/repository/UI once the Flutter-facing invoice response schema is frozen.
-
-
-
-## Developer 2 continuation checkpoint — 2026-09-29
-
-### Current implementation status
-- **M2 [~] Google SSO:** session persistence, `/me` restoration, logout/revocation and auth-aware routing are implemented; exact Google credential exchange, session/token response, public client configuration and role response remain gated by the shared contract/config.
-- **M3 [~] Catalogue:** repository/controller/state plus loading/empty/error/retry integration are implemented; typed category/product mapping remains gated by missing successful response fields.
-- **M4 [~] Orders/COD:** backend checkout/list/detail and server-owned status/concurrency work are verified; Flutter local cart boundary is complete; address, typed order models, COD submission, server totals/errors and order history/detail remain gated by missing shared schemas.
-- **M5 [~] Delivery:** backend provisioning/approval, assignment/status progression and active-trip tracking are verified by #209/#259/#266; Flutter delivery integration remains gated by missing shared assignment/location/tracking response examples.
-- **Invoice [ ]:** backend invoice scope is documented; Flutter invoice work has not started because the shared response schema is incomplete.
-- **Phase 0 [~]:** static audit/documentation complete; Flutter/Dart runtime verification is NOT RUN and no Flutter CI result is available.
-
-### Latest contract finding
-The backend branch now has richer delivery/tracking and invoice endpoint documentation, but the shared `developer-2-flutter` contract remains high-level and is not sufficient to safely implement typed Flutter DTOs/network calls. Developer 2 therefore made no speculative API changes in this continuation.
-
-### Next task queue
-1. Developer 1 synchronizes exact order/COD + address + relevant delivery response examples into the shared/base contract.
-2. Developer 2 implements typed order models and repository/controller boundaries.
-3. Add cart → COD checkout duplicate-submit protection and server-authoritative totals/errors.
-4. Add order success/detail/history with loading/empty/error/refresh states.
-5. Add delivery assignment/status/location/tracking.
-6. Add invoice model/repository/UI after the Flutter-facing invoice response schema is frozen.
-
-
-## Developer 2 checkpoint — 2026-09-29 (continuation / task status synchronization)
-
-- **Branch:** `developer-2-flutter`; **PR:** #1 → `frontend`; open and mergeable.
-- **Current implementation:** API foundation, catalogue repository/controller/state + UI states, session restoration/logout/auth-aware routing, and local cart repository/controller with explicit product IDs and tests are complete.
-- **No new API code added:** the shared contract remains insufficient for the next typed order/COD implementation, so no speculative DTOs, status enums, request payloads or network calls were introduced.
-- **Backend verification currently available:** Workflows #209/#259/#266 cover delivery provisioning/approval, assignment/status progression and active-trip tracking; backend invoice behavior is documented. These do not by themselves freeze the Flutter-facing response schemas.
-- **Verification:** Flutter/Dart formatter, analyzer, tests, APK build and physical-device checks remain NOT RUN; no Flutter CI status is reported.
-
-### Current milestone state
-- M2 `[~]` Auth — session lifecycle done; exact Google exchange/session/role contract remains gated.
-- M3 `[~]` Catalogue — repository/controller/state done; typed response mapping remains gated.
-- M4 `[~]` Orders/COD — backend verified; Flutter address/order schemas remain gated.
-- M5 `[~]` Delivery — backend verification available; Flutter schemas/integration remain gated.
-- M6 `[ ]` Partner delivery completion — Flutter integration not started.
-- M7 `[ ]` Active-trip map integration — Flutter integration not started.
-- M8 `[ ]` Invoice — backend scope documented; Flutter integration not started.
-- M9 `[ ]` Release hardening — runtime/CI/device verification pending.
-
-**Next owner/action:** Developer 1 must synchronize the complete Flutter-facing order/COD + address + delivery response examples into the shared/base contract. Developer 2 then starts typed order models → checkout controller/repository → order success/detail/history → delivery/tracking → invoice.
-
-
-## Developer 2 checkpoint — 2026-09-29 (implementation gate / current branch sync)
-
-- Branch: `developer-2-flutter`; PR #1 → `frontend`, open and mergeable.
-- Current PR head observed: `0c9f9844afbfc3bfb99fc2604f50cab5cec8beeb`.
-- Re-read the required Flutter architecture/API/auth/tracking/design/development docs and inspected the existing Flutter source tree before selecting the next implementation.
-- First incomplete plan task: Google SSO, but it remains blocked by the missing exact Google credential exchange/session response/public client configuration/role schema.
-- Next executable customer implementation remains typed order/COD + address integration, but the shared contract still lacks exact order create/list/detail and address schemas.
-- Backend delivery verification is available (#209/#259/#266), but Flutter delivery response schemas are not synchronized into the shared contract.
-- No speculative DTOs, payloads, status enums or backend-owned changes were introduced.
-- Flutter/Dart format/analyze/test/APK/device checks remain NOT RUN because no Flutter/Dart runner or Flutter CI result is available.
-
-**Next owner/action:** Developer 1 synchronizes the complete Flutter-facing order/COD + address contract; Developer 2 then implements typed order models → checkout repository/controller → server-authoritative totals/errors → order success/detail/history, followed by delivery/tracking.
-
-## Developer 2 checkpoint — 2026-09-29 (Flutter CI enablement)
-
-- Added `.github/workflows/flutter-ci.yml` on `developer-2-flutter` (commit `785ab5f4a1a68fa7bf2a11ff2c0a549eb558d5fa`).
-- The workflow is configured to run Flutter dependency resolution, Dart formatting validation, static analysis, tests and Android debug APK build on relevant branch pushes, PRs targeting `frontend`, and manual dispatch.
-- This enables remote verification but is **not evidence of a passing run**. Phase 0 runtime verification and M9 release hardening remain pending until CI results and device checks are actually reviewed.
-- API integration remains gated by missing Flutter-facing auth/catalogue/order/address/delivery/tracking/invoice schemas and canonical delivery route synchronization.
-- Next owner/action: Developer 2 inspects the first Flutter CI run and fixes any actual failures; Developer 1 synchronizes the complete shared API contract; then Developer 2 resumes typed order/address integration.
-
-
-## Developer 2 checkpoint — 2026-09-29 (CI formatter gate fixed)
-
-- Re-checked Flutter PR #1 and the first Flutter CI run.
-- Flutter CI run `36590699675` completed cancelled at the formatting gate: Flutter 3.47.5 and dependency resolution succeeded, then the strict Dart formatter check reported 45 files requiring formatting and exited 1. Analyze, tests and Android build were skipped, so no passing runtime/build result is claimed.
-- Updated `.github/workflows/flutter-ci.yml` in commit `4ee6286385f02a2154645488208b4c46ff90c146` so the developer branch workflow applies `dart format .`, commits only Dart formatting changes back to `developer-2-flutter`, then runs the strict formatting check, analyzer, tests and Android debug build.
-- This is a CI/verification-enablement fix; no backend-owned files and no API DTOs/payloads were added.
-- The next CI run must be observed before marking Phase 0 runtime verification complete.
-- The shared `API_CONTRACT.md` is still incomplete for Google auth, typed catalogue fields, order/COD + address, delivery/tracking and invoice Flutter-facing schemas. Therefore the next product-feature implementation remains contract-gated.
-
-### Current task status
-- **Phase 0:** [~] static audit complete; CI formatting gate identified and remediation committed; analyzer/tests/APK still unverified.
-- **Phase 1:** [x] API foundation complete.
-- **Phase 2:** [~] session lifecycle complete; Google SSO exchange/config and role routing contract/config gated.
-- **Phase 3:** [~] repository/controller/state integration complete; typed catalogue mapping schema-gated.
-- **Phase 4:** [~] local cart boundary complete; address/COD checkout and order integration remain schema-gated.
-- **Phase 5:** [ ] order history/detail/status not started.
-- **Phase 6/7:** [~] backend delivery lifecycle/tracking verified; Flutter integration schema-gated.
-- **Invoice:** [ ] Flutter integration not started; response schema not frozen.
-- **Release verification:** [ ] pending a successful CI run plus device/integration verification.
-
-### Next executable work
-1. Observe the formatter-remediation CI run and fix any real analyzer/test/build failures.
-2. Developer 1 synchronizes the exact Flutter-facing order/COD + address contract and resolves canonical delivery routes.
-3. Implement typed order models/repository/controller, then COD checkout with duplicate-submit protection and server-authoritative totals/errors.
-4. Implement order success/detail/history, then delivery/tracking and invoice from frozen schemas.
-
-
-## Developer 2 checkpoint — 2026-09-29 (current CI run status)
-
-- Current branch head: `4c7570bd6aa064643d868e1984286fd85dc364d8`.
-- CI run `36591111357` was cancelled after the branch advanced; it did not produce analyzer/test/build results.
-- CI run `36591122454` is now **in progress**. Checkout passed; Flutter setup is still running. No final CI result is claimed.
-- Task progress remains: Phase 1 complete; Phase 2 session lifecycle partial/Google SSO gated; Phase 3 repository/controller/state boundary complete/typed mapping gated; Phase 4 local cart complete/address+COD gated; Phase 5 not started; Phase 6/7 backend verified/Flutter schema-gated; invoice Flutter work not started; release verification pending.
-- Next owner/action: Developer 1 synchronizes complete order/COD + address and canonical delivery schemas; Developer 2 consumes the frozen contract and implements typed order → checkout → order history/detail, then delivery/tracking and invoice.
-
-
-## Developer 2 continuation checkpoint — 2026-09-29 (CI failure triage + test fix)
-
-- Re-checked PR #1 and the latest Flutter CI result before selecting the next implementation.
-- Branch head advanced to `7a70fa05e271dfeee6518fc9f9de71a763c3772e` with a focused test-only fix: `test/features/customer/catalogue_controller_test.dart` now imports the existing `ApiException` type from `lib/core/network/api_exception.dart`.
-- CI run `36591386723` failed at **flutter analyze** after dependency resolution and formatting passed. The concrete blocking analyzer errors were four unresolved `ApiException` references in the catalogue controller test. Tests and Android build were skipped because analysis failed.
-- The failure was not caused by a new API contract assumption; the test was missing an import for an already-existing shared exception type. No backend-owned files or API DTOs/payloads were changed.
-- Replacement CI run `36591707567` for commit `7a70fa05e271dfeee6518fc9f9de71a763c3772e` is currently **in progress**. A pull-request run `36591713156` is also queued. No passing analyzer/test/build result is claimed yet.
-- Current contract gate remains unchanged: the shared `API_CONTRACT.md` still lacks complete Flutter-facing order/COD + address schemas and canonical delivery request/assignment route/response definitions. Therefore the next product implementation is still blocked from safely creating typed network models.
-
-### Updated task status
-- **Phase 0:** [~] static audit complete; CI now reaches analyzer, with one concrete test compile issue fixed; final analyzer/tests/Android build result pending.
-- **Phase 1:** [x] API foundation complete.
-- **Phase 2:** [~] session lifecycle complete; Google SSO exchange/config and role routing remain contract/config gated.
-- **Phase 3:** [~] repository/controller/state integration complete; typed catalogue mapping remains schema-gated. Catalogue controller test compile blocker fixed in `7a70fa0`.
-- **Phase 4:** [~] local cart boundary complete; address/COD checkout and order integration remain contract-gated.
-- **Phase 5:** [ ] customer order history/detail/status not started.
-- **Phase 6/7:** [~] backend delivery lifecycle/tracking verified; Flutter integration remains schema-gated and delivery route canonicalization is pending.
-- **Invoice:** [ ] Flutter integration not started; shared response schema not frozen.
-- **Release verification:** [ ] pending successful CI plus physical-device/integration verification.
-
-### Next execution order
-1. Observe CI run `36591707567` and fix only concrete formatter/analyzer/test/build failures if any remain.
-2. Developer 1 synchronizes the complete Flutter-facing order/COD + address contract and canonical delivery routes/responses into the shared/base contract.
-3. Implement typed order models, repository/controller, duplicate-submit protection and server-authoritative totals/errors.
-4. Implement order success/detail/history, then delivery/tracking and invoice integrations from frozen schemas.
-
-No speculative API payloads, status enums, identifiers or backend changes are permitted while the contract gate remains open.
-
-
-## 2026-09-29 — CI triage and implementation checkpoint (latest)
-
-- Branch head: `74b5877e58333976774b325e9476d26d06b224bc`.
-- Flutter CI run `36591771642` reached `flutter analyze` and failed on two concrete errors: Riverpod `AsyncValue<AuthStatus>.valueOrNull` was unavailable in `lib/app/app.dart`, and `ApiClient` now requires an `ApiTransport` in `lib/features/auth/presentation/auth_controller.dart`.
-- Fixed those concrete analyzer errors only: routing now reads `authState.value`, and the auth API client is constructed with `HttpApiTransport()`.
-- Fix commits: `995a9d56f53ce9bf9e3d0408cd37e3feb009d520` and `74b5877e58333976774b325e9476d26d06b224bc`.
-- New push/PR CI runs `36592415878` and `36592421982` are currently pending; the previous runs for the intermediate commit are still in progress/cancelled as superseded. Do not mark CI green until the latest head completes analyzer, tests, and Android build.
-- Existing non-blocking analyzer warnings/info remain in the legacy UI surface; no broad cleanup was introduced during this checkpoint.
-
-### Current implementation status
-- Phase 0 [~] Static audit/documentation complete; CI verification is active, physical-device verification remains not run here.
-- Phase 1 [x] API foundation complete.
-- Phase 2 [~] Session lifecycle complete; Google SSO exchange/config and role routing remain contract/config gated.
-- Phase 3 [~] Repository/controller/state integration complete; typed catalogue mapping remains schema-gated.
-- Phase 4 [~] Local cart boundary complete; address/COD checkout, server-authoritative totals/errors, duplicate-submit protection, order success/detail/history remain contract-gated.
-- Phase 5 [ ] Customer order history/detail/status not started.
-- Phase 6/7 [~] Backend delivery lifecycle/tracking verified; Flutter delivery integration remains schema-gated and canonical route/response synchronization is still required.
-- Invoice [ ] Flutter integration not started; response schema is not frozen.
-
-### Next execution order
-1. Re-check CI for branch head `74b5877e58333976774b325e9476d26d06b224bc` and fix only newly reported concrete failures.
-2. Once CI is clean and Developer 1 synchronizes the Flutter-facing order/COD + address contract, implement typed order models.
-3. Implement order repository/controller, then cart → COD checkout with duplicate-submit protection and server-authoritative totals/errors.
-4. Implement order success/detail/history and related refresh/empty/error states.
-5. Implement delivery assignment/status/location/tracking from the frozen contract.
-6. Implement invoice model/repository/UI after its Flutter-facing response schema is frozen.
-
-No undocumented API payloads, status enums, route assumptions, or backend-owned changes are to be introduced.
-
-
-## Developer 2 continuation checkpoint — 2026-09-29 (CI analyzer warning remediation)
-
-- Re-checked the latest Flutter CI result before continuing implementation.
-- Current branch head: `9d3132dd92a1c77868aaba8801729d9ff24fad5e`.
-- PR #1 remains open, mergeable, and targets `frontend`.
-- CI run `36592511530` failed at `flutter analyze` on the PR merge commit. Dependency resolution and Dart formatting passed; tests and Android build were skipped.
-- The analyzer reported no Dart errors, but four warning-level issues caused the analyzer command to exit non-zero:
-  1. unused `filterNames` field in `home_feed_screen.dart`;
-  2. unused optional `selected` parameter in the restaurant `_Nav` widget;
-  3. unused `_FakeStore` test declaration;
-  4. unused optional `user` constructor parameter in `_FakeRepository`.
-- Fixed only those concrete Flutter-owned analyzer warnings:
-  - removed the unused `filterNames` constant;
-  - removed the unused `selected` parameter/state from `_Nav`;
-  - removed the unused `_FakeStore` and now-unneeded import;
-  - simplified `_FakeRepository` construction while retaining its default `AuthUser`.
-- Fix commits:
-  - `de05d667cbb84999ff214d38a263a623c2792916`
-  - `3b9ca0dff6dbdbc22731da1a8f9673e18a59c8a8`
-  - `9d3132dd92a1c77868aaba8801729d9ff24fad5e`
-- Replacement CI runs for the updated branch are pending/in progress: push `36593120616`, PR `36593128253`; an intermediate PR run `36593116771` is still in progress and may be superseded. Do not mark CI green until the current head completes analysis, tests and Android build.
-- The shared `API_CONTRACT.md` remains incomplete for Flutter-facing order/COD, address, delivery/tracking and invoice schemas, and the delivery route discrepancy remains unresolved. No speculative DTOs, status enums, payloads or backend-owned files were added.
-
-### Updated task status
-
-- **Phase 0:** [~] static audit complete; CI has reached analyzer and concrete warning blockers were remediated; current-head analyzer/tests/Android build still pending.
-- **Phase 1:** [x] API foundation complete.
-- **Phase 2:** [~] session lifecycle complete; Google SSO exchange/config and role routing remain contract/config gated.
-- **Phase 3:** [~] repository/controller/state integration complete; typed catalogue mapping remains schema-gated.
-- **Phase 4:** [~] local cart boundary complete; address/COD checkout, duplicate-submit protection, server-authoritative totals/errors and order integration remain contract-gated.
-- **Phase 5:** [ ] customer order history/detail/status not started.
-- **Phase 6/7:** [~] backend delivery lifecycle/tracking verified; Flutter integration remains schema-gated and canonical route/response synchronization is required.
-- **Invoice:** [ ] Flutter integration not started; shared response schema is not frozen.
-- **Release verification:** [ ] pending successful current-head CI plus physical-device/integration verification.
-
-### Next execution order
-
-1. Inspect CI for current branch head `9d3132dd92a1c77868aaba8801729d9ff24fad5e`; fix only concrete formatter/analyzer/test/build failures.
-2. Developer 1 synchronizes the exact Flutter-facing order/COD + address contract and resolves canonical delivery routes/responses.
-3. Implement typed order models, repository/controller and tests.
-4. Implement cart → COD checkout with duplicate-submit protection and server-authoritative totals/errors.
-5. Implement order success/detail/history and refresh/empty/error states.
-6. Implement delivery assignment/status/location/tracking, then invoice integration, from frozen schemas.
-
-
-## Developer 2 continuation checkpoint — 2026-09-29 (current CI + contract gate re-check)
-
-- **Branch:** `developer-2-flutter`
-- **PR:** #1 → `frontend`, open and mergeable.
-- **Current head:** `2afcb96a119a695a99bd7cf8eeb3d12f5d72ef7b`.
-- **Latest Flutter CI:** run `36594747609` is **in progress** against the current head. The job has completed setup/checkout and is currently installing Flutter; dependency resolution, formatting, analyzer, tests and Android build have not completed. Therefore CI is not marked passed or failed.
-- **Contract re-check:** shared `API_CONTRACT.md` remains high-level. It still lacks concrete Flutter-facing Google auth, catalogue success, order create/list/detail, address, delivery/tracking and invoice response schemas. The delivery route discrepancy also remains unresolved.
-- **Implementation decision:** no safe API-backed order/COD implementation is newly unblocked. Do not invent DTO fields, status enums, request payloads, or route variants.
-
-### Task status
-- Phase 0: **[~]** static audit/documentation complete; current-head CI verification in progress; physical-device verification not run.
-- Phase 1: **[x]** API foundation complete.
-- Phase 2: **[~]** session lifecycle complete; Google SSO exchange/config and role routing contract/config gated.
-- Phase 3: **[~]** catalogue repository/controller/state integration complete; typed API mapping schema-gated.
-- Phase 4: **[~]** local cart boundary complete; address/COD checkout, server totals/errors and order integration contract-gated.
-- Phase 5: **[ ]** customer order history/detail/status not started.
-- Phase 6/7: **[~]** backend delivery lifecycle/tracking verified; Flutter delivery integration and canonical routes remain schema-gated.
-- Invoice: **[ ]** Flutter integration not started; response schema not frozen.
-- Release verification: **[ ]** pending successful CI plus device/integration verification.
-
-### Next execution order
-1. Complete and inspect CI run `36594747609`; fix only concrete current-head formatter/analyzer/test/build failures.
-2. Developer 1 synchronizes the complete Flutter-facing order/COD + address contract and canonical delivery routes/responses into the shared/base contract.
-3. Implement typed order models → repository/controller → tests.
-4. Implement cart → COD checkout with duplicate-submit protection and server-authoritative totals/errors.
-5. Implement order success/detail/history and refresh/empty/error states.
-6. Implement delivery assignment/status/location/tracking, then invoice integration, from frozen schemas.
-
-No backend/Laravel-owned files were modified. No merge or deployment was performed.
-
-## Developer 2 implementation checkpoint — 2026-09-29 (typed order foundation)
-
-### Completed in this increment
-- Synchronized the Flutter-facing API contract with the current backend implementation for Google auth, catalogue pagination, COD checkout, order history/detail, address snapshot, canonical delivery/tracking routes, invoice access and error codes.
-- Added typed order/domain models for order status, inline delivery address, checkout line requests, order items, server-authoritative totals and paginated order results.
-- Added RemoteOrderRepository for POST /orders, GET /orders, and GET /orders/{order} with strict envelope validation and normalized ApiException failures.
-- Added OrderCheckoutController with duplicate-submit protection and authenticated API access through secure session-token storage.
-- Added OrderHistoryController with paginated history loading, refresh, next-page loading and order-detail loading.
-- Added repository/controller tests covering COD payload serialization, server-authoritative order data, missing-order behavior and duplicate-submit protection.
-
-### Verification
-- Flutter CI for the current branch is not yet green/complete; a fresh run is required after the implementation commits.
-- Local Flutter/Dart commands are unavailable in this GitHub-connected environment, so local analyzer/test/APK results are not claimed.
-
-### Remaining order work
-- Wire the checkout controller into the existing cart/address UI.
-- Add server validation/conflict presentation without recalculating totals client-side.
-- Implement customer order success/detail/history screens and states.
-- Add tracking and delivery-partner Flutter flows from the now-frozen canonical routes.
-- Add invoice model/repository/UI from the frozen invoice response.
-
-No backend/Laravel-owned files were modified.
-## Developer 2 implementation checkpoint — 2026-09-29 (customer order UI)
-
-### Completed in this increment
-- Connected the existing customer Orders screen to `OrderHistoryController` instead of hard-coded order fixtures.
-- Added loading, empty, error/retry, pull-to-refresh and pagination states for customer order history.
-- Added server-backed order status/payment/total display without recalculating financial totals.
-- Added customer order-detail screen backed by `GET /orders/{order}`.
-- Added order-detail route `/orders/:orderId`.
-- Added server-provided delivery-address snapshot and financial fields to the detail UI.
-
-### Checkout boundary retained
-- The COD repository/controller foundation remains implemented, including duplicate-submit protection.
-- The current local cart still contains placeholder product identifiers, so this checkpoint does not submit those fixtures to the backend or invent a product-ID mapping.
-- The existing checkout screen still contains legacy payment/total presentation and must be converted to the server-authoritative COD flow once cart/product IDs are backed by the catalogue.
-
-### Verification
-- PR #1 is open and currently reported mergeable by GitHub.
-- The latest Flutter CI run for the previous head is pending; a fresh result for these UI commits is required before marking CI green.
-- Local Flutter/Dart commands are unavailable in this GitHub-connected environment; no local analyzer/test/APK result is claimed.
-
-### Next execution order
-1. Run/inspect current-head CI and fix only concrete failures.
-2. Replace legacy checkout totals/payment choices with COD-only server-backed submission and editable/validated address input.
-3. Clear the cart only after a successful server-created order and navigate to order detail using the returned order ID.
-4. Add delivery tracking to order detail using the frozen `/orders/{order}/tracking` contract.
-5. Implement delivery partner assignment/status/location UI and then invoice integration.
-
-No backend/Laravel-owned files were modified.
-## Developer 2 implementation checkpoint — 2026-09-29 (COD checkout integration)
-
-### Completed in this increment
-- Wired the customer checkout screen to the existing authenticated OrderCheckoutController.
-- Replaced legacy UPI/card selection and client-calculated totals with the contract-defined COD-only checkout flow.
-- Added inline delivery-address form validation for the frozen checkout address fields.
-- Derived checkout line items from the local cart and enforce positive numeric catalogue product IDs before submission; placeholder fixture IDs are rejected rather than submitted as fake backend IDs.
-- Added server-error presentation using ApiException message/code, including validation/conflict responses without recalculating totals client-side.
-- Added duplicate-submit protection through the existing controller and disabled checkout controls while submitting.
-- Added cart clear operation and clear the cart only after the server successfully creates an order.
-- Navigate to the server-returned order detail after successful checkout.
-- Corrected the order-detail screen to avoid the unsupported AsyncValue.valueOrNull API.
-- Aligned OrderLineRequest.productId with the API contract's integer product IDs and updated the repository test.
-
-### Important remaining integration point
-- The current local cart still seeds illustrative non-numeric IDs (biryani, butter). The checkout now safely refuses those values instead of creating invalid orders. The next catalogue/cart increment must replace those fixture identifiers with real API product IDs when adding products to the cart.
-
-### Verification
-- No local Flutter/Dart execution is available in this GitHub-connected environment.
-- CI must be inspected for the current branch head before marking this increment verified.
-- No backend/Laravel-owned files were modified.
-
-### Next execution order
-1. Verify current-head CI and fix concrete Flutter failures only.
-2. Replace local cart fixture product IDs with real catalogue-backed IDs and typed catalogue mapping.
-3. Add/expand checkout tests for successful COD submission, duplicate submission, validation failure and 409 conflict presentation.
-4. Improve order success/detail/history UX around the newly real checkout path.
-5. Add customer tracking using GET /orders/{order}/tracking.
-6. Continue delivery partner integration and invoice UI from the frozen contract.
-
-## Developer 2 checkpoint — 2026-09-29 (typed catalogue + real-ID cart boundary)
-
-- M3: [x] Flutter typed catalogue DTO/repository/controller mapping is implemented from the frozen catalogue schema. Runtime API verification remains part of CI/integration verification.
-- M4: [~] cart now starts empty and accepts numeric catalogue product IDs through an explicit add-item boundary; COD checkout remains to be covered by successful-path and error/conflict tests.
-- M5–M8: [~] backend delivery/tracking/invoice work is documented/verified, while Flutter delivery/tracking/invoice integration remains.
-- M9: [ ] final CI, Android/device and end-to-end verification remain.
-- Next owner/action: Developer 2 connects real catalogue selection to CartController.addItem, then verifies checkout error paths before continuing tracking/delivery/invoice.
-
-
-## Developer 2 checkpoint — 2026-09-29 (catalogue-to-cart + checkout tests)
-
-- M3: [x] typed catalogue DTO/repository/controller and catalogue-backed menu/detail selection complete.
-- M4: [x] real numeric product IDs flow from catalogue → cart → COD request; checkout tests cover duplicate submit, VALIDATION_FAILED and HTTP 409.
-- M5: [x] order history/detail UI implemented; [~] customer tracking remains.
-- M6/M7: [~] delivery assignment/status/location/tracking Flutter integration remains.
-- M8: [ ] invoice Flutter integration remains.
-- M9: [ ] current-head CI, Android/device and end-to-end verification remain.
-- Next owner/action: Developer 2 verifies CI, then implements customer tracking, delivery and invoice integrations in contract order.
+- **PR:** #1 → `frontend`
+- **Purpose:** synchronize the Flutter branch with the current `frontend` integration head after the backend/admin branch was merged.
+- **Flutter implementation retained:** API/network foundation, auth session restoration/logout and route guards, catalogue repository/controller/state, local cart boundary, customer order/invoice repositories and models, delivery assignment/status/location/tracking integration, and associated tests.
+- **Backend contract authority:** the current `frontend` API contract is retained as the authoritative shared contract; stale placeholder delivery routes from the older Flutter contract are not restored.
+- **Merge resolution:** the only files changed on both sides since the common base were `AI_TASK_BOARD.md` and `API_CONTRACT.md`; both were reconciled against the current backend-integrated `frontend` state.
+- **Verification note:** the previously observed Flutter CI analyzer/test stages passed before the Android debug build hit the Java heap limit; Android build success and physical-device/E2E verification remain pending.
+- **Next action:** run current-head Flutter CI after synchronization, then address any concrete build/test failures before merging PR #1 into `frontend`.

@@ -11,9 +11,9 @@ MySQL is authoritative; Laravel migrations are the schema source of truth.
 - `order_items`: product reference plus product-name/unit-price snapshots, quantity and line total.
 - `order_status_history`: order, from/to status, actor and timestamp.
 - `delivery_partners`: user, approval and availability state.
-- `delivery_assignments`: order, partner, status and lifecycle timestamps.
-- `delivery_locations`: assignment, latitude, longitude, accuracy and recorded timestamp.
-- `invoices`: order, invoice number, financial snapshots, issue time and file reference.
+- `order_assignments`: order, partner, assigning admin and assignment timestamp.
+- `delivery_locations`: assignment, latitude, longitude, optional accuracy and recorded timestamp; indexed for latest-location reads and retained as location history.
+- `invoices`: unique order, deterministic invoice number, customer/address/item/financial snapshots, payment snapshot, issue time and optional file reference.
 
 ## Integrity
 Use foreign keys/indexes, transactions for checkout/assignment, decimal-safe money and consistent timestamps. Historical order/invoice values must not depend on mutable products. Define location retention before long-term history.
