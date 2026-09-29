@@ -32,11 +32,12 @@ The authoritative implementation checklist is `DEVELOPER_1_PLAN.md`. It contains
 - the immediate next task;
 - the required end-of-task reporting format.
 
-Current phase: **Phase 2 — Identity & authorization (not started); Phase 1 foundation is complete.**
+Current phase: **Database foundation verified; catalogue schema/model/validation slice is implemented. Phase 2 identity/authentication is the next major implementation phase after the latest CI run is verified.**
 
-Latest foundation CI verification: workflow #30 successfully completed PHP 8.3 setup, dependency installation and `composer test`. The health test and PHPUnit suite now pass. The branch also contains the initial `users`, `addresses`, `categories` and `products` schema/models plus a MySQL-backed CI migration check; that new database slice is awaiting its first workflow run.
-
-Immediate next task: verify the new MySQL-backed migration workflow, then add model relationship/validation coverage. Authentication remains the next major phase after the database foundation.
+Latest CI verification:
+- Workflow #30 passed the Laravel 13 foundation test suite on PHP 8.3.
+- Workflow #48 passed MySQL 8.4 startup, migrations, schema assertions and the test suite for the initial database foundation.
+- The latest relationship/request-validation commits are awaiting their post-change CI run.
 
 ## Local setup
 
@@ -55,7 +56,7 @@ From `backend/`:
 
 The isolated agent execution container currently has PHP 8.4.23, but it does not have Composer or the MySQL CLI. Those limitations mean Laravel dependency installation, migrations and PHPUnit cannot be claimed as locally executed here.
 
-GitHub Actions has verified PHP 8.3.35, the requested PHP extensions and Composer 2.10.3, and the Laravel 13 dependency set now installs successfully. Workflow #26 verified dependency installation and reached PHPUnit, but failed because `backend/tests/Unit` was absent. That directory is now preserved in Git. The next CI run must verify the health test.
+GitHub Actions has verified PHP 8.3.35, the requested PHP extensions and Composer 2.10.3, and the Laravel 13 dependency set installs successfully. Workflow #30 verified the foundation suite. Workflow #48 verified the initial MySQL migrations and schema tests.
 
 The target server information supplied by the project owner is PHP 8.3. Hosting capabilities beyond PHP version—Composer availability, required PHP extensions, database access, document root/public directory configuration, SSH/cron/queue support—still need verification on the actual GoDaddy plan before deployment.
 
@@ -63,6 +64,14 @@ The target server information supplied by the project owner is PHP 8.3. Hosting 
 
 Do not point development tests at production. Use a separate non-production MySQL database. Never commit OAuth credentials, database passwords, application keys, access tokens, or customer data.
 
+## Current implementation slice
+
+- Initial `users`, `addresses`, `categories` and `products` migrations/models are implemented.
+- MySQL-backed migration/schema verification is green in workflow #48.
+- Eloquent relationship tests cover user/address and category/product ownership.
+- Address/category/product FormRequests define baseline validation and admin-only write authorization.
+- Customer catalogue endpoints, admin CRUD, authentication and order logic are not implemented yet.
+
 ## Next implementation slice
 
-Verify the MySQL-backed migrations and `DatabaseSchemaTest` in CI. Then add relationship/validation coverage for users, addresses, categories and products. Authentication remains gated on verified Google credential handling and the selected Sanctum flow.
+Verify the latest relationship/request-validation CI run. Then proceed to Google SSO/Sanctum authentication and its negative authorization tests.
