@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:snap_foodd/features/delivery/data/delivery_location_adapter.dart';
@@ -69,7 +67,7 @@ void main() {
     final received = <DeliveryPosition>[];
 
     await adapter.start(onPosition: received.add);
-    source.controller.add(const DeliveryPosition(
+    source.controller.add(DeliveryPosition(
       latitude: 1,
       longitude: 2,
       recordedAt: DateTime.utc(2026, 9, 29),
