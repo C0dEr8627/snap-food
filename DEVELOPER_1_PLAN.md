@@ -31,7 +31,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 | Phase 3 — Catalogue | **COMPLETED** | Customer category/product reads, search/pagination, admin create/update/deactivate APIs, validation, regression tests and deterministic seed/demo data are implemented and verified by Workflow #146. |
 | Phase 4 — Orders & COD | **IN PROGRESS** | Checkout/list/detail and server-owned admin status transitions are CI-verified; delivery assignment/partner workflow remains. |
 | Phase 5 — Admin & assignment | **IN PROGRESS** | Protected Laravel web authentication/dashboard foundation and concurrency-safe delivery assignment are implemented; latest CI verifies the suite, while broader admin dashboard/order operations remain. |
-| Phase 6 — Delivery tracking | **IN PROGRESS** | Delivery-partner assignment listing and owned status progression are CI-verified; active-trip location updates/tracking are implemented and pending fresh CI verification. |
+| Phase 6 — Delivery tracking | **COMPLETED** | Delivery-partner assignment listing/status progression and active-trip location updates/tracking are CI-verified by Workflows #259 and #266. |
 | Phase 7 — Invoices | **NOT STARTED** | Numbering decision, invoice generation and access control remain. |
 | Phase 8 — Release readiness | **NOT STARTED** | Seeds, contract examples, clean-DB migration run, automated tests, security review and deployment checklist remain. |
 
@@ -129,12 +129,14 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 - [ ] Implement partner availability and eligible request list.
 - [ ] Implement approved accept/pickup/completion workflow.
-- [ ] Implement partner-owned active-assignment location updates.
-- [ ] Validate coordinates, timestamps and payload size.
-- [ ] Persist latest location and required history.
-- [ ] Implement authorized tracking reads.
-- [ ] Use HTTP updates + polling for MVP; no WebSockets/background GPS dependency.
-- [ ] Add stale-location and authorization tests.
+- [x] Implement partner-owned active-assignment location updates.
+- [x] Validate coordinates, timestamps and payload size.
+- [x] Persist latest location and required history.
+- [x] Implement authorized tracking reads.
+- [x] Use HTTP updates + polling for MVP; no WebSockets/background GPS dependency.
+- [x] Add stale-location and authorization tests.
+
+**Milestone:** Workflow #266 passed on PHP 8.3 with MySQL, verifying the active-trip location/tracking increment. The explicit accept step remains a product-contract/future increment; current assignment is server-created by ADMIN and active for the assigned partner.
 
 ## Phase 7 — Invoices
 
@@ -250,3 +252,10 @@ A task is complete only when implementation, validation, authorization, automate
 - Workflow #259 passed the corrected delivery-partner assignment/status authorization paths on PHP 8.3 with MySQL.
 - Delivery partner assignment listing and owned PICKED_UP → OUT_FOR_DELIVERY → DELIVERED progression are now CI-verified.
 - The explicit accept step remains a contract decision/future increment; current assignment is server-created by ADMIN and becomes active for the assigned partner.
+
+
+### Active-trip tracking verification
+
+- Workflow #266 **PASSED** on commit `f99dde6b52ff0450693fff8b63b90ce31bbe2722`.
+- The active-trip location/tracking increment is now CI-verified complete: partner-owned location writes, coordinate/timestamp validation, active-trip enforcement, persisted history, customer/admin tracking authorization and stale-location behavior.
+- M7 is complete. Next implementation is Phase 7 invoice generation and access control.
