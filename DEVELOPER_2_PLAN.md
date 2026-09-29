@@ -369,3 +369,27 @@ No undocumented API payloads will be introduced, and no Laravel/backend-owned fi
 - **Invoice:** backend scope documented; Flutter invoice model/repository/UI remains not started pending the shared success schema.
 
 **Next executable Flutter task once the shared contract is frozen:** implement typed order models and repository/controller boundaries, then cart → COD checkout with duplicate-submit protection and server-authoritative totals/error handling. No undocumented payloads will be introduced.
+
+
+## Developer 2 checkpoint — 2026-09-29 (implementation gate / current branch sync)
+
+- **Branch:** `developer-2-flutter`; **PR:** #1 → `frontend`, open and mergeable.
+- **Current PR head observed:** `0c9f9844afbfc3bfb99fc2604f50cab5cec8beeb`.
+- Re-read the required architecture, auth, delivery-tracking, design and development documentation and inspected the existing Flutter source structure before selecting the next task.
+- The first incomplete plan item remains Phase 2 Google SSO, but it is **blocked** by the missing exact `POST /api/v1/auth/google` credential field/type, success session/token response, public Google client configuration, and role response shape. Implementing it now would require inventing an API/config contract.
+- The next contract-dependent implementation gate is Phase 4 typed order/COD + address integration. The shared `API_CONTRACT.md` still lacks exact order create/list/detail request/response examples and address request/response fields. Backend delivery workflows are verified, but Flutter delivery response schemas are also not synchronized into the shared contract.
+- **No speculative Flutter DTOs, status enums, request payloads, network calls, or invoice response models were added.** Backend/Laravel-owned files remain untouched.
+- Completed implementation remains: API transport/error foundation; catalogue repository/controller/state and loading/empty/error/retry integration; secure session storage and `/me` restoration; logout/revocation; auth-aware routing; local cart repository/controller with explicit product IDs, quantity updates/removal and tests; contract-question tracking.
+- **Verification:** Flutter/Dart formatter, analyzer, tests, APK build and physical-device checks remain **NOT RUN** because this GitHub-connected environment has no local Flutter/Dart runner and no Flutter CI result is available.
+
+### Task status
+- Phase 0: **[~]** static audit/documentation complete; runtime verification unavailable.
+- Phase 1: **[x]** complete.
+- Phase 2: **[~]** session lifecycle complete; Google SSO exchange/config and role routing contract-gated.
+- Phase 3: **[~]** repository/controller/state integration complete; typed catalogue mapping schema-gated.
+- Phase 4: **[~]** local cart boundary complete; address/COD checkout/server totals/order success-history contract-gated.
+- Phase 5: **[ ]** customer order history/detail/status waiting on order schemas.
+- Phase 6/7: **[~]** backend delivery lifecycle/tracking verified; Flutter integration waiting on shared response schemas.
+- Invoice: **[ ]** backend scope exists; Flutter response schema is not frozen.
+
+**Next executable implementation:** after Developer 1 synchronizes the complete Flutter-facing order/COD + address contract, implement typed order models and repository/controller boundaries, then cart → COD checkout with duplicate-submit protection and server-authoritative totals/errors. Do not bypass the contract gate.
