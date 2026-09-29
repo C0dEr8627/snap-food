@@ -183,7 +183,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 29. Implemented admin category/product create/update/deactivate endpoints, update validation and endpoint regression tests; inactive products are hidden from customer reads.
 30. Corrected catalogue policies so active customers can read categories/products while admin-only write operations remain protected.
 31. Workflow #134 failed on the latest combined API-hardening + catalogue state because Laravel 13's base controller does not provide the `authorize` helper; catalogue controllers were corrected to use `Gate::authorize`.
-32. The correction is committed on `developer-1-backend-admin`; CI verification of those commits is pending.
+32. The initial correction only covered some catalogue controller authorization paths; Workflow #138 still exposed remaining `$this->authorize(...)` calls in category/product `show` and `destroy`. Those remaining paths have now been converted to `Gate::authorize(...)` on `developer-1-backend-admin`; a fresh CI run is required before Phase 2/3 can be verified.
 33. Progress documentation is maintained against actual CI results rather than assuming implementation is verified.
 
 ### Latest verification result
@@ -198,7 +198,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Immediate next task
 
-**Verify CI after the catalogue authorization fix.** If green, update the verified Phase 2/3 status, add deterministic catalogue seed/demo data, and then begin Phase 4 order/COD workflow. If CI exposes another defect, fix the concrete failure before advancing.
+**Verify CI after the complete catalogue authorization fix.** If green, update the verified Phase 2/3 status, add deterministic catalogue seed/demo data, and then begin Phase 4 order/COD workflow. If CI exposes another defect, fix the concrete failure before advancing.
 
 ## Developer 1 definition of done
 
