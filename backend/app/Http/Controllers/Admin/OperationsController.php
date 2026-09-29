@@ -7,11 +7,66 @@ use App\Models\DeliveryPartner;
 use App\Models\Invoice;
 use App\Models\OrderAssignment;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 class OperationsController extends Controller
 {
+    public function updatePartnerApproval(Request $request, DeliveryPartner $deliveryPartner): RedirectResponse
+    {
+        $validated = $request->validate(['approved' => ['required', 'boolean']]);
+        $approved = (bool) $validated['approved'];
+
+        DB::transaction(function () use ($approved, $deliveryPartner, $request): void {
+            $partner = DeliveryPartner::query()->lockForUpdate()->findOrFail($deliveryPartner->id);
+            $partner->is_approved = $approved;
+            $partner->approved_at = $approved ? now() : null;
+            $partner->approved_by = $approved ? $request->user()->id : null;
+            if (! $approved) {
+                $partner->is_available = false;
+            }
+            $partner->save();
+        });
+
+        return redirect()->route('admin.delivery-partners.index')->with('status', $approved ? 'Delivery partner approved.' : 'Delivery partner approval revoked.');
+    }
+
+    public function updatePartnerState(Request $request, DeliveryPartner $deliveryPartner): RedirectResponse
+    {
+        $validated = $request->validate(['action' => ['required', 'in:activate,deactivate,available,unavailable']]);
+
+        DB::transaction(function () use ($validated, $deliveryPartner): void {
+            $partner = DeliveryPartner::query()->with('user')->lockForUpdate()->findOrFail($deliveryPartner->id);
+            $action = $validated['action'];
+
+            if ($action === 'activate' && ! $partner->user->is_active) {
+                abort(409, 'An inactive user account cannot be activated as a delivery partner.');
+            }
+
+            if ($action === 'available' && (! $partner->is_approved || ! $partner->is_active || ! $partner->user->is_active)) {
+                abort(409, 'Only approved and active delivery partners can be made available.');
+            }
+
+            if ($action === 'activate') {
+                $partner->is_active = true;
+                $partner->is_available = false;
+            } elseif ($action === 'deactivate') {
+                $partner->is_active = false;
+                $partner->is_available = false;
+            } elseif ($action === 'available') {
+                $partner->is_available = true;
+            } else {
+                $partner->is_available = false;
+            }
+
+            $partner->save();
+        });
+
+        return redirect()->route('admin.delivery-partners.index')->with('status', 'Delivery partner state updated.');
+    }
+
     public function customers(Request $request): View
     {
         $validated = $request->validate(['q' => ['nullable', 'string', 'max:120']]);
