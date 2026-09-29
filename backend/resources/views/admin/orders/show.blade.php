@@ -9,7 +9,7 @@
     <header>
         <h1><a href="{{ route('admin.dashboard') }}">Snap Foodd Admin</a></h1>
         <nav>
-            <a href="{{ route('admin.orders.index') }}">Orders</a>
+            <a href="{{ route('admin.catalogue.index') }}">Catalogue</a> · <a href="{{ route('admin.orders.index') }}">Orders</a>
             <form method="POST" action="{{ route('admin.logout') }}" style="display:inline">
                 @csrf
                 <button type="submit">Sign out</button>
@@ -73,6 +73,21 @@
         <section>
             <h3>Delivery</h3>
             <p>{{ $order->assignment?->deliveryPartner?->user?->name ?? 'Unassigned' }}</p>
+            @if ($order->assignment)
+                <p>Assigned at: {{ $order->assignment->assigned_at?->toIso8601String() }}</p>
+            @elseif ($order->status === \\App\\Models\\Order::STATUS_READY_FOR_PICKUP)
+                <h4>Assign delivery partner</h4>
+                @if ($eligiblePartners->isNotEmpty())
+                    <form method="POST" action="{{ route('admin.orders.assignment', $order) }}">
+                        @csrf
+                        <label>Eligible partner <select name="delivery_partner_id" required>@foreach ($eligiblePartners as $partner)<option value="{{ $partner->id }}">{{ $partner->user->name }} ({{ $partner->user->email }})</option>@endforeach</select></label>
+                        <button type="submit">Assign delivery</button>
+                    </form>
+                    @error('delivery_partner_id')<p>{{ $message }}</p>@enderror
+                @else
+                    <p>No approved, active and available delivery partners are currently eligible.</p>
+                @endif
+            @endif
         </section>
 
         <section>
