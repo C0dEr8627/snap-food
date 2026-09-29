@@ -4,6 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\User;
+use App\Models\DeliveryPartner;
+use App\Models\OrderAssignment;
+use App\Models\Invoice;
 use Illuminate\Contracts\View\View;
 
 class DashboardController extends Controller
@@ -34,6 +40,15 @@ class DashboardController extends Controller
                 ->count(),
         ];
 
-        return view('admin.dashboard', compact('counts'));
+        $directoryCounts = [
+            'categories' => Category::query()->count(),
+            'products' => Product::query()->count(),
+            'customers' => User::query()->where('role', User::ROLE_CUSTOMER)->count(),
+            'delivery_partners' => DeliveryPartner::query()->count(),
+            'assignments' => OrderAssignment::query()->count(),
+            'invoices' => Invoice::query()->count(),
+        ];
+
+        return view('admin.dashboard', compact('counts', 'directoryCounts'));
     }
 }
