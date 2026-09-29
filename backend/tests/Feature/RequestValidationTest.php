@@ -5,12 +5,16 @@ namespace Tests\Feature;
 use App\Http\Requests\StoreAddressRequest;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\StoreProductRequest;
+use App\Models\Category;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Validator;
 use Tests\TestCase;
 
 class RequestValidationTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_address_rules_accept_valid_coordinates_and_reject_out_of_range_values(): void
     {
         $request = new StoreAddressRequest();
@@ -69,10 +73,15 @@ class RequestValidationTest extends TestCase
 
     public function test_product_rules_validate_category_price_and_stock(): void
     {
+        $category = Category::create([
+            'name' => 'Burgers',
+            'slug' => 'burgers',
+        ]);
+
         $request = new StoreProductRequest();
 
         $valid = Validator::make([
-            'category_id' => 1,
+            'category_id' => $category->id,
             'name' => 'Classic Burger',
             'slug' => 'classic-burger',
             'price' => '149.00',
