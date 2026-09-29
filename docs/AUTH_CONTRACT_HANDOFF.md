@@ -29,9 +29,9 @@ This document records the exact information Flutter needs before Google SSO can 
 
 ## Current cross-branch checkpoint (2026-09-29)
 
-Developer 1's latest inspected branch commit is `aaa75903c5b723aa4d307afa6691f6ab0c535ab7`. Prior auth/authz workflow #109 passed on `b150b2cbb6874c00fda70197d0995057b19a0e6d`; latest workflow #142 exposed four stale `error.code` assertions, corrected in `53cbf6e01ebed21cf295f3700809e2877aaccc26` and `28053a9ff26f854cc70301920b97844dad8c72c9`. Fresh CI after those fixes is still pending.
+Developer 1's latest inspected branch is `developer-1-backend-admin` at `eecba9da5516c14e7921f5640c4dd37f4b76a967`. Workflow #146 passed the corrected Phase 2/3 authentication/authorization and catalogue slice on PHP 8.3 with MySQL. Phase 4 order/COD implementation has started on that branch, but its CI verification is still pending.
 
-Flutter is still blocked from the actual Google exchange because the shared `API_CONTRACT.md` / `AUTH.md` do not yet freeze the exact `/auth/google` request credential field/type, successful application-token response shape, or public Google client configuration.
+Flutter remains blocked from the actual Google exchange because the shared `API_CONTRACT.md` / `AUTH.md` do not yet freeze the exact `/auth/google` request credential field/type, successful application-token response shape, public Google client configuration, or role response shape.
 
 ## Remaining implementation after contract freeze
 
@@ -50,4 +50,4 @@ Flutter is still blocked from the actual Google exchange because the shared `API
 - Do not guess the token field or response envelope.
 - Do not store Google credentials as the application's long-lived session.
 - Do not embed Google OAuth secrets.
-- Do not mark the Google SSO milestone complete until Laravel verification and Flutter session establishment are exercised end-to-end.
+- Do not mark the Google SSO integration complete until Flutter provider login, Laravel verification and Flutter session establishment are exercised end-to-end.
