@@ -22,18 +22,30 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 
 ## Phase 0 — Inspect current app
 
-- [ ] Inspect `pubspec.yaml`, routing, Riverpod providers, feature directories, existing mock repositories and all current screens.
+- [x] Inspect `pubspec.yaml`, routing, Riverpod providers, feature directories, existing mock repositories and all current screens (static source audit completed; runtime baseline remains separate).
 - [ ] Run formatter/analyzer/tests available in the environment; record actual baseline results.
-- [ ] Map each current screen to its feature and intended API endpoint.
-- [ ] Identify existing navigation/design regressions; do not expand scope into unrelated redesigns.
-- [ ] Record dependencies/platform configuration required for Google sign-in, secure storage, Maps and location.
+- [x] Map each current screen to its feature and intended API endpoint.
+- [x] Identify existing navigation/design regressions from static inspection; do not expand scope into unrelated redesigns.
+- [x] Record dependencies/platform configuration required for Google sign-in, secure storage, Maps and location.
+
+## Current execution status
+
+> **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. Latest committed API foundation: `51aa0aec5cbae21b737c69d559ea995a2d50557f`. PR #1 targets `frontend` and remains open.
+>
+> **Verified complete in source control:** Phase 0 static Flutter audit, screen-to-contract mapping, platform/dependency inventory, API transport/client foundation, normalized API errors, environment API URL documentation, and API-client fake-transport unit tests.
+>
+> **Not verified because the GitHub-connected environment has no local Flutter/Dart runner:** `dart format`, `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --debug`, and physical-device checks. These remain **NOT RUN**, not passed.
+>
+> **Current first incomplete implementation task:** repository interfaces/implementations behind the existing Flutter UI. Catalogue integration is the first scoped feature, but typed catalogue models must not invent response fields absent from `API_CONTRACT.md`. If backend response examples remain missing, use documented assumptions/fakes rather than an incompatible payload.
+>
+> **Next implementation sequence:** repository layer → catalogue loading/error/empty states → auth/session contract coordination → Google SSO/session persistence → orders/checkout → delivery → active-trip tracking.
 
 ## Phase 1 — API foundation
 
 - [x] Add a single configured API client with environment-specific base URL.
 - [x] Centralize JSON serialization, timeouts, auth headers, normalized API errors and safe logging (sensitive payloads are not logged).
-- [ ] Add repository interfaces/implementations using the current architecture.
-- [ ] Add loading, empty, error, retry and offline/degraded-network states.
+- [ ] Add repository interfaces/implementations using the current architecture. **Next task.**
+- [ ] Add loading, empty, error, retry and offline/degraded-network states. **Starts with catalogue repositories/screens.**
 - [x] Keep secrets out of source; document how API URL and public client keys are configured per environment.
 - [x] Use a fake transport for API client unit tests; feature repository fakes remain to be added as repositories are introduced.
 
