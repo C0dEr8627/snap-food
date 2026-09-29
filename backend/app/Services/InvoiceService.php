@@ -34,8 +34,8 @@ class InvoiceService
                 'delivery_address_snapshot' => $order->delivery_address_snapshot,
                 'items_snapshot' => $order->items->map(fn ($item): array => [
                     'product_id' => $item->product_id,
-                    'product_name' => $item->product_name_snapshot,
-                    'unit_price' => (string) $item->unit_price_snapshot,
+                    'product_name' => $item->product_name,
+                    'unit_price' => (string) $item->unit_price,
                     'quantity' => $item->quantity,
                     'line_total' => (string) $item->line_total,
                 ])->values()->all(),
