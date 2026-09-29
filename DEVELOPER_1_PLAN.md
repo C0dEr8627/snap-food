@@ -145,7 +145,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 - [x] Protect customer/admin invoice access.
 - [x] Add totals, numbering uniqueness and unauthorized-access tests.
 
-**Current Phase 7 gate:** invoice implementation is awaiting fresh CI verification.
+**Current Phase 7 gate:** Workflow #284 failed only because `User::factory()` was unavailable in the minimal Laravel skeleton. The factory support fix is committed; fresh CI verification is required before M8 can be marked complete.
 
 ## Phase 8 — Integration and release readiness
 
