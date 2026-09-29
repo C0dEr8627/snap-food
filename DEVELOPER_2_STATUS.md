@@ -464,3 +464,39 @@ No merge or deployment performed.
 5. Run current-head CI and physical-device/E2E verification when tooling is available.
 
 No backend/Laravel-owned files were modified. No merge or deployment was performed.
+
+
+## Developer 2 implementation checkpoint — 2026-09-29 (active-trip lifecycle/freshness)
+
+### Completed in this increment
+- Extended the active delivery location controller with last-successful-publish tracking.
+- Bound the partner customer-navigation screen to the active assignment lifecycle: location publishing starts for an active assignment, stops for delivered/cancelled assignments, stops when the partner marks arrival, and stops when the navigation screen is disposed.
+- Added foreground location status presentation for requesting permission, active tracking, permission denial, unavailable GPS and publish errors.
+- Preserved the existing navigation/map UI structure; no background GPS, geofencing or WebSockets were introduced.
+- The default location source remains explicitly unavailable because no concrete Android/iOS location package is currently configured; the UI now reports that limitation instead of implying GPS is active.
+
+### Verification
+- Local Flutter/Dart formatter, analyzer, tests and Android build remain NOT RUN because the GitHub-connected environment has no Flutter/Dart runner.
+- No physical-device permission/GPS verification was performed.
+- No backend/Laravel-owned files were modified.
+
+### Current task status
+- Phase 0: **[~]** static audit complete; current-head CI/device verification pending.
+- Phase 1: **[x]** API foundation complete.
+- Phase 2: **[~]** session lifecycle complete; Google SSO configuration/exchange and final role routing remain integration-gated.
+- Phase 3: **[x]** typed catalogue → menu/detail → real numeric cart IDs complete; runtime verification pending.
+- Phase 4: **[x]** cart → COD checkout foundation/tests and server-backed navigation integrated; runtime verification pending.
+- Phase 5: **[x]** order history/detail/tracking source integration implemented; runtime verification pending.
+- Phase 6: **[~]** delivery assignment retrieval/lifecycle and active-assignment state implemented; concrete platform GPS and complete partner trip flow remain.
+- Phase 7: **[~]** foreground adapter, active-assignment publishing, lifecycle stop behavior and freshness/error presentation are implemented; approved platform GPS source, Maps SDK, physical-device verification and customer/partner map rendering remain.
+- Invoice: **[ ]** Flutter invoice integration not started.
+- Release verification: **[ ]** current-head CI, Android build and physical-device/E2E verification pending.
+
+### Next implementation queue
+1. Identify and wire the approved Android/iOS location package and restricted Maps configuration from project documentation/configuration; do not add speculative dependencies.
+2. Complete platform permission/revocation and real-GPS physical-device verification.
+3. Implement invoice model/repository/UI from the frozen invoice endpoint contract, without inventing undocumented response fields.
+4. Inspect/fix current-head CI once available.
+5. Finish end-to-end/device verification and update PR readiness.
+
+No backend/Laravel-owned files were modified. No merge or deployment was performed.
