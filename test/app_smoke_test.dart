@@ -23,7 +23,7 @@ void main() {
 
     expect(find.byType(SvgPicture), findsOneWidget);
 
-    await tester.pump(const Duration(milliseconds: 1400));
+    await tester.pump(const Duration(milliseconds: 1800));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('GOOD FOOD.'), findsOneWidget);
