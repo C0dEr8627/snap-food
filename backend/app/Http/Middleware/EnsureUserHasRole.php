@@ -14,28 +14,25 @@ class EnsureUserHasRole
 
         if ($user === null) {
             return response()->json([
-                'error' => [
-                    'code' => 'UNAUTHORIZED',
-                    'message' => 'Authentication is required.',
-                ],
+                'message' => 'Authentication is required.',
+                'errors' => (object) [],
+                'code' => 'UNAUTHORIZED',
             ], 401);
         }
 
         if (! $user->is_active) {
             return response()->json([
-                'error' => [
-                    'code' => 'ACCOUNT_INACTIVE',
-                    'message' => 'This account is inactive.',
-                ],
+                'message' => 'This account is inactive.',
+                'errors' => (object) [],
+                'code' => 'ACCOUNT_INACTIVE',
             ], 403);
         }
 
         if (! $user->hasAnyRole($roles)) {
             return response()->json([
-                'error' => [
-                    'code' => 'FORBIDDEN',
-                    'message' => 'You are not authorized to perform this action.',
-                ],
+                'message' => 'You are not authorized to perform this action.',
+                'errors' => (object) [],
+                'code' => 'FORBIDDEN',
             ], 403);
         }
 
