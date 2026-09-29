@@ -12,7 +12,7 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 
 - [ ] M0 — GoDaddy plan/capabilities recorded; local development assumptions documented.
 - [ ] M1 — Laravel boots and connects to non-production MySQL.
-- [ ] M2 — Google SSO works end-to-end and Flutter can restore/revoke session.
+- [!] M2 — Google SSO end-to-end is not yet verified. Flutter session restore/revoke foundation is implemented and backend auth/authz CI is green, but the exact `/auth/google` request/response contract and public Google client configuration are still undocumented.
 - [ ] M3 — Admin product/category CRUD and customer catalogue API work end-to-end.
 - [ ] M4 — Customer creates a COD order with server-calculated totals; admin can inspect it.
 - [ ] M5 — Admin provisions delivery partners and safely assigns orders.
