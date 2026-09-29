@@ -54,5 +54,7 @@ Record decisions here only after the owner approves or they are already establis
 - Admin category/product create/update/deactivate operations are protected by role middleware and policies.
 - Update request validation and catalogue endpoint regression tests are present.
 - Deterministic seed data is still pending.
-- Next verification gate: GitHub Actions on the current branch head.
+- Workflow #134 failed during catalogue tests because the Laravel 13 base controller does not expose `$this->authorize`; the catalogue controllers now use `Gate::authorize`.
+- Fix commits: `26f6217e7a89362550f8f68cfa8027027030645a`, `64aaefff30c5a02bbc0cdf2b367e11166d2403d6`.
+- Next verification gate: GitHub Actions on the fix commits.
 - Next implementation after a green verification gate: deterministic catalogue seeds, then Phase 4 order/COD workflow.
