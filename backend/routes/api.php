@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\Orders\AdminOrderController;
 use App\Http\Controllers\Api\V1\Orders\AdminOrderAssignmentController;
 use App\Http\Controllers\Api\V1\Orders\OrderController;
+use App\Http\Controllers\Api\V1\Orders\InvoiceController;
 use App\Http\Controllers\Api\V1\Delivery\DeliveryPartnerOrderController;
 use App\Http\Controllers\Api\V1\Delivery\DeliveryLocationController;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('/orders', [OrderController::class, 'store'])->name('api.v1.orders.store');
         Route::get('/orders/{order}', [OrderController::class, 'show'])->name('api.v1.orders.show');
         Route::get('/orders/{order}/tracking', [DeliveryLocationController::class, 'show'])->name('api.v1.orders.tracking');
+        Route::get('/orders/{order}/invoice', [InvoiceController::class, 'show'])->name('api.v1.orders.invoice');
     });
 
     Route::middleware('role:DELIVERY_PARTNER')->group(function (): void {
@@ -52,5 +54,6 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::patch('/products/{product}', [ProductController::class, 'update'])->name('api.v1.products.update');
         Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('api.v1.products.destroy');
         Route::get('/admin/orders/{order}/tracking', [DeliveryLocationController::class, 'show'])->name('api.v1.admin.orders.tracking');
+        Route::get('/admin/orders/{order}/invoice', [InvoiceController::class, 'show'])->name('api.v1.admin.orders.invoice');
     });
 });
