@@ -971,3 +971,38 @@ No backend/Laravel-owned files were modified.
 3. Wire the approved platform location source behind the existing adapter/controller boundary.
 4. Perform physical GPS permission/revocation, Maps and active-trip verification.
 5. Complete customer/delivery E2E, Android debug APK and final PR readiness.
+
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (CI smoke-test timing follow-up)
+
+- Fresh Flutter CI run #234 (36611311310) used the PR merge ref and completed dependency resolution, formatting and analyzer successfully.
+- The test suite reached the invoice, order, cart, delivery and API tests successfully; the only failing test was `test/app_smoke_test.dart`.
+- The concrete failure was a timing assumption: the smoke test asserted welcome-screen copy immediately after `pumpAndSettle()`, while the app intentionally keeps the splash screen for 1350 ms before navigating to `/welcome`. The failure found zero widgets containing `GOOD FOOD.`.
+- Updated the smoke test to verify the splash logo first, advance the fake clock past the 1350 ms splash duration, settle the welcome animations, and then assert the welcome UI.
+- Commit: `a614c6d963d26064d71ccb28c3b1e5d921608d01`.
+- This is a test-only correction; no backend/Laravel-owned files, API contracts, or platform dependencies were changed.
+- CI must be re-run on the corrected head. Do not claim green CI until the new run reaches analyzer, tests and Android debug build successfully.
+
+### Current task board
+
+| Area | Status | Current state |
+|---|---|---|
+| Phase 0 — audit/verification | [~] | Current-head CI verification ongoing; physical-device verification pending |
+| Phase 1 — API foundation | [x] | Complete |
+| Phase 2 — auth/session | [~] | Session lifecycle complete; Google platform/runtime verification pending |
+| Phase 3 — catalogue/cart | [x] | Complete |
+| Phase 4 — COD checkout | [x] | Implementation complete; automated/runtime verification pending |
+| Phase 5 — customer orders/tracking | [x] | Implementation complete; runtime verification pending |
+| Phase 6 — delivery lifecycle | [x] | Assignment/status/location integration complete |
+| Phase 7 — active GPS/Maps | [~] | Adapter/controller/lifecycle complete; approved platform dependency + real GPS/Maps verification pending |
+| Invoice | [x] | Contract frozen; typed model/repository/controller/UI and delivered-order route implemented; analyzer fixed; current CI blocked only by smoke-test timing |
+| Release verification | [ ] | Current-head green CI, Android APK, physical-device and E2E verification pending |
+
+### Next execution order
+
+1. Verify the fresh CI run for `a614c6d...` and fix only concrete failures.
+2. Confirm the approved Android/iOS location package and Google Maps configuration; do not invent a dependency.
+3. Wire the approved platform location source behind the existing adapter/controller boundary.
+4. Perform physical GPS permission/revocation, Maps and active-trip verification.
+5. Complete customer/delivery E2E, Android debug APK verification and final PR readiness.
