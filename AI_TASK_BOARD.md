@@ -18,7 +18,7 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 - [~] M5 — Delivery-partner provisioning/approval is CI-verified by Workflow #209 behind ADMIN API authorization. Protected Laravel web authentication and concurrency-safe order assignment are implemented and Workflow #244 has passed the PHPUnit suite; broader dashboard operations remain.
 - [x] M6 — Partner assignment listing and valid pickup → out-for-delivery → delivered transitions are implemented with ownership/conflict tests and verified by Workflow #259. The explicit partner accept step remains to be finalized against the product contract.
 - [x] M7 — Active-trip GPS updates, latest-location reads, stale-state reporting and customer/admin authorization are implemented and verified by Workflow #266.
-- [ ] M8 — Invoice generation and access rules are tested.
+- [~] M8 — Invoice schema, deterministic numbering, immutable snapshots and customer/admin access are implemented; CI verification is pending.
 - [ ] M9 — Security, Android device, end-to-end and deployment-readiness checks pass.
 
 ## Handoff format
@@ -105,3 +105,6 @@ Record decisions here only after the owner approves or they are already establis
 
 
 - Workflow #266 **PASSED** on commit `f99dde6b52ff0450693fff8b63b90ce31bbe2722`, verifying M7 active-trip location/tracking with PHP 8.3/MySQL. M7 is now complete; Phase 7 invoices is the next implementation.
+
+
+- Phase 7 invoice increment is implemented on `developer-1-backend-admin`: delivered-order invoice generation is idempotent, snapshots order/customer/item financial data, and customer/admin authorization is enforced. M8 remains in progress until CI verifies the implementation.
