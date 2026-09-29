@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:snap_foodd/features/customer/data/cart_repository.dart';
@@ -29,10 +30,13 @@ void main() {
     expect(updated.items.map((item) => item.productId), ['butter']);
   });
 
-  test('cart controller exposes a preview subtotal only', () {
-    final controller = CartController();
-    // Notifier lifecycle is normally managed by Riverpod; repository behavior
-    // is covered above, while this assertion documents the preview semantics.
-    expect(controller, isA<CartController>());
+  test('cart provider exposes preview subtotal from the repository', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final cart = container.read(cartControllerProvider);
+
+    expect(cart.itemCount, 2);
+    expect(cart.previewSubtotal, 600);
   });
 }
