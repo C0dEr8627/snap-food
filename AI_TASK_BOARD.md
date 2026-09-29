@@ -17,7 +17,7 @@ This board tracks **integration milestones**, not every code-level subtask. Deta
 - [~] M4 — Customer creates a COD order with server-calculated totals; customer order ownership/history, server-owned admin status transitions, and delivery assignment are implemented. Workflow #204 verified status transitions; assignment verification is pending.
 - [~] M5 — Delivery-partner provisioning/approval is CI-verified by Workflow #209 behind ADMIN API authorization. Protected Laravel web authentication and concurrency-safe order assignment are implemented and Workflow #244 has passed the PHPUnit suite; broader dashboard operations remain.
 - [x] M6 — Partner assignment listing and valid pickup → out-for-delivery → delivered transitions are implemented with ownership/conflict tests and verified by Workflow #259. The explicit partner accept step remains to be finalized against the product contract.
-- [~] M7 — Active-trip GPS updates, latest-location reads, stale-state reporting and customer/admin authorization are implemented; fresh CI verification is pending.
+- [x] M7 — Active-trip GPS updates, latest-location reads, stale-state reporting and customer/admin authorization are implemented and verified by Workflow #266.
 - [ ] M8 — Invoice generation and access rules are tested.
 - [ ] M9 — Security, Android device, end-to-end and deployment-readiness checks pass.
 
@@ -102,3 +102,6 @@ Record decisions here only after the owner approves or they are already establis
 - Implemented M7 location slice: POST /api/v1/delivery/assignments/{assignment}/location for the owning approved/active partner, coordinate/accuracy/timestamp validation, active-trip enforcement, persistent location history, and GET /api/v1/orders/{order}/tracking plus admin tracking read with stale-state reporting.
 - Location implementation commit: 8fce7c8374943d23e4e723f9df01776ac6d71b99; conflict response normalization follow-up: d2fbd64cbdc8086530eda80536ed09e33fd9ff16.
 - M7 remains in progress pending CI verification; invoices remain next after the location/tracking gate passes.
+
+
+- Workflow #266 **PASSED** on commit `f99dde6b52ff0450693fff8b63b90ce31bbe2722`, verifying M7 active-trip location/tracking with PHP 8.3/MySQL. M7 is now complete; Phase 7 invoices is the next implementation.
