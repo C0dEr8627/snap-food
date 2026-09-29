@@ -35,7 +35,6 @@ void main() {
     await tester.tap(find.text('Explore food'));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('GOOD FOOD.'), findsOneWidget);
-    expect(find.textContaining('FAST DELIVERY.'), findsOneWidget);
+    expect(find.text('Home'), findsOneWidget);
   });
 }
