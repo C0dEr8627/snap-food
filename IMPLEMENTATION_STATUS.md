@@ -209,3 +209,48 @@ No speculative API payloads, status enums, identifiers or backend changes are pe
 6. Implement invoice model/repository/UI after its Flutter-facing response schema is frozen.
 
 No undocumented API payloads, status enums, route assumptions, or backend-owned changes are to be introduced.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (CI analyzer warning remediation)
+
+- Re-checked the latest Flutter CI result before continuing implementation.
+- Current branch head: `9d3132dd92a1c77868aaba8801729d9ff24fad5e`.
+- PR #1 remains open, mergeable, and targets `frontend`.
+- CI run `36592511530` failed at `flutter analyze` on the PR merge commit. Dependency resolution and Dart formatting passed; tests and Android build were skipped.
+- The analyzer reported no Dart errors, but four warning-level issues caused the analyzer command to exit non-zero:
+  1. unused `filterNames` field in `home_feed_screen.dart`;
+  2. unused optional `selected` parameter in the restaurant `_Nav` widget;
+  3. unused `_FakeStore` test declaration;
+  4. unused optional `user` constructor parameter in `_FakeRepository`.
+- Fixed only those concrete Flutter-owned analyzer warnings:
+  - removed the unused `filterNames` constant;
+  - removed the unused `selected` parameter/state from `_Nav`;
+  - removed the unused `_FakeStore` and now-unneeded import;
+  - simplified `_FakeRepository` construction while retaining its default `AuthUser`.
+- Fix commits:
+  - `de05d667cbb84999ff214d38a263a623c2792916`
+  - `3b9ca0dff6dbdbc22731da1a8f9673e18a59c8a8`
+  - `9d3132dd92a1c77868aaba8801729d9ff24fad5e`
+- Replacement CI runs for the updated branch are pending/in progress: push `36593120616`, PR `36593128253`; an intermediate PR run `36593116771` is still in progress and may be superseded. Do not mark CI green until the current head completes analysis, tests and Android build.
+- The shared `API_CONTRACT.md` remains incomplete for Flutter-facing order/COD, address, delivery/tracking and invoice schemas, and the delivery route discrepancy remains unresolved. No speculative DTOs, status enums, payloads or backend-owned files were added.
+
+### Updated task status
+
+- **Phase 0:** [~] static audit complete; CI has reached analyzer and concrete warning blockers were remediated; current-head analyzer/tests/Android build still pending.
+- **Phase 1:** [x] API foundation complete.
+- **Phase 2:** [~] session lifecycle complete; Google SSO exchange/config and role routing remain contract/config gated.
+- **Phase 3:** [~] repository/controller/state integration complete; typed catalogue mapping remains schema-gated.
+- **Phase 4:** [~] local cart boundary complete; address/COD checkout, duplicate-submit protection, server-authoritative totals/errors and order integration remain contract-gated.
+- **Phase 5:** [ ] customer order history/detail/status not started.
+- **Phase 6/7:** [~] backend delivery lifecycle/tracking verified; Flutter integration remains schema-gated and canonical route/response synchronization is required.
+- **Invoice:** [ ] Flutter integration not started; shared response schema is not frozen.
+- **Release verification:** [ ] pending successful current-head CI plus physical-device/integration verification.
+
+### Next execution order
+
+1. Inspect CI for current branch head `9d3132dd92a1c77868aaba8801729d9ff24fad5e`; fix only concrete formatter/analyzer/test/build failures.
+2. Developer 1 synchronizes the exact Flutter-facing order/COD + address contract and resolves canonical delivery routes/responses.
+3. Implement typed order models, repository/controller and tests.
+4. Implement cart → COD checkout with duplicate-submit protection and server-authoritative totals/errors.
+5. Implement order success/detail/history and refresh/empty/error states.
+6. Implement delivery assignment/status/location/tracking, then invoice integration, from frozen schemas.
