@@ -30,24 +30,24 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 
 ## Current execution status
 
-> **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. Latest repository/controller commits are `8d7c5c36c631a3f82b9e1ff817ad9528ea04a8f1` and `53e953dde610d6edd6267001a5b5b205c58dda49`. PR #1 targets `frontend` and remains open.
+> **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. Latest catalogue UI work is now on the branch; PR #1 tracks the current head. PR #1 targets `frontend` and remains open.
 >
-> **Verified complete in source control:** Phase 0 static Flutter audit, screen-to-contract mapping, platform/dependency inventory, API transport/client foundation, normalized API errors, environment API URL documentation, API-client fake-transport tests, the first catalogue repository boundary with a remote implementation plus deterministic fake repository, and the catalogue Riverpod controller/state layer with retry/error handling and controller tests.
+> **Verified complete in source control:** Phase 0 static Flutter audit, screen-to-contract mapping, platform/dependency inventory, API transport/client foundation, normalized API errors, environment API URL documentation, API-client fake-transport tests, the first catalogue repository boundary with a remote implementation plus deterministic fake repository, the catalogue Riverpod controller/state layer with retry/error handling and controller tests, configured repository wiring, and catalogue loading/empty/error/retry UI integration across the existing customer catalogue screens with widget coverage.
 >
 > **Catalogue contract limitation:** `API_CONTRACT.md` documents the catalogue endpoints but does not define successful category/product response fields or a common success envelope. The repository therefore preserves JSON payloads without inventing field names. A typed DTO and UI mapping must wait for documented response fields or an explicitly approved backend response shape.
 >
 > **Not verified because the GitHub-connected environment has no local Flutter/Dart runner:** `dart format`, `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --debug`, and physical-device checks. These remain **NOT RUN**, not passed.
 >
-> **Current first incomplete implementation task:** connect the catalogue controller to the existing customer screens and add explicit empty/error/retry UI states without redesigning them. The repository and Riverpod state boundary are now in place.
+> **Current first incomplete implementation task:** replace the remaining hard-coded catalogue presentation with documented API fields once the successful category/product response schema is available. Until then, the UI state boundary is integrated but deliberately does not invent product/category field mappings.
 >
-> **Next implementation sequence:** catalogue UI integration + controller/widget coverage → typed catalogue DTOs once the API response shape is documented → auth/session contract coordination → Google SSO/session persistence → orders/checkout → delivery → active-trip tracking.
+> **Next implementation sequence:** document/confirm catalogue success response fields → add typed DTOs and replace hard-coded catalogue content → auth/session contract coordination → Google SSO/session persistence → orders/checkout → delivery → active-trip tracking.
 
 ## Phase 1 — API foundation
 
 - [x] Add a single configured API client with environment-specific base URL.
 - [x] Centralize JSON serialization, timeouts, auth headers, normalized API errors and safe logging (sensitive payloads are not logged).
 - [x] Add repository interfaces/implementations using the current architecture. **Catalogue repository boundary implemented; UI integration remains.**
-- [ ] Add loading, empty, error, retry and offline/degraded-network states. **Controller/state layer complete; existing catalogue screens still need the UI states.**
+- [x] Add loading, empty, error and retry states. **Integrated through the shared catalogue state widget on home, search, restaurant menu and food details; offline/degraded-network presentation remains represented by normalized network errors and is not yet a distinct offline mode.**
 - [x] Keep secrets out of source; document how API URL and public client keys are configured per environment.
 - [x] Use a fake transport for API client unit tests; feature repository fakes are now present for catalogue.
 
@@ -67,12 +67,12 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 ## Phase 3 — Customer catalogue
 
 - [ ] Define typed models for categories/products and API response/error envelopes. **Blocked on missing successful response schema in API_CONTRACT.md.**
-- [ ] Replace mock catalogue repository behind existing UI. **Repository and controller boundaries added; UI replacement remains.**
-- [ ] Connect home, category, search/filter and product details to real API responses.
-- [ ] Handle empty catalogue, unavailable product, image failure and loading/error states.
+- [ ] Replace hard-coded catalogue presentation behind existing UI. **Repository/controller and state integration are complete; field-level replacement is blocked on the undocumented success response schema.**
+- [x] Connect home, search/filter, restaurant menu and product details to the catalogue controller state boundary. **Field-level rendering remains blocked on undocumented response fields.**
+- [x] Handle empty catalogue plus loading/error/retry states. **Unavailable-product and image-failure behavior remain pending typed product mapping.**
 - [ ] Keep displayed price informational; checkout total comes from backend response.
 - [x] Add repository fake coverage for catalogue fixtures.
-- [x] Add catalogue controller coverage for successful load and repository failure state. Widget/UI state tests remain pending.
+- [x] Add catalogue controller coverage for successful load and repository failure state, plus widget coverage for loading/empty/error/retry states.
 
 **Milestone:** admin-created products appear in customer app when backend is integrated.
 
