@@ -80,7 +80,7 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 
 - [x] Review current cart implementation and preserve usable UI. The existing Stitch-aligned UI/navigation is preserved.
 - [x] Introduce a local cart repository/controller boundary using explicit productId values and quantity updates. Cart prices/subtotals remain preview-only; no checkout payload is inferred.
-- [ ] Ensure cart quantities reference product IDs; local subtotal is preview only. The current cart item identifier is the existing local product key; exact backend product-ID shape remains pending the shared order/catalogue contract.
+- [x] Ensure cart quantities reference product IDs; local subtotal is preview only. Cart lines now carry explicit productId values and controller mutations resolve quantities by that ID. Exact backend product-ID schema remains contract-gated.
 - [ ] Implement address selection/entry based on agreed contract. **Blocked; no finalized address request/response shape is documented for Flutter.**
 - [ ] Add COD checkout request and submit only product IDs, quantities and required address data. **Backend checkout/list/detail is now CI-green in workflow #186; Flutter implementation remains blocked until exact request/response examples are documented in the shared contract.**
 - [ ] Display server-calculated totals and server validation errors. **Blocked until the order success/error envelope is documented for Flutter.**
@@ -169,3 +169,13 @@ A task is complete only when it has predictable loading/error/empty behavior, no
 - Delivery Flutter remains blocked on the pending backend delivery-partner provisioning/approval CI verification.
 
 Next implementation gate: freeze the documented order/COD + address contract, then add typed order request/response models and repository/controller submission flow. Do not change the existing checkout UI until the server response shape is explicit.
+
+
+## Developer 2 checkpoint — 2026-09-29 (cart boundary hardening)
+
+- Fixed a source-level cart UI binding typo introduced during the cart-controller migration (vegetarian field).
+- Strengthened cart provider test coverage using a managed Riverpod ProviderContainer; the test verifies the initial item count and preview subtotal exposed by the cart controller.
+- Confirmed the cart quantity task is complete at the local repository/controller boundary: quantity mutations resolve by explicit product ID.
+- No backend order/address payloads were added or inferred.
+- Flutter/Dart formatting, analysis and test execution remain NOT RUN because no Flutter/Dart runner is available in the GitHub-connected environment.
+- Next implementation remains contract-gated: typed order request/response models and COD submission after Developer 1 documents exact order/address schemas.
