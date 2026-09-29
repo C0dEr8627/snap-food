@@ -70,3 +70,21 @@ Still required in the shared/base contract before implementation:
 - Invoice success response with invoice identifier/number and immutable financial/address/item snapshot fields.
 
 Developer 2 will continue to use local repositories/fakes only where the API contract is incomplete and will not infer missing fields from backend implementation details.
+
+
+
+## 2026-09-29 continuation re-check
+
+- Shared `developer-2-flutter/API_CONTRACT.md` remains insufficient for typed Flutter order/address/delivery/invoice integration.
+- Backend `developer-1-backend-admin/API_CONTRACT.md` now includes delivery assignment/lifecycle/tracking and invoice endpoint behavior, but does not provide the complete Flutter-facing order/address/catalogue/auth success schemas needed by Developer 2.
+- Workflows #209/#259/#266 are recorded as passing, so backend delivery verification is no longer the blocker.
+
+### Still required in the shared/base contract
+1. Order create/list/detail request and response examples, including stable ID/status and authoritative totals.
+2. Address request/response shape and validation/ownership behavior.
+3. Google auth credential exchange and application-session/user-role response.
+4. Catalogue category/product success fields and pagination/search representation.
+5. Delivery assignment/list/status/location/tracking request and response examples, including freshness fields.
+6. Invoice success response with invoice identifier/number and immutable financial/address/item snapshot fields.
+
+Until these are synchronized, Developer 2 will not infer field names, status values, identifiers or payload shapes.
