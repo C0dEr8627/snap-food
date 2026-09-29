@@ -7,13 +7,14 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $this->authorize('viewAny', Category::class);
+        Gate::authorize('viewAny', Category::class);
 
         $query = Category::query()
             ->when(! $request->user()->hasRole('ADMIN'), fn ($query) => $query->where('is_active', true))
