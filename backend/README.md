@@ -15,7 +15,7 @@ Laravel API and separate session-authenticated admin dashboard for Snap Foodd.
 
 ## Current implementation status
 
-The authoritative task checklist is `DEVELOPER_1_PLAN.md`.
+The authoritative task checklist is `DEVELOPER_1_PLAN.md`. Operational release, backup/restore and hosting checks are documented in `backend/OPERATIONS.md`.
 
 - Phase 0: partially verified. GoDaddy plan-specific Composer, extensions, DB access, SSH and document-root capabilities still need confirmation.
 - Phase 1: Laravel 13 foundation, MySQL migrations, health endpoint and PHP 8.3 CI are implemented.
