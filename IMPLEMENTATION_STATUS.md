@@ -150,3 +150,32 @@ The backend plan records successful workflows for authentication/catalogue (#146
 2. Synchronize the frozen Flutter-facing order/COD + address contract and canonical delivery routes.
 3. Implement typed order models/repository/controller and COD checkout with duplicate-submit protection and server-authoritative totals/errors.
 4. Implement order success/detail/history, then delivery/tracking and invoice integrations.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (CI failure triage + test fix)
+
+- Re-checked PR #1 and the latest Flutter CI result before selecting the next implementation.
+- Branch head advanced to `7a70fa05e271dfeee6518fc9f9de71a763c3772e` with a focused test-only fix: `test/features/customer/catalogue_controller_test.dart` now imports the existing `ApiException` type from `lib/core/network/api_exception.dart`.
+- CI run `36591386723` failed at **flutter analyze** after dependency resolution and formatting passed. The concrete blocking analyzer errors were four unresolved `ApiException` references in the catalogue controller test. Tests and Android build were skipped because analysis failed.
+- The failure was not caused by a new API contract assumption; the test was missing an import for an already-existing shared exception type. No backend-owned files or API DTOs/payloads were changed.
+- Replacement CI run `36591707567` for commit `7a70fa05e271dfeee6518fc9f9de71a763c3772e` is currently **in progress**. A pull-request run `36591713156` is also queued. No passing analyzer/test/build result is claimed yet.
+- Current contract gate remains unchanged: the shared `API_CONTRACT.md` still lacks complete Flutter-facing order/COD + address schemas and canonical delivery request/assignment route/response definitions. Therefore the next product implementation is still blocked from safely creating typed network models.
+
+### Updated task status
+- **Phase 0:** [~] static audit complete; CI now reaches analyzer, with one concrete test compile issue fixed; final analyzer/tests/Android build result pending.
+- **Phase 1:** [x] API foundation complete.
+- **Phase 2:** [~] session lifecycle complete; Google SSO exchange/config and role routing remain contract/config gated.
+- **Phase 3:** [~] repository/controller/state integration complete; typed catalogue mapping remains schema-gated. Catalogue controller test compile blocker fixed in `7a70fa0`.
+- **Phase 4:** [~] local cart boundary complete; address/COD checkout and order integration remain contract-gated.
+- **Phase 5:** [ ] customer order history/detail/status not started.
+- **Phase 6/7:** [~] backend delivery lifecycle/tracking verified; Flutter integration remains schema-gated and delivery route canonicalization is pending.
+- **Invoice:** [ ] Flutter integration not started; shared response schema not frozen.
+- **Release verification:** [ ] pending successful CI plus physical-device/integration verification.
+
+### Next execution order
+1. Observe CI run `36591707567` and fix only concrete formatter/analyzer/test/build failures if any remain.
+2. Developer 1 synchronizes the complete Flutter-facing order/COD + address contract and canonical delivery routes/responses into the shared/base contract.
+3. Implement typed order models, repository/controller, duplicate-submit protection and server-authoritative totals/errors.
+4. Implement order success/detail/history, then delivery/tracking and invoice integrations from frozen schemas.
+
+No speculative API payloads, status enums, identifiers or backend changes are permitted while the contract gate remains open.
