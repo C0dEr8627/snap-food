@@ -7,12 +7,20 @@ on:
     paths:
       - 'backend/**'
       - '.github/workflows/backend-format.yml'
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-format.yml'
 
 permissions:
   contents: write
 
 jobs:
   format:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -21,7 +29,8 @@ jobs:
       - name: Checkout backend branch
         uses: actions/checkout@v4
         with:
-          ref: developer-1-backend-admin
+          repository: ${{ github.repository }}
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.ref || 'developer-1-backend-admin' }}
 
       - name: Setup PHP 8.3
         uses: shivammathur/setup-php@v2
