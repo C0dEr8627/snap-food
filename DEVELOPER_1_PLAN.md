@@ -27,7 +27,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 |---|---|---|
 | Phase 0 — Environment & repository baseline | **PARTIAL** | Repository/docs inspected; PHP 8.3 target recorded; hosting checklist and safe env example documented. Actual GoDaddy Composer/MySQL capability remains unverified. |
 | Phase 1 — Backend foundation | **COMPLETED** | Laravel API skeleton, routing, health endpoint, PHPUnit config/test, PHP 8.3 CI, Sanctum, MySQL config, Laravel 13 baseline and required Git-preserved directories are complete. Workflow #30 passed the foundation suite. Initial MySQL schema/models and CI migration verification also passed in workflow #48. |
-| Phase 2 — Identity & authorization | **NOT STARTED** | Google verification, users, Sanctum tokens, roles, ownership and auth tests remain. |
+| Phase 2 — Identity & authorization | **PARTIAL** | Google verification service, login, Sanctum token storage, `/me`, logout and negative auth tests are implemented; final CI verification and role middleware/policies remain. |
 | Phase 3 — Catalogue | **PARTIAL** | Categories/products schema, models, casts and initial request validation are implemented. Catalogue APIs, resources, pagination/search, deterministic seeds, admin CRUD and endpoint tests remain. |
 | Phase 4 — Orders & COD | **NOT STARTED** | Order snapshots, totals, COD state, transitions, history and tests remain. |
 | Phase 5 — Admin & assignment | **NOT STARTED** | Protected admin web dashboard and delivery assignment operations remain. |
@@ -70,14 +70,15 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Phase 2 — Identity and authorization
 
-- [ ] Implement Google credential verification server-side.
-- [ ] Find/create users by stable Google subject identifier.
-- [ ] Implement Sanctum application tokens/session flow.
-- [ ] Implement login, `GET /api/v1/me`, logout/revocation and role middleware/policies.
+- [x] Implement Google credential verification server-side through the Google API client, validating the configured OAuth client ID.
+- [x] Find/create users by stable Google subject identifier.
+- [x] Implement Sanctum application tokens/session flow and token storage migration.
+- [x] Implement login, `GET /api/v1/me`, logout/revocation; role middleware/policies remain.
 - [ ] Roles: `CUSTOMER`, `DELIVERY_PARTNER`, `ADMIN`; no Restaurant Partner scope.
 - [ ] Provision/approve delivery partners and admins server-side only.
 - [ ] Enforce resource ownership.
-- [ ] Add invalid credential, inactive account, token revocation, role escalation and cross-user access tests.
+- [x] Add invalid credential, inactive account, token revocation and role-escalation regression tests.
+- [ ] Add explicit role middleware/policy and cross-user resource authorization tests.
 
 **Milestone:** Google SSO → Laravel verification → MySQL user → application token/session → `/me`.
 
@@ -167,17 +168,19 @@ Build the trusted backend and admin operations that the existing Flutter app can
 15. Bidirectional Eloquent relationship tests added for users/addresses and categories/products.
 16. Foreign-key behavior tests added for address cascade and product/category restrict-on-delete.
 17. Initial address/category/product FormRequest validation added, including coordinate ranges, slug/price/stock validation and admin-only authorization checks.
-18. `DEVELOPER_1_PLAN.md` and `backend/README.md` updated to reflect the verified database foundation and partial catalogue progress.
+18. Workflow #58 passed the relationship/request-validation slice.
+19. Google credential verification service, auth routes, Sanctum token storage, `/me`, logout and authentication regression tests implemented.
+20. `DEVELOPER_1_PLAN.md` and `backend/README.md` updated to reflect the verified database foundation and current authentication implementation status.
 
 ### Not yet verified
 
-- The latest relationship/request-validation commits have not yet been verified by a post-change GitHub Actions run.
-- Any real Google credential verification.
+- The latest Google SSO/Sanctum implementation is awaiting workflow #73.
+- A real production Google credential has not been used; tests mock the verifier to avoid external identity-provider calls.
 - GoDaddy Composer/extensions/database/document-root/SSH capabilities.
 
 ## Immediate next task
 
-**Verify the latest relationship/request-validation slice in GitHub Actions.** If green, tighten any validation/test gaps found, then begin Phase 2 identity/authentication: Google credential verification, stable-subject user lookup/creation, Sanctum token issuance/revocation, `/me`, role enforcement and negative authorization tests.
+**Verify workflow #73 for the Google SSO/Sanctum slice.** If green, complete the remaining Phase 2 authorization work (role middleware/policies and cross-user authorization tests), then proceed to catalogue read/admin CRUD endpoints.
 
 ## Developer 1 definition of done
 
