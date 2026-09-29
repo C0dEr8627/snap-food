@@ -147,3 +147,14 @@ Record decisions here only after the owner approves or they are already establis
 - **Flutter verification:** formatter/analyzer/tests/APK/device checks are **NOT RUN**; no Flutter CI status is reported.
 
 **Next owner/action:** Developer 1 freezes the complete Flutter-facing order/COD + address contract in the shared/base contract. Developer 2 then implements typed order models, checkout repository/controller, server-authoritative totals, order success/detail/history, followed by delivery request/assignment/tracking. No undocumented API payloads will be introduced.
+
+
+## Developer 2 checkpoint — 2026-09-29 (latest contract gate / status synchronization)
+
+- **Branch:** developer-2-flutter; **PR:** #1 → frontend, open and mergeable.
+- **Completed Flutter work:** API transport/client + normalized errors; catalogue repository/controller/state and loading/empty/error/retry UI integration; secure session storage; /me restoration; logout/revocation; auth-aware routing; local cart repository/controller with explicit product IDs and quantity tests; contract-question documentation.
+- **Backend verification:** workflow #209 passes for delivery-partner provisioning/approval; backend order checkout/list/detail and server-owned status-transition/concurrency work are verified.
+- **Current gate:** shared frontend API_CONTRACT.md still lacks exact order create/list/detail and address request/response examples. Backend delivery assignment/lifecycle/tracking details exist on developer-1-backend-admin, but are not yet synchronized into the shared/base contract with complete Flutter-facing response examples.
+- **Status:** M2 [~] Google SSO contract/config gated; M3 [x] backend catalogue milestone verified but Flutter typed field mapping is schema-gated; M4 [~] backend order/COD/status/concurrency verified while Flutter checkout/history/address remain contract-gated; M5 [~] provisioning/approval verified while Flutter delivery flows remain schema-gated.
+- **Verification:** Flutter/Dart formatter, analyzer, tests, APK build and physical-device checks are NOT RUN; no Flutter CI status is reported.
+- **Next owner/action:** Developer 1 freezes the complete Flutter-facing order/COD + address contract in the shared/base branch. Developer 2 then implements typed order models, checkout repository/controller, server-authoritative totals/error handling, order success/detail/history, followed by delivery request/assignment/status/tracking from the frozen delivery schemas.
