@@ -6,6 +6,7 @@ import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import 'home_feed_screen.dart';
 import 'order_controller.dart';
+import '../data/order_models.dart';
 
 class OrdersScreen extends ConsumerWidget {
   const OrdersScreen({super.key});
