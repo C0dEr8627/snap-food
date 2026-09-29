@@ -531,3 +531,11 @@ No backend/Laravel-owned files were modified.
 4. Improve order success/detail/history UX around the newly real checkout path.
 5. Add customer tracking using GET /orders/{order}/tracking.
 6. Continue delivery partner integration and invoice UI from the frozen contract.
+
+## Developer 2 checkpoint — 2026-09-29 (typed catalogue + real-ID cart boundary)
+
+- M3: [x] Flutter typed catalogue DTO/repository/controller mapping is implemented from the frozen catalogue schema. Runtime API verification remains part of CI/integration verification.
+- M4: [~] cart now starts empty and accepts numeric catalogue product IDs through an explicit add-item boundary; COD checkout remains to be covered by successful-path and error/conflict tests.
+- M5–M8: [~] backend delivery/tracking/invoice work is documented/verified, while Flutter delivery/tracking/invoice integration remains.
+- M9: [ ] final CI, Android/device and end-to-end verification remain.
+- Next owner/action: Developer 2 connects real catalogue selection to CartController.addItem, then verifies checkout error paths before continuing tracking/delivery/invoice.
