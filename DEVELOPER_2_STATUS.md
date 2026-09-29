@@ -297,3 +297,31 @@ No local Flutter/Dart runner is available in this GitHub-connected environment. 
 3. Implement delivery assignment/status/location integration from the documented schemas.
 4. Implement invoice model/repository/UI from the frozen invoice schema.
 5. Finish UX hardening and final CI/device/end-to-end verification.
+
+
+## Developer 2 implementation checkpoint — 2026-09-29 (CI failure remediation + catalogue cart wiring)
+
+- **Branch:** `developer-2-flutter`
+- **Current head:** `a4330bc9a54571a958414b68c77a390b7ab228db`.
+- **CI evidence inspected:** Flutter CI run `36598554720` failed during `Analyze`. Formatting/check-format completed successfully; tests and Android build were skipped because analysis failed.
+- **Concrete failures remediated:** restored the missing cart model import, replaced unsupported Riverpod `valueOrNull`, restored the order-model import, removed an unused broken auth test fake, updated the typed catalogue widget fixture, restored the `ApiException` test import, and restored the missing menu-item tap callback.
+- **Catalogue/cart correction:** removed remaining illustrative restaurant-menu product fixtures and connected the restaurant menu to typed catalogue products and the real local cart boundary. Menu actions now use numeric catalogue product IDs and respect active/available state.
+- **Verification:** no local Flutter/Dart runner is available in the GitHub-connected environment. A new CI run is required against the current head; no green result is claimed yet.
+- **Backend boundary:** no Laravel/backend-owned files were modified.
+- **PR:** existing PR #1 continues to target `frontend`; no merge or deployment performed.
+
+### Current task status
+- Phase 0: **[~]** static audit complete; CI failure analyzed and concrete failures fixed; current-head CI verification remains pending.
+- Phase 1: **[x]** API foundation complete.
+- Phase 2: **[~]** session lifecycle complete; Google credential exchange/config and final role routing remain configuration/integration work.
+- Phase 3: **[x]** typed catalogue mapping and catalogue-backed menu/product selection are implemented; runtime API verification remains CI/integration dependent.
+- Phase 4: **[~]** numeric-ID cart and COD checkout foundation are implemented; successful runtime checkout verification remains pending.
+- Phase 5: **[x]** order history/detail UI implemented; tracking remains.
+- Phase 6/7: **[~]** delivery/tracking Flutter integration remains.
+- Invoice: **[ ]** Flutter invoice integration remains.
+- Release verification: **[ ]** current-head CI, Android build and physical-device/end-to-end verification remain.
+
+### Next task
+1. Inspect the new current-head Flutter CI run and fix only concrete failures.
+2. Then implement customer order tracking from `GET /orders/{order}/tracking`.
+3. Continue delivery-partner assignment/status/location integration, then invoice UI.
