@@ -35,6 +35,6 @@ void main() {
     await tester.tap(find.text('Explore food'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Home'), findsOneWidget);
+    expect(find.text('What are you craving today?'), findsOneWidget);
   });
 }
