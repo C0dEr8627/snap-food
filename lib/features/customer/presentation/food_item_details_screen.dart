@@ -7,6 +7,7 @@ import 'catalogue_controller.dart';
 import 'catalogue_state_message.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../data/catalogue_models.dart';
+import '../data/cart_models.dart';
 import 'cart_controller.dart';
 
 class FoodItemDetailsScreen extends ConsumerStatefulWidget {
