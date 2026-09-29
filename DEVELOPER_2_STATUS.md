@@ -534,3 +534,37 @@ No backend/Laravel-owned files were modified. No merge or deployment was perform
 3. Verify real permission/GPS behavior on a physical device.
 4. Freeze the exact invoice success response fields, then implement invoice model/repository/UI without inventing fields.
 5. Complete E2E/device verification and update PR readiness.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (current-head CI analyzer follow-up)
+
+- Current implementation branch: `developer-2-flutter`.
+- PR #1 remains open, targets `frontend`, and GitHub reports it mergeable.
+- Current implementation head before this fix: `b6e20cbfdcfaf3d5d74fbdae05c904d964486a39`.
+- Flutter CI run `36603659984` (run #187) executed against the PR merge commit containing that head. Dependency resolution and Dart formatting passed; `flutter analyze` failed, so tests and Android debug build were skipped.
+- The only concrete analyzer error in the run was `StreamController` being unresolved in `test/features/delivery/delivery_location_adapter_test.dart`. The test used `StreamController<DeliveryPosition>` without importing `dart:async`.
+- Fixed that exact issue in commit `ea88f35202db2153570aa149b51b8b805df07bcc`. No production behavior, API contract, GPS dependency, Maps SDK, or backend/Laravel-owned file was changed.
+- The CI log also contains many pre-existing warning/info-level lints across the legacy UI. They were not broad-cleaned in this increment; only the concrete analyzer error that stopped the pipeline was fixed.
+- The synchronized `API_CONTRACT.md` now contains concrete Google auth, catalogue, order/COD, address, delivery/tracking and invoice contract details. Therefore order/invoice work is no longer blocked by the earlier documentation gap.
+- `pubspec.yaml` currently has no concrete Android/iOS location or Google Maps package. The approved platform dependency/configuration still needs to be identified from project requirements before adding one; no speculative package was added.
+
+### Task status after this increment
+- Phase 0: **[~]** static audit and CI workflow complete; current-head analyzer/test/Android verification still pending after the latest fix; physical-device verification pending.
+- Phase 1: **[x]** API foundation complete.
+- Phase 2: **[~]** session lifecycle and auth-aware routing complete; Google platform credential configuration and final role-specific runtime verification remain.
+- Phase 3: **[x]** typed catalogue → menu/detail → real numeric cart IDs complete; automated/runtime verification pending.
+- Phase 4: **[x]** cart → COD checkout foundation, validation/conflict handling, duplicate-submit protection, server-authoritative order response handling and success navigation implemented; current CI/device verification pending.
+- Phase 5: **[x]** order history/detail and customer tracking source integration implemented; runtime verification pending.
+- Phase 6: **[~]** delivery assignment/status lifecycle and active-assignment location lifecycle implemented; concrete platform GPS/Maps integration and complete partner trip verification remain.
+- Phase 7: **[~]** foreground location adapter, active-assignment publishing, stop lifecycle and freshness/error states implemented; concrete GPS source, Maps SDK/configuration and physical-device verification remain.
+- Invoice: **[ ]** Flutter invoice model/repository/UI remains to be implemented from the now-documented endpoint contract.
+- Release verification: **[ ]** fresh CI green run, Android build, physical-device and E2E verification pending.
+
+### Next implementation queue
+1. Verify the new CI run for `ea88f35202db2153570aa149b51b8b805df07bcc`; fix only concrete analyzer/test/build failures.
+2. Inspect project/platform configuration for the approved Android/iOS location and Google Maps setup before adding dependencies.
+3. Implement the frozen invoice model/repository/UI without inventing response fields.
+4. Complete real GPS permission/revocation and Maps/device verification.
+5. Finish E2E/release verification and update PR readiness.
+
+No backend/Laravel-owned files were modified. No merge or deployment was performed.
