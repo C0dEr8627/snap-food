@@ -27,7 +27,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 |---|---|---|
 | Phase 0 — Environment & repository baseline | **PARTIAL** | Repository/docs inspected; PHP 8.3 target recorded; hosting checklist and safe env example documented. Actual GoDaddy Composer/MySQL capability remains unverified. |
 | Phase 1 — Backend foundation | **COMPLETED** | Laravel API skeleton, routing, health endpoint, PHPUnit config/test, PHP 8.3 CI, Sanctum, MySQL config, Laravel 13 baseline and required Git-preserved directories are complete. Workflow #30 passed the foundation suite. Initial MySQL schema/models and CI migration verification also passed in workflow #48. |
-| Phase 2 — Identity & authorization | **PARTIAL** | Google verification service, login, Sanctum token storage, `/me`, logout, role middleware, resource policies and negative/cross-user authorization tests are implemented. Rate limiting and credential-safe logging are also implemented. Latest combined authorization/API-hardening CI verification remains pending. |
+| Phase 2 — Identity & authorization | **PARTIAL** | Google verification service, login, Sanctum token storage, `/me`, logout, role middleware, resource policies and negative/cross-user authorization tests are implemented. Rate limiting and credential-safe logging are also implemented. Latest combined authorization/API-hardening CI verification remains pending; Workflow #142 exposed stale test assertions using `error.code` instead of the documented top-level `code` field. |
 | Phase 3 — Catalogue | **PARTIAL** | Customer category/product read APIs, search/pagination, admin create/update/deactivate APIs, update validation and endpoint regression tests are now implemented. Deterministic seed data and final CI verification remain. |
 | Phase 4 — Orders & COD | **NOT STARTED** | Order snapshots, totals, COD state, transitions, history and tests remain. |
 | Phase 5 — Admin & assignment | **NOT STARTED** | Protected admin web dashboard and delivery assignment operations remain. |
@@ -183,22 +183,24 @@ Build the trusted backend and admin operations that the existing Flutter app can
 29. Implemented admin category/product create/update/deactivate endpoints, update validation and endpoint regression tests; inactive products are hidden from customer reads.
 30. Corrected catalogue policies so active customers can read categories/products while admin-only write operations remain protected.
 31. Workflow #134 failed on the latest combined API-hardening + catalogue state because Laravel 13's base controller does not provide the `authorize` helper; catalogue controllers were corrected to use `Gate::authorize`.
-32. The initial correction only covered some catalogue controller authorization paths; Workflow #138 still exposed remaining `$this->authorize(...)` calls in category/product `show` and `destroy`. Those remaining paths have now been converted to `Gate::authorize(...)` on `developer-1-backend-admin`; a fresh CI run is required before Phase 2/3 can be verified.
-33. Progress documentation is maintained against actual CI results rather than assuming implementation is verified.
+32. The initial correction only covered some catalogue controller authorization paths; Workflow #138 still exposed remaining `$this->authorize(...)` calls in category/product `show` and `destroy`. Those remaining paths have now been converted to `Gate::authorize(...)` on `developer-1-backend-admin`.
+33. Workflow #142 confirmed the catalogue authorization fix was no longer the failing condition, but exposed four stale test assertions expecting `error.code` rather than the documented top-level `code` field.
+34. Corrected those authentication/authorization test assertions in commits `53cbf6e01ebed21cf295f3700809e2877aaccc26` and `28053a9ff26f854cc70301920b97844dad8c72c9`; fresh CI verification is pending.
+35. Progress documentation is maintained against actual CI results rather than assuming implementation is verified.
 
 ### Latest verification result
 
 - Workflow #109 passed the prior authentication + authorization implementation.
 - Workflow #134 ran the combined latest branch state and **failed in the catalogue test suite**: 7 tests failed after the application boot, dependency installation and MySQL migrations all succeeded.
-- The concrete failure was `Method App\\Http\\Controllers\\Api\\V1\\Catalogue\\ProductController::authorize does not exist.` The same controller-level authorization helper was also used by `CategoryController`.
+- The concrete Workflow #142 failure was four stale test assertions expecting `error.code`; the API contract and exception/middleware implementations return `code` at the top level. MySQL migrations and the test suite booted successfully, and the earlier controller authorization issue was no longer present.
 - Fixed the Laravel 13 controller authorization calls by switching catalogue controllers to `Gate::authorize(...)` in commits `26f6217e7a89362550f8f68cfa8027027030645a` and `64aaefff30c5a02bbc0cdf2b367e11166d2403d6`.
-- A new CI result for the fix commits is pending; Phase 2/3 must remain unverified until it passes.
+- Workflow #142 failed only four assertions in `AuthenticationTest`/`AuthorizationPolicyTest` because they expected the old nested `error.code` shape. The test assertions were corrected in commits `53cbf6e01ebed21cf295f3700809e2877aaccc26` and `28053a9ff26f854cc70301920b97844dad8c72c9`; fresh CI verification is required.
 - A real production Google credential has not been used; tests mock the verifier to avoid external identity-provider calls.
 - GoDaddy Composer/extensions/database/document-root/SSH capabilities remain unverified.
 
 ## Immediate next task
 
-**Verify CI after the complete catalogue authorization fix.** If green, update the verified Phase 2/3 status, add deterministic catalogue seed/demo data, and then begin Phase 4 order/COD workflow. If CI exposes another defect, fix the concrete failure before advancing.
+**Verify CI after correcting the stale API error-shape assertions.** If green, update the verified Phase 2/3 status, add deterministic catalogue seed/demo data, and then begin Phase 4 order/COD workflow. If CI exposes another defect, fix the concrete failure before advancing.
 
 ## Developer 1 definition of done
 
