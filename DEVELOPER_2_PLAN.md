@@ -22,7 +22,7 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 
 ## Current execution status
 
-> **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. PR #1 targets `frontend` and remains open. The latest verified branch head before this documentation update was `3f66a3ce9f2fc297a2241cc403986f09e5b1c39e`.
+> **Status as of 2026-09-29:** Developer 2 is working only on `developer-2-flutter`. PR #1 targets `frontend` and remains open. The latest implementation checkpoint is `c0fbe23643507eba58534a05d821eec89495d102`.
 >
 > **Verified complete in source control:** Phase 0 static Flutter audit, screen-to-contract mapping, platform/dependency inventory, API transport/client foundation, normalized API errors, environment API URL documentation, API-client fake-transport tests, the first catalogue repository boundary with a remote implementation plus deterministic fake repository, the catalogue Riverpod controller/state layer with retry/error handling and controller tests, configured repository wiring, catalogue loading/empty/error/retry UI integration across the existing customer catalogue screens with widget coverage, and the initial auth/session foundation with secure token storage, `/me` hydration, logout handling and auth-aware route redirects.
 >
@@ -78,7 +78,8 @@ Evolve the existing Flutter application to consume the documented Laravel API wh
 
 ## Phase 4 — Cart, addresses and COD checkout
 
-- [x] Review current cart implementation and preserve usable UI. Static review completed: the existing cart keeps quantity state keyed by item ID, preserves the current Stitch-aligned UI/navigation, and remains intentionally local until the checkout contract is frozen.
+- [x] Review current cart implementation and preserve usable UI. The existing Stitch-aligned UI/navigation is preserved.
+- [x] Introduce a local cart repository/controller boundary using explicit productId values and quantity updates. Cart prices/subtotals remain preview-only; no checkout payload is inferred.
 - [ ] Ensure cart quantities reference product IDs; local subtotal is preview only. The current cart item identifier is the existing local product key; exact backend product-ID shape remains pending the shared order/catalogue contract.
 - [ ] Implement address selection/entry based on agreed contract. **Blocked; no finalized address request/response shape is documented for Flutter.**
 - [ ] Add COD checkout request and submit only product IDs, quantities and required address data. **Backend checkout/list/detail is now CI-green in workflow #186; Flutter implementation remains blocked until exact request/response examples are documented in the shared contract.**
@@ -154,3 +155,17 @@ A task is complete only when it has predictable loading/error/empty behavior, no
 - Platform/device checks:
 - Remaining blockers:
 - Next task:
+
+
+## Developer 2 checkpoint — 2026-09-29 (cart boundary implementation)
+
+- Implemented the next unblocked Phase 4 subtask without touching the backend contract: the existing cart is now backed by a CartRepository/CartController boundary.
+- Cart lines now carry an explicit productId; quantity changes are performed through the controller instead of widget-local mutable item state.
+- The current preview subtotal/delivery/tax display remains clearly client-side and non-authoritative. No COD request or server total was invented.
+- Existing cart visual layout, route and navigation were preserved.
+- Added repository tests for product IDs, quantity updates and removal at zero quantity.
+- Flutter runtime verification is still NOT RUN: no local Dart/Flutter runner is available in this GitHub-connected environment.
+- API integration remains blocked on the exact order/address request/response examples in API_CONTRACT.md.
+- Delivery Flutter remains blocked on the pending backend delivery-partner provisioning/approval CI verification.
+
+Next implementation gate: freeze the documented order/COD + address contract, then add typed order request/response models and repository/controller submission flow. Do not change the existing checkout UI until the server response shape is explicit.
