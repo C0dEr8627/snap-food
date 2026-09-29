@@ -267,13 +267,14 @@ class _MenuItemCard extends StatelessWidget {
 }
 
 class _CartBar extends StatelessWidget {
-  const _CartBar({required this.items, required this.total});
+  const _CartBar({required this.items, required this.total, required this.onTap});
   final int items, total;
+  final VoidCallback onTap;
   @override
   Widget build(BuildContext context) => Material(
     color: SnapFoodColors.secondary, borderRadius: BorderRadius.circular(SnapFoodRadii.lg), elevation: 8,
     child: InkWell(
-      onTap: () => context.push('/cart'),
+      onTap: onTap,
       borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
