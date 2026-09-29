@@ -29,7 +29,7 @@ This document records the exact information Flutter needs before Google SSO can 
 
 ## Current cross-branch checkpoint (2026-09-29)
 
-Developer 1's latest inspected branch is `developer-1-backend-admin` at `eecba9da5516c14e7921f5640c4dd37f4b76a967`. Workflow #146 passed the corrected Phase 2/3 authentication/authorization and catalogue slice on PHP 8.3 with MySQL. Phase 4 order/COD implementation has started on that branch, but its CI verification is still pending.
+Developer 1's latest inspected branch is `developer-1-backend-admin` at `083bab12b37a2a010b15b8c394561e9f627d65de`. Workflow #146 passed the corrected Phase 2/3 authentication/authorization and catalogue slice on PHP 8.3 with MySQL. Workflow #179 then ran against the newer Phase 4 state but failed in `OrderApiTest` after migrations completed, so Phase 4 is still not CI-verified.
 
 Flutter remains blocked from the actual Google exchange because the shared `API_CONTRACT.md` / `AUTH.md` do not yet freeze the exact `/auth/google` request credential field/type, successful application-token response shape, public Google client configuration, or role response shape.
 
