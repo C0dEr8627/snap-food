@@ -58,7 +58,11 @@ class DeliveryPartnerOrderController
                 ->findOrFail($assignment->id);
 
             if ((int) $lockedAssignment->delivery_partner_id !== (int) $partner->id) {
-                abort(403, 'This assignment does not belong to the authenticated delivery partner.');
+                return response()->json([
+                    'message' => 'This assignment does not belong to the authenticated delivery partner.',
+                    'errors' => [],
+                    'code' => 'FORBIDDEN',
+                ], 403);
             }
 
             $order = Order::query()->lockForUpdate()->findOrFail($lockedAssignment->order_id);
