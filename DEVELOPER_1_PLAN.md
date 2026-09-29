@@ -118,7 +118,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 - [x] Create protected Laravel web login/authorization for admins.
 - [ ] Build dashboard for catalogue, orders, customers, partners, assignments and invoices.
-- [ ] Implement order search/filter/detail/status actions.
+- [x] Implement order search/filter/detail/status actions.
 - [x] Provision/approve/deactivate delivery partners.
 - [x] Implement concurrency-safe delivery assignment with transactional order/partner row locking.
 - [x] Record current assignment and status history actor.
@@ -161,6 +161,9 @@ Build the trusted backend and admin operations that the existing Flutter app can
 ## Current execution status
 
 ### Completed in this branch
+
+47. Added protected Laravel admin order search/filter/list, order detail, valid status actions and status-history display. Workflow #324 passed on PHP 8.3 with MySQL, including the full PHPUnit suite.
+48. Corrected the admin web invalid-transition response to HTTP 409 and fixed the delivery assignment-list regression test to assert the assignment resource identifier rather than the related order identifier.
 
 1. Repository and backend documentation baseline established.
 2. PHP 8.3 production target recorded.
