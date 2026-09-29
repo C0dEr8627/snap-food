@@ -57,6 +57,6 @@ Record decisions here only after the owner approves or they are already establis
 - Workflow #134 failed during catalogue tests because the Laravel 13 base controller does not expose `$this->authorize`.
 - Workflow #138 confirmed remaining `$this->authorize` calls in catalogue `show`/`destroy` paths; these have now been replaced with `Gate::authorize`.
 - Fix commits: `26f6217e7a89362550f8f68cfa8027027030645a`, `64aaefff30c5a02bbc0cdf2b367e11166d2403d6`, `7d7fa3fc02456c4f724fbbcc345717c35ac42b78`, `735853594f3c7b82b0e8c19db92483f9cf7a9324`.
-- Workflow #138 failed with the remaining controller authorization calls; the latest two commits fix those paths. Fresh CI verification is pending.
-- Next verification gate: GitHub Actions on the fix commits.
-- Next implementation after a green verification gate: deterministic catalogue seeds, then Phase 4 order/COD workflow.
+- Workflow #138 failed with the remaining controller authorization calls; the latest two commits fixed those paths. Workflow #142 then failed on four stale test assertions expecting `error.code`; the API contract uses top-level `code`. Test assertions were corrected in commits `53cbf6e01ebed21cf295f3700809e2877aaccc26` and `28053a9ff26f854cc70301920b97844dad8c72c9`. Fresh CI verification is pending.
+- Next verification gate: GitHub Actions on the corrected test assertions.
+- Next implementation after a green verification gate: mark verified Phase 2/3 items, add deterministic catalogue seeds, then Phase 4 order/COD workflow.
