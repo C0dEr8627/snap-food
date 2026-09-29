@@ -125,3 +125,28 @@ The backend plan records successful workflows for authentication/catalogue (#146
 2. Developer 1 synchronizes the exact Flutter-facing order/COD + address contract and resolves canonical delivery routes.
 3. Implement typed order models/repository/controller, then COD checkout with duplicate-submit protection and server-authoritative totals/errors.
 4. Implement order success/detail/history, then delivery/tracking and invoice from frozen schemas.
+
+
+## Latest continuation checkpoint — 2026-09-29 (CI run observed)
+
+- Current branch head is `4c7570bd6aa064643d868e1984286fd85dc364d8`; PR #1 remains open and mergeable against `frontend`.
+- CI run `36591111357` was cancelled after the branch advanced; it did not reach analyzer/tests/build and must not be counted as pass/fail evidence for those stages.
+- A replacement CI run `36591122454` is **in progress**. Its job has completed checkout and is currently in Flutter setup; formatting, analysis, tests and Android build remain pending.
+- The shared API contract is still not sufficiently concrete for the next API-backed feature. In particular, order/COD + address schemas and canonical delivery route/response definitions are still missing. No undocumented DTOs or network payloads were introduced.
+
+### Task progress
+- **Phase 0:** [~] static audit complete; remote CI verification in progress, final result pending.
+- **Phase 1:** [x] API foundation complete.
+- **Phase 2:** [~] session lifecycle complete; Google SSO exchange/config and role routing remain gated.
+- **Phase 3:** [~] repository/controller/state integration complete; typed catalogue mapping remains schema-gated.
+- **Phase 4:** [~] local cart boundary complete; address/COD checkout remains contract-gated.
+- **Phase 5:** [ ] order history/detail/status not started.
+- **Phase 6/7:** [~] backend delivery lifecycle/tracking verified; Flutter integration remains schema-gated and route canonicalization is pending.
+- **Invoice:** [ ] Flutter integration not started; shared response schema not frozen.
+- **Release verification:** [ ] pending successful CI and device/integration checks.
+
+### Next actions
+1. Inspect the final result of CI run `36591122454` and fix concrete failures.
+2. Synchronize the frozen Flutter-facing order/COD + address contract and canonical delivery routes.
+3. Implement typed order models/repository/controller and COD checkout with duplicate-submit protection and server-authoritative totals/errors.
+4. Implement order success/detail/history, then delivery/tracking and invoice integrations.
