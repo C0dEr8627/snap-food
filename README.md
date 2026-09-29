@@ -40,6 +40,10 @@ Read before coding:
 8. [DEVELOPMENT.md](DEVELOPMENT.md)
 9. [AI_RULES.md](AI_RULES.md)
 10. [DESIGN.md](DESIGN.md)
+11. [DEVELOPER_1_PLAN.md](DEVELOPER_1_PLAN.md) — Laravel/API/MySQL/Admin task plan
+12. [DEVELOPER_2_PLAN.md](DEVELOPER_2_PLAN.md) — Flutter/Maps task plan
+13. [AIDLC_WORKFLOW.md](AIDLC_WORKFLOW.md) — parallel AI workflow, branches, commits and PRs
+14. [AI_TASK_BOARD.md](AI_TASK_BOARD.md) — shared integration milestones
 
 If code and documentation disagree, update them together.
 
@@ -65,4 +69,4 @@ If code and documentation disagree, update them together.
 9. Invoices.
 10. Security/integration/device release testing.
 
-See [DEVELOPMENT.md](DEVELOPMENT.md).
+See [DEVELOPMENT.md](DEVELOPMENT.md) for sequencing, [AIDLC_WORKFLOW.md](AIDLC_WORKFLOW.md) for the required AI development lifecycle, and [AI_TASK_BOARD.md](AI_TASK_BOARD.md) for shared milestone tracking.
