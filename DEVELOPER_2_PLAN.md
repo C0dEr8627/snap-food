@@ -1090,3 +1090,44 @@ No backend/Laravel-owned files were modified.
 - Google auth platform/runtime verification remains pending.
 
 `DEVELOPER_2_PLAN.md` remains the authoritative Developer 2 task-progress record; update it after each implementation or verification checkpoint.
+
+
+## Developer 2 continuation checkpoint — 2026-09-30 (CI #239 smoke-test failure + correction)
+
+- **Current branch:** `developer-2-flutter`.
+- **PR:** #1 → `frontend`, open and currently reported mergeable.
+- **CI run #239** (`36612623553`) completed with **failure**. Dependency resolution, Dart formatting, formatting check and analyzer all passed. The test suite reached 36 passing tests before the smoke test failed; Android debug build was skipped because the test step failed.
+- The concrete failure was `test/app_smoke_test.dart`: the test expected the splash SVG's `semanticsLabel` to produce a semantics node named `Snap Foodd`, but the GitHub Flutter test environment found zero matching semantics nodes. The splash implementation itself still renders the same `SvgPicture` asset with that label.
+- Corrected the smoke test to assert the rendered `SvgPicture` widget directly instead of relying on the SVG semantics tree, while retaining the timed transition and welcome-screen assertions.
+- **Fix commit:** `7e111f34dca6db8889747f7167314764ec6b88f1` (`test(flutter): make splash smoke assertion asset-based`).
+- This is a test-only correction. No Laravel/backend-owned files, API contracts, platform credentials or GPS/Maps dependencies were changed.
+- **CI is not green yet**; a fresh run must verify the correction through tests and the Android debug build.
+
+### Authoritative task board
+
+| Area | Status | Current state |
+|---|---|---|
+| Phase 0 — audit/verification | [~] | Static audit complete; CI #239 exposed a smoke-test assertion issue; correction committed; fresh CI pending |
+| Phase 1 — API foundation | [x] | Complete |
+| Phase 2 — auth/session | [~] | Session lifecycle complete; Google platform/runtime verification pending |
+| Phase 3 — catalogue/cart | [x] | Typed catalogue, real product IDs, cart integration and tests complete; runtime verification pending |
+| Phase 4 — COD checkout | [x] | Server-backed COD flow, address validation, duplicate-submit protection, server-authoritative totals/errors and success navigation implemented; runtime verification pending |
+| Phase 5 — customer orders/tracking | [x] | Order history/detail/tracking implementation present; runtime/E2E verification pending |
+| Phase 6 — delivery lifecycle | [x] | Assignment/status/location integration implemented against canonical routes; runtime verification pending |
+| Phase 7 — active GPS/Maps | [~] | Adapter/controller/lifecycle complete; approved platform location + Maps configuration and physical verification blocked |
+| Invoice | [x] | Contract frozen; typed model/repository/controller/UI and delivered-order route implemented; current CI verification pending |
+| Release verification | [ ] | Green current-head CI, Android APK, physical-device and full E2E verification pending |
+
+### Next execution order
+
+1. **Verify fresh CI on `7e111f3...`** and fix only concrete failures; do not claim green until tests and Android debug build complete successfully.
+2. **Close the GPS/Maps dependency gate** by confirming the approved Android/iOS location package and Maps configuration from project documentation/owner direction.
+3. **Wire the approved platform GPS source** behind the existing adapter/controller boundary.
+4. **Verify customer tracking and delivery runtime behavior**: permission denial/revocation, stale/no-location/error states, active-trip start/stop, throttling and location publishing.
+5. **Run release E2E and Android debug APK verification**: COD → order → delivery → tracking → delivered → invoice, then final PR readiness.
+
+### Current blockers
+
+- No approved concrete GPS/Maps dependency or platform Maps configuration is documented in the repository.
+- Google auth platform/runtime verification remains pending.
+- Local Flutter/Dart execution remains unavailable; GitHub Actions is the available Flutter execution environment.
