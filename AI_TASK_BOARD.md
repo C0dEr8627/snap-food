@@ -44,3 +44,15 @@ Record decisions here only after the owner approves or they are already establis
 - Tracking: active-trip only using HTTP updates and polling for MVP.
 - Hosting: GoDaddy; plan/capabilities unverified.
 - Restaurant Partner workflow: deferred.
+
+
+## Developer 1 status — 2026-09-29
+
+- Phase 2 authentication/authorization implementation: **implemented; CI verification pending** for the latest combined slice.
+- Phase 3 catalogue implementation: **implemented for customer reads and admin CRUD/deactivation; CI verification pending**.
+- Catalogue APIs now support authenticated category/product reads, active-item filtering for customers, search and bounded pagination.
+- Admin category/product create/update/deactivate operations are protected by role middleware and policies.
+- Update request validation and catalogue endpoint regression tests are present.
+- Deterministic seed data is still pending.
+- Next verification gate: GitHub Actions on the current branch head.
+- Next implementation after a green verification gate: deterministic catalogue seeds, then Phase 4 order/COD workflow.
