@@ -907,3 +907,35 @@ No backend/Laravel-owned files were modified.
 - Android debug build was skipped by CI because the test step failed; it remains pending until the smoke test passes.
 - No backend/Laravel-owned files were modified.
 - Next: verify the new smoke-test commit in CI. If green, proceed to the next unblocked platform/configuration gate; do not add an unapproved GPS/Maps dependency.
+
+
+## Developer 2 checkpoint — 2026-09-29 (invoice implementation)
+
+- Revalidated the backend invoice implementation on branch `developer-1-backend-admin` before adding Flutter DTOs; the customer invoice controller exposes a concrete `data` payload with invoice identity, customer snapshot, delivery-address snapshot, immutable item snapshot, financial totals, payment fields, issue timestamp, and optional file reference.
+- Froze those Flutter-facing invoice fields in `API_CONTRACT.md` without modifying any Laravel/backend-owned file.
+- Implemented typed `Invoice` and `InvoiceItem` models, a remote/fake `InvoiceRepository`, Riverpod `InvoiceController`, invoice repository tests, and a customer invoice screen.
+- Added a delivered-order-only `View invoice` action and route at `/orders/:orderId/invoice`. Existing order navigation and visual structure remain intact.
+- Invoice monetary values remain server-authoritative strings; Flutter performs no invoice total calculation.
+- Current CI #214 was still in progress for the pre-invoice commit `eb9041a...`; the invoice commits necessarily trigger a fresh CI run. No green result is claimed yet.
+- Local Flutter/Dart execution remains NOT RUN because the connected environment has no local Flutter/Dart runner.
+
+### Updated execution order
+1. Verify the fresh CI run for the invoice implementation and fix only concrete analyzer/test/build failures.
+2. Confirm the approved Android/iOS location package and Google Maps configuration; do not add an unapproved dependency.
+3. Wire the approved platform GPS source behind the existing location adapter and perform physical permission/Maps verification.
+4. Complete customer/delivery E2E verification, Android debug APK verification, and final PR readiness.
+
+### Current task board
+
+| Area | Status | Current state |
+|---|---|---|
+| Phase 0 — audit/verification | [~] | Static audit complete; CI/device verification pending |
+| Phase 1 — API foundation | [x] | Complete |
+| Phase 2 — auth/session | [~] | Session lifecycle complete; Google platform/runtime verification pending |
+| Phase 3 — catalogue/cart | [x] | Complete |
+| Phase 4 — COD checkout | [x] | Implementation complete; automated/runtime verification pending |
+| Phase 5 — customer orders/tracking | [x] | Implementation complete; runtime verification pending |
+| Phase 6 — delivery lifecycle | [x] | Assignment/status/location integration complete |
+| Phase 7 — active GPS/Maps | [~] | Adapter/controller/lifecycle complete; approved platform dependency + real GPS/Maps verification pending |
+| Invoice | [x] | Contract frozen; typed repository/controller/UI and delivered-order route implemented; runtime verification pending |
+| Release verification | [ ] | Fresh green CI, Android APK, physical-device and E2E verification pending |
