@@ -80,3 +80,21 @@ The backend plan records successful workflows for authentication/catalogue (#146
 - No backend-owned files or speculative DTOs/network calls were added.
 - Flutter format/pub-get/analyze/test/Android build/device verification remains **NOT RUN** because no Flutter/Dart runner is available in this environment.
 - **Next owner/action:** Developer 1 synchronizes exact request/response examples and resolves route discrepancies in the shared/base `API_CONTRACT.md`. Developer 2 then starts with the first newly unblocked plan task, prioritizing order/address integration once those schemas are frozen.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (Flutter CI added)
+
+- Added `.github/workflows/flutter-ci.yml` on `developer-2-flutter`.
+- The workflow runs on relevant Flutter changes pushed to `developer-2-flutter`, pull requests targeting `frontend`, and manual dispatch.
+- CI steps: install stable Flutter, report Flutter/Dart versions, `flutter pub get`, Dart formatting check, `flutter analyze`, `flutter test --reporter expanded`, and Android debug APK build.
+- This is a verification-enablement change only. The workflow has been committed but **has not yet been observed passing**; do not treat the workflow definition itself as a successful test run.
+- The shared Flutter API contract is still incomplete for Google auth exchange, catalogue success fields, order/COD + address request/response examples, delivery assignment/status/location/tracking response examples, and invoice snapshots. No speculative API models or payloads were added.
+- Backend branch contract has richer delivery lifecycle/tracking/invoice detail, but the shared contract still needs canonical routes and concrete Flutter-facing response examples before API integration.
+- Existing Flutter implementation remains complete at the API transport/error foundation, catalogue repository/controller/state/UI-state boundary, secure session lifecycle, auth-aware routing and local cart repository/controller boundary.
+- Runtime test/build status: local Flutter/Dart commands remain **NOT RUN** in this GitHub-connected environment. The newly added CI run must be checked for actual results before marking verification complete.
+
+### Updated next actions
+1. Inspect the first run of the new Flutter CI workflow and fix any formatter/analyzer/test/build failures in Developer 2-owned files.
+2. Coordinate with Developer 1 to synchronize the complete Flutter-facing auth/catalogue/order/address/delivery/invoice contract into the shared/base contract and resolve delivery route discrepancies.
+3. Implement the first newly unblocked typed order/address slice, then checkout, order history/detail, delivery/tracking and invoice integrations.
+4. Keep PR #1 targeted at `frontend`; do not merge automatically.
