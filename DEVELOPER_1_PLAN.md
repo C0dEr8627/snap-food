@@ -226,7 +226,7 @@ Build the trusted backend and admin operations that the existing Flutter app can
 
 ## Immediate next task
 
-**Re-run CI for the protected Laravel admin web authentication and delivery-assignment increments after the runtime-configuration fix.** Do not mark either task complete until CI passes. If green, continue with the remaining admin dashboard/order operations and delivery-partner lifecycle APIs. If CI fails, fix the concrete failure before advancing.
+**Verify the restored protected Laravel admin web authentication and delivery-assignment increments.** Workflow #240 exposed that the web routes were not present on the branch even though the controllers/views/runtime config existed. Restored `backend/routes/web.php` and registered the admin web middleware alias in `bootstrap/app.php`; Workflow #243 is now running against commit `cc08d4ff61540fdd4e5786d82821e43dc53b1377`. Do not mark either task complete until that workflow passes. If green, continue with the remaining admin dashboard/order operations and delivery-partner lifecycle APIs. If it fails, fix the concrete failure before advancing.
 
 ## Developer 1 definition of done
 
