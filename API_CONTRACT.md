@@ -41,3 +41,18 @@ ADMIN only. Assigns a single approved, active, available delivery partner to an 
 Request: `{ "delivery_partner_id": 123 }`
 
 On success: HTTP 201 with `data` containing the assignment, delivery partner, assigning admin and order status. The server records the `READY_FOR_PICKUP` → `ASSIGNED` status history with the actor.
+
+
+## Delivery partner lifecycle and tracking
+
+### GET /api/v1/delivery/assignments
+DELIVERY_PARTNER only. Lists assignments owned by the authenticated approved/active partner whose order is in ASSIGNED, PICKED_UP or OUT_FOR_DELIVERY.
+
+### PATCH /api/v1/delivery/assignments/{assignment}/status
+DELIVERY_PARTNER only. The authenticated partner may advance only its own assignment through PICKED_UP → OUT_FOR_DELIVERY → DELIVERED. Invalid transitions return HTTP 409.
+
+### POST /api/v1/delivery/assignments/{assignment}/location
+DELIVERY_PARTNER only. The authenticated approved/active partner may submit latitude/longitude, optional accuracy and an ISO-8601-compatible recorded timestamp for its own assignment while the order is PICKED_UP or OUT_FOR_DELIVERY. Coordinates are bounded to valid ranges and materially future timestamps are rejected with HTTP 409. Each accepted point is persisted as location history.
+
+### GET /api/v1/orders/{order}/tracking
+CUSTOMER owner only. Returns the active order status, latest recorded delivery location and is_stale flag. A location older than 120 seconds is considered stale; missing location is also reported as stale. ADMIN API users may use the corresponding /api/v1/admin/orders/{order}/tracking route.
