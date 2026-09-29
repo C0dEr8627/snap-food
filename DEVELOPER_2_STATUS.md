@@ -427,3 +427,40 @@ No merge or deployment performed.
 3. Send location updates only for the active assignment and stop them on completion/exit.
 4. Add invoice repository/model/UI.
 5. Run current-head CI and device/E2E verification when tooling is available.
+
+
+## Developer 2 implementation checkpoint — 2026-09-29 (active-trip location boundary)
+
+### Completed in this increment
+- Added a foreground-only `DeliveryLocationSource` abstraction so platform GPS/permission APIs stay behind a small adapter boundary.
+- Added `ForegroundDeliveryLocationAdapter` with explicit permission states, start/stop lifecycle, first-position emission and throttling at a default 5-second interval in line with `DELIVERY_TRACKING.md`.
+- Added `ActiveDeliveryLocationController` that binds location publishing to one active assignment ID and posts only through `POST /delivery/assignments/{assignment}/location`.
+- Location publishing stops when the active trip is stopped; no background location, geofencing or WebSockets were introduced.
+- Bound the partner customer-navigation screen to `activeDeliveryAssignmentProvider` so assignment/order/address/status values no longer come from the old static trip identifiers.
+- Added adapter/controller-boundary tests for denied permission, unavailable GPS, foreground emission, throttling and clean shutdown.
+
+### Important platform limitation
+- The repository currently has no concrete Android/iOS location plugin dependency. The default app source therefore uses an explicit `UnavailableDeliveryLocationSource` rather than inventing a platform GPS implementation.
+- A platform adapter still needs to be wired once the approved location package/platform configuration is available. Physical permission/GPS verification remains pending.
+- This preserves the contract boundary and prevents the app from silently pretending that GPS is available.
+
+### Current task status
+- Phase 0: **[~]** static audit complete; current-head CI/device verification pending.
+- Phase 1: **[x]** API foundation complete.
+- Phase 2: **[~]** session lifecycle complete; Google SSO configuration/exchange and final role routing remain integration-gated.
+- Phase 3: **[x]** typed catalogue → menu/detail → real numeric cart IDs complete; runtime verification pending.
+- Phase 4: **[x]** cart → COD checkout foundation/tests and server-backed navigation integrated; runtime verification pending.
+- Phase 5: **[x]** order history/detail/tracking source integration implemented; runtime verification pending.
+- Phase 6: **[~]** delivery assignment retrieval/lifecycle and active-assignment state implemented; concrete platform GPS and complete partner trip flow remain.
+- Phase 7: **[~]** foreground location adapter, permission-state boundary and throttled active-assignment publishing boundary implemented; platform GPS source, freshness UI, maps SDK and physical-device verification remain.
+- Invoice: **[ ]** Flutter invoice integration not started.
+- Release verification: **[ ]** current-head CI, Android build and physical-device/E2E verification pending.
+
+### Next implementation queue
+1. Wire the approved platform location package into `DeliveryLocationSource` once its dependency/configuration is available.
+2. Add last-location freshness/error presentation to the partner active-trip UI.
+3. Stop the location controller on completed assignment and navigation exit; verify lifecycle behavior.
+4. Implement invoice model/repository/UI from the frozen invoice contract.
+5. Run current-head CI and physical-device/E2E verification when tooling is available.
+
+No backend/Laravel-owned files were modified. No merge or deployment was performed.
