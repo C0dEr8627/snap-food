@@ -704,3 +704,19 @@ The active-trip tracking slice has progressed beyond the previous delivery lifec
 The default location source intentionally reports 'unavailable' until the approved platform location dependency/configuration is available; no fake coordinates or background location behavior is introduced.
 
 No backend/Laravel-owned files were modified.
+
+
+## Developer 2 continuation checkpoint — 2026-09-29 (active-trip lifecycle/freshness)
+
+- Completed the next unblocked active-trip subtask after the foreground location adapter boundary: the partner navigation screen now starts/stops location publishing with the active assignment and navigation lifecycle.
+- Added last-successful-publish tracking and UI states for requesting permission, tracking, permission denied, unavailable GPS and publish errors.
+- Kept the default location source explicitly unavailable until an approved Android/iOS location package is documented/configured; no fake coordinates or speculative dependency were introduced.
+- Invoice remains the next contract-safe feature after the location lifecycle work.
+- Runtime verification remains **NOT RUN** because no Flutter/Dart runner is available in the GitHub-connected environment.
+
+### Updated execution queue
+1. Wire the approved platform location package and Maps configuration once identified in project configuration/documentation.
+2. Verify permission/revocation and real GPS on a physical device.
+3. Implement invoice model/repository/UI from the frozen endpoint contract.
+4. Run current-head CI and fix only concrete failures.
+5. Complete Android/device/E2E verification and update PR readiness.
