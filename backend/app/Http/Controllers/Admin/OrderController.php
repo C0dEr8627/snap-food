@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\DeliveryPartner;
+use App\Services\Orders\OrderAssignmentService;
+use App\Exceptions\ConflictException;
 use App\Services\Orders\OrderStatusService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -65,6 +68,9 @@ class OrderController extends Controller
         return view('admin.orders.show', [
             'order' => $order,
             'nextStatuses' => Order::allowedTransitions()[$order->status] ?? [],
+            'eligiblePartners' => $order->status === Order::STATUS_READY_FOR_PICKUP && ! $order->assignment
+                ? DeliveryPartner::query()->with('user:id,name,email')->where('is_approved', true)->where('is_active', true)->where('is_available', true)->whereHas('user', fn ($users) => $users->where('is_active', true))->orderBy('id')->get()
+                : collect(),
         ]);
     }
 
