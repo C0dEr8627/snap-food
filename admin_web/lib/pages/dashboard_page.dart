@@ -132,7 +132,7 @@ class _DashboardKpi extends StatelessWidget {
         Text(secondary, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.green)),
         if (progress != null) ...[
           const SizedBox(height: 10),
-          _DashboardProgress(value: progress),
+          _DashboardProgress(value: progress ?? 0),
           const SizedBox(height: 4),
           Text(progressLabel ?? '', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
         ],
