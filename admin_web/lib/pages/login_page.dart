@@ -171,7 +171,7 @@ class _LoginPageState extends State<LoginPage> {
     suffixIcon: suffix == null ? null : Padding(padding: const EdgeInsets.only(right: 5), child: suffix),
     filled: true,
     fillColor: Colors.white,
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(11), borderSide: const BorderSide(color: AdminColors.line)),
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AdminColors.line)),
     enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(11), borderSide: const BorderSide(color: AdminColors.line)),
     focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(11), borderSide: const BorderSide(color: AdminColors.yellowDark, width: 1.5)),
   );
