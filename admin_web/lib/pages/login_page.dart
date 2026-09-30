@@ -122,18 +122,12 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 14),
                       ],
-                      FilledButton(
+                      shad.PrimaryButton(
                         onPressed: _loading ? null : _submitPassword,
-                        style: FilledButton.styleFrom(
-                          backgroundColor: AdminColors.ink,
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size.fromHeight(46),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        ),
                         child: _loading
                             ? const SizedBox(width: 17, height: 17, child: CircularProgressIndicator(strokeWidth: 2))
                             : const Text('Sign in', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
-                      ),
+                      ).sized(width: double.infinity, height: 46),
                       const SizedBox(height: 18),
                       const _OrDivider(),
                       const SizedBox(height: 18),
