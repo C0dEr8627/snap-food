@@ -265,14 +265,43 @@ class _CategoryManagerState extends State<_CategoryManager> {
     } catch (e) { if (mounted) _notice(context, e.toString(), error: true); }
     finally { if (mounted) setState(() => _busyId = null); }
   }
+  Future<void> _setCategoryActive(_CatalogueCategory category, bool active) async {
+    if (category.id == null) return;
+    setState(() => _busyId = category.id);
+    try {
+      if (widget.live) {
+        await widget.repository.setCategoryActive(category.id!, active);
+      } else {
+        final index = widget.categories.indexWhere((c) => c.id == category.id);
+        if (index >= 0) {
+          final old = widget.categories[index];
+          widget.categories[index] = _CatalogueCategory(
+            id: old.id,
+            name: old.name,
+            slug: old.slug,
+            sortOrder: old.sortOrder,
+            active: active,
+            count: old.count,
+          );
+        }
+      }
+      await widget.onChanged();
+      if (mounted) _notice(context, active ? 'Category activated.' : 'Category deactivated.');
+    } catch (e) {
+      if (mounted) _notice(context, e.toString(), error: true);
+    } finally {
+      if (mounted) setState(() => _busyId = null);
+    }
+  }
+
   Future<void> _deleteCategory(_CatalogueCategory category) async {
     if (category.id == null) return;
     final confirmed = await showDialog<bool>(context: context, builder: (c) => AlertDialog(
-      title: const Text('Delete category?'),
-      content: Text('This will deactivate "${category.name}". Products are not deleted.'),
+      title: const Text('Delete category permanently?'),
+      content: Text(category.count > 0 ? 'This category has assigned products. Deactivate it instead or move the products first.' : 'This permanently removes the category. This cannot be undone.'),
       actions: [
         TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
-        FilledButton(onPressed: () => Navigator.pop(c, true), style: FilledButton.styleFrom(backgroundColor: AdminColors.red), child: const Text('Delete')),
+        if (category.count == 0) FilledButton(onPressed: () => Navigator.pop(c, true), style: FilledButton.styleFrom(backgroundColor: AdminColors.red), child: const Text('Delete Permanently')),
       ],
     ));
     if (confirmed != true) return;
@@ -287,7 +316,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
         widget.categories..clear()..addAll(list);
       }
       await widget.onChanged();
-      if (mounted) _notice(context, 'Category deleted (deactivated).');
+      if (mounted) _notice(context, 'Category deleted permanently.');
     } catch (e) { if (mounted) _notice(context, e.toString(), error: true); }
     finally { if (mounted) setState(() => _busyId = null); }
   }
@@ -319,6 +348,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
   }
   @override Widget build(BuildContext context) {
     final visible = widget.categories.where((c) => c.active).toList();
+    final inactive = widget.categories.where((c) => !c.active).toList();
     return Column(mainAxisSize: MainAxisSize.min, children: [
       Align(alignment: Alignment.centerRight, child: FilledButton.icon(onPressed: _busyId != null ? null : () => _openEditor(), icon: const Icon(Icons.add, size: 16), label: const Text('Add Category'))),
       const SizedBox(height: 12),
@@ -327,11 +357,41 @@ class _CategoryManagerState extends State<_CategoryManager> {
         child: ListView.separated(shrinkWrap: true, itemCount: visible.length, separatorBuilder: (_, __) => const Divider(height: 1), itemBuilder: (_, index) {
           final c = visible[index]; final busy = _busyId == c.id;
           return ListTile(dense: true, title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w800)), subtitle: Text(c.slug.isEmpty ? 'No slug' : c.slug), trailing: Wrap(spacing: 2, children: [
-            IconButton(tooltip: 'Edit', onPressed: busy ? null : () => _openEditor(c), icon: const Icon(Icons.edit_outlined, size: 18)),
-            IconButton(tooltip: 'Delete', onPressed: busy ? null : () => _deleteCategory(c), icon: busy ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.delete_outline, size: 18, color: AdminColors.red)),
+            IconButton(tooltip: 'Edit category', onPressed: busy ? null : () => _openEditor(c), icon: const Icon(Icons.edit_outlined, size: 18)),
+            IconButton(tooltip: 'Deactivate category', onPressed: busy ? null : () => _setCategoryActive(c, false), icon: busy ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.visibility_off_outlined, size: 18)),
+            IconButton(tooltip: c.count == 0 ? 'Delete permanently' : 'Move products before deleting', onPressed: busy || c.count > 0 ? null : () => _deleteCategory(c), icon: const Icon(Icons.delete_forever_outlined, size: 18, color: AdminColors.red)),
           ]));
         }),
       ),
+      if (inactive.isNotEmpty) ...[
+        const SizedBox(height: 18),
+        const Align(
+          alignment: Alignment.centerLeft,
+          child: Text('INACTIVE CATEGORIES', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, letterSpacing: 1, color: AdminColors.muted)),
+        ),
+        const SizedBox(height: 6),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 220),
+          child: ListView.separated(
+            shrinkWrap: true,
+            itemCount: inactive.length,
+            separatorBuilder: (_, __) => const Divider(height: 1),
+            itemBuilder: (_, index) {
+              final c = inactive[index];
+              final busy = _busyId == c.id;
+              return ListTile(
+                dense: true,
+                title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w800)),
+                subtitle: Text((c.slug.isEmpty ? 'No slug' : c.slug) + ' • ' + c.count.toString() + ' product(s) • inactive'),
+                trailing: Wrap(spacing: 2, children: [
+                  IconButton(tooltip: 'Activate category', onPressed: busy ? null : () => _setCategoryActive(c, true), icon: busy ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.visibility_outlined, size: 18)),
+                  IconButton(tooltip: c.count == 0 ? 'Delete permanently' : 'Move products before deleting', onPressed: busy || c.count > 0 ? null : () => _deleteCategory(c), icon: const Icon(Icons.delete_forever_outlined, size: 18, color: AdminColors.red)),
+                ]),
+              );
+            },
+          ),
+        ),
+      ],
     ]);
   }
 }
