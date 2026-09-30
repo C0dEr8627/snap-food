@@ -293,7 +293,7 @@ class _DeliveryPartnerApi {
         .replaceFirst(RegExp(r'/$'), '');
   }
 
-  String get token => const String.fromEnvironment('API_TOKEN');
+  String get token => html.window.localStorage['snap_foodd_admin_token'] ?? '';
   bool get configured => token.isNotEmpty;
   Map<String, String> get headers => {
         'Accept': 'application/json',
