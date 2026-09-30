@@ -1,11 +1,11 @@
 # Snap Foodd
 
-Snap Foodd is a Flutter food-delivery application backed by Laravel/PHP and MySQL.
+Snap Foodd is a food-delivery system with two Flutter clients backed by one Laravel/PHP API and MySQL database.
 
-## Release scope
-- **Customer mobile:** Google SSO, catalogue/search, cart, COD checkout, orders and active delivery tracking.
-- **Delivery Partner mobile:** approved-partner sign-in, delivery requests, pickup/delivery workflow and active-trip GPS.
-- **Admin web:** products, categories, orders, delivery partners, assignments and invoices.
+## Applications
+- **Consumer + Delivery Partner mobile:** root Flutter project; Google SSO, catalogue/search, cart, COD checkout, orders, delivery workflow and active tracking.
+- **Admin Web:** separate Flutter Web project at \`admin_web/\`; operational GUI for dashboard, catalogue, orders, delivery partners, assignments and invoices.
+- **Backend:** \`backend/\`; Laravel API, authentication, authorization, business rules, database access and invoice generation.
 - **Restaurant Partner:** deferred for this release.
 
 ## Approved technical decisions
@@ -13,17 +13,17 @@ Snap Foodd is a Flutter food-delivery application backed by Laravel/PHP and MySQ
 | Area | Decision |
 |---|---|
 | Mobile | Flutter / Dart |
-| State + DI | Riverpod 3 |
-| Navigation | go_router |
+| Admin client | Separate Flutter Web application (\`admin_web/\`) |
+| State + DI | Riverpod 3 for mobile; keep admin dependencies minimal until features are implemented |
+| Navigation | go_router where applicable |
 | Backend | Laravel / PHP |
-| API | REST under `/api/v1` |
-| Database | MySQL |
-| Auth | Google OAuth SSO |
+| API | REST under \`/api/v1\` |
+| Database | MySQL, accessed only by Laravel |
+| Auth | Google OAuth SSO for mobile; admin flow follows documented backend capabilities |
 | OTP | Deferred |
 | Payments | COD |
 | Maps | Google Maps Platform |
 | Tracking | Active-trip HTTP updates + polling |
-| Admin | Separate Laravel web dashboard |
 | Hosting | GoDaddy; exact plan must be verified |
 | Backend style | Laravel modular monolith |
 | WebSockets | Not required for MVP |
@@ -37,38 +37,36 @@ Read before coding:
 5. [AUTH.md](AUTH.md)
 6. [DELIVERY_TRACKING.md](DELIVERY_TRACKING.md)
 7. [ADMIN.md](ADMIN.md)
-8. [DEVELOPMENT.md](DEVELOPMENT.md)
-9. [AI_RULES.md](AI_RULES.md)
-10. [DESIGN.md](DESIGN.md)
-11. [DEVELOPER_1_PLAN.md](DEVELOPER_1_PLAN.md) — Laravel/API/MySQL/Admin task plan
-12. [DEVELOPER_2_PLAN.md](DEVELOPER_2_PLAN.md) — Flutter/Maps task plan
-13. [AIDLC_WORKFLOW.md](AIDLC_WORKFLOW.md) — parallel AI workflow, branches, commits and PRs
-14. [AI_TASK_BOARD.md](AI_TASK_BOARD.md) — shared integration milestones
-15. [AI_TASK_TEMPLATE.md](AI_TASK_TEMPLATE.md) — reusable scoped task definition
-16. [`.github/pull_request_template.md`](.github/pull_request_template.md) — required PR checklist
+8. [ADMIN_FLUTTER_WEB_PLAN.md](ADMIN_FLUTTER_WEB_PLAN.md)
+9. [DEVELOPMENT.md](DEVELOPMENT.md)
+10. [AI_RULES.md](AI_RULES.md)
+11. [DESIGN.md](DESIGN.md)
+12. [DEVELOPER_1_PLAN.md](DEVELOPER_1_PLAN.md)
+13. [DEVELOPER_2_PLAN.md](DEVELOPER_2_PLAN.md)
+14. [AIDLC_WORKFLOW.md](AIDLC_WORKFLOW.md)
+15. [AI_TASK_BOARD.md](AI_TASK_BOARD.md)
+16. [AI_TASK_TEMPLATE.md](AI_TASK_TEMPLATE.md)
 
 If code and documentation disagree, update them together.
 
 ## Engineering rules
 - Backend is authoritative for business rules and data.
-- Flutter widgets do not own API calls, persistence, pricing or workflow decisions.
+- Flutter widgets do not own API calls, pricing or workflow decisions.
 - Never trust client role, price, availability, total, payment state or order status.
-- Keep repository boundaries between features and external data sources.
-- Keep secrets out of Flutter and Git.
-- Preserve existing UI unless a design change is explicitly requested.
+- Both clients use documented Laravel APIs; no client directly accesses MySQL.
+- Keep secrets out of Flutter/browser bundles and Git.
+- Preserve existing mobile UI unless a design change is explicitly requested.
 - Loading, empty, error and degraded-network states are part of completion.
 - Update docs/tests when architecture, API, schema or workflow changes.
 
 ## Implementation order
-1. Verify GoDaddy capabilities.
-2. Laravel + MySQL foundation.
-3. Google SSO end-to-end.
-4. Catalogue/admin.
-5. Cart + COD checkout.
-6. Admin order/delivery assignment.
-7. Delivery partner workflow.
-8. Maps + active tracking.
-9. Invoices.
-10. Security/integration/device release testing.
+1. Verify GoDaddy/static web hosting, HTTPS, domain and CORS capabilities.
+2. Keep the existing Laravel API and mobile client stable; verify current integration.
+3. Set up the separate \`admin_web/\` Flutter Web project and CI.
+4. Implement admin auth/session and API client against existing backend capabilities.
+5. Implement dashboard, catalogue, order operations, delivery partner operations and invoices.
+6. Verify role enforcement, CORS, browser refresh/deep links and end-to-end workflows.
+7. Retire Laravel Blade admin only after the Flutter Web replacement is accepted.
+8. Complete security/integration/device and release testing.
 
-See [DEVELOPMENT.md](DEVELOPMENT.md) for sequencing, [AIDLC_WORKFLOW.md](AIDLC_WORKFLOW.md) for the required AI development lifecycle, and [AI_TASK_BOARD.md](AI_TASK_BOARD.md) for shared milestone tracking.
+See [DEVELOPMENT.md](DEVELOPMENT.md), [ADMIN_FLUTTER_WEB_PLAN.md](ADMIN_FLUTTER_WEB_PLAN.md), [AIDLC_WORKFLOW.md](AIDLC_WORKFLOW.md) and [AI_TASK_BOARD.md](AI_TASK_BOARD.md).
