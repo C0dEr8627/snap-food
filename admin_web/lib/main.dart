@@ -365,7 +365,6 @@ class _OpsCard extends StatelessWidget {
     const _Progress(label: 'Out for delivery', value: '18', fraction: .52, color: AdminColors.blue),
   ])));
 }
-}
 
 class _Progress extends StatelessWidget {
   const _Progress({required this.label, required this.value, required this.fraction, required this.color});
