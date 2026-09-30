@@ -278,8 +278,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
     setState(() => _busyId = category.id);
     try {
       if (widget.live) {
-        final res = await http.delete(widget.repository._uri('/admin/categories/${category.id}'), headers: widget.repository._headers);
-        if (res.statusCode < 200 || res.statusCode >= 300) throw _CatalogueApiException(res.statusCode, _CatalogueRepository._message(res));
+        await widget.repository.deleteCategory(category.id!);
       } else {
         final list = [...widget.categories];
         final index = list.indexWhere((c) => c.id == category.id);
