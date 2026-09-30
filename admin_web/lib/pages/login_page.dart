@@ -26,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _loading = false;
   bool _obscurePassword = true;
+  bool _googleLoading = false;
   String? _error;
 
   @override
@@ -48,22 +49,22 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: AdminColors.canvas,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 460),
+            constraints: const BoxConstraints(maxWidth: 420),
             child: Card(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(32, 34, 32, 30),
+                padding: const EdgeInsets.fromLTRB(30, 28, 30, 26),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const _LoginBrand(),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 24),
                       const Text(
                         'Welcome back',
-                        style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: AdminColors.ink),
+                        style: TextStyle(fontSize: 25, fontWeight: FontWeight.w900, color: AdminColors.ink),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 7),
@@ -72,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                         style: TextStyle(fontSize: 12.5, color: AdminColors.muted),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 26),
+                      const SizedBox(height: 22),
                       TextFormField(
                         controller: _email,
                         keyboardType: TextInputType.emailAddress,
@@ -84,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 12),
                       TextFormField(
                         controller: _password,
                         obscureText: _obscurePassword,
@@ -101,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                         validator: (value) => value == null || value.length < 8 ? 'Enter your password.' : null,
                         onFieldSubmitted: (_) => _submitPassword(),
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 16),
                       if (_error != null) ...[
                         Container(
                           padding: const EdgeInsets.all(12),
@@ -126,20 +127,21 @@ class _LoginPageState extends State<LoginPage> {
                         style: FilledButton.styleFrom(
                           backgroundColor: AdminColors.ink,
                           foregroundColor: Colors.white,
-                          minimumSize: const Size.fromHeight(50),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11)),
+                          minimumSize: const Size.fromHeight(46),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
                         child: _loading
-                            ? const SizedBox(width: 19, height: 19, child: CircularProgressIndicator(strokeWidth: 2))
+                            ? const SizedBox(width: 17, height: 17, child: CircularProgressIndicator(strokeWidth: 2))
                             : const Text('Sign in', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
                       ),
                       const SizedBox(height: 18),
                       const _OrDivider(),
                       const SizedBox(height: 18),
                       SizedBox(
-                        height: 50,
+                        height: 46,
+                        width: double.infinity,
                         child: IgnorePointer(
-                          ignoring: _loading,
+                          ignoring: _loading || _googleLoading,
                           child: google_web.renderButton(
                             configuration: google_web.GSIButtonConfiguration(
                               type: google_web.GSIButtonType.standard,
@@ -147,16 +149,10 @@ class _LoginPageState extends State<LoginPage> {
                               size: google_web.GSIButtonSize.large,
                               text: google_web.GSIButtonText.continueWith,
                               shape: google_web.GSIButtonShape.rectangular,
-                              minimumWidth: 360,
+                              minimumWidth: 0,
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Admin access only • All sign-in attempts are verified by the Laravel API.',
-                        style: TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.4),
-                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -171,8 +167,8 @@ class _LoginPageState extends State<LoginPage> {
 
   InputDecoration _fieldDecoration(String label, AdminIconData icon, {Widget? suffix}) => InputDecoration(
     labelText: label,
-    prefixIcon: AdminIcon(icon, size: 19),
-    suffixIcon: suffix,
+    prefixIcon: Padding(padding: const EdgeInsets.symmetric(horizontal: 13), child: AdminIcon(icon, size: 18)),
+    suffixIcon: suffix == null ? null : Padding(padding: const EdgeInsets.only(right: 5), child: suffix),
     filled: true,
     fillColor: Colors.white,
     border: OutlineInputBorder(borderRadius: BorderRadius.circular(11), borderSide: const BorderSide(color: AdminColors.line)),
@@ -186,7 +182,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleGoogleAccount(GoogleSignInAccount? account) async {
-    if (account == null || _loading) return;
+    if (account == null || _loading || _googleLoading) return;
+    setState(() => _googleLoading = true);
 
     await _run(() async {
       final authentication = await account.authentication;
@@ -216,7 +213,7 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
       setState(() => _error = 'Unable to reach the authentication service. Please try again.');
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) setState(() { _loading = false; _googleLoading = false; });
     }
   }
 }
