@@ -267,9 +267,7 @@ class _CataloguePageState extends State<CataloguePage> {
   }
 
   Future<void> _manageCategories() async {
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) => StatefulBuilder(
+    await shad.showOverlay<void>(context, shad.DialogConfiguration<void>(builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, dialogSetState) => AlertDialog(
           title: const Text('Manage Categories'),
           content: SizedBox(
@@ -390,14 +388,14 @@ class _CategoryManagerState extends State<_CategoryManager> {
 
   Future<void> _deleteCategory(_CatalogueCategory category) async {
     if (category.id == null) return;
-    final confirmed = await showDialog<bool>(context: context, builder: (c) => AlertDialog(
+    final confirmed = await shad.showOverlay<bool>(context, shad.DialogConfiguration<bool>(builder: (c) => shad.AlertDialog(
       title: const Text('Delete category permanently?'),
       content: Text(category.count > 0 ? 'This category has assigned products. Deactivate it instead or move the products first.' : 'This permanently removes the category. This cannot be undone.'),
       actions: [
         shad.OutlineButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
         if (category.count == 0) shad.DestructiveButton(onPressed: () => Navigator.pop(c, true), child: const Text('Delete Permanently')),
       ],
-    ));
+    ))).future;
     if (confirmed != true) return;
     setState(() => _busyId = category.id);
     try {
@@ -419,7 +417,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
     final slug = TextEditingController(text: category?.slug ?? '');
     final order = TextEditingController(text: (category?.sortOrder ?? 0).toString());
     final form = GlobalKey<FormState>();
-    final result = await showDialog<bool>(context: context, builder: (c) => AlertDialog(
+    final result = await shad.showOverlay<bool>(context, shad.DialogConfiguration<bool>(builder: (c) => shad.AlertDialog(
       title: Text(category == null ? 'Add Category' : 'Edit Category'),
       content: SizedBox(width: 430, child: Form(key: form, child: Column(mainAxisSize: MainAxisSize.min, children: [
         _field(name, 'Category name', maxLength: 120, validator: (v) => v == null || v.trim().isEmpty ? 'Category name is required' : null),
@@ -436,7 +434,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
           if (c.mounted) Navigator.pop(c, true);
         }, child: Text(category == null ? 'Create' : 'Save Changes')),
       ],
-    ));
+    ))).future;
     name.dispose(); slug.dispose(); order.dispose();
     if (result == true && mounted) setState(() {});
   }
