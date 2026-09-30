@@ -3,6 +3,8 @@ import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+part 'services/admin_auth_service.dart';
+part 'pages/login_page.dart';
 part 'app/admin_shell.dart';
 part 'widgets/admin_shared.dart';
 part 'widgets/catalogue_shared.dart';
