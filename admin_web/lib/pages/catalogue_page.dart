@@ -152,7 +152,7 @@ class _CataloguePageState extends State<CataloguePage> {
         await _load(keepSelection: false);
       }
       if (!mounted) return;
-      _notice(context, _creating ? 'Product created successfully.' : 'Product updated successfully.');
+      _notice(context, _creating ? 'Item created successfully.' : 'Item updated successfully.');
       _creating = false;
       _selected = saved;
     } catch (e) {
@@ -170,7 +170,7 @@ class _CataloguePageState extends State<CataloguePage> {
       await _repo.deactivate(p);
       p.active = false; p.available = false;
       if (_live) await _load(keepSelection: false); else _applyPreviewFilters();
-      if (mounted) { _newProduct(); _notice(context, 'Product deactivated.'); }
+      if (mounted) { _newProduct(); _notice(context, 'Item deactivated.'); }
     } catch (e) { if (mounted) _notice(context, e.toString(), error: true); }
     finally { if (mounted) setState(() => _saving = false); }
   }
@@ -528,13 +528,13 @@ class _CatalogueList extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         const Row(children: [
-          Expanded(flex: 5, child: Text('PRODUCT', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
+          Expanded(flex: 5, child: Text('ITEM', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
           Expanded(flex: 3, child: Text('CATEGORY', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
           SizedBox(width: 85, child: Text('STOCK', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
         ]),
         const Divider(height: 18),
         if (products.isEmpty && !loading)
-          const Padding(padding: EdgeInsets.all(30), child: Center(child: Text('No products match these filters.', style: TextStyle(color: AdminColors.muted)))),
+          const Padding(padding: EdgeInsets.all(30), child: Center(child: Text('No items match your search.', style: TextStyle(color: AdminColors.muted)))),
         ...products.map((p) => _ProductRow(product: p, selected: selected?.id == p.id && selected == p, onTap: () => onSelect(p))),
         const SizedBox(height: 10),
         Row(children: [
@@ -547,20 +547,6 @@ class _CatalogueList extends StatelessWidget {
     ),
   );
 }
-
-Widget _select(String label, List<String> items, String value, ValueChanged<String> onChanged) => Container(
-  height: 40,
-  padding: const EdgeInsets.symmetric(horizontal: 11),
-  decoration: BoxDecoration(color: AdminColors.peach, borderRadius: BorderRadius.circular(10), border: Border.all(color: AdminColors.line)),
-  child: DropdownButtonHideUnderline(child: DropdownButton<String>(
-    value: items.contains(value) ? value : items.first,
-    isDense: true,
-    icon: const AdminIcon(HugeIcons.strokeRoundedArrowDown01, size: 17),
-    style: const TextStyle(fontSize: 11, color: AdminColors.ink, fontWeight: FontWeight.w700),
-    items: items.map((e) => DropdownMenuItem<String>(value: e, child: Text(e))).toList(),
-    onChanged: (v) { if (v != null) onChanged(v); },
-  )),
-);
 
 class _ProductRow extends StatelessWidget {
   const _ProductRow({required this.product, required this.selected, required this.onTap});
@@ -713,7 +699,7 @@ class _ProductEditor extends StatelessWidget {
                 ],
               ),
               const Divider(height: 22),
-              _label('Dish Name *', 'Max 180 chars'),
+              _label('Dish Name *', 'Required'),
               _field(
                 name,
                 'Smokey Chicken Tikka Roll',
@@ -741,15 +727,7 @@ class _ProductEditor extends StatelessWidget {
                       onCategory,
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _select(
-                      'GST Slab',
-                      const ['5%', '12%', '18%'],
-                      selected?.gst ?? '5%',
-                      (_) {},
-                    ),
-                  ),
+
                 ],
               ),
               const SizedBox(height: 12),
@@ -861,7 +839,7 @@ class _ProductEditor extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              _label('Product Photography (1:1 Ratio)', null),
+              _label('Item Image', null),
               InkWell(
                 onTap: uploading ? null : onPickImage,
                 borderRadius: BorderRadius.circular(12),
@@ -898,7 +876,7 @@ class _ProductEditor extends StatelessWidget {
                             Text(
                               uploading
                                   ? 'Reading image…'
-                                  : 'Drop product image or browse file',
+                                  : 'Drop item image or browse file',
                               style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w800,
@@ -920,7 +898,7 @@ class _ProductEditor extends StatelessWidget {
               _field(
                 imageUrl,
                 'https://...',
-                label: 'Image URL (supported by current API)',
+                label: 'Image URL',
                 validator: (_) => null,
               ),
               const SizedBox(height: 14),
