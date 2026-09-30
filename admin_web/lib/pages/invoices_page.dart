@@ -116,7 +116,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
       else if (_items.isEmpty) _InvoiceStateCard(icon: HugeIcons.strokeRoundedInvoice01, title: 'No invoices found', message: 'Try changing your search, date range, or payment status filter.', action: 'Reset filters', onAction: _reset)
       else _InvoiceLedgerCard(invoices: _items, mobile: mobile, page: _page, total: _total, lastPage: _lastPage, onPage: (p) => _load(page: p), onView: _showInvoice),
       const SizedBox(height: 12),
-      const Text('Stored invoice snapshots only. GST splits, gateway references, refund/reconciliation events, and rider payouts are not currently exposed by the backend.', style: TextStyle(fontSize: 10.5, color: AdminColors.muted, height: 1.5)),
+      const Text('Stored invoice snapshots only. GST splits, gateway references, refund/reconciliation events, and rider payouts are not currently exposed by the backend.', style: TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.5)),
     ]);
   }
 
@@ -127,7 +127,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
         _InvoiceDetailLine('Issued at', i.issuedAt ?? 'Not recorded'), const Divider(height: 24),
         _InvoiceDetailLine('Item subtotal', _inr(i.subtotal)), _InvoiceDetailLine('Delivery fee', _inr(i.deliveryFee)), _InvoiceDetailLine('Invoice total', _inr(i.total), strong: true),
         _InvoiceDetailLine('Payment method', i.paymentMethod), _InvoiceDetailLine('Payment status', i.paymentStatus), _InvoiceDetailLine('File reference', i.fileReference ?? 'No downloadable file reference stored'),
-        if (i.items.isNotEmpty) ...[const SizedBox(height: 12), const Text('ITEM SNAPSHOT', style: TextStyle(fontSize: 10, letterSpacing: 1.1, fontWeight: FontWeight.w900, color: AdminColors.muted)), const SizedBox(height: 8),
+        if (i.items.isNotEmpty) ...[const SizedBox(height: 12), const Text('ITEM SNAPSHOT', style: TextStyle(fontSize: 11, letterSpacing: 1.1, fontWeight: FontWeight.w900, color: AdminColors.muted)), const SizedBox(height: 8),
           ...i.items.map((item) => Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Row(children: [
             Expanded(child: Text((item['product_name'] ?? 'Item').toString() + ' × ' + (item['quantity'] ?? 1).toString(), style: const TextStyle(fontSize: 12))),
             Text(_inr(_number(item['line_total'])), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
@@ -180,9 +180,9 @@ class _LedgerInvoice {
 class _InvoiceBreadcrumb extends StatelessWidget {
   const _InvoiceBreadcrumb();
   @override Widget build(BuildContext context) => const Wrap(spacing: 7, crossAxisAlignment: WrapCrossAlignment.center, children: [
-    Text('ACCOUNTING & COMPLIANCE', style: TextStyle(fontSize: 9, letterSpacing: 1.2, fontWeight: FontWeight.w900, color: AdminColors.muted)),
+    Text('ACCOUNTING & COMPLIANCE', style: TextStyle(fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w900, color: AdminColors.muted)),
     AdminIcon(HugeIcons.strokeRoundedCircle, size: 4, color: AdminColors.warning),
-    Text('INVOICE LEDGER', style: TextStyle(fontSize: 9, letterSpacing: 1.2, fontWeight: FontWeight.w900, color: AdminColors.warning)),
+    Text('INVOICE LEDGER', style: TextStyle(fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w900, color: AdminColors.warning)),
   ]);
 }
 
@@ -191,9 +191,9 @@ class _InvoiceKpi extends StatelessWidget {
   final String title, value, caption; final AdminIconData icon; final Color accent;
   @override Widget build(BuildContext context) => Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: AdminColors.line)),
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Row(children: [Expanded(child: Text(title, style: const TextStyle(fontSize: 9, letterSpacing: .7, fontWeight: FontWeight.w900, color: AdminColors.muted))), AdminIcon(icon, size: 18, color: accent)]),
+      Row(children: [Expanded(child: Text(title, style: const TextStyle(fontSize: 11, letterSpacing: .7, fontWeight: FontWeight.w900, color: AdminColors.muted))), AdminIcon(icon, size: 18, color: accent)]),
       const SizedBox(height: 12), Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: value == 'Not available' ? 16 : 22, fontWeight: FontWeight.w900, color: AdminColors.ink, letterSpacing: -.5)),
-      const SizedBox(height: 5), Text(caption, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 10, color: AdminColors.muted, height: 1.4)),
+      const SizedBox(height: 5), Text(caption, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.4)),
     ]));
 }
 
@@ -211,29 +211,29 @@ class _InvoiceLedgerCard extends StatelessWidget {
   @override Widget build(BuildContext context) => Container(decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(16)),
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(padding: const EdgeInsets.all(16), child: Row(children: [const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Invoice ledger', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AdminColors.ink)), SizedBox(height: 3), Text('Stored invoice snapshots · newest first', style: TextStyle(fontSize: 10.5, color: AdminColors.muted)),
+        Text('Invoice ledger', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AdminColors.ink)), SizedBox(height: 3), Text('Stored invoice snapshots · newest first', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
       ])), _Pill(total.toString() + ' records')])),
       const Divider(height: 1, color: AdminColors.line),
       if (mobile) ...invoices.map((i) => _InvoiceMobileCard(invoice: i, onView: () => onView(i)))
       else SingleChildScrollView(scrollDirection: Axis.horizontal, child: ConstrainedBox(constraints: const BoxConstraints(minWidth: 990), child: DataTable(horizontalMargin: 16, columnSpacing: 20, headingRowHeight: 43, dataRowMinHeight: 70, dataRowMaxHeight: 82,
-        headingRowColor: WidgetStateProperty.all(AdminColors.canvas), headingTextStyle: const TextStyle(fontSize: 9, letterSpacing: .6, fontWeight: FontWeight.w900, color: AdminColors.muted),
+        headingRowColor: WidgetStateProperty.all(AdminColors.canvas), headingTextStyle: const TextStyle(fontSize: 11, letterSpacing: .6, fontWeight: FontWeight.w900, color: AdminColors.muted),
         columns: const [DataColumn(label: Text('INVOICE & ORDER')), DataColumn(label: Text('DATE & TIME')), DataColumn(label: Text('CUSTOMER INFO')), DataColumn(label: Text('ORDER TOTAL'), numeric: true), DataColumn(label: Text('TAX BREAKDOWN')), DataColumn(label: Text('STATUS')), DataColumn(label: Text('ACTIONS'))],
         rows: invoices.map((i) => DataRow(cells: [
-          DataCell(Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(i.number, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900)), Text('#ORDER-' + i.orderId.toString(), style: const TextStyle(fontSize: 10, color: AdminColors.muted))])),
-          DataCell(Text(i.issuedAt == null ? 'Not recorded' : _formatTimestamp(i.issuedAt!), style: const TextStyle(fontSize: 10.5))),
-          DataCell(SizedBox(width: 150, child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(i.customer, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)), Text(i.email.isEmpty ? 'No email' : i.email, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 9.5, color: AdminColors.muted))]))),
-          DataCell(Text(_inr(i.total), style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w900))),
-          DataCell(Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Items ' + _inr(i.subtotal), style: const TextStyle(fontSize: 10.5)), Text('Delivery ' + _inr(i.deliveryFee), style: const TextStyle(fontSize: 10, color: AdminColors.muted)), const Text('GST details unavailable', style: TextStyle(fontSize: 9, color: AdminColors.muted))])),
+          DataCell(Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(i.number, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)), Text('#ORDER-' + i.orderId.toString(), style: const TextStyle(fontSize: 11, color: AdminColors.muted))])),
+          DataCell(Text(i.issuedAt == null ? 'Not recorded' : _formatTimestamp(i.issuedAt!), style: const TextStyle(fontSize: 11))),
+          DataCell(SizedBox(width: 150, child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(i.customer, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)), Text(i.email.isEmpty ? 'No email' : i.email, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted))]))),
+          DataCell(Text(_inr(i.total), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
+          DataCell(Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Items ' + _inr(i.subtotal), style: const TextStyle(fontSize: 11)), Text('Delivery ' + _inr(i.deliveryFee), style: const TextStyle(fontSize: 11, color: AdminColors.muted)), const Text('GST details unavailable', style: TextStyle(fontSize: 11, color: AdminColors.muted))])),
           DataCell(_InvoiceStatus(i.paymentStatus)),
           DataCell(IconButton(tooltip: 'View invoice details', onPressed: () => onView(i), icon: const AdminIcon(HugeIcons.strokeRoundedLinkSquare01, size: 17, color: AdminColors.yellowDark))),
         ])).toList(),
       ))),
       const Divider(height: 1, color: AdminColors.line),
       Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), child: Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center, spacing: 12, runSpacing: 10, children: [
-        Text('Displaying ' + (((page - 1) * 10) + 1).toString() + '–' + ((page - 1) * 10 + invoices.length).toString() + ' of ' + total.toString() + ' invoices', style: const TextStyle(fontSize: 10.5, color: AdminColors.muted)),
+        Text('Displaying ' + (((page - 1) * 10) + 1).toString() + '–' + ((page - 1) * 10 + invoices.length).toString() + ' of ' + total.toString() + ' invoices', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
         Wrap(spacing: 5, children: [
           OutlinedButton(onPressed: page > 1 ? () => onPage(page - 1) : null, child: const Text('Previous')),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9), decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(9)), child: Text(page.toString() + ' / ' + lastPage.toString(), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: AdminColors.yellowDark))),
+          Container(padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9), decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(9)), child: Text(page.toString() + ' / ' + lastPage.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.yellowDark))),
           OutlinedButton(onPressed: page < lastPage ? () => onPage(page + 1) : null, child: const Text('Next')),
         ]),
       ])),
@@ -244,10 +244,10 @@ class _InvoiceMobileCard extends StatelessWidget {
   const _InvoiceMobileCard({required this.invoice, required this.onView});
   final _LedgerInvoice invoice; final VoidCallback onView;
   @override Widget build(BuildContext context) => InkWell(onTap: onView, child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(invoice.number, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)), const SizedBox(height: 3), Text('#ORDER-' + invoice.orderId.toString() + ' · ' + invoice.customer, style: const TextStyle(fontSize: 10.5, color: AdminColors.muted))])), _InvoiceStatus(invoice.paymentStatus)]),
-    const SizedBox(height: 12), Row(children: [Expanded(child: Text(invoice.email.isEmpty ? 'No email recorded' : invoice.email, style: const TextStyle(fontSize: 10.5, color: AdminColors.muted))), Text(_inr(invoice.total), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900))]),
-    const SizedBox(height: 7), Text('Items ' + _inr(invoice.subtotal) + ' · Delivery ' + _inr(invoice.deliveryFee), style: const TextStyle(fontSize: 10.5, color: AdminColors.muted)),
-    const SizedBox(height: 7), Row(children: [Expanded(child: Text(invoice.paymentMethod, style: const TextStyle(fontSize: 10.5))), TextButton(onPressed: onView, child: const Text('View details'))]), const Divider(height: 1, color: AdminColors.line),
+    Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(invoice.number, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)), const SizedBox(height: 3), Text('#ORDER-' + invoice.orderId.toString() + ' · ' + invoice.customer, style: const TextStyle(fontSize: 11, color: AdminColors.muted))])), _InvoiceStatus(invoice.paymentStatus)]),
+    const SizedBox(height: 12), Row(children: [Expanded(child: Text(invoice.email.isEmpty ? 'No email recorded' : invoice.email, style: const TextStyle(fontSize: 11, color: AdminColors.muted))), Text(_inr(invoice.total), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900))]),
+    const SizedBox(height: 7), Text('Items ' + _inr(invoice.subtotal) + ' · Delivery ' + _inr(invoice.deliveryFee), style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
+    const SizedBox(height: 7), Row(children: [Expanded(child: Text(invoice.paymentMethod, style: const TextStyle(fontSize: 11))), TextButton(onPressed: onView, child: const Text('View details'))]), const Divider(height: 1, color: AdminColors.line),
   ])));
 }
 
@@ -257,7 +257,7 @@ class _InvoiceStatus extends StatelessWidget {
     final paid = status == 'PAID', pending = status == 'PENDING';
     final bg = paid ? AdminColors.greenSoft : pending ? AdminColors.amberSoft : AdminColors.redSoft;
     final fg = paid ? AdminColors.green : pending ? AdminColors.yellowDark : AdminColors.red;
-    return Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6), decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)), child: Text(status, style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w900, color: fg)));
+    return Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6), decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)), child: Text(status, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: fg)));
   }
 }
 
