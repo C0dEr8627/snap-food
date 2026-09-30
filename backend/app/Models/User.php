@@ -21,8 +21,14 @@ class User extends Authenticatable
         'google_subject',
         'name',
         'email',
+        'password',
         'role',
         'is_active',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
     ];
 
     protected function casts(): array
