@@ -268,7 +268,7 @@ class _Header extends StatelessWidget {
       if (desktop)
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
-          decoration: BoxDecoration(color: AdminColors.greenSoft, borderRadius: BorderRadius.circular(10), border: Border.all(color: Color(0xFFCBE8D6))),
+          decoration: BoxDecoration(color: AdminColors.greenSoft, borderRadius: BorderRadius.circular(10), border: Border.all(color: AdminColors.greenSoft)),
           child: const Row(children: [
             _StatusDot(color: AdminColors.green),
             SizedBox(width: 7),
