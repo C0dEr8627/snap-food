@@ -587,7 +587,7 @@ class _FleetKpiCard extends StatelessWidget {
   final Color tone;
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => AdminCard(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -634,7 +634,7 @@ class _PartnerFilterBar extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => AdminCard(
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: LayoutBuilder(builder: (context, constraints) {
@@ -714,7 +714,7 @@ class _PartnerRoster extends StatelessWidget {
   final Future<void> Function(_DeliveryPartnerRecord, bool) onApproval;
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => AdminCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(17, 16, 17, 12),
@@ -945,7 +945,7 @@ class _PartnerLoadingState extends StatelessWidget {
   const _PartnerLoadingState();
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => AdminCard(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(children: [
@@ -993,7 +993,7 @@ class _PartnerEmptyState extends StatelessWidget {
   final VoidCallback onClear;
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => AdminCard(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 34),
           child: Center(child: Column(children: [
@@ -1024,7 +1024,7 @@ class _KycQueueNotice extends StatelessWidget {
   final bool busy;
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => AdminCard(
         child: Padding(
           padding: const EdgeInsets.all(17),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
