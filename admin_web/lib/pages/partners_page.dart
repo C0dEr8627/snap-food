@@ -805,7 +805,6 @@ class _PartnerActions extends StatelessWidget {
           icon: const AdminIcon(HugeIcons.strokeRoundedLinkSquare01, size: 17),
         ),
         shad.IconButton.ghost(
-          tooltip: partner.approved ? 'Remove approval' : 'Approve partner',
           onPressed: busy ? null : () => onApproval(partner, !partner.approved),
           icon: AdminIcon(partner.approved ? HugeIcons.strokeRoundedSecurityCheck : HugeIcons.strokeRoundedCheckmarkCircle01, size: 18, color: partner.approved ? AdminColors.muted : AdminColors.green),
         ),
