@@ -470,7 +470,7 @@ class _PartnerCommandHeader extends StatelessWidget {
           SizedBox(height: 7),
           Text('Fleet roster, partner approvals, and operational readiness.', style: TextStyle(fontSize: 12, color: AdminColors.muted)),
           SizedBox(height: 10),
-          Text('FLEET LOGISTICS  /  MUMBAI CLUSTER  /  RIDER OPS', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.1, color: AdminColors.muted)),
+          Text('FLEET LOGISTICS  /  MUMBAI CLUSTER  /  RIDER OPS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1.1, color: AdminColors.muted)),
         ],
       );
       if (constraints.maxWidth < 760) {
@@ -517,7 +517,7 @@ class _ApiStatusPill extends StatelessWidget {
           const SizedBox(width: 7),
           Text(
             configured ? 'API configured • Authenticated requests enabled' : 'API token missing • Data unavailable',
-            style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: configured ? AdminColors.green : AdminColors.red),
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: configured ? AdminColors.green : AdminColors.red),
           ),
         ]),
       );
@@ -582,7 +582,7 @@ class _FleetKpiCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              Expanded(child: Text(title, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: .6, color: AdminColors.muted))),
+              Expanded(child: Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .6, color: AdminColors.muted))),
               Container(
                 width: 33,
                 height: 33,
@@ -593,7 +593,7 @@ class _FleetKpiCard extends StatelessWidget {
             const Spacer(),
             Text(value, style: const TextStyle(fontSize: 27, fontWeight: FontWeight.w900, letterSpacing: -.7, color: AdminColors.ink)),
             const SizedBox(height: 3),
-            Text(caption, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 9.5, color: AdminColors.muted)),
+            Text(caption, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
           ]),
         ),
       );
@@ -636,7 +636,7 @@ class _PartnerFilterBar extends StatelessWidget {
                 style: const TextStyle(fontSize: 11),
                 decoration: InputDecoration(
                   hintText: 'Search name, email or partner ID',
-                  hintStyle: const TextStyle(fontSize: 10.5),
+                  hintStyle: const TextStyle(fontSize: 11),
                   prefixIcon: const AdminIcon(HugeIcons.strokeRoundedSearch01, size: 18),
                   suffixIcon: controller.text.isEmpty
                       ? null
@@ -669,9 +669,9 @@ class _PartnerFilterBar extends StatelessWidget {
                       border: Border.all(color: active ? AdminColors.yellow : AdminColors.line),
                     ),
                     child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      Text(option.$2, style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: active ? AdminColors.ink : AdminColors.muted)),
+                      Text(option.$2, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: active ? AdminColors.ink : AdminColors.muted)),
                       const SizedBox(width: 6),
-                      Text((counts[option.$1] ?? 0).toString(), style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900)),
+                      Text((counts[option.$1] ?? 0).toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
                     ]),
                   ),
                 );
@@ -712,7 +712,7 @@ class _PartnerRoster extends StatelessWidget {
               const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text('DELIVERY PARTNER ROSTER', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .3)),
                 SizedBox(height: 3),
-                Text('Partner identity and operational flags returned by the admin API.', style: TextStyle(fontSize: 10, color: AdminColors.muted)),
+                Text('Partner identity and operational flags returned by the admin API.', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
               ])),
               const _TelemetryBoundaryPill(),
             ]),
@@ -736,7 +736,7 @@ class _PartnerRoster extends StatelessWidget {
                 dataRowMaxHeight: 78,
                 columnSpacing: 24,
                 horizontalMargin: 16,
-                headingTextStyle: const TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, color: AdminColors.muted),
+                headingTextStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted),
                 columns: const [
                   DataColumn(label: Text('PARTNER / IDENTITY')),
                   DataColumn(label: Text('CONTACT')),
@@ -746,7 +746,7 @@ class _PartnerRoster extends StatelessWidget {
                 ],
                 rows: partners.map((partner) => DataRow(cells: [
                   DataCell(SizedBox(width: 175, child: _PartnerIdentity(partner: partner))),
-                  DataCell(SizedBox(width: 185, child: Text(partner.email, style: const TextStyle(fontSize: 10.5)))),
+                  DataCell(SizedBox(width: 185, child: Text(partner.email, style: const TextStyle(fontSize: 11)))),
                   DataCell(_PartnerDutyStatus(partner: partner)),
                   DataCell(_ApprovalPill(approved: partner.approved)),
                   DataCell(_PartnerActions(partner: partner, busy: busy, onApproval: onApproval)),
@@ -771,13 +771,13 @@ class _PartnerIdentity extends StatelessWidget {
         height: 36,
         alignment: Alignment.center,
         decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(11)),
-        child: Text(initials.isEmpty ? 'DP' : initials, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: AdminColors.yellowDark)),
+        child: Text(initials.isEmpty ? 'DP' : initials, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.yellowDark)),
       ),
       const SizedBox(width: 10),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-        Text(partner.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900)),
+        Text(partner.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
         const SizedBox(height: 3),
-        Text('Partner #${partner.id}', style: const TextStyle(fontSize: 9.5, color: AdminColors.muted)),
+        Text('Partner #${partner.id}', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
       ])),
     ]);
   }
@@ -798,7 +798,7 @@ class _PartnerDutyStatus extends StatelessWidget {
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         _StatusDot(color: color),
         const SizedBox(width: 6),
-        Text(text, style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: color)),
+        Text(text, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: color)),
       ]),
     );
   }
@@ -812,7 +812,7 @@ class _ApprovalPill extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
         decoration: BoxDecoration(color: approved ? AdminColors.greenSoft : AdminColors.amberSoft, borderRadius: BorderRadius.circular(18)),
-        child: Text(approved ? 'APPROVED' : 'PENDING', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, color: approved ? AdminColors.green : AdminColors.yellowDark)),
+        child: Text(approved ? 'APPROVED' : 'PENDING', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: approved ? AdminColors.green : AdminColors.yellowDark)),
       );
 }
 
@@ -870,7 +870,7 @@ class _PartnerMobileCard extends StatelessWidget {
             _ApprovalPill(approved: partner.approved),
           ]),
           const SizedBox(height: 10),
-          Text(partner.email, style: const TextStyle(fontSize: 10.5, color: AdminColors.muted)),
+          Text(partner.email, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
           const SizedBox(height: 10),
           Row(children: [
             Expanded(child: _PartnerDutyStatus(partner: partner)),
@@ -894,8 +894,8 @@ class _DetailLine extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          SizedBox(width: 105, child: Text(label, style: const TextStyle(fontSize: 10.5, color: AdminColors.muted))),
-          Expanded(child: Text(value, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700))),
+          SizedBox(width: 105, child: Text(label, style: const TextStyle(fontSize: 11, color: AdminColors.muted))),
+          Expanded(child: Text(value, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700))),
         ]),
       );
 }
@@ -910,7 +910,7 @@ class _TelemetryBoundaryPill extends StatelessWidget {
         child: const Row(mainAxisSize: MainAxisSize.min, children: [
           _StatusDot(color: AdminColors.muted),
           SizedBox(width: 6),
-          Text('Telemetry unavailable', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AdminColors.muted)),
+          Text('Telemetry unavailable', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.muted)),
         ]),
       );
 }
@@ -924,7 +924,7 @@ class _PartnerPagination extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(children: [
-        Text('Page $currentPage of $lastPage • $total partners', style: const TextStyle(fontSize: 10, color: AdminColors.muted, fontWeight: FontWeight.w700)),
+        Text('Page $currentPage of $lastPage • $total partners', style: const TextStyle(fontSize: 11, color: AdminColors.muted, fontWeight: FontWeight.w700)),
         const Spacer(),
         IconButton(tooltip: 'Previous page', onPressed: currentPage > 1 ? () => onPage(currentPage - 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowLeft01)),
         IconButton(tooltip: 'Next page', onPressed: currentPage < lastPage ? () => onPage(currentPage + 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01)),
@@ -968,9 +968,9 @@ class _PartnerErrorBanner extends StatelessWidget {
           const AdminIcon(HugeIcons.strokeRoundedCloud, color: AdminColors.red, size: 20),
           const SizedBox(width: 10),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('Delivery partner data could not be loaded', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w900, color: AdminColors.red)),
+            const Text('Delivery partner data could not be loaded', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.red)),
             const SizedBox(height: 3),
-            Text(message, style: const TextStyle(fontSize: 10, color: AdminColors.ink, height: 1.4)),
+            Text(message, style: const TextStyle(fontSize: 11, color: AdminColors.ink, height: 1.4)),
           ])),
           TextButton(onPressed: onRetry, child: const Text('Retry')),
         ]),
@@ -991,7 +991,7 @@ class _PartnerEmptyState extends StatelessWidget {
             const SizedBox(height: 12),
             Text(hasQuery ? 'No partners match these filters' : 'No delivery partners found', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
             const SizedBox(height: 5),
-            const Text('Try another search or refresh the roster from the admin API.', textAlign: TextAlign.center, style: TextStyle(fontSize: 10.5, color: AdminColors.muted)),
+            const Text('Try another search or refresh the roster from the admin API.', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: AdminColors.muted)),
             if (hasQuery) ...[
               const SizedBox(height: 10),
               TextButton(onPressed: onClear, child: const Text('Clear filters')),
@@ -1024,11 +1024,11 @@ class _KycQueueNotice extends StatelessWidget {
               const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text('Sarathi & UIDAI Automated KYC Queue', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
                 SizedBox(height: 4),
-                Text('Pending partner records from the admin API. Government document verification metadata is not currently exposed.', style: TextStyle(fontSize: 10.5, color: AdminColors.muted, height: 1.5)),
+                Text('Pending partner records from the admin API. Government document verification metadata is not currently exposed.', style: TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.5)),
               ])),
               const SizedBox(width: 8),
               Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6), decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(18)), child: Text('${pendingPartners.length} pending on page', style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: AdminColors.yellowDark))),
+                Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6), decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(18)), child: Text('${pendingPartners.length} pending on page', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.yellowDark))),
                 const SizedBox(height: 8),
                 OutlinedButton(onPressed: onReview, child: const Text('Filter pending')),
               ]),
@@ -1041,24 +1041,24 @@ class _KycQueueNotice extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 7),
                 child: LayoutBuilder(builder: (context, constraints) {
                   final identity = Row(children: [
-                    Container(width: 34, height: 34, alignment: Alignment.center, decoration: BoxDecoration(color: AdminColors.peach, borderRadius: BorderRadius.circular(10)), child: Text(partner.name.trim().isEmpty ? 'DP' : partner.name.trim().split(RegExp(r'\\s+')).take(2).map((part) => part.isEmpty ? '' : part[0]).join().toUpperCase(), style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900))),
+                    Container(width: 34, height: 34, alignment: Alignment.center, decoration: BoxDecoration(color: AdminColors.peach, borderRadius: BorderRadius.circular(10)), child: Text(partner.name.trim().isEmpty ? 'DP' : partner.name.trim().split(RegExp(r'\\s+')).take(2).map((part) => part.isEmpty ? '' : part[0]).join().toUpperCase(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
                     const SizedBox(width: 10),
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(partner.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900)),
+                      Text(partner.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
                       const SizedBox(height: 2),
-                      Text('Partner #${partner.id} • ${partner.email}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 9.5, color: AdminColors.muted)),
+                      Text('Partner #${partner.id} • ${partner.email}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
                     ])),
                   ]);
                   final action = FilledButton(
                     onPressed: busy ? null : () => onApprove(partner),
                     style: FilledButton.styleFrom(backgroundColor: AdminColors.yellow, foregroundColor: AdminColors.ink, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9))),
-                    child: const Text('Approve & activate', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800)),
+                    child: const Text('Approve & activate', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
                   );
                   if (constraints.maxWidth < 540) {
                     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       identity,
                       const SizedBox(height: 8),
-                      const Text('KYC documents / OCR score unavailable from current API', style: TextStyle(fontSize: 9.5, color: AdminColors.muted)),
+                      const Text('KYC documents / OCR score unavailable from current API', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
                       const SizedBox(height: 6),
                       Align(alignment: Alignment.centerRight, child: action),
                     ]);
@@ -1066,7 +1066,7 @@ class _KycQueueNotice extends StatelessWidget {
                   return Row(children: [
                     Expanded(child: identity),
                     const SizedBox(width: 12),
-                    const Text('KYC metadata unavailable', style: TextStyle(fontSize: 9.5, color: AdminColors.muted)),
+                    const Text('KYC metadata unavailable', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
                     const SizedBox(width: 12),
                     action,
                   ]);
@@ -1075,7 +1075,7 @@ class _KycQueueNotice extends StatelessWidget {
             ] else
               const Padding(
                 padding: EdgeInsets.only(top: 15),
-                child: Text('No pending partner approvals on this page. KYC document queue requires a dedicated backend endpoint.', style: TextStyle(fontSize: 10.5, color: AdminColors.muted)),
+                child: Text('No pending partner approvals on this page. KYC document queue requires a dedicated backend endpoint.', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
               ),
           ]),
         ),
@@ -1095,7 +1095,7 @@ class _KycDataBoundary extends StatelessWidget {
           SizedBox(width: 10),
           Expanded(child: Text(
             'KYC integration boundary: no document URLs, UIDAI/Sarathi verification metadata, trust scores, rejection endpoint, or re-upload endpoint were found in the existing API. These controls are intentionally not simulated. The existing approval endpoint is used only for its supported approve/unapprove action.',
-            style: TextStyle(fontSize: 10.5, color: AdminColors.muted, height: 1.5),
+            style: TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.5),
           )),
         ]),
       );
