@@ -284,7 +284,7 @@ class _CataloguePageState extends State<CataloguePage> {
               },
             ),
           ),
-          actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Close'))],
+          actions: [shad.OutlineButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Close'))],
         ),
       ),
     );
@@ -305,7 +305,7 @@ class _CataloguePageState extends State<CataloguePage> {
       ),
       const SizedBox(height: 16),
       if (_error.isNotEmpty) _ErrorBanner(message: _error, onRetry: _load),
-      if (_loading) const LinearProgressIndicator(minHeight: 2),
+      if (_loading) const shad.LinearProgressIndicator(minHeight: 2),
       const SizedBox(height: 8),
       _buildProductPanel(),
     ]);
@@ -394,8 +394,8 @@ class _CategoryManagerState extends State<_CategoryManager> {
       title: const Text('Delete category permanently?'),
       content: Text(category.count > 0 ? 'This category has assigned products. Deactivate it instead or move the products first.' : 'This permanently removes the category. This cannot be undone.'),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
-        if (category.count == 0) FilledButton(onPressed: () => Navigator.pop(c, true), style: FilledButton.styleFrom(backgroundColor: AdminColors.red), child: const Text('Delete Permanently')),
+        shad.OutlineButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
+        if (category.count == 0) shad.DestructiveButton(onPressed: () => Navigator.pop(c, true), child: const Text('Delete Permanently')),
       ],
     ));
     if (confirmed != true) return;
@@ -430,7 +430,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
       ]))),
       actions: [
         TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
-        FilledButton(onPressed: () async {
+        shad.PrimaryButton(onPressed: () async {
           if (!form.currentState!.validate()) return;
           await _saveCategory(id: category?.id, name: name.text, slug: slug.text, sortOrder: int.tryParse(order.text) ?? 0, active: true);
           if (c.mounted) Navigator.pop(c, true);
@@ -451,9 +451,9 @@ class _CategoryManagerState extends State<_CategoryManager> {
         child: ListView.separated(shrinkWrap: true, itemCount: visible.length, separatorBuilder: (_, __) => const Divider(height: 1), itemBuilder: (_, index) {
           final c = visible[index]; final busy = _busyId == c.id;
           return ListTile(dense: true, title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w800)), subtitle: Text(c.slug.isEmpty ? 'No slug' : c.slug), trailing: Wrap(spacing: 2, children: [
-            IconButton(tooltip: 'Edit category', onPressed: busy ? null : () => _openEditor(c), icon: const AdminIcon(HugeIcons.strokeRoundedEdit02, size: 18)),
-            IconButton(tooltip: 'Deactivate category', onPressed: busy ? null : () => _setCategoryActive(c, false), icon: busy ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const AdminIcon(HugeIcons.strokeRoundedViewOff, size: 18)),
-            IconButton(tooltip: c.count == 0 ? 'Delete permanently' : 'Move products before deleting', onPressed: busy || c.count > 0 ? null : () => _deleteCategory(c), icon: const AdminIcon(HugeIcons.strokeRoundedDelete02, size: 18, color: AdminColors.red)),
+            shad.IconButton.ghost(tooltip: 'Edit category', onPressed: busy ? null : () => _openEditor(c), icon: const AdminIcon(HugeIcons.strokeRoundedEdit02, size: 18)),
+            shad.IconButton.ghost(tooltip: 'Deactivate category', onPressed: busy ? null : () => _setCategoryActive(c, false), icon: busy ? const shad.CircularProgressIndicator(size: 18, strokeWidth: 2) : const AdminIcon(HugeIcons.strokeRoundedViewOff, size: 18)),
+            shad.IconButton.ghost(tooltip: c.count == 0 ? 'Delete permanently' : 'Move products before deleting', onPressed: busy || c.count > 0 ? null : () => _deleteCategory(c), icon: const AdminIcon(HugeIcons.strokeRoundedDelete02, size: 18, color: AdminColors.red)),
           ]));
         }),
       ),
@@ -1035,32 +1035,21 @@ class _ProductEditor extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 height: 46,
-                child: FilledButton.icon(
+                child: shad.PrimaryButton(
                   onPressed: saving ? null : onSave,
-                  icon: AdminIcon(
+                  leading: AdminIcon(
                     saving
                         ? HugeIcons.strokeRoundedHourglass
                         : HugeIcons.strokeRoundedFloppyDisk,
                     size: 17,
                   ),
-                  label: Text(
-                    saving
-                        ? 'Saving…'
-                        : 'Save Item',
-                  ),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AdminColors.red,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(11),
-                    ),
-                  ),
+                  child: Text(saving ? 'Saving…' : 'Save Item'),
                 ),
               ),
               if (!creating)
                 Align(
                   alignment: Alignment.center,
-                  child: TextButton(
+                  child: shad.OutlineButton(
                     onPressed: saving ? null : onDeactivate,
                     child: const Text(
                       'Deactivate item',
@@ -1112,5 +1101,5 @@ InputDecoration _inputDecoration(String hint, [AdminIconData? icon]) => InputDec
 
 class _ErrorBanner extends StatelessWidget {
   const _ErrorBanner({required this.message, required this.onRetry}); final String message; final VoidCallback onRetry;
-  @override Widget build(BuildContext context) => Container(width: double.infinity, margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.all(11), decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(10)), child: Row(children: [const AdminIcon(HugeIcons.strokeRoundedAlertCircle, size: 17, color: AdminColors.red), const SizedBox(width: 8), Expanded(child: Text(message, style: const TextStyle(fontSize: 11))), TextButton(onPressed: onRetry, child: const Text('Retry', style: TextStyle(fontSize: 11)))]));
+  @override Widget build(BuildContext context) => Container(width: double.infinity, margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.all(11), decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(10)), child: Row(children: [const AdminIcon(HugeIcons.strokeRoundedAlertCircle, size: 17, color: AdminColors.red), const SizedBox(width: 8), Expanded(child: Text(message, style: const TextStyle(fontSize: 11))), shad.OutlineButton(onPressed: onRetry, child: const Text('Retry', style: TextStyle(fontSize: 11)))]));
 }
