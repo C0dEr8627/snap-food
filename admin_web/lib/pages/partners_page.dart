@@ -483,16 +483,16 @@ class _ApiStatusPill extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         decoration: BoxDecoration(
-          color: configured ? AdminAdminColors.greenSoft : AdminAdminColors.redSoft,
+          color: configured ? AdminColors.greenSoft : AdminColors.redSoft,
           borderRadius: BorderRadius.circular(9),
           border: Border.all(color: AdminColors.line),
         ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
-          _StatusDot(color: configured ? AdminAdminColors.green : AdminAdminColors.red),
+          _StatusDot(color: configured ? AdminColors.green : AdminColors.red),
           const SizedBox(width: 7),
           Text(
             configured ? 'API configured • Authenticated requests enabled' : 'API token missing • Data unavailable',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: configured ? AdminAdminColors.green : AdminAdminColors.red),
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: configured ? AdminColors.green : AdminColors.red),
           ),
         ]),
       );
@@ -519,10 +519,10 @@ class _FleetSummary extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       final columns = constraints.maxWidth >= 900 ? 4 : constraints.maxWidth >= 560 ? 2 : 1;
       final cards = [
-        _FleetKpiCard(title: 'TOTAL FLEET STRENGTH', value: loading ? '—' : total.toString(), caption: 'Partners registered in backend', icon: HugeIcons.strokeRoundedScooterElectric, tone: AdminAdminColors.amberSoft),
-        _FleetKpiCard(title: 'APPROVED & ACTIVE', value: loading ? '—' : approved.toString(), caption: 'On the current result page', icon: HugeIcons.strokeRoundedFlash, tone: AdminAdminColors.greenSoft),
-        _FleetKpiCard(title: 'AVAILABLE NOW', value: loading ? '—' : available.toString(), caption: 'Availability reported by API', icon: HugeIcons.strokeRoundedRoute01, tone: AdminAdminColors.blueSoft),
-        _FleetKpiCard(title: 'PENDING APPROVAL', value: loading ? '—' : pending.toString(), caption: 'Needs admin decision on this page', icon: HugeIcons.strokeRoundedTask01, tone: AdminAdminColors.redSoft),
+        _FleetKpiCard(title: 'TOTAL FLEET STRENGTH', value: loading ? '—' : total.toString(), caption: 'Partners registered in backend', icon: HugeIcons.strokeRoundedScooterElectric, tone: AdminColors.amberSoft),
+        _FleetKpiCard(title: 'APPROVED & ACTIVE', value: loading ? '—' : approved.toString(), caption: 'On the current result page', icon: HugeIcons.strokeRoundedFlash, tone: AdminColors.greenSoft),
+        _FleetKpiCard(title: 'AVAILABLE NOW', value: loading ? '—' : available.toString(), caption: 'Availability reported by API', icon: HugeIcons.strokeRoundedRoute01, tone: AdminColors.blueSoft),
+        _FleetKpiCard(title: 'PENDING APPROVAL', value: loading ? '—' : pending.toString(), caption: 'Needs admin decision on this page', icon: HugeIcons.strokeRoundedTask01, tone: AdminColors.redSoft),
       ];
       return GridView.count(
         crossAxisCount: columns,
@@ -628,7 +628,7 @@ class _PartnerFilterBar extends StatelessWidget {
                     const SizedBox(width: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                      decoration: BoxDecoration(color: active ? AdminAdminColors.yellow : AdminColors.canvas, borderRadius: BorderRadius.circular(6)),
+                      decoration: BoxDecoration(color: active ? AdminColors.yellow : AdminColors.canvas, borderRadius: BorderRadius.circular(6)),
                       child: Text((counts[option.$1] ?? 0).toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
                     ),
                   ]),
@@ -734,8 +734,8 @@ class _PartnerIdentity extends StatelessWidget {
         width: 36,
         height: 36,
         alignment: Alignment.center,
-        decoration: BoxDecoration(color: AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(11)),
-        child: Text(initials.isEmpty ? 'DP' : initials, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminAdminColors.amber)),
+        decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(11)),
+        child: Text(initials.isEmpty ? 'DP' : initials, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.amber)),
       ),
       const SizedBox(width: 10),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -754,8 +754,8 @@ class _PartnerDutyStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = !partner.active ? 'Inactive' : !partner.approved ? 'Awaiting approval' : partner.available ? 'Available' : 'Not available';
-    final color = !partner.active || !partner.approved ? AdminAdminColors.red : partner.available ? AdminAdminColors.green : AdminColors.muted;
-    final background = !partner.active || !partner.approved ? AdminAdminColors.redSoft : partner.available ? AdminAdminColors.greenSoft : AdminColors.canvas;
+    final color = !partner.active || !partner.approved ? AdminColors.red : partner.available ? AdminColors.green : AdminColors.muted;
+    final background = !partner.active || !partner.approved ? AdminColors.redSoft : partner.available ? AdminColors.greenSoft : AdminColors.canvas;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
       decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(20)),
@@ -775,8 +775,8 @@ class _ApprovalPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-        decoration: BoxDecoration(color: approved ? AdminAdminColors.greenSoft : AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(18)),
-        child: Text(approved ? 'APPROVED' : 'PENDING', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: approved ? AdminAdminColors.green : AdminAdminColors.amber)),
+        decoration: BoxDecoration(color: approved ? AdminColors.greenSoft : AdminColors.amberSoft, borderRadius: BorderRadius.circular(18)),
+        child: Text(approved ? 'APPROVED' : 'PENDING', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: approved ? AdminColors.green : AdminColors.amber)),
       );
 }
 
@@ -830,7 +830,7 @@ class _PartnerActions extends StatelessWidget {
           icon: AdminIcon(
             partner.approved ? HugeIcons.strokeRoundedSecurityCheck : HugeIcons.strokeRoundedCheckmarkCircle01,
             size: 18,
-            color: partner.approved ? AdminColors.muted : AdminAdminColors.green,
+            color: partner.approved ? AdminColors.muted : AdminColors.green,
           ),
         ),
       ]);
@@ -940,12 +940,12 @@ class _PartnerErrorBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: AdminAdminColors.redSoft, borderRadius: BorderRadius.circular(12), border: Border.all(color: AdminAdminColors.redSoft)),
+        decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(12), border: Border.all(color: AdminColors.redSoft)),
         child: Row(children: [
-          const AdminIcon(HugeIcons.strokeRoundedCloud, color: AdminAdminColors.red, size: 20),
+          const AdminIcon(HugeIcons.strokeRoundedCloud, color: AdminColors.red, size: 20),
           const SizedBox(width: 10),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('Delivery partner data could not be loaded', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminAdminColors.red)),
+            const Text('Delivery partner data could not be loaded', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.red)),
             const SizedBox(height: 3),
             Text(message, style: const TextStyle(fontSize: 11, color: AdminColors.ink, height: 1.4)),
           ])),
@@ -964,7 +964,7 @@ class _PartnerEmptyState extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 34),
           child: Center(child: Column(children: [
-            Container(width: 48, height: 48, decoration: BoxDecoration(color: AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(15)), child: const AdminIcon(HugeIcons.strokeRoundedDeliveryTruck01, color: AdminAdminColors.amber, size: 24)),
+            Container(width: 48, height: 48, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(15)), child: const AdminIcon(HugeIcons.strokeRoundedDeliveryTruck01, color: AdminColors.amber, size: 24)),
             const SizedBox(height: 12),
             Text(hasQuery ? 'No partners match these filters' : 'No delivery partners found', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
             const SizedBox(height: 5),
@@ -996,7 +996,7 @@ class _KycQueueNotice extends StatelessWidget {
           padding: const EdgeInsets.all(17),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(width: 42, height: 42, decoration: BoxDecoration(color: AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(12)), child: const AdminIcon(HugeIcons.strokeRoundedTaskDone01, color: AdminAdminColors.amber, size: 21)),
+              Container(width: 42, height: 42, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(12)), child: const AdminIcon(HugeIcons.strokeRoundedTaskDone01, color: AdminColors.amber, size: 21)),
               const SizedBox(width: 12),
               const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text('Sarathi & UIDAI Automated KYC Queue', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
@@ -1005,7 +1005,7 @@ class _KycQueueNotice extends StatelessWidget {
               ])),
               const SizedBox(width: 8),
               Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6), decoration: BoxDecoration(color: AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(18)), child: Text('${pendingPartners.length} pending on page', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminAdminColors.amber))),
+                Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6), decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(18)), child: Text('${pendingPartners.length} pending on page', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.amber))),
                 const SizedBox(height: 8),
                 shad.OutlineButton(onPressed: onReview, child: const Text('Filter pending')),
               ]),
@@ -1080,6 +1080,6 @@ class _KycDataBoundary extends StatelessWidget {
 void _partnersNotice(BuildContext context, String message, {bool error = false}) =>
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message),
-      backgroundColor: error ? AdminAdminColors.red : null,
+      backgroundColor: error ? AdminColors.red : null,
       behavior: SnackBarBehavior.floating,
     ));
