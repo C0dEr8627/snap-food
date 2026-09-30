@@ -73,10 +73,7 @@ class _AdminShellState extends State<AdminShell> {
     final desktop = width >= 1050;
     final tablet = width >= 720;
     return Scaffold(
-      drawer: desktop ? null : Drawer(
-        width: tablet ? 300 : width * .84,
-        child: _Sidebar(selected: section, onSelect: _select, compact: true),
-      ),
+      drawer: null,
       body: Row(children: [
         if (desktop) SizedBox(width: 248, height: double.infinity, child: _Sidebar(selected: section, onSelect: _select)),
         Expanded(child: Column(children: [
@@ -97,10 +94,10 @@ class _AdminShellState extends State<AdminShell> {
                   if (!desktop) Padding(
                     padding: const EdgeInsets.only(bottom: 18),
                     child: Row(children: [
-                      Builder(builder: (context) => IconButton.filledTonal(
-                        onPressed: () => Scaffold.of(context).openDrawer(),
+                      shad.IconButton.secondary(
+                        onPressed: () => _openMobileNav(context, tablet ? 300 : width * .84),
                         icon: const AdminIcon(HugeIcons.strokeRoundedMenu01),
-                      )),
+                      ),
                       const SizedBox(width: 12),
                       Expanded(child: Text(section.label, style: Theme.of(context).textTheme.headlineSmall)),
                     ]),
@@ -137,7 +134,20 @@ class _AdminShellState extends State<AdminShell> {
 
   void _select(AdminSection value) {
     setState(() => section = value);
-    if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+    shad.closeDrawer(context);
+  }
+
+  Future<void> _openMobileNav(BuildContext context, double width) async {
+    await shad.openDrawerOverlay<void>(
+      context: context,
+      position: shad.OverlayPosition.left,
+      constraints: BoxConstraints(maxWidth: width),
+      builder: (drawerContext) => _Sidebar(
+        selected: section,
+        onSelect: _select,
+        compact: true,
+      ),
+    );
   }
 }
 
