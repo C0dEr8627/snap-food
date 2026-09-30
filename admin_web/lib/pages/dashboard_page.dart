@@ -45,7 +45,7 @@ class _ConnectionBanner extends StatelessWidget {
   const _ConnectionBanner();
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => AdminCard(
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       child: Row(children: [
@@ -118,7 +118,7 @@ class _DashboardKpi extends StatelessWidget {
   final String? progressLabel;
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => AdminCard(
     child: Padding(
       padding: const EdgeInsets.all(18),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -147,7 +147,7 @@ class _AttentionSection extends StatelessWidget {
   const _AttentionSection();
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => AdminCard(
     child: Padding(
       padding: const EdgeInsets.all(17),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -208,7 +208,7 @@ class _WeeklySalesCard extends StatelessWidget {
   static const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => AdminCard(
     child: Padding(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -325,7 +325,7 @@ class _KitchenPulseCard extends StatelessWidget {
   const _KitchenPulseCard();
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => AdminCard(
     child: Padding(
       padding: const EdgeInsets.all(18),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -395,7 +395,7 @@ class _LiveOrdersCard extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => AdminCard(
     child: Padding(
       padding: const EdgeInsets.fromLTRB(18, 18, 18, 10),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -505,7 +505,7 @@ class _PageButton extends StatelessWidget {
 class _SalesCard extends StatelessWidget {
   const _SalesCard();
   @override
-  Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(21), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+  Widget build(BuildContext context) => AdminCard(child: Padding(padding: const EdgeInsets.all(21), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
     Row(children: [
       const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text('Sales overview', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
@@ -535,7 +535,7 @@ class _ChartBar extends StatelessWidget {
 class _OpsCard extends StatelessWidget {
   const _OpsCard();
   @override
-  Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(21), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+  Widget build(BuildContext context) => AdminCard(child: Padding(padding: const EdgeInsets.all(21), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
     const Text('Live operations', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
     const SizedBox(height: 3),
     const Text('Current order queue', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
@@ -578,7 +578,7 @@ class _OrdersTable extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => AdminCard(
     child: SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: DataTable(
