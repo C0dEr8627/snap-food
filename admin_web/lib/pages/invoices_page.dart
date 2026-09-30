@@ -86,7 +86,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
           const Text('Reconcile delivered orders, review billing snapshots, and manage invoice records.', style: TextStyle(fontSize: 12, height: 1.5, color: AdminColors.muted)),
         ])),
         Wrap(spacing: 8, children: [
-          shad.OutlineButton(onPressed: _exporting ? null : _exportPage, leading: _exporting ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2)) : const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 17), child: const Text('Export current page CSV')),
+          shad.OutlineButton(onPressed: _exporting ? null : _exportPage, leading: _exporting ? const SizedBox(width: 14, height: 14, child: shad.CircularProgressIndicator(size: 14, strokeWidth: 2)) : const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 17), child: const Text('Export current page CSV')),
           shad.PrimaryButton(onPressed: () => _notice(context, 'GSTR-1 export is not available in the current backend API.', error: true), leading: const AdminIcon(HugeIcons.strokeRoundedInvoice01, size: 17), child: const Text('Export GSTR-1')),
         ]),
       ]),
@@ -211,9 +211,10 @@ class _InvoiceKpi extends StatelessWidget {
 class _InvoiceFilterPill extends StatelessWidget {
   const _InvoiceFilterPill(this.label, this.active, this.onTap);
   final String label; final bool active; final VoidCallback onTap;
-  @override Widget build(BuildContext context) => InkWell(onTap: onTap, borderRadius: BorderRadius.circular(30), child: AnimatedContainer(duration: const Duration(milliseconds: 140), padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
-    decoration: BoxDecoration(color: active ? AdminColors.amberSoft : AdminColors.canvas, borderRadius: BorderRadius.circular(30), border: Border.all(color: active ? AdminColors.yellow : AdminColors.line)),
-    child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: active ? AdminColors.yellowDark : AdminColors.muted))));
+  @override Widget build(BuildContext context) => (active ? shad.Button.secondary : shad.Button.ghost)(
+    onPressed: onTap,
+    child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: active ? AdminColors.ink : AdminColors.muted)),
+  );
 }
 
 class _InvoiceLedgerCard extends StatelessWidget {
@@ -226,19 +227,53 @@ class _InvoiceLedgerCard extends StatelessWidget {
       ])), _Pill(total.toString() + ' records')])),
       const Divider(height: 1, color: AdminColors.line),
       if (mobile) ...invoices.map((i) => _InvoiceMobileCard(invoice: i, onView: () => onView(i)))
-      else SingleChildScrollView(scrollDirection: Axis.horizontal, child: ConstrainedBox(constraints: const BoxConstraints(minWidth: 990), child: DataTable(horizontalMargin: 16, columnSpacing: 20, headingRowHeight: 43, dataRowMinHeight: 70, dataRowMaxHeight: 82,
-        headingRowColor: WidgetStateProperty.all(AdminColors.canvas), headingTextStyle: const TextStyle(fontSize: 11, letterSpacing: .6, fontWeight: FontWeight.w900, color: AdminColors.muted),
-        columns: const [DataColumn(label: Text('INVOICE & ORDER')), DataColumn(label: Text('DATE & TIME')), DataColumn(label: Text('CUSTOMER INFO')), DataColumn(label: Text('ORDER TOTAL'), numeric: true), DataColumn(label: Text('TAX BREAKDOWN')), DataColumn(label: Text('STATUS')), DataColumn(label: Text('ACTIONS'))],
-        rows: invoices.map((i) => DataRow(cells: [
-          DataCell(Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(i.number, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)), Text('#ORDER-' + i.orderId.toString(), style: const TextStyle(fontSize: 11, color: AdminColors.muted))])),
-          DataCell(Text(i.issuedAt == null ? 'Not recorded' : _formatTimestamp(i.issuedAt!), style: const TextStyle(fontSize: 11))),
-          DataCell(SizedBox(width: 150, child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(i.customer, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)), Text(i.email.isEmpty ? 'No email' : i.email, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted))]))),
-          DataCell(Text(_inr(i.total), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
-          DataCell(Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Items ' + _inr(i.subtotal), style: const TextStyle(fontSize: 11)), Text('Delivery ' + _inr(i.deliveryFee), style: const TextStyle(fontSize: 11, color: AdminColors.muted)), const Text('GST details unavailable', style: TextStyle(fontSize: 11, color: AdminColors.muted))])),
-          DataCell(_InvoiceStatus(i.paymentStatus)),
-          DataCell(shad.IconButton.ghost(tooltip: 'View invoice details', onPressed: () => onView(i), icon: const AdminIcon(HugeIcons.strokeRoundedLinkSquare01, size: 17))),
-        ])).toList(),
-      ))),
+      else SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 990),
+          child: shad.Table(
+            rows: [
+              shad.TableHeader(cells: const [
+                shad.TableCell(child: Text('INVOICE & ORDER')),
+                shad.TableCell(child: Text('DATE & TIME')),
+                shad.TableCell(child: Text('CUSTOMER INFO')),
+                shad.TableCell(child: Text('ORDER TOTAL')),
+                shad.TableCell(child: Text('TAX BREAKDOWN')),
+                shad.TableCell(child: Text('STATUS')),
+                shad.TableCell(child: Text('ACTIONS')),
+              ]),
+              ...invoices.map((i) => shad.TableRow(cells: [
+                shad.TableCell(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(i.number, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
+                  Text('#ORDER-' + i.orderId.toString(), style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
+                ])),
+                shad.TableCell(child: Text(i.issuedAt == null ? 'Not recorded' : _formatTimestamp(i.issuedAt!), style: const TextStyle(fontSize: 11))),
+                shad.TableCell(child: SizedBox(width: 150, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(i.customer, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
+                  Text(i.email.isEmpty ? 'No email' : i.email, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
+                ]))),
+                shad.TableCell(child: Text(_inr(i.total), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
+                shad.TableCell(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('Items ' + _inr(i.subtotal), style: const TextStyle(fontSize: 11)),
+                  Text('Delivery ' + _inr(i.deliveryFee), style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
+                  const Text('GST details unavailable', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
+                ])),
+                shad.TableCell(child: _InvoiceStatus(i.paymentStatus)),
+                shad.TableCell(child: shad.IconButton.ghost(tooltip: 'View invoice details', onPressed: () => onView(i), icon: const AdminIcon(HugeIcons.strokeRoundedLinkSquare01, size: 17))),
+              ])),
+            ],
+            columnWidths: const {
+              0: shad.FlexTableSize(flex: 2),
+              1: shad.FlexTableSize(flex: 1),
+              2: shad.FlexTableSize(flex: 2),
+              3: shad.FixedTableSize(width: 120),
+              4: shad.FlexTableSize(flex: 2),
+              5: shad.FixedTableSize(width: 110),
+              6: shad.FixedTableSize(width: 90),
+            },
+          ),
+        ),
+      )
       const Divider(height: 1, color: AdminColors.line),
       Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), child: Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center, spacing: 12, runSpacing: 10, children: [
         Text('Displaying ' + (((page - 1) * 10) + 1).toString() + '–' + ((page - 1) * 10 + invoices.length).toString() + ' of ' + total.toString() + ' invoices', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
@@ -276,7 +311,7 @@ class _InvoiceStateCard extends StatelessWidget {
   const _InvoiceStateCard({required this.icon, required this.title, required this.message, required this.action, required this.onAction});
   final AdminIconData icon; final String title, message, action; final VoidCallback onAction;
   @override Widget build(BuildContext context) => Container(width: double.infinity, padding: const EdgeInsets.all(30), decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(16)),
-    child: Column(children: [AdminIcon(icon, size: 32, color: AdminColors.yellowDark), const SizedBox(height: 12), Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)), const SizedBox(height: 6), Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11.5, color: AdminColors.muted, height: 1.5)), const SizedBox(height: 14), FilledButton(onPressed: onAction, style: FilledButton.styleFrom(backgroundColor: AdminColors.yellow, foregroundColor: AdminColors.ink), child: Text(action))]));
+    child: Column(children: [AdminIcon(icon, size: 32, color: AdminColors.yellowDark), const SizedBox(height: 12), Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)), const SizedBox(height: 6), Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11.5, color: AdminColors.muted, height: 1.5)), const SizedBox(height: 14), shad.PrimaryButton(onPressed: onAction, child: Text(action))]));
 }
 
 class _InvoiceLoadingCard extends StatelessWidget {
