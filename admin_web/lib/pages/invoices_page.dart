@@ -17,7 +17,16 @@ class _InvoicesPageState extends State<InvoicesPage> {
   DateTime? _from, _to;
   bool _loading = true, _exporting = false;
 
-  @override void initState() { super.initState(); _load(); }
+  @override void initState() { super.initState(); _search.text = widget.searchQuery; _load(); }
+
+  @override
+  void didUpdateWidget(covariant InvoicesPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.searchQuery != widget.searchQuery && _search.text != widget.searchQuery) {
+      _search.text = widget.searchQuery;
+      _load(page: 1);
+    }
+  }
   @override void dispose() { _search.dispose(); super.dispose(); }
 
   Future<void> _load({int page = 1}) async {
