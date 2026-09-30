@@ -434,36 +434,51 @@ class _LiveOrdersCard extends StatelessWidget {
         const SizedBox(height: 13),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: DataTable(
-            headingTextStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted),
-            dataTextStyle: const TextStyle(fontSize: 11, color: AdminColors.ink),
-            columnSpacing: 22, horizontalMargin: 4,
-            columns: const [
-              DataColumn(label: Text('ORDER ID')), DataColumn(label: Text('CUSTOMER')), DataColumn(label: Text('ITEMS SUMMARY')),
-              DataColumn(label: Text('TOTAL AMOUNT')), DataColumn(label: Text('STATUS')), DataColumn(label: Text('PAYMENT')),
-              DataColumn(label: Text('TIMESTAMP')), DataColumn(label: Text('ACTIONS')),
-            ],
-            rows: orders.map((o) => DataRow(cells: [
-              DataCell(Text(o[0], style: const TextStyle(fontWeight: FontWeight.w900))),
-              DataCell(SizedBox(width: 125, child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(o[1], style: const TextStyle(fontWeight: FontWeight.w800)),
-                if (o[2].isNotEmpty) Text(o[2], style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
-              ]))),
-              DataCell(SizedBox(width: 260, child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(o[3], maxLines: 1, overflow: TextOverflow.ellipsis),
-                Text(o[4], maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
-              ]))),
-              DataCell(Text(o[5], style: const TextStyle(fontWeight: FontWeight.w900))),
-              DataCell(_OrderStatus(o[6])),
-              DataCell(Text(o[7])),
-              DataCell(SizedBox(width: 80, child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(o[8], style: const TextStyle(fontWeight: FontWeight.w800)), Text(o[9], style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
-              ]))),
-              DataCell(Row(mainAxisSize: MainAxisSize.min, children: [
-                shad.OutlineButton(onPressed: () => _notice(context, 'Action will connect to the existing order workflow.'), child: Text(o[6] == 'NEW' ? 'Accept' : o[6] == 'PREPARING' ? 'KDS View' : o[6] == 'OUT FOR DELIVERY' ? 'Track GPS' : 'Invoice', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
-                shad.OutlineButton(onPressed: () => _notice(context, 'Order detail route will use the existing navigation flow.'), child: const Text('View', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
+          child: shad.Table(
+            rows: [
+              shad.TableHeader(cells: const [
+                shad.TableCell(child: Text('ORDER ID')),
+                shad.TableCell(child: Text('CUSTOMER')),
+                shad.TableCell(child: Text('ITEMS SUMMARY')),
+                shad.TableCell(child: Text('TOTAL AMOUNT')),
+                shad.TableCell(child: Text('STATUS')),
+                shad.TableCell(child: Text('PAYMENT')),
+                shad.TableCell(child: Text('TIMESTAMP')),
+                shad.TableCell(child: Text('ACTIONS')),
+              ]),
+              ...orders.map((o) => shad.TableRow(cells: [
+                shad.TableCell(child: Text(o[0], style: const TextStyle(fontWeight: FontWeight.w900))),
+                shad.TableCell(child: SizedBox(width: 125, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(o[1], style: const TextStyle(fontWeight: FontWeight.w800)),
+                  if (o[2].isNotEmpty) Text(o[2], style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
+                ]))),
+                shad.TableCell(child: SizedBox(width: 260, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(o[3], maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(o[4], maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
+                ]))),
+                shad.TableCell(child: Text(o[5], style: const TextStyle(fontWeight: FontWeight.w900))),
+                shad.TableCell(child: _OrderStatus(o[6])),
+                shad.TableCell(child: Text(o[7])),
+                shad.TableCell(child: SizedBox(width: 80, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(o[8], style: const TextStyle(fontWeight: FontWeight.w800)),
+                  Text(o[9], style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
+                ]))),
+                shad.TableCell(child: Wrap(spacing: 4, children: [
+                  shad.OutlineButton(onPressed: () => _notice(context, 'Action will connect to the existing order workflow.'), child: Text(o[6] == 'NEW' ? 'Accept' : o[6] == 'PREPARING' ? 'KDS View' : o[6] == 'OUT FOR DELIVERY' ? 'Track GPS' : 'Invoice', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
+                  shad.OutlineButton(onPressed: () => _notice(context, 'Order detail route will use the existing navigation flow.'), child: const Text('View', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
+                ])),
               ])),
-            ])).toList(),
+            ],
+            columnWidths: const {
+              0: shad.FixedTableSize(width: 110),
+              1: shad.FlexTableSize(flex: 1),
+              2: shad.FlexTableSize(flex: 2),
+              3: shad.FixedTableSize(width: 110),
+              4: shad.FixedTableSize(width: 125),
+              5: shad.FixedTableSize(width: 100),
+              6: shad.FixedTableSize(width: 115),
+              7: shad.FixedTableSize(width: 230),
+            },
           ),
         ),
         const SizedBox(height: 7),
@@ -599,27 +614,33 @@ class _OrdersTable extends StatelessWidget {
   Widget build(BuildContext context) => AdminCard(
     child: SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: DataTable(
-        headingTextStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted),
-        dataTextStyle: const TextStyle(fontSize: 11.5, color: AdminColors.ink),
-        columnSpacing: 30,
-        columns: const [
-          DataColumn(label: Text('ORDER')),
-          DataColumn(label: Text('CUSTOMER')),
-          DataColumn(label: Text('TOTAL')),
-          DataColumn(label: Text('TIME')),
-          DataColumn(label: Text('STATUS')),
-          DataColumn(label: Text('ACTION')),
+      child: shad.Table(
+        rows: [
+          shad.TableHeader(cells: const [
+            shad.TableCell(child: Text('ORDER')),
+            shad.TableCell(child: Text('CUSTOMER')),
+            shad.TableCell(child: Text('TOTAL')),
+            shad.TableCell(child: Text('TIME')),
+            shad.TableCell(child: Text('STATUS')),
+            shad.TableCell(child: Text('ACTION')),
+          ]),
+          ...rows.map((r) => shad.TableRow(cells: [
+            shad.TableCell(child: Text(r[0], style: const TextStyle(fontWeight: FontWeight.w900))),
+            shad.TableCell(child: Text(r[1])),
+            shad.TableCell(child: Text(r[2], style: const TextStyle(fontWeight: FontWeight.w800))),
+            shad.TableCell(child: Text(r[3])),
+            shad.TableCell(child: _Pill(r[4])),
+            shad.TableCell(child: shad.IconButton.ghost(onPressed: () => _notice(context, 'Order details will be connected to the Laravel API.'), icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 19))),
+          ])),
         ],
-        rows: rows.map((r) => DataRow(cells: [
-          DataCell(Text(r[0], style: const TextStyle(fontWeight: FontWeight.w900))),
-          DataCell(Text(r[1])),
-          DataCell(Text(r[2], style: const TextStyle(fontWeight: FontWeight.w800))),
-          DataCell(Text(r[3])),
-          DataCell(_Pill(r[4])),
-          DataCell(shad.IconButton.ghost(onPressed: () => _notice(context, 'Order details will be connected to the Laravel API.'), icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 19))),
-        ])).toList(),
+        columnWidths: const {
+          0: shad.FixedTableSize(width: 120),
+          1: shad.FlexTableSize(flex: 2),
+          2: shad.FixedTableSize(width: 90),
+          3: shad.FixedTableSize(width: 90),
+          4: shad.FixedTableSize(width: 120),
+          5: shad.FixedTableSize(width: 90),
+        },
       ),
-    ),
-  );
+
 }
