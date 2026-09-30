@@ -367,16 +367,16 @@ class _CategoryManagerState extends State<_CategoryManager> {
     final visible = widget.categories.where((c) => c.active).toList();
     final inactive = widget.categories.where((c) => !c.active).toList();
     return Column(mainAxisSize: MainAxisSize.min, children: [
-      Align(alignment: Alignment.centerRight, child: FilledButton.icon(onPressed: _busyId != null ? null : () => _openEditor(), icon: const Icon(Icons.add, size: 16), label: const Text('Add Category'))),
+      Align(alignment: Alignment.centerRight, child: FilledButton.icon(onPressed: _busyId != null ? null : () => _openEditor(), icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 16), label: const Text('Add Category'))),
       const SizedBox(height: 12),
       if (visible.isEmpty) const Padding(padding: EdgeInsets.all(18), child: Text('No active categories yet.')) else ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 360),
         child: ListView.separated(shrinkWrap: true, itemCount: visible.length, separatorBuilder: (_, __) => const Divider(height: 1), itemBuilder: (_, index) {
           final c = visible[index]; final busy = _busyId == c.id;
           return ListTile(dense: true, title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w800)), subtitle: Text(c.slug.isEmpty ? 'No slug' : c.slug), trailing: Wrap(spacing: 2, children: [
-            IconButton(tooltip: 'Edit category', onPressed: busy ? null : () => _openEditor(c), icon: const Icon(Icons.edit_outlined, size: 18)),
-            IconButton(tooltip: 'Deactivate category', onPressed: busy ? null : () => _setCategoryActive(c, false), icon: busy ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.visibility_off_outlined, size: 18)),
-            IconButton(tooltip: c.count == 0 ? 'Delete permanently' : 'Move products before deleting', onPressed: busy || c.count > 0 ? null : () => _deleteCategory(c), icon: const Icon(Icons.delete_forever_outlined, size: 18, color: AdminColors.red)),
+            IconButton(tooltip: 'Edit category', onPressed: busy ? null : () => _openEditor(c), icon: const AdminIcon(HugeIcons.strokeRoundedEdit02, size: 18)),
+            IconButton(tooltip: 'Deactivate category', onPressed: busy ? null : () => _setCategoryActive(c, false), icon: busy ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const AdminIcon(HugeIcons.strokeRoundedViewOff, size: 18)),
+            IconButton(tooltip: c.count == 0 ? 'Delete permanently' : 'Move products before deleting', onPressed: busy || c.count > 0 ? null : () => _deleteCategory(c), icon: const AdminIcon(HugeIcons.strokeRoundedDelete02, size: 18, color: AdminColors.red)),
           ]));
         }),
       ),
@@ -401,8 +401,8 @@ class _CategoryManagerState extends State<_CategoryManager> {
                 title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w800)),
                 subtitle: Text((c.slug.isEmpty ? 'No slug' : c.slug) + ' • ' + c.count.toString() + ' product(s) • inactive'),
                 trailing: Wrap(spacing: 2, children: [
-                  IconButton(tooltip: 'Activate category', onPressed: busy ? null : () => _setCategoryActive(c, true), icon: busy ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.visibility_outlined, size: 18)),
-                  IconButton(tooltip: c.count == 0 ? 'Delete permanently' : 'Move products before deleting', onPressed: busy || c.count > 0 ? null : () => _deleteCategory(c), icon: const Icon(Icons.delete_forever_outlined, size: 18, color: AdminColors.red)),
+                  IconButton(tooltip: 'Activate category', onPressed: busy ? null : () => _setCategoryActive(c, true), icon: busy ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const AdminIcon(HugeIcons.strokeRoundedView, size: 18)),
+                  IconButton(tooltip: c.count == 0 ? 'Delete permanently' : 'Move products before deleting', onPressed: busy || c.count > 0 ? null : () => _deleteCategory(c), icon: const AdminIcon(HugeIcons.strokeRoundedDelete02, size: 18, color: AdminColors.red)),
                 ]),
               );
             },
@@ -457,7 +457,7 @@ class _CatalogueHeader extends StatelessWidget {
           ),
           OutlinedButton.icon(
             onPressed: onCategories,
-            icon: const Icon(Icons.category_outlined, size: 17),
+            icon: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
             label: const Text('Manage Categories'),
           ),
         ],
@@ -490,10 +490,10 @@ class _CatalogueStats extends StatelessWidget {
       final cols = c.maxWidth >= 850 ? 4 : c.maxWidth >= 560 ? 2 : 1;
       return GridView.count(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), crossAxisCount: cols, mainAxisSpacing: 12, crossAxisSpacing: 12, childAspectRatio: 2.6,
         children: [
-          _StatCard('TOTAL MENU ITEMS', total.toString(), 'Kitchen catalogue', Icons.restaurant_menu_rounded),
-          _StatCard('ACTIVE LIVE ON APP', active.toString(), total == 0 ? '0% Availability' : ((active / total) * 100).toStringAsFixed(1) + '% Availability', Icons.check_circle_outline_rounded),
-          _StatCard('OUT OF STOCK', out.toString().padLeft(2, '0'), 'Hidden from user feed', Icons.block_rounded, danger: true),
-          _StatCard('LOW STOCK ALERT', low.toString().padLeft(2, '0'), 'Requires raw prep reorder', Icons.warning_amber_rounded, warning: true),
+          _StatCard('TOTAL MENU ITEMS', total.toString(), 'Kitchen catalogue', HugeIcons.strokeRoundedMenuRestaurant),
+          _StatCard('ACTIVE LIVE ON APP', active.toString(), total == 0 ? '0% Availability' : ((active / total) * 100).toStringAsFixed(1) + '% Availability', HugeIcons.strokeRoundedCheckmarkCircle01),
+          _StatCard('OUT OF STOCK', out.toString().padLeft(2, '0'), 'Hidden from user feed', HugeIcons.strokeRoundedBlocked, danger: true),
+          _StatCard('LOW STOCK ALERT', low.toString().padLeft(2, '0'), 'Requires raw prep reorder', HugeIcons.strokeRoundedAlert02, warning: true),
         ],
       );
     });
@@ -503,7 +503,7 @@ class _CatalogueStats extends StatelessWidget {
 class _StatCard extends StatelessWidget {
   const _StatCard(this.label, this.value, this.caption, this.icon, {this.danger = false, this.warning = false});
   final String label, value, caption;
-  final IconData icon;
+  final AdminIconData icon;
   final bool danger, warning;
 
   @override
@@ -511,7 +511,7 @@ class _StatCard extends StatelessWidget {
     padding: const EdgeInsets.all(15),
     decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15), border: Border.all(color: AdminColors.line), boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 14, offset: Offset(0, 5))]),
     child: Row(children: [
-      Container(width: 38, height: 38, decoration: BoxDecoration(color: danger ? AdminColors.redSoft : warning ? AdminColors.peach : AdminColors.amberSoft, borderRadius: BorderRadius.circular(10)), child: Icon(icon, size: 19, color: danger ? AdminColors.red : warning ? AdminColors.warning : AdminColors.yellowDark)),
+      Container(width: 38, height: 38, decoration: BoxDecoration(color: danger ? AdminColors.redSoft : warning ? AdminColors.peach : AdminColors.amberSoft, borderRadius: BorderRadius.circular(10)), child: AdminIcon(icon, size: 19, color: danger ? AdminColors.red : warning ? AdminColors.warning : AdminColors.yellowDark)),
       const SizedBox(width: 12),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
         Text(label, style: const TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, letterSpacing: .8, color: AdminColors.muted)),
@@ -554,16 +554,16 @@ class _CatalogueList extends StatelessWidget {
           ])),
           FilledButton.icon(
             onPressed: loading ? null : () => onCreateProduct(),
-            icon: const Icon(Icons.add_rounded, size: 16),
+            icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 16),
             label: const Text('New Product'),
             style: FilledButton.styleFrom(backgroundColor: AdminColors.red, foregroundColor: Colors.white),
           ),
           const SizedBox(width: 6),
-          IconButton(onPressed: () => _notice(context, 'Use the filters below to narrow the catalogue.'), icon: const Icon(Icons.tune_rounded, size: 18)),
+          IconButton(onPressed: () => _notice(context, 'Use the filters below to narrow the catalogue.'), icon: const AdminIcon(HugeIcons.strokeRoundedFilterHorizontal, size: 18)),
         ]),
         const SizedBox(height: 12),
         Wrap(spacing: 8, runSpacing: 8, children: [
-          SizedBox(width: 230, height: 40, child: TextField(controller: search, onSubmitted: (_) => onSearch(), decoration: _inputDecoration('Filter by dish...', Icons.search_rounded))),
+          SizedBox(width: 230, height: 40, child: TextField(controller: search, onSubmitted: (_) => onSearch(), decoration: _inputDecoration('Filter by dish...', HugeIcons.strokeRoundedSearch01))),
           _select('All Food Types', ['All Food Types', 'Pure Veg', 'Non-Veg', 'Contains Egg'], foodFilter, onFood),
           _select('Stock', ['All', 'In Stock', 'Low Stock', 'Out of Stock'], stockFilter, onStock),
           _select('Availability', ['All', 'Live', 'Hidden'], availabilityFilter, onAvailability),
@@ -581,9 +581,9 @@ class _CatalogueList extends StatelessWidget {
         const SizedBox(height: 10),
         Row(children: [
           Expanded(child: Text('Showing ' + (total == 0 ? '0' : '1') + '–' + products.length.toString() + ' of ' + total.toString(), style: const TextStyle(fontSize: 9.5, color: AdminColors.muted))),
-          IconButton(onPressed: page > 1 ? () => onPage(page - 1) : null, icon: const Icon(Icons.chevron_left_rounded, size: 18)),
+          IconButton(onPressed: page > 1 ? () => onPage(page - 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowLeft01, size: 18)),
           Text(page.toString(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),
-          IconButton(onPressed: page < lastPage ? () => onPage(page + 1) : null, icon: const Icon(Icons.chevron_right_rounded, size: 18)),
+          IconButton(onPressed: page < lastPage ? () => onPage(page + 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 18)),
         ]),
       ]),
     ),
@@ -597,7 +597,7 @@ Widget _select(String label, List<String> items, String value, ValueChanged<Stri
   child: DropdownButtonHideUnderline(child: DropdownButton<String>(
     value: items.contains(value) ? value : items.first,
     isDense: true,
-    icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 17),
+    icon: const AdminIcon(HugeIcons.strokeRoundedArrowDown01, size: 17),
     style: const TextStyle(fontSize: 10.5, color: AdminColors.ink, fontWeight: FontWeight.w700),
     items: items.map((e) => DropdownMenuItem<String>(value: e, child: Text(e))).toList(),
     onChanged: (v) { if (v != null) onChanged(v); },
@@ -641,7 +641,7 @@ class _ProductRow extends StatelessWidget {
 class _Thumb extends StatelessWidget {
   const _Thumb({this.image, required this.name}); final String? image; final String name;
   @override Widget build(BuildContext context) => ClipRRect(borderRadius: BorderRadius.circular(10), child: Container(width: 50, height: 50, color: AdminColors.canvas, child: image != null && image!.isNotEmpty ? Image.network(image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _placeholder()) : _placeholder()));
-  Widget _placeholder() => const Icon(Icons.restaurant_rounded, size: 22, color: AdminColors.yellowDark);
+  Widget _placeholder() => const AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 22, color: AdminColors.yellowDark);
 }
 
 class _Badge extends StatelessWidget {
@@ -751,7 +751,7 @@ class _ProductEditor extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: onClose,
-                    icon: const Icon(Icons.close_rounded, size: 18),
+                    icon: const AdminIcon(HugeIcons.strokeRoundedCancel01, size: 18),
                   ),
                 ],
               ),
@@ -897,7 +897,7 @@ class _ProductEditor extends StatelessWidget {
                   tag.clear();
                   (context as Element).markNeedsBuild();
                 },
-                icon: const Icon(Icons.add_rounded, size: 15),
+                icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 15),
                 label: const Text(
                   'Add tag',
                   style: TextStyle(fontSize: 9.5),
@@ -930,10 +930,10 @@ class _ProductEditor extends StatelessWidget {
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            AdminIcon(
                               uploading
-                                  ? Icons.hourglass_top_rounded
-                                  : Icons.cloud_upload_outlined,
+                                  ? HugeIcons.strokeRoundedHourglass
+                                  : HugeIcons.strokeRoundedCloudUpload,
                               size: 27,
                               color: AdminColors.yellowDark,
                             ),
@@ -1011,10 +1011,10 @@ class _ProductEditor extends StatelessWidget {
                 height: 46,
                 child: FilledButton.icon(
                   onPressed: saving ? null : onSave,
-                  icon: Icon(
+                  icon: AdminIcon(
                     saving
-                        ? Icons.hourglass_top_rounded
-                        : Icons.save_rounded,
+                        ? HugeIcons.strokeRoundedHourglass
+                        : HugeIcons.strokeRoundedFloppyDisk,
                     size: 17,
                   ),
                   label: Text(
@@ -1085,9 +1085,9 @@ Widget _dropdownField(String label, List<DropdownMenuItem<int?>> items, int? val
   Container(height: 43, padding: const EdgeInsets.symmetric(horizontal: 10), decoration: BoxDecoration(color: AdminColors.peach, borderRadius: BorderRadius.circular(9), border: Border.all(color: AdminColors.line)), child: DropdownButtonHideUnderline(child: DropdownButton<int?>(value: items.any((i) => i.value == value) ? value : (items.isEmpty ? null : items.first.value), isExpanded: true, style: const TextStyle(fontSize: 10.5, color: AdminColors.ink, fontWeight: FontWeight.w700), items: items, onChanged: onChanged))),
 ]);
 
-InputDecoration _inputDecoration(String hint, [IconData? icon]) => InputDecoration(
+InputDecoration _inputDecoration(String hint, [AdminIconData? icon]) => InputDecoration(
   hintText: hint, hintStyle: const TextStyle(fontSize: 10, color: AdminColors.muted),
-  prefixIcon: icon == null ? null : Icon(icon, size: 17, color: AdminColors.muted),
+  prefixIcon: icon == null ? null : AdminIcon(icon, size: 17, color: AdminColors.muted),
   filled: true, fillColor: AdminColors.peach, contentPadding: const EdgeInsets.symmetric(horizontal: 11, vertical: 12),
   border: OutlineInputBorder(borderRadius: BorderRadius.circular(9), borderSide: const BorderSide(color: AdminColors.line)),
   enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(9), borderSide: const BorderSide(color: AdminColors.line)),
@@ -1096,5 +1096,5 @@ InputDecoration _inputDecoration(String hint, [IconData? icon]) => InputDecorati
 
 class _ErrorBanner extends StatelessWidget {
   const _ErrorBanner({required this.message, required this.onRetry}); final String message; final VoidCallback onRetry;
-  @override Widget build(BuildContext context) => Container(width: double.infinity, margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.all(11), decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(10)), child: Row(children: [const Icon(Icons.error_outline_rounded, size: 17, color: AdminColors.red), const SizedBox(width: 8), Expanded(child: Text(message, style: const TextStyle(fontSize: 9.5))), TextButton(onPressed: onRetry, child: const Text('Retry', style: TextStyle(fontSize: 9)))]));
+  @override Widget build(BuildContext context) => Container(width: double.infinity, margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.all(11), decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(10)), child: Row(children: [const AdminIcon(HugeIcons.strokeRoundedAlertCircle, size: 17, color: AdminColors.red), const SizedBox(width: 8), Expanded(child: Text(message, style: const TextStyle(fontSize: 9.5))), TextButton(onPressed: onRetry, child: const Text('Retry', style: TextStyle(fontSize: 9)))]));
 }
