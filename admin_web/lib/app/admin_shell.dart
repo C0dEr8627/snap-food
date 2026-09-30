@@ -257,36 +257,18 @@ class _Header extends StatelessWidget {
       if (desktop)
         Expanded(
           flex: 3,
-          child: Container(
-            height: 42,
-            constraints: const BoxConstraints(maxWidth: 560),
-            padding: const EdgeInsets.symmetric(horizontal: 13),
-            decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(11), border: Border.all(color: AdminColors.line)),
-            child: TextField(
-              controller: searchController,
-              onSubmitted: (_) => onSearch(),
-              textInputAction: TextInputAction.search,
-              style: const TextStyle(fontSize: 11, color: AdminColors.ink),
-              decoration: InputDecoration(
-                prefixIcon: const AdminIcon(HugeIcons.strokeRoundedSearch01, size: 19, color: AdminColors.muted),
-                hintText: 'Search this section...',
-                suffixIcon: searchQuery.isEmpty
-                    ? null
-                    : IconButton(
-                        tooltip: 'Clear search',
-                        onPressed: () {
-                          searchController.clear();
-                          onSearch();
-                        },
-                        icon: const Icon(Icons.clear, size: 17, color: AdminColors.muted),
-                      ),
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 11),
-              ),
-            ),
-          ),
+          child: shad.TextField(
+            controller: searchController,
+            onSubmitted: (_) => onSearch(),
+            textInputAction: TextInputAction.search,
+            hintText: 'Search this section...',
+            style: const TextStyle(fontSize: 11, color: AdminColors.ink),
+            filled: true,
+            border: const Border.fromBorderSide(BorderSide(color: AdminColors.line)),
+            borderRadius: BorderRadius.circular(11),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+            features: const [shad.InputClearFeature()],
+          ).constrained(maxWidth: 560, height: 42),
         )
       else
         const Expanded(child: Text('Snap Foodd Admin', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900))),
