@@ -411,7 +411,7 @@ Widget _field(TextEditingController c, String hint, {String? label, int? maxLeng
 
 Widget _dropdownField(String label, List<DropdownMenuItem<int?>> items, int? value, ValueChanged<int?> onChanged) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
   Padding(padding: const EdgeInsets.only(bottom: 5), child: Text(label, style: const TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, color: AdminColors.muted))),
-  Container(height: 43, padding: const EdgeInsets.symmetric(horizontal: 10), decoration: BoxDecoration(color: AdminColors.peach, borderRadius: BorderRadius.circular(9), border: Border.all(color: AdminColors.line)), child: DropdownButtonHideUnderline(child: DropdownButton<int?>(value: items.any((i) => i.value == value) ? value : items.firstOrNull?.value, isExpanded: true, style: const TextStyle(fontSize: 10.5, color: AdminColors.ink, fontWeight: FontWeight.w700), items: items, onChanged: onChanged))),
+  Container(height: 43, padding: const EdgeInsets.symmetric(horizontal: 10), decoration: BoxDecoration(color: AdminColors.peach, borderRadius: BorderRadius.circular(9), border: Border.all(color: AdminColors.line)), child: DropdownButtonHideUnderline(child: DropdownButton<int?>(value: items.any((i) => i.value == value) ? value : (items.isEmpty ? null : items.first.value), isExpanded: true, style: const TextStyle(fontSize: 10.5, color: AdminColors.ink, fontWeight: FontWeight.w700), items: items, onChanged: onChanged))),
 ]);
 
 InputDecoration _inputDecoration(String hint, [IconData? icon]) => InputDecoration(
