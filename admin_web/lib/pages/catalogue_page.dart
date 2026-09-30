@@ -37,6 +37,7 @@ class _CataloguePageState extends State<CataloguePage> {
   bool _live = false;
   String _error = '';
   String _imagePreview = '';
+  bool _gridView = false;
 
   @override
   void initState() {
@@ -102,15 +103,71 @@ class _CataloguePageState extends State<CataloguePage> {
     _name.text = product.name; _slug.text = product.slug; _description.text = product.description;
     _price.text = product.price.toStringAsFixed(2); _prep.text = product.prepTime.toString(); _stock.text = product.stock.toString();
     _imageUrl.text = product.image ?? ''; _imagePreview = product.image ?? '';
+    _openProductDialog();
   }
 
   void _newProduct() {
     setState(() { _selected = null; _creating = true; _error = ''; _imagePreview = ''; _formDietary = 'Non-Veg'; _formCategoryId = _categories.isNotEmpty ? _categories.first.id : null; });
     _name.clear(); _slug.clear(); _description.clear(); _price.clear(); _prep.text = '15'; _stock.text = '0'; _imageUrl.clear(); _tag.clear();
+    _openProductDialog();
   }
 
-  Future<void> _save() async {
-    if (!_form.currentState!.validate()) return;
+  Future<void> _openProductDialog() async {
+    if (_categories.isEmpty) {
+      _notice(context, 'Create a category before adding an item.', error: true);
+      return;
+    }
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 680, maxHeight: 760),
+          child: _ProductEditor(
+            form: _form,
+            formCategoryId: _formCategoryId,
+            formDietary: _formDietary,
+            creating: _creating,
+            selected: _selected,
+            categories: _categories,
+            name: _name,
+            slug: _slug,
+            description: _description,
+            price: _price,
+            prep: _prep,
+            stock: _stock,
+            tag: _tag,
+            imageUrl: _imageUrl,
+            imagePreview: _imagePreview,
+            uploading: _uploading,
+            saving: _saving,
+            onClose: () => Navigator.of(dialogContext).pop(),
+            onPickImage: _pickImage,
+            onSave: () async {
+              final saved = await _save();
+              if (saved && dialogContext.mounted) Navigator.of(dialogContext).pop();
+            },
+            onDeactivate: () async {
+              await _deactivate();
+              if (dialogContext.mounted) Navigator.of(dialogContext).pop();
+            },
+            onCategory: (v) {
+              setState(() { _formCategoryId = v; });
+              if (_selected != null) _selected!.categoryId = v;
+            },
+            onDietary: (v) {
+              if (_selected != null) _selected!.dietary = v;
+              setState(() {});
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<bool> _save() async {
+    if (!_form.currentState!.validate()) return false;
     final product = _CatalogueProduct(
       id: _creating ? null : _selected?.id,
       name: _name.text.trim(),
@@ -127,7 +184,7 @@ class _CataloguePageState extends State<CataloguePage> {
       dietary: _selected?.dietary ?? _formDietary, prepTime: int.tryParse(_prep.text.trim()) ?? 15,
       tags: _selected?.tags ?? [],
     );
-    if (product.categoryId == null) { _notice(context, 'Select a category before saving.', error: true); return; }
+    if (product.categoryId == null) { _notice(context, 'Select a category before saving.', error: true); return false; }
     final imageValue = _imageUrl.text.trim();
     if (imageValue.isNotEmpty) {
       final imageUri = Uri.tryParse(imageValue);
@@ -136,7 +193,7 @@ class _CataloguePageState extends State<CataloguePage> {
           !['http', 'https'].contains(imageUri.scheme.toLowerCase()) ||
           imageUri.host.isEmpty) {
         _notice(context, 'Enter a valid image URL starting with https://, or leave it blank.', error: true);
-        return;
+        return false;
       }
     }
     setState(() => _saving = true);
@@ -155,8 +212,10 @@ class _CataloguePageState extends State<CataloguePage> {
       _notice(context, _creating ? 'Item created successfully.' : 'Item updated successfully.');
       _creating = false;
       _selected = saved;
+      return true;
     } catch (e) {
       if (mounted) _notice(context, e.toString(), error: true);
+      return false;
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -221,11 +280,9 @@ class _CataloguePageState extends State<CataloguePage> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-    final desktop = width >= 980;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      _CatalogueHeader(onCategories: _manageCategories),
-      const SizedBox(height: 18),
+      _CatalogueHeader(onCategories: _manageCategories, onAddItem: _newProduct),
+      const SizedBox(height: 16),
       _CategoryTabs(
         categories: _categories,
         selected: _categoryFilter,
@@ -238,39 +295,30 @@ class _CataloguePageState extends State<CataloguePage> {
       if (_error.isNotEmpty) _ErrorBanner(message: _error, onRetry: _load),
       if (_loading) const LinearProgressIndicator(minHeight: 2),
       const SizedBox(height: 8),
-      if (desktop)
-        _Workspace(
-          list: _buildProductPanel(),
-          editor: _buildEditor(),
-          listFlex: 62,
-          editorFlex: 38,
-        )
-      else
-        Column(
-          children: [
-            _buildProductPanel(),
-            const SizedBox(height: 18),
-            _buildEditor(),
-          ],
-        ),
+      _buildProductPanel(),
     ]);
   }
 
   Widget _buildProductPanel() => _CatalogueList(
-    products: _products, search: _search, foodFilter: _foodFilter, stockFilter: _stockFilter, availabilityFilter: _availabilityFilter,
-    loading: _loading, page: _page, lastPage: _lastPage, total: _total, selected: _selected,
+    products: _products,
+    search: _search,
+    foodFilter: _foodFilter,
+    stockFilter: _stockFilter,
+    availabilityFilter: _availabilityFilter,
+    loading: _loading,
+    page: _page,
+    lastPage: _lastPage,
+    total: _total,
+    selected: _selected,
+    gridView: _gridView,
+    onToggleView: () => setState(() => _gridView = !_gridView),
     onCreateProduct: _newProduct,
-    onSearch: () { _page = 1; _load(keepSelection: true); }, onFood: (v) { setState(() => _foodFilter = v); if (!_live) setState(_applyPreviewFilters); },
+    onSearch: () { _page = 1; _load(keepSelection: true); },
+    onFood: (v) { setState(() => _foodFilter = v); if (!_live) setState(_applyPreviewFilters); },
     onStock: (v) { setState(() => _stockFilter = v); if (!_live) setState(_applyPreviewFilters); },
     onAvailability: (v) { setState(() => _availabilityFilter = v); if (!_live) setState(_applyPreviewFilters); },
-    onSelect: _selectProduct, onPage: (p) { setState(() => _page = p); _load(keepSelection: true); },
-  );
-
-  Widget _buildEditor() => _ProductEditor(
-    form: _form, formCategoryId: _formCategoryId, formDietary: _formDietary, creating: _creating, selected: _selected, categories: _categories, name: _name, slug: _slug, description: _description,
-    price: _price, prep: _prep, stock: _stock, tag: _tag, imageUrl: _imageUrl, imagePreview: _imagePreview, uploading: _uploading, saving: _saving,
-    onClose: _newProduct, onPickImage: _pickImage, onSave: _save, onDeactivate: _deactivate, onCategory: (v) { setState(() { _formCategoryId = v; }); if (_selected != null) _selected!.categoryId = v; },
-    onDietary: (v) { if (_selected != null) _selected!.dietary = v; setState(() {}); },
+    onSelect: _selectProduct,
+    onPage: (p) { setState(() => _page = p); _load(keepSelection: true); },
   );
 }
 
@@ -439,17 +487,27 @@ class _Workspace extends StatelessWidget {
 }
 
 class _CatalogueHeader extends StatelessWidget {
-  const _CatalogueHeader({required this.onCategories});
+  const _CatalogueHeader({required this.onCategories, required this.onAddItem});
   final VoidCallback onCategories;
+  final VoidCallback onAddItem;
 
   @override
-  Widget build(BuildContext context) => Align(
-    alignment: Alignment.centerRight,
-    child: OutlinedButton.icon(
-      onPressed: onCategories,
-      icon: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
-      label: const Text('Manage Categories'),
-    ),
+  Widget build(BuildContext context) => Row(
+    mainAxisAlignment: MainAxisAlignment.end,
+    children: [
+      OutlinedButton.icon(
+        onPressed: onCategories,
+        icon: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
+        label: const Text('Manage Categories'),
+      ),
+      const SizedBox(width: 10),
+      FilledButton.icon(
+        onPressed: onAddItem,
+        icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 17),
+        label: const Text('Add Item'),
+        style: FilledButton.styleFrom(backgroundColor: AdminColors.red, foregroundColor: Colors.white),
+      ),
+    ],
   );
 }
 
@@ -470,15 +528,20 @@ class _CategoryTabs extends StatelessWidget {
 }
 
 class _CatalogueList extends StatelessWidget {
-  const _CatalogueList({required this.products, required this.search, required this.foodFilter, required this.stockFilter, required this.availabilityFilter, required this.loading, required this.page, required this.lastPage, required this.total, required this.selected, required this.onCreateProduct, required this.onSearch, required this.onFood, required this.onStock, required this.onAvailability, required this.onSelect, required this.onPage});
+  const _CatalogueList({
+    required this.products, required this.search, required this.foodFilter, required this.stockFilter,
+    required this.availabilityFilter, required this.loading, required this.page, required this.lastPage,
+    required this.total, required this.selected, required this.gridView, required this.onToggleView,
+    required this.onCreateProduct, required this.onSearch, required this.onFood, required this.onStock,
+    required this.onAvailability, required this.onSelect, required this.onPage,
+  });
   final List<_CatalogueProduct> products;
   final TextEditingController search;
   final String foodFilter, stockFilter, availabilityFilter;
-  final bool loading;
+  final bool loading, gridView;
   final int page, lastPage, total;
   final _CatalogueProduct? selected;
-  final VoidCallback onCreateProduct;
-  final VoidCallback onSearch;
+  final VoidCallback onToggleView, onCreateProduct, onSearch;
   final ValueChanged<String> onFood, onStock, onAvailability;
   final ValueChanged<_CatalogueProduct> onSelect;
   final ValueChanged<int> onPage;
@@ -490,52 +553,51 @@ class _CatalogueList extends StatelessWidget {
       padding: const EdgeInsets.all(17),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Items',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-                ),
-                SizedBox(height: 3),
-                Text(
-                  'Select an item to edit or add a new item.',
-                  style: TextStyle(fontSize: 13, color: AdminColors.muted),
-                ),
-              ],
-            ),
-          ),
-          FilledButton.icon(
-            onPressed: loading ? null : () => onCreateProduct(),
-            icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 16),
-            label: const Text('Add Item'),
-            style: FilledButton.styleFrom(
-              backgroundColor: AdminColors.red,
-              foregroundColor: Colors.white,
+          const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('Items', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+            SizedBox(height: 3),
+            Text('Select an item to edit. Use tile or list view.', style: TextStyle(fontSize: 13, color: AdminColors.muted)),
+          ])),
+          Tooltip(
+            message: gridView ? 'Switch to list view' : 'Switch to tile view',
+            child: IconButton(
+              onPressed: onToggleView,
+              icon: AdminIcon(gridView ? HugeIcons.strokeRoundedMenu01 : HugeIcons.strokeRoundedGridView, size: 20),
             ),
           ),
         ]),
         const SizedBox(height: 12),
         SizedBox(
-          width: 300,
           height: 44,
-          child: TextField(
-            controller: search,
-            onSubmitted: (_) => onSearch(),
-            decoration: _inputDecoration('Search items...', HugeIcons.strokeRoundedSearch01),
-          ),
+          child: TextField(controller: search, onSubmitted: (_) => onSearch(), decoration: _inputDecoration('Search items...', HugeIcons.strokeRoundedSearch01)),
         ),
         const SizedBox(height: 16),
-        const Row(children: [
-          Expanded(flex: 5, child: Text('ITEM', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
-          Expanded(flex: 3, child: Text('CATEGORY', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
-          SizedBox(width: 85, child: Text('STOCK', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
-        ]),
-        const Divider(height: 18),
         if (products.isEmpty && !loading)
-          const Padding(padding: EdgeInsets.all(30), child: Center(child: Text('No items match your search.', style: TextStyle(color: AdminColors.muted)))),
-        ...products.map((p) => _ProductRow(product: p, selected: selected?.id == p.id && selected == p, onTap: () => onSelect(p))),
+          const Padding(padding: EdgeInsets.all(30), child: Center(child: Text('No items match your search.', style: TextStyle(color: AdminColors.muted))))
+        else if (gridView)
+          LayoutBuilder(builder: (context, constraints) {
+            final columns = constraints.maxWidth >= 1000 ? 4 : constraints.maxWidth >= 720 ? 3 : constraints.maxWidth >= 460 ? 2 : 1;
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: products.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: columns, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: .82),
+              itemBuilder: (_, index) => _ProductTile(
+                product: products[index],
+                selected: selected?.id == products[index].id && selected == products[index],
+                onTap: () => onSelect(products[index]),
+              ),
+            );
+          })
+        else ...[
+          const Row(children: [
+            Expanded(flex: 5, child: Text('ITEM', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
+            Expanded(flex: 3, child: Text('CATEGORY', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
+            SizedBox(width: 85, child: Text('STOCK', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
+          ]),
+          const Divider(height: 18),
+          ...products.map((p) => _ProductRow(product: p, selected: selected?.id == p.id && selected == p, onTap: () => onSelect(p))),
+        ],
         const SizedBox(height: 10),
         Row(children: [
           Expanded(child: Text('Showing ' + (total == 0 ? '0' : '1') + '–' + products.length.toString() + ' of ' + total.toString(), style: const TextStyle(fontSize: 11, color: AdminColors.muted))),
@@ -543,6 +605,56 @@ class _CatalogueList extends StatelessWidget {
           Text(page.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
           IconButton(onPressed: page < lastPage ? () => onPage(page + 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 18)),
         ]),
+      ]),
+    ),
+  );
+}
+
+class _ProductTile extends StatelessWidget {
+  const _ProductTile({required this.product, required this.selected, required this.onTap});
+  final _CatalogueProduct product;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(14),
+    child: Container(
+      decoration: BoxDecoration(
+        color: selected ? AdminColors.amberSoft : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: selected ? AdminColors.yellowDark : AdminColors.line, width: selected ? 1.4 : 1),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        AspectRatio(
+          aspectRatio: 1.35,
+          child: Container(
+            color: AdminColors.canvas,
+            child: product.image != null && product.image!.isNotEmpty
+                ? Image.network(product.image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminColors.yellowDark)))
+                : const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminColors.yellowDark)),
+          ),
+        ),
+        Expanded(child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              Expanded(child: Text(product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900))),
+              if (product.badge.isNotEmpty) _Badge(product.badge),
+            ]),
+            const SizedBox(height: 6),
+            Text(product.categoryName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AdminColors.muted)),
+            const SizedBox(height: 6),
+            Expanded(child: Text(product.description, maxLines: 3, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted))),
+            const SizedBox(height: 8),
+            Row(children: [
+              Expanded(child: Text('₹' + product.price.toStringAsFixed(0), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900))),
+              Text(product.outOfStock ? 'Sold out' : product.stock.toString() + ' units', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: product.outOfStock ? AdminColors.red : product.lowStock ? AdminColors.warning : AdminColors.ink)),
+            ]),
+          ]),
+        )),
       ]),
     ),
   );
@@ -591,401 +703,6 @@ class _Thumb extends StatelessWidget {
 class _Badge extends StatelessWidget {
   const _Badge(this.text); final String text;
   @override Widget build(BuildContext context) { final danger = text == 'Sold Out' || text.contains('Left'); final seasonal = text == 'Seasonal'; return Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3), decoration: BoxDecoration(color: danger ? AdminColors.redSoft : seasonal ? AdminColors.amberSoft : AdminColors.redSoft, borderRadius: BorderRadius.circular(5)), child: Text(text, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: danger ? AdminColors.red : AdminColors.ink))); }
-}
-
-// Product editor intentionally uses a block-bodied build method to keep widget nesting balanced.
-class _ProductEditor extends StatelessWidget {
-  const _ProductEditor({
-    required this.form,
-    required this.formCategoryId,
-    required this.formDietary,
-    required this.creating,
-    required this.selected,
-    required this.categories,
-    required this.name,
-    required this.slug,
-    required this.description,
-    required this.price,
-    required this.prep,
-    required this.stock,
-    required this.tag,
-    required this.imageUrl,
-    required this.imagePreview,
-    required this.uploading,
-    required this.saving,
-    required this.onClose,
-    required this.onPickImage,
-    required this.onSave,
-    required this.onDeactivate,
-    required this.onCategory,
-    required this.onDietary,
-  });
-
-  final GlobalKey<FormState> form;
-  final int? formCategoryId;
-  final String formDietary;
-  final bool creating;
-  final bool uploading;
-  final bool saving;
-  final _CatalogueProduct? selected;
-  final List<_CatalogueCategory> categories;
-  final TextEditingController name;
-  final TextEditingController slug;
-  final TextEditingController description;
-  final TextEditingController price;
-  final TextEditingController prep;
-  final TextEditingController stock;
-  final TextEditingController tag;
-  final TextEditingController imageUrl;
-  final String imagePreview;
-  final VoidCallback onClose;
-  final VoidCallback onPickImage;
-  final VoidCallback onSave;
-  final VoidCallback onDeactivate;
-  final ValueChanged<int?> onCategory;
-  final ValueChanged<String> onDietary;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(17),
-        border: Border.all(color: AdminColors.line),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x09000000),
-            blurRadius: 18,
-            offset: Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Form(
-          key: form,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'ITEM DETAILS',
-                          style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.w900,
-                            letterSpacing: 1.2,
-                            color: AdminColors.green,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          creating ? 'Add Item' : 'Edit Item',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: onClose,
-                    icon: const AdminIcon(HugeIcons.strokeRoundedCancel01, size: 18),
-                  ),
-                ],
-              ),
-              const Divider(height: 22),
-              _label('Dish Name *', 'Required'),
-              _field(
-                name,
-                'Smokey Chicken Tikka Roll',
-                maxLength: 180,
-                validator: (v) => v == null || v.trim().isEmpty
-                    ? 'Dish name is required'
-                    : null,
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _dropdownField(
-                      'Category',
-                      categories
-                          .map(
-                            (c) => DropdownMenuItem<int?>(
-                              value: c.id,
-                              child: Text(c.name),
-                            ),
-                          )
-                          .toList(),
-                      formCategoryId ??
-                          (categories.isNotEmpty ? categories.first.id : null),
-                      onCategory,
-                    ),
-                  ),
-
-                ],
-              ),
-              const SizedBox(height: 12),
-              _label('Dietary Classification', null),
-              Wrap(
-                spacing: 6,
-                children: ['Pure Veg', 'Non-Veg', 'Contains Egg']
-                    .map(
-                      (e) => ChoiceChip(
-                        label: Text(
-                          e,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        selected: formDietary == e,
-                        onSelected: (_) => onDietary(e),
-                        selectedColor: AdminColors.yellow,
-                        side: const BorderSide(color: AdminColors.line),
-                      ),
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _field(
-                      price,
-                      '₹220',
-                      label: 'Base Price (₹)',
-                      keyboard: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      validator: (v) {
-                        final n = double.tryParse(v ?? '');
-                        return n == null || n < 0
-                            ? 'Enter a valid price'
-                            : null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _field(
-                      prep,
-                      '15',
-                      label: 'Prep Time (Min)',
-                      keyboard: TextInputType.number,
-                      validator: (v) {
-                        final n = int.tryParse(v ?? '');
-                        return n == null || n < 1 || n > 300
-                            ? '1–300 min'
-                            : null;
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              _field(
-                description,
-                'Charcoal roasted chicken tikka cubes, spiced onions, mint yogurt and flaky paratha bread.',
-                label: 'Short Description',
-                maxLines: 3,
-              ),
-              const SizedBox(height: 12),
-              _label('Ingredients & Tags', null),
-              if (selected == null || selected!.tags.isEmpty)
-                const Text(
-                  'No tags yet',
-                  style: TextStyle(fontSize: 11, color: AdminColors.muted),
-                )
-              else
-                Wrap(
-                  spacing: 5,
-                  runSpacing: 5,
-                  children: selected!.tags
-                      .map(
-                        (e) => InputChip(
-                          label: Text(
-                            e,
-                            style: const TextStyle(fontSize: 11),
-                          ),
-                          onDeleted: () {
-                            selected!.tags.remove(e);
-                            (context as Element).markNeedsBuild();
-                          },
-                        ),
-                      )
-                      .toList(),
-                ),
-              const SizedBox(height: 8),
-              TextButton.icon(
-                onPressed: () {
-                  if (tag.text.trim().isEmpty || selected == null) return;
-                  selected!.tags = [
-                    ...selected!.tags,
-                    tag.text.trim(),
-                  ];
-                  tag.clear();
-                  (context as Element).markNeedsBuild();
-                },
-                icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 15),
-                label: const Text(
-                  'Add tag',
-                  style: TextStyle(fontSize: 11),
-                ),
-              ),
-              const SizedBox(height: 10),
-              _label('Item Image', null),
-              InkWell(
-                onTap: uploading ? null : onPickImage,
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  width: double.infinity,
-                  height: 135,
-                  decoration: BoxDecoration(
-                    color: AdminColors.peach,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AdminColors.line),
-                  ),
-                  child: imagePreview.isNotEmpty
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.network(
-                            imagePreview,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Center(
-                              child: Text('Preview unavailable'),
-                            ),
-                          ),
-                        )
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AdminIcon(
-                              uploading
-                                  ? HugeIcons.strokeRoundedHourglass
-                                  : HugeIcons.strokeRoundedCloudUpload,
-                              size: 27,
-                              color: AdminColors.yellowDark,
-                            ),
-                            const SizedBox(height: 7),
-                            Text(
-                              uploading
-                                  ? 'Reading image…'
-                                  : 'Drop item image or browse file',
-                              style: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              'PNG, JPG, WEBP up to 4MB',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: AdminColors.muted,
-                              ),
-                            ),
-                          ],
-                        ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              _field(
-                imageUrl,
-                'https://...',
-                label: 'Image URL',
-                validator: (_) => null,
-              ),
-              const SizedBox(height: 14),
-              Row(
-                children: [
-                  Expanded(
-                    child: _field(
-                      stock,
-                      '0',
-                      label: 'Stock Quantity',
-                      keyboard: TextInputType.number,
-                      validator: (v) {
-                        final value = int.tryParse(v ?? '');
-                        return value == null || value < 0
-                            ? 'Enter stock'
-                            : null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      dense: true,
-                      title: const Text(
-                        'Live on app',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      value: selected?.available ?? true,
-                      onChanged: (v) {
-                        if (selected != null) {
-                          selected!.available = v;
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-              SizedBox(
-                width: double.infinity,
-                height: 46,
-                child: FilledButton.icon(
-                  onPressed: saving ? null : onSave,
-                  icon: AdminIcon(
-                    saving
-                        ? HugeIcons.strokeRoundedHourglass
-                        : HugeIcons.strokeRoundedFloppyDisk,
-                    size: 17,
-                  ),
-                  label: Text(
-                    saving
-                        ? 'Saving…'
-                        : 'Save Item',
-                  ),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AdminColors.red,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(11),
-                    ),
-                  ),
-                ),
-              ),
-              if (!creating)
-                Align(
-                  alignment: Alignment.center,
-                  child: TextButton(
-                    onPressed: saving ? null : onDeactivate,
-                    child: const Text(
-                      'Deactivate item',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AdminColors.red,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 Widget _label(String text, String? trailing) => Padding(
