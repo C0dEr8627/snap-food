@@ -1,7 +1,8 @@
 part of '../main.dart';
 
 class CataloguePage extends StatefulWidget {
-  const CataloguePage({super.key});
+  const CataloguePage({super.key, this.searchQuery = ''});
+  final String searchQuery;
   @override State<CataloguePage> createState() => _CataloguePageState();
 }
 
