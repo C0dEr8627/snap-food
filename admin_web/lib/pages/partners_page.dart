@@ -1,54 +1,1054 @@
 part of '../main.dart';
 
-class PartnersPage extends StatelessWidget {
+/// Delivery partner operations view. This page intentionally uses the existing
+/// AdminShell section and the authenticated Laravel admin API.
+class PartnersPage extends StatefulWidget {
   const PartnersPage({super.key});
-  static const rows = [
-    ['Vikram Joshi', 'DP-0084', 'Mumbai Central', 'Approved', 'Available'],
-    ['Neha Kulkarni', 'DP-0083', 'Andheri West', 'Approved', 'On delivery'],
-    ['Sameer Khan', 'DP-0082', 'Bandra', 'Pending review', 'Offline'],
-    ['Priya Nair', 'DP-0081', 'Powai', 'Approved', 'Available'],
-  ];
+
   @override
-  Widget build(BuildContext context) => Column(children: [
-    LayoutBuilder(builder: (context, c) {
-      final cols = c.maxWidth >= 850 ? 3 : c.maxWidth >= 500 ? 2 : 1;
-      return GridView.count(crossAxisCount: cols, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), crossAxisSpacing: 13, mainAxisSpacing: 13, childAspectRatio: cols == 1 ? 3.2 : 2.1, children: const [
-        _Kpi(title: 'Total partners', value: '84', delta: '+6 this week', icon: Icons.groups_2_outlined, tone: AdminColors.amberSoft),
-        _Kpi(title: 'Available now', value: '21', delta: 'Online', icon: Icons.electric_bike_outlined, tone: AdminColors.greenSoft),
-        _Kpi(title: 'Pending review', value: '03', delta: 'Action needed', icon: Icons.pending_actions_rounded, tone: AdminColors.redSoft),
-      ]);
-    }),
-    const SizedBox(height: 17),
-    Card(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: DataTable(
-      headingTextStyle: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w900, color: AdminColors.muted),
-      columnSpacing: 28,
-      columns: const [DataColumn(label: Text('PARTNER')), DataColumn(label: Text('ID')), DataColumn(label: Text('AREA')), DataColumn(label: Text('KYC')), DataColumn(label: Text('AVAILABILITY')), DataColumn(label: Text('ACTION'))],
-      rows: rows.map((r) => DataRow(cells: [
-        DataCell(Text(r[0], style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11.5))),
-        DataCell(Text(r[1])),
-        DataCell(Text(r[2])),
-        DataCell(_Pill(r[3])),
-        DataCell(Text(r[4])),
-        DataCell(TextButton(onPressed: () => _notice(context, 'Partner review will use protected Laravel admin endpoints.'), child: const Text('Review'))),
-      ])).toList(),
-    ))),
-  ]);
+  State<PartnersPage> createState() => _PartnersPageState();
 }
 
-class _Kpi extends StatelessWidget {
-  const _Kpi({required this.title, required this.value, required this.delta, required this.icon, required this.tone});
-  final String title, value, delta;
+class _PartnersPageState extends State<PartnersPage> {
+  final _api = const _DeliveryPartnerApi();
+  final _search = TextEditingController();
+  List<_DeliveryPartnerRecord> _partners = [];
+  int _total = 0;
+  int _currentPage = 1;
+  int _lastPage = 1;
+  bool _loading = true;
+  bool _busy = false;
+  String _filter = 'ALL';
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _search.addListener(_refreshView);
+    _loadPartners();
+  }
+
+  @override
+  void dispose() {
+    _search.removeListener(_refreshView);
+    _search.dispose();
+    super.dispose();
+  }
+
+  void _refreshView() {
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _loadPartners({int page = 1}) async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final result = await _api.list(page: page);
+      if (!mounted) return;
+      setState(() {
+        _partners = result.items;
+        _total = result.total;
+        _currentPage = result.currentPage;
+        _lastPage = result.lastPage;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = e.toString().replaceFirst('Bad state: ', '');
+      });
+    }
+  }
+
+  List<_DeliveryPartnerRecord> get _filtered {
+    final query = _search.text.trim().toLowerCase();
+    return _partners.where((partner) {
+      final statusMatches = switch (_filter) {
+        'PENDING' => !partner.approved,
+        'ACTIVE' => partner.approved && partner.active,
+        'INACTIVE' => !partner.active,
+        _ => true,
+      };
+      final queryMatches = query.isEmpty ||
+          partner.name.toLowerCase().contains(query) ||
+          partner.email.toLowerCase().contains(query) ||
+          partner.id.toString().contains(query);
+      return statusMatches && queryMatches;
+    }).toList();
+  }
+
+  int _count(String filter) => _partners.where((partner) {
+        return switch (filter) {
+          'PENDING' => !partner.approved,
+          'ACTIVE' => partner.approved && partner.active,
+          'INACTIVE' => !partner.active,
+          _ => true,
+        };
+      }).length;
+
+  Future<void> _setApproval(_DeliveryPartnerRecord partner, bool approved) async {
+    if (!_api.configured) {
+      _notice(context, 'Configure API_TOKEN to change partner approval.', error: true);
+      return;
+    }
+    setState(() => _busy = true);
+    try {
+      final updated = await _api.setApproval(partner.id, approved);
+      if (!mounted) return;
+      setState(() {
+        final index = _partners.indexWhere((item) => item.id == updated.id);
+        if (index >= 0) _partners[index] = updated;
+        _busy = false;
+      });
+      _notice(context, approved
+          ? 'Partner approval saved.'
+          : 'Partner approval removed. Availability was disabled by the server.');
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _busy = false);
+      _notice(context, e.toString().replaceFirst('Bad state: ', ''), error: true);
+    }
+  }
+
+  Future<void> _manualOnboard() async {
+    if (!_api.configured) {
+      _notice(context, 'Configure API_TOKEN to onboard a delivery partner.', error: true);
+      return;
+    }
+    final controller = TextEditingController();
+    final userId = await showDialog<int>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Manual partner onboarding'),
+        content: SizedBox(
+          width: 380,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'The existing backend provisions an existing active user by ID. '
+                'It does not create a user account or accept KYC documents here.',
+                style: TextStyle(fontSize: 12, color: AdminColors.muted, height: 1.5),
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  labelText: 'Existing user ID',
+                  hintText: 'Enter a user ID',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final value = int.tryParse(controller.text.trim());
+              if (value == null || value < 1) {
+                _notice(dialogContext, 'Enter a valid positive user ID.', error: true);
+                return;
+              }
+              Navigator.pop(dialogContext, value);
+            },
+            style: FilledButton.styleFrom(backgroundColor: AdminColors.yellow),
+            child: const Text('Create partner', style: TextStyle(color: AdminColors.ink)),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (userId == null || !mounted) return;
+
+    setState(() => _busy = true);
+    try {
+      await _api.create(userId: userId);
+      if (!mounted) return;
+      setState(() => _busy = false);
+      await _loadPartners(page: 1);
+      if (mounted) _notice(context, 'Partner record created. Admin approval is still required.');
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _busy = false);
+      _notice(context, e.toString().replaceFirst('Bad state: ', ''), error: true);
+    }
+  }
+
+  void _exportRoster() {
+    final rows = <List<String>>[
+      ['Partner ID', 'Name', 'Email', 'Approved', 'Active', 'Available'],
+      ..._filtered.map((p) => [
+            p.id.toString(),
+            p.name,
+            p.email,
+            p.approved ? 'Yes' : 'No',
+            p.active ? 'Yes' : 'No',
+            p.available ? 'Yes' : 'No',
+          ]),
+    ];
+    String cell(String value) => '"${value.replaceAll('"', '""')}"';
+    final csv = rows.map((row) => row.map(cell).join(',')).join('\n');
+    final blob = html.Blob([utf8.encode(csv)], 'text/csv;charset=utf-8');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    final anchor = html.AnchorElement(href: url)
+      ..download = 'snap-foodd-delivery-partners.csv'
+      ..style.display = 'none';
+    html.document.body?.children.add(anchor);
+    anchor.click();
+    anchor.remove();
+    html.Url.revokeObjectUrl(url);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _PartnerCommandHeader(
+          apiConfigured: _api.configured,
+          onExport: _exportRoster,
+          onManualOnboard: _manualOnboard,
+        ),
+        const SizedBox(height: 18),
+        if (_error != null)
+          _PartnerErrorBanner(message: _error!, onRetry: () => _loadPartners(page: _currentPage)),
+        if (_error != null) const SizedBox(height: 14),
+        _FleetSummary(
+          partners: _partners,
+          total: _total,
+          loading: _loading,
+          apiConfigured: _api.configured,
+        ),
+        const SizedBox(height: 18),
+        _PartnerFilterBar(
+          controller: _search,
+          filter: _filter,
+          counts: {
+            'ALL': _partners.length,
+            'ACTIVE': _count('ACTIVE'),
+            'PENDING': _count('PENDING'),
+            'INACTIVE': _count('INACTIVE'),
+          },
+          onFilter: (value) => setState(() => _filter = value),
+          onRefresh: () => _loadPartners(page: _currentPage),
+          loading: _loading,
+        ),
+        const SizedBox(height: 14),
+        if (_loading)
+          const _PartnerLoadingState()
+        else if (_error == null && _filtered.isEmpty)
+          _PartnerEmptyState(
+            hasQuery: _search.text.trim().isNotEmpty || _filter != 'ALL',
+            onClear: () => setState(() {
+              _search.clear();
+              _filter = 'ALL';
+            }),
+          )
+        else
+          _PartnerRoster(
+            partners: _filtered,
+            busy: _busy,
+            onApproval: _setApproval,
+          ),
+        if (!_loading && _error == null && _total > 0) ...[
+          const SizedBox(height: 12),
+          _PartnerPagination(
+            currentPage: _currentPage,
+            lastPage: _lastPage,
+            total: _total,
+            onPage: (page) => _loadPartners(page: page),
+          ),
+        ],
+        const SizedBox(height: 22),
+        _KycQueueNotice(
+          pendingCount: _partners.where((partner) => !partner.approved).length,
+          onReview: () => setState(() => _filter = 'PENDING'),
+        ),
+        const SizedBox(height: 14),
+        const _KycDataBoundary(),
+      ],
+    );
+  }
+}
+
+class _DeliveryPartnerApi {
+  const _DeliveryPartnerApi();
+
+  String get base {
+    final value = apiBaseUrl.trim();
+    return (value.isEmpty ? 'https://api.snapfoodd.in/api/v1' : value)
+        .replaceFirst(RegExp(r'/$'), '');
+  }
+
+  String get token => const String.fromEnvironment('API_TOKEN');
+  bool get configured => token.isNotEmpty;
+  Map<String, String> get headers => {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        if (configured) 'Authorization': 'Bearer $token',
+      };
+
+  Future<_DeliveryPartnerPage> list({required int page}) async {
+    if (!configured) {
+      throw StateError('API_TOKEN is not configured. Partner data cannot be loaded in preview mode.');
+    }
+    final response = await http.get(
+      Uri.parse('$base/admin/delivery-partners?page=$page'),
+      headers: headers,
+    );
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw StateError('Delivery partner request failed (${response.statusCode}).');
+    }
+    final decoded = jsonDecode(response.body);
+    if (decoded is! Map || decoded['data'] is! Map) {
+      throw StateError('The delivery partner API returned an unexpected response.');
+    }
+    final pageData = decoded['data'] as Map;
+    final itemsData = pageData['data'];
+    final items = itemsData is List
+        ? itemsData.whereType<Map>().map(_DeliveryPartnerRecord.fromJson).toList()
+        : <_DeliveryPartnerRecord>[];
+    return _DeliveryPartnerPage(
+      items: items,
+      total: _asInt(pageData['total'], items.length),
+      currentPage: _asInt(pageData['current_page'], page),
+      lastPage: _asInt(pageData['last_page'], 1),
+    );
+  }
+
+  Future<_DeliveryPartnerRecord> setApproval(int id, bool approved) async {
+    final response = await http.patch(
+      Uri.parse('$base/admin/delivery-partners/$id/approval'),
+      headers: headers,
+      body: jsonEncode({'approved': approved}),
+    );
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw StateError('Approval update failed (${response.statusCode}): ${_responseMessage(response.body)}');
+    }
+    final decoded = jsonDecode(response.body);
+    if (decoded is! Map || decoded['data'] is! Map) {
+      throw StateError('The approval API returned an unexpected response.');
+    }
+    return _DeliveryPartnerRecord.fromJson(decoded['data'] as Map);
+  }
+
+  Future<void> create({required int userId}) async {
+    final response = await http.post(
+      Uri.parse('$base/admin/delivery-partners'),
+      headers: headers,
+      body: jsonEncode({'user_id': userId}),
+    );
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw StateError('Onboarding failed (${response.statusCode}): ${_responseMessage(response.body)}');
+    }
+  }
+
+  static String _responseMessage(String body) {
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map) {
+        final message = decoded['message']?.toString();
+        if (message != null && message.isNotEmpty) return message;
+      }
+    } catch (_) {
+      // Keep the response generic if the server did not return JSON.
+    }
+    return 'Please retry or contact the backend administrator.';
+  }
+}
+
+class _DeliveryPartnerPage {
+  const _DeliveryPartnerPage({
+    required this.items,
+    required this.total,
+    required this.currentPage,
+    required this.lastPage,
+  });
+  final List<_DeliveryPartnerRecord> items;
+  final int total;
+  final int currentPage;
+  final int lastPage;
+}
+
+class _DeliveryPartnerRecord {
+  const _DeliveryPartnerRecord({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.approved,
+    required this.active,
+    required this.available,
+    this.createdAt,
+  });
+
+  final int id;
+  final String name;
+  final String email;
+  final bool approved;
+  final bool active;
+  final bool available;
+  final String? createdAt;
+
+  factory _DeliveryPartnerRecord.fromJson(Map json) {
+    final user = json['user'] is Map ? json['user'] as Map : const {};
+    return _DeliveryPartnerRecord(
+      id: _asInt(json['id'], 0),
+      name: (user['name'] ?? 'Unnamed partner').toString(),
+      email: (user['email'] ?? 'No email on file').toString(),
+      approved: json['is_approved'] == true,
+      active: json['is_active'] == true && user['is_active'] != false,
+      available: json['is_available'] == true,
+      createdAt: json['created_at']?.toString(),
+    );
+  }
+
+  _DeliveryPartnerRecord withApprovalFrom(_DeliveryPartnerRecord other) => other;
+}
+
+int _asInt(dynamic value, int fallback) =>
+    value is int ? value : int.tryParse(value?.toString() ?? '') ?? fallback;
+
+class _PartnerCommandHeader extends StatelessWidget {
+  const _PartnerCommandHeader({
+    required this.apiConfigured,
+    required this.onExport,
+    required this.onManualOnboard,
+  });
+
+  final bool apiConfigured;
+  final VoidCallback onExport;
+  final VoidCallback onManualOnboard;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      final actions = Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          OutlinedButton.icon(
+            onPressed: onExport,
+            icon: const Icon(Icons.download_rounded, size: 17),
+            label: const Text('Export roster'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AdminColors.ink,
+              side: const BorderSide(color: AdminColors.line),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11)),
+              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 13),
+            ),
+          ),
+          FilledButton.icon(
+            onPressed: onManualOnboard,
+            icon: const Icon(Icons.person_add_alt_1_rounded, size: 17),
+            label: const Text('Manual onboard'),
+            style: FilledButton.styleFrom(
+              backgroundColor: AdminColors.yellow,
+              foregroundColor: AdminColors.ink,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11)),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
+            ),
+          ),
+        ],
+      );
+      final title = const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Delivery Partner Command', style: TextStyle(fontSize: 30, height: 1.1, fontWeight: FontWeight.w900, letterSpacing: -1.0, color: AdminColors.ink)),
+          SizedBox(height: 7),
+          Text('Fleet roster, partner approvals, and operational readiness.', style: TextStyle(fontSize: 12, color: AdminColors.muted)),
+          SizedBox(height: 10),
+          Text('FLEET LOGISTICS  /  MUMBAI CLUSTER  /  RIDER OPS', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.1, color: AdminColors.muted)),
+        ],
+      );
+      if (constraints.maxWidth < 760) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            title,
+            const SizedBox(height: 15),
+            actions,
+            const SizedBox(height: 12),
+            _ApiStatusPill(configured: apiConfigured),
+          ],
+        );
+      }
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          const Expanded(child: title),
+          const SizedBox(width: 14),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [actions, const SizedBox(height: 9), _ApiStatusPill(configured: apiConfigured)],
+          ),
+        ],
+      );
+    });
+  }
+}
+
+class _ApiStatusPill extends StatelessWidget {
+  const _ApiStatusPill({required this.configured});
+  final bool configured;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        decoration: BoxDecoration(
+          color: configured ? AdminColors.greenSoft : AdminColors.redSoft,
+          borderRadius: BorderRadius.circular(9),
+          border: Border.all(color: AdminColors.line),
+        ),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          _StatusDot(color: configured ? AdminColors.green : AdminColors.red),
+          const SizedBox(width: 7),
+          Text(
+            configured ? 'API configured • Authenticated requests enabled' : 'API token missing • Data unavailable',
+            style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: configured ? AdminColors.green : AdminColors.red),
+          ),
+        ]),
+      );
+}
+
+class _FleetSummary extends StatelessWidget {
+  const _FleetSummary({
+    required this.partners,
+    required this.total,
+    required this.loading,
+    required this.apiConfigured,
+  });
+
+  final List<_DeliveryPartnerRecord> partners;
+  final int total;
+  final bool loading;
+  final bool apiConfigured;
+
+  @override
+  Widget build(BuildContext context) {
+    final approved = partners.where((p) => p.approved && p.active).length;
+    final pending = partners.where((p) => !p.approved).length;
+    final available = partners.where((p) => p.approved && p.active && p.available).length;
+    return LayoutBuilder(builder: (context, constraints) {
+      final columns = constraints.maxWidth >= 900 ? 4 : constraints.maxWidth >= 560 ? 2 : 1;
+      final cards = [
+        _FleetKpiCard(title: 'TOTAL FLEET STRENGTH', value: loading ? '—' : total.toString(), caption: 'Partners registered in backend', icon: Icons.electric_moped_rounded, tone: AdminColors.amberSoft),
+        _FleetKpiCard(title: 'APPROVED & ACTIVE', value: loading ? '—' : approved.toString(), caption: 'On the current result page', icon: Icons.bolt_rounded, tone: AdminColors.greenSoft),
+        _FleetKpiCard(title: 'AVAILABLE NOW', value: loading ? '—' : available.toString(), caption: 'Availability reported by API', icon: Icons.route_rounded, tone: AdminColors.blueSoft),
+        _FleetKpiCard(title: 'PENDING APPROVAL', value: loading ? '—' : pending.toString(), caption: 'Needs admin decision on this page', icon: Icons.pending_actions_rounded, tone: AdminColors.redSoft),
+      ];
+      return GridView.count(
+        crossAxisCount: columns,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: columns == 4 ? 1.8 : columns == 2 ? 2.15 : 4.2,
+        children: cards,
+      );
+    });
+  }
+}
+
+class _FleetKpiCard extends StatelessWidget {
+  const _FleetKpiCard({
+    required this.title,
+    required this.value,
+    required this.caption,
+    required this.icon,
+    required this.tone,
+  });
+  final String title;
+  final String value;
+  final String caption;
   final IconData icon;
   final Color tone;
+
   @override
-  Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(18), child: Row(children: [
-    Container(width: 43, height: 43, decoration: BoxDecoration(color: tone, borderRadius: BorderRadius.circular(13)), child: Icon(icon, size: 20, color: AdminColors.ink)),
-    const SizedBox(width: 13),
-    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text(title, style: const TextStyle(fontSize: 11, color: AdminColors.muted, fontWeight: FontWeight.w700)),
-      const SizedBox(height: 5),
-      Text(value, style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w900)),
-    ])),
-    Text(delta, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w800, color: AdminColors.green)),
-  ])));
+  Widget build(BuildContext context) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              Expanded(child: Text(title, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: .6, color: AdminColors.muted))),
+              Container(
+                width: 33,
+                height: 33,
+                decoration: BoxDecoration(color: tone, borderRadius: BorderRadius.circular(10)),
+                child: Icon(icon, size: 17, color: AdminColors.ink),
+              ),
+            ]),
+            const Spacer(),
+            Text(value, style: const TextStyle(fontSize: 27, fontWeight: FontWeight.w900, letterSpacing: -.7, color: AdminColors.ink)),
+            const SizedBox(height: 3),
+            Text(caption, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 9.5, color: AdminColors.muted)),
+          ]),
+        ),
+      );
 }
+
+class _PartnerFilterBar extends StatelessWidget {
+  const _PartnerFilterBar({
+    required this.controller,
+    required this.filter,
+    required this.counts,
+    required this.onFilter,
+    required this.onRefresh,
+    required this.loading,
+  });
+
+  final TextEditingController controller;
+  final String filter;
+  final Map<String, int> counts;
+  final ValueChanged<String> onFilter;
+  final VoidCallback onRefresh;
+  final bool loading;
+
+  static const options = [
+    ('ALL', 'All partners'),
+    ('ACTIVE', 'Active'),
+    ('PENDING', 'Pending approval / KYC'),
+    ('INACTIVE', 'Inactive'),
+  ];
+
+  @override
+  Widget build(BuildContext context) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: LayoutBuilder(builder: (context, constraints) {
+            final search = SizedBox(
+              width: constraints.maxWidth < 700 ? double.infinity : 250,
+              height: 40,
+              child: TextField(
+                controller: controller,
+                style: const TextStyle(fontSize: 11),
+                decoration: InputDecoration(
+                  hintText: 'Search name, email or partner ID',
+                  hintStyle: const TextStyle(fontSize: 10.5),
+                  prefixIcon: const Icon(Icons.search_rounded, size: 18),
+                  suffixIcon: controller.text.isEmpty
+                      ? null
+                      : IconButton(
+                          tooltip: 'Clear search',
+                          onPressed: controller.clear,
+                          icon: const Icon(Icons.close_rounded, size: 16),
+                        ),
+                  filled: true,
+                  fillColor: AdminColors.canvas,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 9),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(9), borderSide: const BorderSide(color: AdminColors.line)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(9), borderSide: const BorderSide(color: AdminColors.line)),
+                ),
+              ),
+            );
+            final chips = Wrap(
+              spacing: 7,
+              runSpacing: 7,
+              children: options.map((option) {
+                final active = filter == option.$1;
+                return InkWell(
+                  onTap: () => onFilter(option.$1),
+                  borderRadius: BorderRadius.circular(9),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+                    decoration: BoxDecoration(
+                      color: active ? AdminColors.amberSoft : AdminColors.canvas,
+                      borderRadius: BorderRadius.circular(9),
+                      border: Border.all(color: active ? AdminColors.yellow : AdminColors.line),
+                    ),
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      Text(option.$2, style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: active ? AdminColors.ink : AdminColors.muted)),
+                      const SizedBox(width: 6),
+                      Text((counts[option.$1] ?? 0).toString(), style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900)),
+                    ]),
+                  ),
+                );
+              }).toList(),
+            );
+            if (constraints.maxWidth < 700) {
+              return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                search,
+                const SizedBox(height: 10),
+                chips,
+                Align(alignment: Alignment.centerRight, child: IconButton(onPressed: loading ? null : onRefresh, tooltip: 'Refresh roster', icon: const Icon(Icons.refresh_rounded))),
+              ]);
+            }
+            return Row(children: [
+              search,
+              const SizedBox(width: 10),
+              Expanded(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: chips)),
+              const SizedBox(width: 4),
+              IconButton(onPressed: loading ? null : onRefresh, tooltip: 'Refresh roster', icon: const Icon(Icons.refresh_rounded)),
+            ]);
+          }),
+        ),
+      );
+}
+
+class _PartnerRoster extends StatelessWidget {
+  const _PartnerRoster({required this.partners, required this.busy, required this.onApproval});
+  final List<_DeliveryPartnerRecord> partners;
+  final bool busy;
+  final Future<void> Function(_DeliveryPartnerRecord, bool) onApproval;
+
+  @override
+  Widget build(BuildContext context) => Card(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(17, 16, 17, 12),
+            child: Row(children: [
+              const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('DELIVERY PARTNER ROSTER', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .3)),
+                SizedBox(height: 3),
+                Text('Partner identity and operational flags returned by the admin API.', style: TextStyle(fontSize: 10, color: AdminColors.muted)),
+              ])),
+              const _TelemetryBoundaryPill(),
+            ]),
+          ),
+          const Divider(height: 1, color: AdminColors.line),
+          LayoutBuilder(builder: (context, constraints) {
+            if (constraints.maxWidth < 700) {
+              return Column(
+                children: partners.map((partner) => _PartnerMobileCard(
+                  partner: partner,
+                  busy: busy,
+                  onApproval: onApproval,
+                )).toList(),
+              );
+            }
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                headingRowHeight: 42,
+                dataRowMinHeight: 66,
+                dataRowMaxHeight: 78,
+                columnSpacing: 24,
+                horizontalMargin: 16,
+                headingTextStyle: const TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, color: AdminColors.muted),
+                columns: const [
+                  DataColumn(label: Text('PARTNER / IDENTITY')),
+                  DataColumn(label: Text('CONTACT')),
+                  DataColumn(label: Text('DUTY STATUS')),
+                  DataColumn(label: Text('APPROVAL')),
+                  DataColumn(label: Text('QUICK ACTIONS')),
+                ],
+                rows: partners.map((partner) => DataRow(cells: [
+                  DataCell(SizedBox(width: 175, child: _PartnerIdentity(partner: partner))),
+                  DataCell(SizedBox(width: 185, child: Text(partner.email, style: const TextStyle(fontSize: 10.5)))),
+                  DataCell(_PartnerDutyStatus(partner: partner)),
+                  DataCell(_ApprovalPill(approved: partner.approved)),
+                  DataCell(_PartnerActions(partner: partner, busy: busy, onApproval: onApproval)),
+                ])).toList(),
+              ),
+            );
+          }),
+        ]),
+      );
+}
+
+class _PartnerIdentity extends StatelessWidget {
+  const _PartnerIdentity({required this.partner});
+  final _DeliveryPartnerRecord partner;
+
+  @override
+  Widget build(BuildContext context) {
+    final initials = partner.name.trim().split(RegExp(r'\s+')).where((part) => part.isNotEmpty).take(2).map((part) => part[0]).join().toUpperCase();
+    return Row(children: [
+      Container(
+        width: 36,
+        height: 36,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(11)),
+        child: Text(initials.isEmpty ? 'DP' : initials, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: AdminColors.yellowDark)),
+      ),
+      const SizedBox(width: 10),
+      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text(partner.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900)),
+        const SizedBox(height: 3),
+        Text('Partner #${partner.id}', style: const TextStyle(fontSize: 9.5, color: AdminColors.muted)),
+      ])),
+    ]);
+  }
+}
+
+class _PartnerDutyStatus extends StatelessWidget {
+  const _PartnerDutyStatus({required this.partner});
+  final _DeliveryPartnerRecord partner;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = !partner.active ? 'Inactive' : !partner.approved ? 'Awaiting approval' : partner.available ? 'Available' : 'Not available';
+    final color = !partner.active || !partner.approved ? AdminColors.red : partner.available ? AdminColors.green : AdminColors.muted;
+    final background = !partner.active || !partner.approved ? AdminColors.redSoft : partner.available ? AdminColors.greenSoft : AdminColors.canvas;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+      decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(20)),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        _StatusDot(color: color),
+        const SizedBox(width: 6),
+        Text(text, style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: color)),
+      ]),
+    );
+  }
+}
+
+class _ApprovalPill extends StatelessWidget {
+  const _ApprovalPill({required this.approved});
+  final bool approved;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+        decoration: BoxDecoration(color: approved ? AdminColors.greenSoft : AdminColors.amberSoft, borderRadius: BorderRadius.circular(18)),
+        child: Text(approved ? 'APPROVED' : 'PENDING', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, color: approved ? AdminColors.green : AdminColors.yellowDark)),
+      );
+}
+
+class _PartnerActions extends StatelessWidget {
+  const _PartnerActions({required this.partner, required this.busy, required this.onApproval});
+  final _DeliveryPartnerRecord partner;
+  final bool busy;
+  final Future<void> Function(_DeliveryPartnerRecord, bool) onApproval;
+
+  @override
+  Widget build(BuildContext context) => Wrap(spacing: 2, children: [
+        IconButton(
+          tooltip: 'View available partner details',
+          onPressed: () => showDialog<void>(
+            context: context,
+            builder: (dialogContext) => AlertDialog(
+              title: Text(partner.name),
+              content: SizedBox(
+                width: 360,
+                child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  _DetailLine(label: 'Partner ID', value: partner.id.toString()),
+                  _DetailLine(label: 'Email', value: partner.email),
+                  _DetailLine(label: 'Approval', value: partner.approved ? 'Approved' : 'Pending approval'),
+                  _DetailLine(label: 'Account active', value: partner.active ? 'Yes' : 'No'),
+                  _DetailLine(label: 'Available', value: partner.available ? 'Yes' : 'No'),
+                  const SizedBox(height: 8),
+                  const Text('Vehicle, trip history, live GPS, phone, and rating are not supplied by the current API.', style: TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.5)),
+                ]),
+              ),
+              actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Close'))],
+            ),
+          ),
+          icon: const Icon(Icons.open_in_new_rounded, size: 17),
+        ),
+        IconButton(
+          tooltip: partner.approved ? 'Remove approval' : 'Approve partner',
+          onPressed: busy ? null : () => onApproval(partner, !partner.approved),
+          icon: Icon(partner.approved ? Icons.verified_user_outlined : Icons.check_circle_outline_rounded, size: 18, color: partner.approved ? AdminColors.muted : AdminColors.green),
+        ),
+      ]);
+}
+
+class _PartnerMobileCard extends StatelessWidget {
+  const _PartnerMobileCard({required this.partner, required this.busy, required this.onApproval});
+  final _DeliveryPartnerRecord partner;
+  final bool busy;
+  final Future<void> Function(_DeliveryPartnerRecord, bool) onApproval;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.all(13),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Expanded(child: _PartnerIdentity(partner: partner)),
+            _ApprovalPill(approved: partner.approved),
+          ]),
+          const SizedBox(height: 10),
+          Text(partner.email, style: const TextStyle(fontSize: 10.5, color: AdminColors.muted)),
+          const SizedBox(height: 10),
+          Row(children: [
+            Expanded(child: _PartnerDutyStatus(partner: partner)),
+            TextButton.icon(
+              onPressed: busy ? null : () => onApproval(partner, !partner.approved),
+              icon: Icon(partner.approved ? Icons.remove_moderator_outlined : Icons.check_circle_outline_rounded, size: 16),
+              label: Text(partner.approved ? 'Remove approval' : 'Approve'),
+            ),
+          ]),
+          const Divider(height: 16, color: AdminColors.line),
+        ]),
+      );
+}
+
+class _DetailLine extends StatelessWidget {
+  const _DetailLine({required this.label, required this.value});
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          SizedBox(width: 105, child: Text(label, style: const TextStyle(fontSize: 10.5, color: AdminColors.muted))),
+          Expanded(child: Text(value, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700))),
+        ]),
+      );
+}
+
+class _TelemetryBoundaryPill extends StatelessWidget {
+  const _TelemetryBoundaryPill();
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
+        decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(9), border: Border.all(color: AdminColors.line)),
+        child: const Row(mainAxisSize: MainAxisSize.min, children: [
+          _StatusDot(color: AdminColors.muted),
+          SizedBox(width: 6),
+          Text('Telemetry unavailable', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AdminColors.muted)),
+        ]),
+      );
+}
+
+class _PartnerPagination extends StatelessWidget {
+  const _PartnerPagination({required this.currentPage, required this.lastPage, required this.total, required this.onPage});
+  final int currentPage;
+  final int lastPage;
+  final int total;
+  final ValueChanged<int> onPage;
+
+  @override
+  Widget build(BuildContext context) => Row(children: [
+        Text('Page $currentPage of $lastPage • $total partners', style: const TextStyle(fontSize: 10, color: AdminColors.muted, fontWeight: FontWeight.w700)),
+        const Spacer(),
+        IconButton(tooltip: 'Previous page', onPressed: currentPage > 1 ? () => onPage(currentPage - 1) : null, icon: const Icon(Icons.chevron_left_rounded)),
+        IconButton(tooltip: 'Next page', onPressed: currentPage < lastPage ? () => onPage(currentPage + 1) : null, icon: const Icon(Icons.chevron_right_rounded)),
+      ]);
+}
+
+class _PartnerLoadingState extends StatelessWidget {
+  const _PartnerLoadingState();
+
+  @override
+  Widget build(BuildContext context) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(children: [
+            const Row(children: [
+              SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+              SizedBox(width: 11),
+              Text('Loading delivery partners…', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+            ]),
+            const SizedBox(height: 18),
+            ...List.generate(3, (index) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 7),
+              child: Container(height: 48, decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(9)),
+                child: const SizedBox.expand()),
+            )),
+          ]),
+        ),
+      );
+}
+
+class _PartnerErrorBanner extends StatelessWidget {
+  const _PartnerErrorBanner({required this.message, required this.onRetry});
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFF2C9C2))),
+        child: Row(children: [
+          const Icon(Icons.cloud_off_rounded, color: AdminColors.red, size: 20),
+          const SizedBox(width: 10),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('Delivery partner data could not be loaded', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w900, color: AdminColors.red)),
+            const SizedBox(height: 3),
+            Text(message, style: const TextStyle(fontSize: 10, color: AdminColors.ink, height: 1.4)),
+          ])),
+          TextButton(onPressed: onRetry, child: const Text('Retry')),
+        ]),
+      );
+}
+
+class _PartnerEmptyState extends StatelessWidget {
+  const _PartnerEmptyState({required this.hasQuery, required this.onClear});
+  final bool hasQuery;
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) => Card(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 34),
+          child: Center(child: Column(children: [
+            Container(width: 48, height: 48, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.delivery_dining_rounded, color: AdminColors.yellowDark, size: 24)),
+            const SizedBox(height: 12),
+            Text(hasQuery ? 'No partners match these filters' : 'No delivery partners found', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
+            const SizedBox(height: 5),
+            const Text('Try another search or refresh the roster from the admin API.', textAlign: TextAlign.center, style: TextStyle(fontSize: 10.5, color: AdminColors.muted)),
+            if (hasQuery) ...[
+              const SizedBox(height: 10),
+              TextButton(onPressed: onClear, child: const Text('Clear filters')),
+            ],
+          ])),
+        ),
+      );
+}
+
+class _KycQueueNotice extends StatelessWidget {
+  const _KycQueueNotice({required this.pendingCount, required this.onReview});
+  final int pendingCount;
+  final VoidCallback onReview;
+
+  @override
+  Widget build(BuildContext context) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(17),
+          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Container(width: 42, height: 42, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.fact_check_outlined, color: AdminColors.yellowDark, size: 21)),
+            const SizedBox(width: 12),
+            const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('Sarathi & UIDAI Automated KYC Queue', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
+              SizedBox(height: 4),
+              Text('The current API exposes partner approval flags only; it does not return KYC documents, OCR scores, document previews, or re-upload decisions.', style: TextStyle(fontSize: 10.5, color: AdminColors.muted, height: 1.5)),
+            ])),
+            const SizedBox(width: 8),
+            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+              Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6), decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(18)), child: Text('$pendingCount pending on page', style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: AdminColors.yellowDark))),
+              const SizedBox(height: 8),
+              OutlinedButton(onPressed: onReview, child: const Text('Review pending')),
+            ]),
+          ]),
+        ),
+      );
+}
+
+class _KycDataBoundary extends StatelessWidget {
+  const _KycDataBoundary();
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(12), border: Border.all(color: AdminColors.line)),
+        child: const Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Icon(Icons.info_outline_rounded, color: AdminColors.muted, size: 18),
+          SizedBox(width: 10),
+          Expanded(child: Text(
+            'KYC integration boundary: no document URLs, UIDAI/Sarathi verification metadata, trust scores, rejection endpoint, or re-upload endpoint were found in the existing API. These controls are intentionally not simulated. The existing approval endpoint is used only for its supported approve/unapprove action.',
+            style: TextStyle(fontSize: 10.5, color: AdminColors.muted, height: 1.5),
+          )),
+        ]),
+      );
+}
+
+void _notice(BuildContext context, String message, {bool error = false}) =>
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      backgroundColor: error ? AdminColors.red : null,
+      behavior: SnackBarBehavior.floating,
+    ));
