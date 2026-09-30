@@ -174,8 +174,7 @@ class _Sidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    color: AdminColors.surface,
-    decoration: const BoxDecoration(border: Border(right: BorderSide(color: AdminColors.border))),
+    decoration: const BoxDecoration(color: AdminColors.surface, border: Border(right: BorderSide(color: AdminColors.border))),
     child: SafeArea(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(padding: const EdgeInsets.fromLTRB(22, 25, 18, 28), child: Row(children: [
         Container(width: 42, height: 42, decoration: BoxDecoration(color: AdminColors.yellow, borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.restaurant_rounded, color: AdminColors.ink, size: 23)),
