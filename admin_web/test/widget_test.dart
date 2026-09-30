@@ -14,7 +14,7 @@ void main() {
 
     await tester.tap(find.text('Orders').first);
     await tester.pumpAndSettle();
-    expect(find.text('Review, search and manage incoming orders.'), findsOneWidget);
+    expect(find.text('Track every order from checkout to delivery.'), findsOneWidget);
     expect(find.text('#SF-1048'), findsOneWidget);
   });
 
