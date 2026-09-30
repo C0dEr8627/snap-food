@@ -90,7 +90,7 @@ class _CatalogueRepository {
     final q = <String, String>{'page': page.toString(), 'per_page': perPage.toString()};
     if (search.trim().isNotEmpty) q['search'] = search.trim();
     if (categoryId != null) q['category_id'] = categoryId.toString();
-    final res = await http.get(_uri('/products', q), headers: _headers);
+    final res = await http.get(_uri('/admin/products', q), headers: _headers);
     if (res.statusCode < 200 || res.statusCode >= 300) throw _CatalogueApiException(res.statusCode, _message(res));
     final root = jsonDecode(res.body);
     final p = root is Map ? root['data'] : null;
@@ -104,7 +104,7 @@ class _CatalogueRepository {
   }
   Future<List<_CatalogueCategory>> categories() async {
     if (!liveEnabled) return const [];
-    final res = await http.get(_uri('/categories', {'per_page': '100'}), headers: _headers);
+    final res = await http.get(_uri('/admin/categories', {'per_page': '100'}), headers: _headers);
     if (res.statusCode < 200 || res.statusCode >= 300) throw _CatalogueApiException(res.statusCode, _message(res));
     final root = jsonDecode(res.body);
     final p = root is Map ? root['data'] : null;
@@ -131,7 +131,7 @@ class _CatalogueRepository {
   Future<_CatalogueCategory> saveCategory({int? id, required String name, required String slug, required int sortOrder, required bool active}) async {
     if (!liveEnabled) return _CatalogueCategory(id: id, name: name, slug: slug, sortOrder: sortOrder, active: active);
     final body = jsonEncode({'name': name.trim(), 'slug': slug.trim(), 'sort_order': sortOrder, 'is_active': active});
-    final res = id == null ? await http.post(_uri('/categories'), headers: _headers, body: body) : await http.patch(_uri('/categories/' + id.toString()), headers: _headers, body: body);
+    final res = id == null ? await http.post(_uri('/admin/categories'), headers: _headers, body: body) : await http.patch(_uri('/categories/' + id.toString()), headers: _headers, body: body);
     if (res.statusCode < 200 || res.statusCode >= 300) throw _CatalogueApiException(res.statusCode, _message(res));
     final root = jsonDecode(res.body);
     final data = root is Map && root['data'] is Map ? Map<String, dynamic>.from(root['data']) : <String, dynamic>{};
