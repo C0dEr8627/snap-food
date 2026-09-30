@@ -1,22 +1,22 @@
 part of '../main.dart';
 
 abstract final class AdminColors {
-  static const ink = Color(0xFF201B17);
-  static const muted = Color(0xFF4E4634);
-  static const canvas = Color(0xFFFFF8F5);
+  static const ink = Color(0xFF0D0D0D);
+  static const muted = Color(0x990D0D0D);
+  static const canvas = Color(0x14F2D022);
   static const surface = Colors.white;
-  static const line = Color(0xFFD1C5AE);
-  static const yellow = Color(0xFFE4B935);
-  static const yellowDark = Color(0xFF755B00);
-  static const red = Color(0xFFD54126);
-  static const redSoft = Color(0xFFFBE3DC);
-  static const green = Color(0xFF2D7A4B);
-  static const greenSoft = Color(0xFFE7F5EC);
-  static const blue = Color(0xFF3867D6);
-  static const blueSoft = Color(0xFFEAF0FF);
-  static const amberSoft = Color(0xFFFFF4CE);
-  static const peach = Color(0xFFF9EEE7);
-  static const warning = Color(0xFFF05A3C);
+  static const line = Color(0x40F2AE2E);
+  static const yellow = Color(0xFFF2D022);
+  static const yellowDark = Color(0xFFA61C1C);
+  static const red = Color(0xFFD92929);
+  static const redSoft = Color(0x1AD92929);
+  static const green = Color(0xFFA61C1C);
+  static const greenSoft = Color(0x1AF2AE2E);
+  static const blue = Color(0xFFA61C1C);
+  static const blueSoft = Color(0x14F2D022);
+  static const amberSoft = Color(0x33F2D022);
+  static const peach = Color(0x1AF2AE2E);
+  static const warning = Color(0xFFF2AE2E);
 }
 
 void _notice(BuildContext context, String message, {bool error = false}) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: error ? AdminColors.red : null, behavior: SnackBarBehavior.floating));
