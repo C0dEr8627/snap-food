@@ -391,7 +391,20 @@ class _ProductEditor extends StatelessWidget {
     _field(description, 'Charcoal roasted chicken tikka cubes, spiced onions, mint yogurt and flaky paratha bread.', label: 'Short Description', maxLines: 3),
     const SizedBox(height: 12),
     _label('Ingredients & Tags', null),
-    Wrap(spacing: 6, runSpacing: 6, children: [(selected?.tags ?? const []).map((e) => InputChip(label: Text(e, style: const TextStyle(fontSize: 9)), onDeleted: () { selected?.tags.remove(e); (context as Element).markNeedsBuild(); })).toList().isEmpty ? const Text('No tags yet', style: TextStyle(fontSize: 9, color: AdminColors.muted)) : Wrap(spacing: 5, children: (selected?.tags ?? const []).map((e) => Chip(label: Text(e, style: const TextStyle(fontSize: 9)), onDeleted: () { selected?.tags.remove(e); (context as Element).markNeedsBuild(); })).toList())]),
+    if (selected == null || selected!.tags.isEmpty)
+      const Text('No tags yet', style: TextStyle(fontSize: 9, color: AdminColors.muted))
+    else
+      Wrap(
+        spacing: 5,
+        runSpacing: 5,
+        children: selected!.tags.map((e) => InputChip(
+          label: Text(e, style: const TextStyle(fontSize: 9)),
+          onDeleted: () {
+            selected!.tags.remove(e);
+            (context as Element).markNeedsBuild();
+          },
+        )).toList(),
+      ),
     const SizedBox(height: 8),
     TextButton.icon(onPressed: () { if (tag.text.trim().isEmpty || selected == null) return; selected!.tags = [...selected!.tags, tag.text.trim()]; tag.clear(); (context as Element).markNeedsBuild(); }, icon: const Icon(Icons.add_rounded, size: 15), label: const Text('Add tag', style: TextStyle(fontSize: 9.5))),
     const SizedBox(height: 10),
@@ -408,7 +421,18 @@ class _ProductEditor extends StatelessWidget {
   ])));
 }
 
-String _label(String text, String? trailing) => trailing == null ? text : text + '  ' + trailing;
+Widget _label(String text, String? trailing) => Padding(
+  padding: const EdgeInsets.only(bottom: 5),
+  child: Row(
+    children: [
+      Text(text, style: const TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, color: AdminColors.muted)),
+      if (trailing != null) ...[
+        const SizedBox(width: 6),
+        Text(trailing!, style: const TextStyle(fontSize: 8, color: AdminColors.muted)),
+      ],
+    ],
+  ),
+);
 Widget _field(TextEditingController c, String hint, {String? label, int? maxLength, int maxLines = 1, TextInputType? keyboard, String? Function(String?)? validator}) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
   if (label != null) Padding(padding: const EdgeInsets.only(bottom: 5), child: Text(label, style: const TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, color: AdminColors.muted))),
   TextFormField(controller: c, maxLength: maxLength, maxLines: maxLines, keyboardType: keyboard, validator: validator, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700), decoration: _inputDecoration(hint).copyWith(counterText: '')),
