@@ -190,7 +190,7 @@ class _OrderFilters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return AdminCard(
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: SingleChildScrollView(
@@ -274,7 +274,7 @@ class _OrderQueue extends StatelessWidget{
   final List<_AdminOrder> orders;final String? selectedId;final int page;final ValueChanged<int> onPage;final ValueChanged<String> onSelect;
   @override Widget build(BuildContext context){
     final start=(page-1)*10,visible=orders.skip(start).take(10).toList(),pages=orders.isEmpty?1:((orders.length-1)~/10)+1;
-    return Card(child:Padding(padding:const EdgeInsets.fromLTRB(14,14,14,10),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+    return AdminCard(child:Padding(padding:const EdgeInsets.fromLTRB(14,14,14,10),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
       Row(children:[const Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('ORDER QUEUE',style:TextStyle(fontSize:12,fontWeight:FontWeight.w900)),SizedBox(height:3)])),Text('Showing '+visible.length.toString()+' of '+orders.length.toString()+' active tickets',style:const TextStyle(fontSize: 11,color:AdminColors.muted)),const SizedBox(width:10),Container(padding:const EdgeInsets.symmetric(horizontal:9,vertical:7),decoration:BoxDecoration(color:AdminColors.canvas,borderRadius:BorderRadius.circular(8),border:Border.all(color:AdminColors.line)),child:const Row(children:[AdminIcon(HugeIcons.strokeRoundedSortingUp,size:15,color:AdminColors.muted),SizedBox(width:4),Text('Live Recency',style:TextStyle(fontSize: 11,fontWeight:FontWeight.w800))]))]),
       const SizedBox(height:12),
       Scrollbar(
@@ -320,9 +320,9 @@ class _OrderDetails extends StatelessWidget{
   const _OrderDetails({required this.order,required this.busy,required this.apiConfigured,required this.onAdvance,required this.onInvoice,required this.onCancel});
   final _AdminOrder? order;final bool busy,apiConfigured;final VoidCallback? onAdvance,onInvoice,onCancel;
   @override Widget build(BuildContext context){
-    final o=order;if(o==null)return const Card(child:Padding(padding:EdgeInsets.all(30),child:Center(child:Text('No selected order',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)))));
+    final o=order;if(o==null)return const AdminCard(child:Padding(padding:EdgeInsets.all(30),child:Center(child:Text('No selected order',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)))));
     final next=_nextStatus(o.status);
-    return Card(child:Padding(padding:const EdgeInsets.all(16),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+    return AdminCard(child:Padding(padding:const EdgeInsets.all(16),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
       Row(children:[Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(o.id,style:const TextStyle(fontSize:18,fontWeight:FontWeight.w900)),const SizedBox(height:5),Row(children:[_OrderStatusBadge(o.status),const SizedBox(width:7),if(apiConfigured)const Text('LIVE ACTIVE',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.green))])])),IconButton(tooltip:'Print',onPressed:()=>_notice(context,'Print is not wired in the existing admin app.'),icon:const AdminIcon(HugeIcons.strokeRoundedPrinter,size:18)),IconButton(tooltip:'Share',onPressed:()=>_notice(context,'Share is not wired in the existing admin app.'),icon:const AdminIcon(HugeIcons.strokeRoundedShare08,size:18))]),
       const SizedBox(height:5),Text('Placed at '+o.time+' IST • Estimated Dispatch: 8 min',style:const TextStyle(fontSize: 11,color:AdminColors.muted)),const SizedBox(height:15),
       _Panel(title:'Order Dispatch Progression',trailing:'Step '+_progressStep(o.status).toString()+' of 5',child:_Progression(o.status)),const SizedBox(height:12),
@@ -440,7 +440,7 @@ class _Bill extends StatelessWidget{
   @override Widget build(BuildContext context){final sub=o.total-69;Widget line(String a,String b,{bool strong=false})=>Row(children:[Expanded(child:Text(a,style:TextStyle(fontSize:strong?10:8.5,fontWeight:strong?FontWeight.w900:FontWeight.w600,color:strong?AdminColors.ink:AdminColors.muted))),Text(b,style:TextStyle(fontSize:strong?12.5:8.5,fontWeight:FontWeight.w900))]);return Container(padding:const EdgeInsets.all(12),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminColors.line)),child:Column(children:[line('Item Subtotal','₹'+sub.toStringAsFixed(2)),line('GST & Packaging Charges','₹69.00'),const Divider(height:17),line('Grand Total','₹'+o.total.toStringAsFixed(2),strong:true),const SizedBox(height:9),Row(children:[const Text('PAYMENT',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted)),const Spacer(),Container(padding:const EdgeInsets.symmetric(horizontal:7,vertical:4),decoration:BoxDecoration(color:AdminColors.greenSoft,borderRadius:BorderRadius.circular(6)),child:const Text('PAID',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.green))),const SizedBox(width:6),Text(o.payment,style:const TextStyle(fontSize: 11,color:AdminColors.muted))])]));}
 }
 
-class _EmptyOrders extends StatelessWidget{const _EmptyOrders({required this.onClear});final VoidCallback onClear;@override Widget build(BuildContext context)=>Card(child:Padding(padding:const EdgeInsets.all(34),child:Center(child:Column(children:[const AdminIcon(HugeIcons.strokeRoundedInbox,size:34,color:AdminColors.muted),const SizedBox(height:9),const Text('No orders match this view',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)),const SizedBox(height:5),const Text('Try another status filter or clear the order search.',style:TextStyle(fontSize: 11,color:AdminColors.muted)),const SizedBox(height:12),OutlinedButton(onPressed:onClear,child:const Text('Clear filters'))]))));}
+class _EmptyOrders extends StatelessWidget{const _EmptyOrders({required this.onClear});final VoidCallback onClear;@override Widget build(BuildContext context)=>AdminCard(child:Padding(padding:const EdgeInsets.all(34),child:Center(child:Column(children:[const AdminIcon(HugeIcons.strokeRoundedInbox,size:34,color:AdminColors.muted),const SizedBox(height:9),const Text('No orders match this view',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)),const SizedBox(height:5),const Text('Try another status filter or clear the order search.',style:TextStyle(fontSize: 11,color:AdminColors.muted)),const SizedBox(height:12),OutlinedButton(onPressed:onClear,child:const Text('Clear filters'))]))));}
 
 const _previewOrders=<_AdminOrder>[
   _AdminOrder(id:'#SFD-9042',customer:'Aarav Mehra',phone:'+919820144521',address:'Flat 402 Wing B, Sea Green Apts, Juhu Beach Ext.',total:849,items:3,payment:'UPI',time:'14:32 (4m ago)',status:'PREPARING',partner:'Ramesh Patil',vehicle:'Ather 450X (MH-02-EH-4819)',lines:[_OrderLine(1,'Truffle Melt Burger','Extra Cheese',480),_OrderLine(1,'Peri Peri Crinkle Fries','Jalapeño Dip',160),_OrderLine(1,'Alphonso Mango Shake','No Sugar Added',140)]),
