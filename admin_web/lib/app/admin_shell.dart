@@ -180,28 +180,25 @@ class _Sidebar extends StatelessWidget {
           ),
           ...AdminSection.values.map((item) {
             final active = item == selected;
+            final button = active
+                ? shad.Button.secondary(
+                    onPressed: () => onSelect(item),
+                    leading: AdminIcon(item.icon, size: 18),
+                    trailing: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 16),
+                    child: Text(item.label),
+                  )
+                : shad.Button.ghost(
+                    onPressed: () => onSelect(item),
+                    leading: AdminIcon(item.icon, size: 18),
+                    child: Text(item.label),
+                  );
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
               child: Semantics(
                 button: true,
                 selected: active,
                 label: item.label,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(11),
-                  onTap: () => onSelect(item),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 150),
-                    constraints: const BoxConstraints(minHeight: 48),
-                    padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
-                  decoration: BoxDecoration(color: active ? AdminColors.amberSoft : Colors.transparent, borderRadius: BorderRadius.circular(11)),
-                  child: Row(children: [
-                    AdminIcon(item.icon, size: 18, color: active ? AdminColors.yellowDark : AdminColors.muted),
-                    const SizedBox(width: 12),
-                    Expanded(child: Text(item.label, style: TextStyle(fontSize: 12.5, fontWeight: active ? FontWeight.w900 : FontWeight.w700, color: AdminColors.ink))),
-                    if (active) const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 16, color: AdminColors.yellowDark),
-                  ]),
-                  ),
-                ),
+                child: button.sized(width: double.infinity, height: 44),
               ),
             );
           }),
@@ -295,7 +292,13 @@ class _Header extends StatelessWidget {
         const Expanded(child: Text('Snap Foodd Admin', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900))),
       if (desktop) const SizedBox(width: 16),
       const SizedBox(width: 10),
-      IconButton(tooltip: 'Notifications', onPressed: () => _notice(context, 'No new notifications in preview mode.'), icon: const AdminIcon(HugeIcons.strokeRoundedNotification01, size: 21, color: AdminColors.ink)),
+      Tooltip(
+        message: 'Notifications',
+        child: shad.IconButton.ghost(
+          onPressed: () => _notice(context, 'No new notifications in preview mode.'),
+          icon: const AdminIcon(HugeIcons.strokeRoundedNotification01, size: 20),
+        ),
+      ),
       const SizedBox(width: 2),
       Container(width: 34, height: 34, decoration: BoxDecoration(color: AdminColors.ink, borderRadius: BorderRadius.circular(10)), alignment: Alignment.center, child: Text(_initials(user.name), style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900))),
       if (desktop) ...[
@@ -306,7 +309,13 @@ class _Header extends StatelessWidget {
           Text(user.email, style: const TextStyle(fontSize: 9, color: AdminColors.muted)),
         ]),
         const SizedBox(width: 8),
-        IconButton(tooltip: 'Logout', onPressed: onLogout, icon: const AdminIcon(HugeIcons.strokeRoundedLogout01, size: 18, color: AdminColors.muted)),
+        Tooltip(
+          message: 'Logout',
+          child: shad.IconButton.ghost(
+            onPressed: onLogout,
+            icon: const AdminIcon(HugeIcons.strokeRoundedLogout01, size: 18),
+          ),
+        ),
       ],
     ]),
   );
