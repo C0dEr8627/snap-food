@@ -5,15 +5,15 @@ const apiBaseUrl = String.fromEnvironment('API_BASE_URL');
 void main() => runApp(const SnapFooddAdminApp());
 
 abstract final class AdminColors {
-  static const ink = Color(0xFF191512);
-  static const muted = Color(0xFF756E67);
-  static const canvas = Color(0xFFF7F4EF);
+  static const ink = Color(0xFF201B17);
+  static const muted = Color(0xFF4E4634);
+  static const canvas = Color(0xFFFFF8F5);
   static const surface = Colors.white;
-  static const line = Color(0xFFE8E1D9);
-  static const yellow = Color(0xFFF2C94C);
-  static const yellowDark = Color(0xFF9A7200);
-  static const red = Color(0xFFCF3D27);
-  static const redSoft = Color(0xFFFCE9E4);
+  static const line = Color(0xFFD1C5AE);
+  static const yellow = Color(0xFFE4B935);
+  static const yellowDark = Color(0xFF755B00);
+  static const red = Color(0xFFD54126);
+  static const redSoft = Color(0xFFFBE3DC);
   static const green = Color(0xFF2D7A4B);
   static const greenSoft = Color(0xFFE7F5EC);
   static const blue = Color(0xFF3867D6);
@@ -34,8 +34,8 @@ class SnapFooddAdminApp extends StatelessWidget {
       colorScheme: ColorScheme.fromSeed(seedColor: AdminColors.yellowDark),
       fontFamily: 'Plus Jakarta Sans',
       textTheme: const TextTheme(
-        headlineLarge: TextStyle(fontSize: 30, fontWeight: FontWeight.w900, color: AdminColors.ink, letterSpacing: -.7),
-        headlineSmall: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AdminColors.ink),
+        headlineLarge: TextStyle(fontSize: 40, height: 1.2, fontWeight: FontWeight.w800, color: AdminColors.ink, letterSpacing: -.8),
+        headlineSmall: TextStyle(fontSize: 26, height: 1.25, fontWeight: FontWeight.w800, color: AdminColors.ink),
         titleLarge: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AdminColors.ink),
         titleMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AdminColors.ink),
         bodyMedium: TextStyle(fontSize: 13, color: AdminColors.ink, height: 1.45),
@@ -45,7 +45,7 @@ class SnapFooddAdminApp extends StatelessWidget {
         elevation: 0,
         color: AdminColors.surface,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18), side: const BorderSide(color: AdminColors.line)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: AdminColors.line)),
       ),
     ),
     home: const AdminShell(),
@@ -98,14 +98,14 @@ class _AdminShellState extends State<AdminShell> {
         child: _Sidebar(selected: section, onSelect: _select, compact: true),
       ),
       body: Row(children: [
-        if (desktop) SizedBox(width: 264, child: _Sidebar(selected: section, onSelect: _select)),
+        if (desktop) SizedBox(width: 248, child: _Sidebar(selected: section, onSelect: _select)),
         Expanded(child: Column(children: [
           _Header(desktop: desktop),
           Expanded(child: LayoutBuilder(builder: (context, constraints) => SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(desktop ? 38 : 18, 28, desktop ? 38 : 18, 36),
+            padding: EdgeInsets.fromLTRB(desktop ? 24 : 16, 24, desktop ? 24 : 16, 32),
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1420),
+                constraints: const BoxConstraints(maxWidth: 1200),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   if (!desktop) Padding(
                     padding: const EdgeInsets.only(bottom: 18),
@@ -222,7 +222,7 @@ class _Header extends StatelessWidget {
   final bool desktop;
   @override
   Widget build(BuildContext context) => Container(
-    height: 74,
+    height: 72,
     padding: EdgeInsets.symmetric(horizontal: desktop ? 38 : 18),
     decoration: const BoxDecoration(color: Colors.white, border: Border(bottom: BorderSide(color: AdminColors.line))),
     child: Row(children: [
@@ -271,33 +271,157 @@ void _notice(BuildContext context, String message) => ScaffoldMessenger.of(conte
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
+
   @override
-  Widget build(BuildContext context) => Column(children: [
-    LayoutBuilder(builder: (context, c) {
-      final n = c.maxWidth >= 1000 ? 4 : c.maxWidth >= 650 ? 2 : 1;
-      return GridView.count(
-        crossAxisCount: n, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
-        crossAxisSpacing: 14, mainAxisSpacing: 14, childAspectRatio: n == 1 ? 3.2 : n == 2 ? 1.8 : 1.55,
-        children: const [
-          _Kpi(title: 'Orders today', value: '128', delta: '+12.8%', icon: Icons.receipt_long_rounded, tone: AdminColors.amberSoft),
-          _Kpi(title: 'Gross sales', value: '₹48,290', delta: '+8.2%', icon: Icons.payments_outlined, tone: AdminColors.greenSoft),
-          _Kpi(title: 'Active deliveries', value: '18', delta: 'Live', icon: Icons.delivery_dining_rounded, tone: AdminColors.redSoft),
-          _Kpi(title: 'Needs attention', value: '07', delta: 'Review', icon: Icons.notifications_active_outlined, tone: AdminColors.blueSoft),
-        ],
-      );
-    }),
-    const SizedBox(height: 18),
-    LayoutBuilder(builder: (context, c) {
-      final stacked = c.maxWidth < 850;
-      final sales = const _SalesCard();
-      final ops = const _OpsCard();
-      return stacked ? Column(children: [sales, const SizedBox(height: 18), ops]) : Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(flex: 3, child: sales), const SizedBox(width: 18), Expanded(flex: 2, child: ops)]);
-    }),
-    const SizedBox(height: 18),
-    const _CardTitle(title: 'Recent orders', action: 'View all'),
-    const SizedBox(height: 11),
-    const _OrdersTable(),
-  ]);
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Card(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 16),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: AdminColors.amberSoft,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.wb_sunny_outlined,
+                  size: 20,
+                  color: AdminColors.yellowDark,
+                ),
+              ),
+              const SizedBox(width: 13),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Today at a glance',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: AdminColors.ink,
+                      ),
+                    ),
+                    SizedBox(height: 3),
+                    Text(
+                      'Live operational snapshot · preview data',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: AdminColors.muted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AdminColors.canvas,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AdminColors.line),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today_outlined,
+                      size: 14,
+                      color: AdminColors.muted,
+                    ),
+                    SizedBox(width: 7),
+                    Text(
+                      '30 Sep 2026',
+                      style: TextStyle(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w700,
+                        color: AdminColors.ink,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      const SizedBox(height: 16),
+      LayoutBuilder(
+        builder: (context, c) {
+          final n = c.maxWidth >= 1000 ? 4 : c.maxWidth >= 650 ? 2 : 1;
+          return GridView.count(
+            crossAxisCount: n,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: n == 1 ? 3.3 : n == 2 ? 1.9 : 1.5,
+            children: const [
+              _Kpi(
+                title: 'Orders today',
+                value: '128',
+                delta: '+12.8%',
+                icon: Icons.receipt_long_rounded,
+                tone: AdminColors.amberSoft,
+              ),
+              _Kpi(
+                title: 'Gross sales',
+                value: '₹48,290',
+                delta: '+8.2%',
+                icon: Icons.payments_outlined,
+                tone: AdminColors.greenSoft,
+              ),
+              _Kpi(
+                title: 'Active deliveries',
+                value: '18',
+                delta: 'Live',
+                icon: Icons.delivery_dining_rounded,
+                tone: AdminColors.redSoft,
+              ),
+              _Kpi(
+                title: 'Needs attention',
+                value: '07',
+                delta: 'Review',
+                icon: Icons.notifications_active_outlined,
+                tone: AdminColors.blueSoft,
+              ),
+            ],
+          );
+        },
+      ),
+      const SizedBox(height: 16),
+      LayoutBuilder(
+        builder: (context, c) {
+          final stacked = c.maxWidth < 820;
+          const sales = _SalesCard();
+          const ops = _OpsCard();
+          return stacked
+              ? const Column(
+                  children: [
+                    sales,
+                    SizedBox(height: 16),
+                    ops,
+                  ],
+                )
+              : const Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(flex: 3, child: sales),
+                    SizedBox(width: 16),
+                    Expanded(flex: 2, child: ops),
+                  ],
+                );
+        },
+      ),
+      const SizedBox(height: 18),
+      const _CardTitle(title: 'Recent orders', action: 'View all'),
+      const SizedBox(height: 10),
+      const _OrdersTable(),
+    ],
+  );
 }
 
 class _Kpi extends StatelessWidget {
@@ -331,7 +455,7 @@ class _SalesCard extends StatelessWidget {
       Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7), decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(9)), child: const Text('This week', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700))),
     ]),
     const SizedBox(height: 25),
-    SizedBox(height: 170, child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: const [
+    SizedBox(height: 182, child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: const [
       _ChartBar(day: 'MON', h: .42), _ChartBar(day: 'TUE', h: .60), _ChartBar(day: 'WED', h: .51), _ChartBar(day: 'THU', h: .78), _ChartBar(day: 'FRI', h: .65), _ChartBar(day: 'SAT', h: .92, active: true), _ChartBar(day: 'SUN', h: .73),
     ])),
   ])));
