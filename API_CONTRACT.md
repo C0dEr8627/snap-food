@@ -21,15 +21,15 @@ Error shape (API requests return JSON):
 Common HTTP/code mapping: 401 `UNAUTHORIZED` (invalid Google credential uses `INVALID_GOOGLE_CREDENTIAL`); 403 `FORBIDDEN` (or the explicit `ACCOUNT_INACTIVE` response); 404 `NOT_FOUND`; 409 `CONFLICT` or `ORDER_STATE_CONFLICT`; 422 `VALIDATION_FAILED`; 429 `RATE_LIMITED`. Do not depend on framework exception text for UI copy. Validation errors map field names to arrays of messages. Some business errors such as invalid Google credentials and inactive accounts have dedicated codes.
 
 ## Auth
-`POST /auth/google` · `POST /auth/admin/password` · `POST /auth/admin/google` · `GET /me` · `POST /auth/logout`
+`POST /auth/google` · `POST /admin/auth/password` · `POST /admin/auth/google` · `GET /me` · `POST /auth/logout`
 
-Admin Flutter web authentication uses bearer tokens issued by the Laravel API. `POST /auth/admin/password` accepts `{ "email": "admin@example.com", "password": "..." }` and only authenticates active `ADMIN` users with a configured password. `POST /auth/admin/google` accepts `{ "credential": "<Google ID token>" }`, verifies the credential server-side, and only authenticates an active pre-provisioned `ADMIN` account. It does not auto-create customer accounts. Both admin login routes are rate-limited. The Flutter admin client stores only the returned application bearer token in browser storage and calls `GET /me` before rendering the dashboard.
+Admin Flutter web authentication uses bearer tokens issued by the Laravel API. `POST /admin/auth/password` accepts `{ "email": "admin@example.com", "password": "..." }` and only authenticates active `ADMIN` users with a configured password. `POST /admin/auth/google` accepts `{ "credential": "<Google ID token>" }`, verifies the credential server-side, and only authenticates an active pre-provisioned `ADMIN` account. It does not auto-create customer accounts. Both admin login routes are rate-limited. The Flutter admin client stores only the returned application bearer token in browser storage and calls `GET /me` before rendering the dashboard.
 
 ## Catalogue
-`GET /categories` · `GET /categories/{category}` · `GET /products` · `GET /products/{product}`. ADMIN catalogue writes use `POST /categories`, `PATCH /categories/{category}`, `DELETE /categories/{category}`, `POST /products`, `PATCH /products/{product}` and `DELETE /products/{product}`. Delete operations soft-deactivate records; product deactivation also sets `is_available=false`. Catalogue list responses use `data` containing a Laravel paginator; search uses `search`, product category filtering uses `category_id`, and `per_page` is bounded to 1–100.
+Consumer catalogue reads use `GET /consumer/categories`, `GET /consumer/categories/{category}`, `GET /consumer/products` and `GET /consumer/products/{product}`. ADMIN catalogue reads/writes use the corresponding `/admin/categories` and `/admin/products` paths. Delete operations soft-deactivate records; product deactivation also sets `is_available=false`. Catalogue list responses use `data` containing a Laravel paginator; search uses `search`, product category filtering uses `category_id`, and `per_page` is bounded to 1–100.
 
 ## Orders
-`POST /orders` · `GET /orders` · `GET /orders/{order}` · `GET /orders/{order}/tracking` · `GET /orders/{order}/invoice`.
+Consumer orders use `POST /consumer/orders` · `GET /consumer/orders` · `GET /consumer/orders/{order}` · `GET /consumer/orders/{order}/tracking` · `GET /consumer/orders/{order}/invoice`.
 ADMIN operations include `PATCH /admin/orders/{order}/status`, `POST /admin/orders/{order}/assignment`, `GET /admin/orders/{order}/tracking` and `GET /admin/orders/{order}/invoice`.
 Checkout sends product IDs, quantities and address data; Laravel resolves prices, availability, fees and totals.
 
@@ -71,13 +71,13 @@ DELIVERY_PARTNER only. The authenticated partner may advance only its own assign
 ### POST /api/v1/delivery/assignments/{assignment}/location
 DELIVERY_PARTNER only. The authenticated approved/active partner may submit latitude/longitude, optional accuracy and an ISO-8601-compatible recorded timestamp for its own assignment while the order is PICKED_UP or OUT_FOR_DELIVERY. Coordinates are bounded to valid ranges and materially future timestamps are rejected with HTTP 409. Each accepted point is persisted as location history.
 
-### GET /api/v1/orders/{order}/tracking
+### GET /api/v1/consumer/orders/{order}/tracking
 CUSTOMER owner only. Returns the active order status, latest recorded delivery location and is_stale flag. A location older than 120 seconds is considered stale; missing location is also reported as stale. ADMIN API users may use the corresponding /api/v1/admin/orders/{order}/tracking route.
 
 
 ## Invoices
 
-### GET /api/v1/orders/{order}/invoice
+### GET /api/v1/consumer/orders/{order}/invoice
 CUSTOMER owner only. Generates the invoice on first read for a DELIVERED order and returns the immutable financial/address/item snapshots captured at issuance. Repeated reads return the same invoice and invoice number.
 
 ### GET /api/v1/admin/orders/{order}/invoice
@@ -124,7 +124,7 @@ Send subsequent API calls with `Authorization: Bearer <token>`. The backend vali
 ### Catalogue reads
 
 ```http
-GET /api/v1/products?search=wrap&category_id=3&per_page=20
+GET /api/v1/consumer/products?search=wrap&category_id=3&per_page=20
 Authorization: Bearer <token>
 Accept: application/json
 ```
@@ -161,7 +161,7 @@ The nested `data.data` is the record list for paginated endpoints. Customer read
 ### COD checkout
 
 ```http
-POST /api/v1/orders
+POST /api/v1/consumer/orders
 Authorization: Bearer <customer-token>
 Content-Type: application/json
 Accept: application/json
@@ -192,10 +192,10 @@ Success (201): `{ "data": { "id": 1001, "customer_id": 42, "status": "PLACED", "
 
 ### Order and tracking reads
 
-- `GET /orders` — current customer's paginated orders, `per_page` defaults to 20 and is clamped to 1–100.
-- `GET /orders/{order}` — order plus items and status history; owner only.
-- `GET /orders/{order}/tracking` — current tracking status and latest location for an active assigned trip; customer owner only. Missing/old location is marked stale.
-- `GET /orders/{order}/invoice` — invoice for delivered orders; customer owner only.
+- `GET /consumer/orders` — current customer's paginated orders, `per_page` defaults to 20 and is clamped to 1–100.
+- `GET /consumer/orders/{order}` — order plus items and status history; owner only.
+- `GET /consumer/orders/{order}/tracking` — current tracking status and latest location for an active assigned trip; customer owner only. Missing/old location is marked stale.
+- `GET /consumer/orders/{order}/invoice` — invoice for delivered orders; customer owner only.
 - `GET /admin/orders/{order}/tracking` and `GET /admin/orders/{order}/invoice` — ADMIN-only API routes.
 
 ### Delivery assignment and progression
@@ -253,3 +253,7 @@ Approval is updated with `PATCH /admin/delivery-partners/{deliveryPartner}/appro
 ## Flutter integration note — 2026-09-30
 
 The Flutter implementation on `developer-2-flutter` consumes the backend-authoritative routes and response envelopes documented above. The backend contract in this file takes precedence over older placeholder delivery routes in the historical Flutter branch.
+
+## API surface separation
+
+The contract is intentionally partitioned by client domain: Consumer routes live under `/consumer/*`, Delivery Partner routes under `/delivery/*`, and Admin routes under `/admin/*`. Shared authentication/session endpoints remain under `/auth/*`. This is API and authorization separation only; business services, models and the database remain shared so the Admin surface can later be deployed behind a separate host or load-balancing target without duplicating domain logic.
