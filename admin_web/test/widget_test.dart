@@ -8,9 +8,9 @@ void main() {
 
     expect(find.text('Snap Foodd'), findsOneWidget);
     expect(find.text('Dashboard'), findsWidgets);
-    expect(find.text('Orders today'), findsOneWidget);
-    expect(find.text('Sales overview'), findsOneWidget);
-    expect(find.text('Preview mode'), findsOneWidget);
+    expect(find.text("TODAY'S REVENUE"), findsOneWidget);
+    expect(find.text('Weekly Sales & Dispatch Volume'), findsOneWidget);
+    expect(find.text('Preview Data Mode'), findsOneWidget);
 
     await tester.tap(find.text('Orders').first);
     await tester.pumpAndSettle();
