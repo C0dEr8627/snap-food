@@ -45,3 +45,7 @@ Laravel owns product price, availability, delivery fee, order total, payment sta
 3. Deploy admin_web Flutter Web to cPanel and verify API/CORS/auth/admin workflows.
 4. Prepare and deploy consumer + delivery-partner Flutter Web.
 5. Run cross-client end-to-end and security verification.
+
+## API surface separation
+
+The API is partitioned by client domain: `/api/v1/consumer/*` for consumers, `/api/v1/delivery/*` for delivery partners, and `/api/v1/admin/*` for Admin operations and Admin authentication. Shared session endpoints remain under `/api/v1/auth/*`. This is contract and authorization separation while Laravel business services, models and MySQL remain shared, keeping the Admin surface ready to move behind a separate host or load-balancing target later without duplicating domain logic.
