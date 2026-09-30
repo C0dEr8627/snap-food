@@ -4,10 +4,10 @@ on:
   push:
     branches: [frontend]
     paths-ignore:
-      - 'android/app/src/main/res/mipmap-*/**'
-      - 'android/app/src/main/res/drawable/ic_launcher_foreground.png'
-      - 'android/app/src/main/res/values/icon_background.xml'
-      - 'android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml'
+      - 'mobile_app/android/app/src/main/res/mipmap-*/**'
+      - 'mobile_app/android/app/src/main/res/drawable/ic_launcher_foreground.png'
+      - 'mobile_app/android/app/src/main/res/values/icon_background.xml'
+      - 'mobile_app/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml'
 
 permissions:
   contents: write
@@ -27,7 +27,7 @@ jobs:
       - name: Generate launcher PNGs from official SVG
         run: |
           set -euo pipefail
-          src="assets/images/customer/logo.svg"
+          src="mobile_app/assets/images/customer/logo.svg"
           declare -A sizes=(
             [mdpi]=48
             [hdpi]=72
@@ -37,28 +37,28 @@ jobs:
           )
           for density in "${!sizes[@]}"; do
             size="${sizes[$density]}"
-            mkdir -p "android/app/src/main/res/mipmap-${density}"
+            mkdir -p "mobile_app/android/app/src/main/res/mipmap-${density}"
             tmp="/tmp/logo-${density}.png"
             rsvg-convert -w 1599 -h 1066 -o "$tmp" "$src"
-            convert "$tmp" -background none -thumbnail "${size}x${size}" -gravity center -extent "${size}x${size}" "android/app/src/main/res/mipmap-${density}/ic_launcher.png"
+            convert "$tmp" -background none -thumbnail "${size}x${size}" -gravity center -extent "${size}x${size}" "mobile_app/android/app/src/main/res/mipmap-${density}/ic_launcher.png"
           done
 
-          mkdir -p android/app/src/main/res/drawable
+          mkdir -p mobile_app/android/app/src/main/res/drawable
           rsvg-convert -w 1599 -h 1066 -o /tmp/logo-foreground.png "$src"
-          convert /tmp/logo-foreground.png -background none -thumbnail 432x432 -gravity center -extent 432x432 android/app/src/main/res/drawable/ic_launcher_foreground.png
+          convert /tmp/logo-foreground.png -background none -thumbnail 432x432 -gravity center -extent 432x432 mobile_app/android/app/src/main/res/drawable/ic_launcher_foreground.png
 
       - name: Add adaptive launcher icon resources
         run: |
           set -euo pipefail
-          mkdir -p android/app/src/main/res/mipmap-anydpi-v26 android/app/src/main/res/values
-          cat > android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml <<'XML'
+          mkdir -p mobile_app/android/app/src/main/res/mipmap-anydpi-v26 mobile_app/android/app/src/main/res/values
+          cat > mobile_app/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml <<'XML'
           <?xml version="1.0" encoding="utf-8"?>
           <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
               <background android:drawable="@color/icon_background" />
               <foreground android:drawable="@drawable/ic_launcher_foreground" />
           </adaptive-icon>
           XML
-          cat > android/app/src/main/res/values/icon_background.xml <<'XML'
+          cat > mobile_app/android/app/src/main/res/values/icon_background.xml <<'XML'
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
               <color name="icon_background">#FFF8F5</color>
@@ -69,7 +69,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add android/app/src/main/res
+          git add mobile_app/android/app/src/main/res
           if git diff --cached --quiet; then
             echo "No launcher icon changes to commit."
             exit 0
