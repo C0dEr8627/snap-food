@@ -67,7 +67,7 @@ class AdminAuthService {
     required String password,
   }) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl/auth/admin/password'),
+      Uri.parse('$_baseUrl/admin/auth/password'),
       headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
       body: jsonEncode({'email': email.trim(), 'password': password}),
     );
@@ -77,7 +77,7 @@ class AdminAuthService {
 
   Future<AdminUser> loginWithGoogle(String credential) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl/auth/admin/google'),
+      Uri.parse('$_baseUrl/admin/auth/google'),
       headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
       body: jsonEncode({'credential': credential}),
     );
