@@ -444,7 +444,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
     final visible = widget.categories.where((c) => c.active).toList();
     final inactive = widget.categories.where((c) => !c.active).toList();
     return Column(mainAxisSize: MainAxisSize.min, children: [
-      Align(alignment: Alignment.centerRight, child: FilledButton.icon(onPressed: _busyId != null ? null : () => _openEditor(), icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 16), label: const Text('Add Category'))),
+      Align(alignment: Alignment.centerRight, child: shad.PrimaryButton(onPressed: _busyId != null ? null : () => _openEditor(), leading: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 16), child: const Text('Add Category'))),
       const SizedBox(height: 12),
       if (visible.isEmpty) const Padding(padding: EdgeInsets.all(18), child: Text('No active categories yet.')) else ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 360),
@@ -548,7 +548,7 @@ class _CatalogueList extends StatelessWidget {
         const SizedBox(height: 12),
         SizedBox(
           height: 44,
-          child: TextField(controller: search, onSubmitted: (_) => onSearch(), decoration: _inputDecoration('Search items...', HugeIcons.strokeRoundedSearch01)),
+          child: shad.TextField(controller: search, onSubmitted: (_) => onSearch(), placeholder: const Text('Search items...'), leading: const AdminIcon(HugeIcons.strokeRoundedSearch01, size: 17)),
         ),
         const SizedBox(height: 16),
         if (products.isEmpty && !loading)
@@ -1098,7 +1098,7 @@ Widget _field(TextEditingController c, String hint, {String? label, int? maxLeng
 
 Widget _dropdownField(String label, List<DropdownMenuItem<int?>> items, int? value, ValueChanged<int?> onChanged) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
   Padding(padding: const EdgeInsets.only(bottom: 5), child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted))),
-  Container(height: 43, padding: const EdgeInsets.symmetric(horizontal: 10), decoration: BoxDecoration(color: AdminColors.peach, borderRadius: BorderRadius.circular(9), border: Border.all(color: AdminColors.line)), child: DropdownButtonHideUnderline(child: DropdownButton<int?>(value: items.any((i) => i.value == value) ? value : (items.isEmpty ? null : items.first.value), isExpanded: true, style: const TextStyle(fontSize: 11, color: AdminColors.ink, fontWeight: FontWeight.w700), items: items, onChanged: onChanged))),
+  SizedBox(height: 43, child: shad.Select<int?>(value: items.any((i) => i.value == value) ? value : (items.isEmpty ? null : items.first.value), onChanged: onChanged, placeholder: const Text('Select category'), itemBuilder: (context, item) => Text(item?.toString() ?? 'All categories'))),
 ]);
 
 InputDecoration _inputDecoration(String hint, [AdminIconData? icon]) => InputDecoration(
