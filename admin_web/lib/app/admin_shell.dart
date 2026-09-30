@@ -36,7 +36,7 @@ class SnapFooddAdminApp extends StatelessWidget {
     theme: ThemeData(
       useMaterial3: true,
       scaffoldBackgroundColor: AdminColors.canvas,
-      colorScheme: ColorScheme.fromSeed(seedColor: AdminColors.yellowDark),
+      colorScheme: ColorScheme.fromSeed(seedColor: AdminColors.yellow),
       fontFamily: 'Plus Jakarta Sans',
       textTheme: const TextTheme(
         headlineLarge: TextStyle(fontSize: 40, height: 1.2, fontWeight: FontWeight.w800, color: AdminColors.ink, letterSpacing: -.8),
