@@ -93,7 +93,8 @@ class _OrdersPageState extends State<OrdersPage>{
   final api=const _AdminOrderApi(),search=TextEditingController();
   final orders=< _AdminOrder>[];
   String filter='ALL';String? selectedId;int page=1;bool busy=false;bool loading=true;String? loadError;
-  @override void initState(){super.initState();search.addListener(()=>setState(()=>page=1));_loadOrders();}
+  @override void initState(){super.initState();search.text=widget.searchQuery;search.addListener(()=>setState(()=>page=1));_loadOrders();}
+  @override void didUpdateWidget(covariant OrdersPage oldWidget){super.didUpdateWidget(oldWidget);if(oldWidget.searchQuery!=widget.searchQuery && search.text!=widget.searchQuery){search.text=widget.searchQuery;_loadOrders();}}
   Future<void> _loadOrders() async {
     setState(()=>loading=true);
     try {
