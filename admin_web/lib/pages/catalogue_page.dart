@@ -443,31 +443,13 @@ class _CatalogueHeader extends StatelessWidget {
   final VoidCallback onCategories;
 
   @override
-  Widget build(BuildContext context) => Row(
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      const Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Catalogue',
-              style: TextStyle(fontSize: 29, fontWeight: FontWeight.w900, letterSpacing: -.5),
-            ),
-            SizedBox(height: 4),
-            Text(
-              'Manage categories and menu items.',
-              style: TextStyle(fontSize: 13, color: AdminColors.muted),
-            ),
-          ],
-        ),
-      ),
-      OutlinedButton.icon(
-        onPressed: onCategories,
-        icon: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
-        label: const Text('Manage Categories'),
-      ),
-    ],
+  Widget build(BuildContext context) => Align(
+    alignment: Alignment.centerRight,
+    child: OutlinedButton.icon(
+      onPressed: onCategories,
+      icon: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
+      label: const Text('Manage Categories'),
+    ),
   );
 }
 
