@@ -382,7 +382,7 @@ class _Header extends StatelessWidget {
                           searchController.clear();
                           onSearch();
                         },
-                        icon: const AdminIcon(HugeIcons.strokeRoundedCancel01, size: 17, color: AdminColors.muted),
+                        icon: const Icon(Icons.clear, size: 17, color: AdminColors.muted),
                       ),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
