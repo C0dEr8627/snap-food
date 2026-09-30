@@ -20,7 +20,7 @@ extension on AdminSection {
   String get subtitle => switch (this) {
     AdminSection.dashboard => 'A clear view of today’s business and operations.',
     AdminSection.orders => 'Track every order from checkout to delivery.',
-    AdminSection.catalogue => 'Manage menu items, categories and availability.',
+    AdminSection.catalogue => 'Manage categories and menu items.',
     AdminSection.partners => 'Review delivery partners and KYC status.',
     AdminSection.invoices => 'Reconcile invoice snapshots and review billing records.',
   };
