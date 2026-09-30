@@ -137,7 +137,7 @@ class _OrdersPageState extends State<OrdersPage>{
     setState(()=>busy=true);try{final ref=await api.invoice(order.id);if(mounted)setState(()=>busy=false);if(mounted)_notice(context,ref==null?'Invoice endpoint exists; configure API_TOKEN for a real request.':'Invoice reference: '+ref);}catch(e){if(mounted){setState(()=>busy=false);_notice(context,e.toString());}}
   }
   Future<void> cancel(_AdminOrder order)async{
-    final ok=await shad.showOverlay<bool>(context, shad.DialogConfiguration<bool>(), builder:(c)=>shad.AlertDialog(
+    final ok=await shad.showOverlay<bool>(context, shad.DialogConfiguration(), builder:(c)=>shad.AlertDialog(
       title: const Text('Cancel order?'),
       content: Text('Confirm cancellation for ' + order.id + '.'),
       actions: [
