@@ -86,8 +86,8 @@ class _InvoicesPageState extends State<InvoicesPage> {
           const Text('Reconcile delivered orders, review billing snapshots, and manage invoice records.', style: TextStyle(fontSize: 12, height: 1.5, color: AdminColors.muted)),
         ])),
         Wrap(spacing: 8, children: [
-          OutlinedButton.icon(onPressed: _exporting ? null : _exportPage, icon: _exporting ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2)) : const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 17), label: const Text('Export current page CSV')),
-          FilledButton.icon(onPressed: () => _notice(context, 'GSTR-1 export is not available in the current backend API.', error: true), style: FilledButton.styleFrom(backgroundColor: AdminColors.yellow, foregroundColor: AdminColors.ink), icon: const AdminIcon(HugeIcons.strokeRoundedInvoice01, size: 17), label: const Text('Export GSTR-1')),
+          shad.OutlineButton(onPressed: _exporting ? null : _exportPage, leading: _exporting ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2)) : const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 17), child: const Text('Export current page CSV')),
+          shad.PrimaryButton(onPressed: () => _notice(context, 'GSTR-1 export is not available in the current backend API.', error: true), leading: const AdminIcon(HugeIcons.strokeRoundedInvoice01, size: 17), child: const Text('Export GSTR-1')),
         ]),
       ]),
       const SizedBox(height: 20),
@@ -108,9 +108,9 @@ class _InvoicesPageState extends State<InvoicesPage> {
               decoration: InputDecoration(prefixIcon: const AdminIcon(HugeIcons.strokeRoundedSearch01, size: 19), hintText: 'Search invoice, order, customer, email…', isDense: true, filled: true, fillColor: AdminColors.canvas,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                 suffixIcon: IconButton(tooltip: 'Search invoices', onPressed: () => _load(page: 1), icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 18))))),
-            OutlinedButton.icon(onPressed: () => _pickDate(true), icon: const AdminIcon(HugeIcons.strokeRoundedCalendar03, size: 15), label: Text(_from == null ? 'From date' : _date(_from!))),
-            OutlinedButton.icon(onPressed: () => _pickDate(false), icon: const AdminIcon(HugeIcons.strokeRoundedCalendar03, size: 15), label: Text(_to == null ? 'To date' : _date(_to!))),
-            FilledButton(onPressed: () => _load(page: 1), style: FilledButton.styleFrom(backgroundColor: AdminColors.yellow, foregroundColor: AdminColors.ink), child: const Text('Apply')),
+            shad.OutlineButton(onPressed: () => _pickDate(true), leading: const AdminIcon(HugeIcons.strokeRoundedCalendar03, size: 15), child: Text(_from == null ? 'From date' : _date(_from!))),
+            shad.OutlineButton(onPressed: () => _pickDate(false), leading: const AdminIcon(HugeIcons.strokeRoundedCalendar03, size: 15), child: Text(_to == null ? 'To date' : _date(_to!))),
+            shad.PrimaryButton(onPressed: () => _load(page: 1), child: const Text('Apply')),
             TextButton(onPressed: _reset, child: const Text('Reset')),
           ]),
           const SizedBox(height: 12),
@@ -242,9 +242,9 @@ class _InvoiceLedgerCard extends StatelessWidget {
       Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), child: Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center, spacing: 12, runSpacing: 10, children: [
         Text('Displaying ' + (((page - 1) * 10) + 1).toString() + '–' + ((page - 1) * 10 + invoices.length).toString() + ' of ' + total.toString() + ' invoices', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
         Wrap(spacing: 5, children: [
-          OutlinedButton(onPressed: page > 1 ? () => onPage(page - 1) : null, child: const Text('Previous')),
+          shad.OutlineButton(onPressed: page > 1 ? () => onPage(page - 1) : null, child: const Text('Previous')),
           Container(padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9), decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(9)), child: Text(page.toString() + ' / ' + lastPage.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.yellowDark))),
-          OutlinedButton(onPressed: page < lastPage ? () => onPage(page + 1) : null, child: const Text('Next')),
+          shad.OutlineButton(onPressed: page < lastPage ? () => onPage(page + 1) : null, child: const Text('Next')),
         ]),
       ])),
     ]));
