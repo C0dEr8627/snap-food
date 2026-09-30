@@ -128,8 +128,8 @@ class _CataloguePageState extends State<CataloguePage> {
       _notice(context, 'Create a category before adding an item.', error: true);
       return;
     }
-    await shad.showOverlay<void>(context, shad.DialogConfiguration<void>(builder: (dialogContext) => shad.Dialog(
-        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+    await shad.showOverlay<void>(context, shad.DialogConfiguration(), builder: (dialogContext) => shad.AlertDialog(
+        title: Text(_creating ? 'Add Item' : 'Edit Item'),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 680, maxHeight: 760),
           child: SingleChildScrollView(
@@ -281,8 +281,8 @@ class _CataloguePageState extends State<CataloguePage> {
   }
 
   Future<void> _manageCategories() async {
-    await shad.showOverlay<void>(context, shad.DialogConfiguration<void>(builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, dialogSetState) => AlertDialog(
+    await shad.showOverlay<void>(context, shad.DialogConfiguration(), builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, dialogSetState) => shad.AlertDialog(
           title: const Text('Manage Categories'),
           content: SizedBox(
             width: 560,
@@ -402,14 +402,14 @@ class _CategoryManagerState extends State<_CategoryManager> {
 
   Future<void> _deleteCategory(_CatalogueCategory category) async {
     if (category.id == null) return;
-    final confirmed = await shad.showOverlay<bool>(context, shad.DialogConfiguration<bool>(builder: (c) => shad.AlertDialog(
+    final confirmed = await shad.showOverlay<bool>(context, shad.DialogConfiguration(), builder: (c) => shad.AlertDialog(
       title: const Text('Delete category permanently?'),
       content: Text(category.count > 0 ? 'This category has assigned products. Deactivate it instead or move the products first.' : 'This permanently removes the category. This cannot be undone.'),
       actions: [
         shad.OutlineButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
         if (category.count == 0) shad.DestructiveButton(onPressed: () => Navigator.pop(c, true), child: const Text('Delete Permanently')),
       ],
-    ))).future;
+    )).future;
     if (confirmed != true) return;
     setState(() => _busyId = category.id);
     try {
@@ -523,13 +523,11 @@ class _CategoryManagerState extends State<_CategoryManager> {
               ),
             ),
             shad.IconButton.ghost(
-              tooltip: 'Edit category',
               onPressed: inactive || busy ? null : () => _openEditor(c),
               icon: const AdminIcon(HugeIcons.strokeRoundedEdit02, size: 18),
             ),
             if (inactive)
               shad.IconButton.ghost(
-                tooltip: 'Activate category',
                 onPressed: busy ? null : () => _setCategoryActive(c, true),
                 icon: busy
                     ? const shad.CircularProgressIndicator(size: 18, strokeWidth: 2)
@@ -537,7 +535,6 @@ class _CategoryManagerState extends State<_CategoryManager> {
               )
             else
               shad.IconButton.ghost(
-                tooltip: 'Deactivate category',
                 onPressed: busy ? null : () => _setCategoryActive(c, false),
                 icon: busy
                     ? const shad.CircularProgressIndicator(size: 18, strokeWidth: 2)
@@ -1171,7 +1168,23 @@ Widget _field(TextEditingController c, String hint, {String? label, int? maxLeng
 
 Widget _dropdownField(String label, List<DropdownMenuItem<int?>> items, int? value, ValueChanged<int?> onChanged) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
   Padding(padding: const EdgeInsets.only(bottom: 5), child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted))),
-  SizedBox(height: 43, child: shad.Select<int?>(value: items.any((i) => i.value == value) ? value : (items.isEmpty ? null : items.first.value), onChanged: onChanged, placeholder: const Text('Select category'), itemBuilder: (context, item) { final match = items.where((entry) => entry.value == item).toList(); return match.isEmpty ? const Text('Select category') : match.first.child; })),
+  SizedBox(height: 43, child: shad.Select<int?>(
+    value: items.any((i) => i.value == value) ? value : (items.isEmpty ? null : items.first.value),
+    onChanged: onChanged,
+    placeholder: const Text('Select category'),
+    popup: (context) => shad.SelectPopup(
+      items: shad.SelectItemList(
+        children: items.map((entry) => shad.SelectItem(
+          value: entry.value,
+          builder: (_) => entry.child,
+        )).toList(),
+      ),
+    ),
+    itemBuilder: (context, item) {
+      final match = items.where((entry) => entry.value == item).toList();
+      return match.isEmpty ? const Text('Select category') : match.first.child;
+    },
+  )),
 ]);
 
 
