@@ -1,9 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:snap_foodd_admin_web/main.dart';
 
 void main() {
   testWidgets('renders branded admin dashboard and navigation', (tester) async {
-    await tester.setViewportSize(const Size(1440, 1000));
+    tester.view.physicalSize = const Size(1440, 1000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
     await tester.pumpWidget(const SnapFooddAdminApp());
 
     expect(find.text('Snap Foodd'), findsOneWidget);
