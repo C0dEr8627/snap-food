@@ -107,7 +107,7 @@ class _AdminShellState extends State<AdminShell> {
                     AdminSection.invoices => const InvoicesPage(),
                   },
                   const SizedBox(height: 28),
-                  const Center(child: Text('Snap Foodd Admin  •  Preview data  •  Laravel API integration pending', style: TextStyle(fontSize: 10, color: AdminColors.muted))),
+                  const Center(child: Text('Snap Foodd Admin  •  Preview data • Laravel API v1', style: TextStyle(fontSize: 10, color: AdminColors.muted))),
                 ]),
               ),
             ),
