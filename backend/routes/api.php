@@ -20,6 +20,14 @@ Route::post('/auth/google', [AuthController::class, 'google'])
     ->middleware('throttle:auth-google')
     ->name('api.v1.auth.google');
 
+Route::post('/auth/admin/password', [AuthController::class, 'adminPassword'])
+    ->middleware('throttle:admin-login')
+    ->name('api.v1.auth.admin.password');
+
+Route::post('/auth/admin/google', [AuthController::class, 'adminGoogle'])
+    ->middleware('throttle:admin-login')
+    ->name('api.v1.auth.admin.google');
+
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/me', [AuthController::class, 'me'])->name('api.v1.me');
     Route::post('/auth/logout', [AuthController::class, 'logout'])->name('api.v1.auth.logout');
