@@ -644,3 +644,6 @@ class _OrdersTable extends StatelessWidget {
       ),
 
 }
+    ),
+  );
+}
