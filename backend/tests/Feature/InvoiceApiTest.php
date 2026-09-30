@@ -38,7 +38,7 @@ class InvoiceApiTest extends TestCase
 
         Sanctum::actingAs($customer);
 
-        $response = $this->getJson("/api/v1/orders/{$order->id}/invoice");
+        $response = $this->getJson("/api/v1/consumer/orders/{$order->id}/invoice");
 
         $response->assertOk()
             ->assertJsonPath('data.invoice_number', sprintf('INV-%s-%08d', now()->format('Y'), $order->id))
@@ -64,7 +64,7 @@ class InvoiceApiTest extends TestCase
         ]);
         Sanctum::actingAs($customer);
 
-        $this->getJson("/api/v1/orders/{$order->id}/invoice")->assertOk();
+        $this->getJson("/api/v1/consumer/orders/{$order->id}/invoice")->assertOk();
 
         $order->update([
             'subtotal' => '999.00',
@@ -90,7 +90,7 @@ class InvoiceApiTest extends TestCase
         ]);
         Sanctum::actingAs($customer);
 
-        $this->getJson("/api/v1/orders/{$order->id}/invoice")
+        $this->getJson("/api/v1/consumer/orders/{$order->id}/invoice")
             ->assertStatus(409)
             ->assertJsonPath('code', 'CONFLICT');
     }
@@ -105,7 +105,7 @@ class InvoiceApiTest extends TestCase
         ]);
         Sanctum::actingAs($other);
 
-        $this->getJson("/api/v1/orders/{$order->id}/invoice")
+        $this->getJson("/api/v1/consumer/orders/{$order->id}/invoice")
             ->assertStatus(403)
             ->assertJsonPath('code', 'FORBIDDEN');
     }
@@ -120,7 +120,7 @@ class InvoiceApiTest extends TestCase
         ]);
         Sanctum::actingAs($partner);
 
-        $this->getJson("/api/v1/orders/{$order->id}/invoice")
+        $this->getJson("/api/v1/consumer/orders/{$order->id}/invoice")
             ->assertStatus(403)
             ->assertJsonPath('code', 'FORBIDDEN');
     }
@@ -149,8 +149,8 @@ class InvoiceApiTest extends TestCase
         ]);
         Sanctum::actingAs($customer);
 
-        $first = $this->getJson("/api/v1/orders/{$order->id}/invoice")->assertOk()->json('data');
-        $second = $this->getJson("/api/v1/orders/{$order->id}/invoice")->assertOk()->json('data');
+        $first = $this->getJson("/api/v1/consumer/orders/{$order->id}/invoice")->assertOk()->json('data');
+        $second = $this->getJson("/api/v1/consumer/orders/{$order->id}/invoice")->assertOk()->json('data');
 
         $this->assertSame($first['id'], $second['id']);
         $this->assertSame($first['invoice_number'], $second['invoice_number']);
