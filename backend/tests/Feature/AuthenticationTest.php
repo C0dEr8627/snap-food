@@ -260,7 +260,7 @@ class AuthenticationTest extends TestCase
             'is_active' => true,
         ]);
 
-        $this->postJson('/api/v1/auth/admin/password', [
+        $this->postJson('/api/v1/admin/auth/password', [
             'email' => $admin->email,
             'password' => 'CorrectHorseBatteryStaple!',
         ])->assertOk()
@@ -282,13 +282,13 @@ class AuthenticationTest extends TestCase
             'is_active' => true,
         ]);
 
-        $this->postJson('/api/v1/auth/admin/password', [
+        $this->postJson('/api/v1/admin/auth/password', [
             'email' => 'customer@example.test',
             'password' => 'CorrectHorseBatteryStaple!',
         ])->assertUnauthorized()
             ->assertJsonPath('code', 'INVALID_CREDENTIALS');
 
-        $this->postJson('/api/v1/auth/admin/password', [
+        $this->postJson('/api/v1/admin/auth/password', [
             'email' => 'customer@example.test',
             'password' => 'wrong-password',
         ])->assertUnauthorized()
@@ -318,7 +318,7 @@ class AuthenticationTest extends TestCase
                 ]);
         });
 
-        $this->postJson('/api/v1/auth/admin/google', [
+        $this->postJson('/api/v1/admin/auth/google', [
             'credential' => 'admin-google-token',
         ])->assertOk()
             ->assertJsonPath('data.user.id', $admin->id)
@@ -339,7 +339,7 @@ class AuthenticationTest extends TestCase
                 ]);
         });
 
-        $this->postJson('/api/v1/auth/admin/google', [
+        $this->postJson('/api/v1/admin/auth/google', [
             'credential' => 'google-token',
         ])->assertForbidden()
             ->assertJsonPath('code', 'ADMIN_ACCESS_REQUIRED');
