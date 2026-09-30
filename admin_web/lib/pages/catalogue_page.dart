@@ -615,13 +615,38 @@ class _CategoryTabs extends StatelessWidget {
     _cat('All Categories', selected == null, null, 0),
     ...categories.map((c) => _cat(c.name, selected == c.id, c.id, c.count)),
   ]));
-  Widget _cat(String label, bool active, int? id, int count) => Padding(padding: const EdgeInsets.only(right: 8), child: InkWell(
-    onTap: () => onSelect(id), borderRadius: BorderRadius.circular(11), child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-      decoration: BoxDecoration(color: active ? AdminColors.yellow : Colors.white, borderRadius: BorderRadius.circular(11), border: Border.all(color: active ? AdminColors.yellow : AdminColors.line)),
-      child: Row(children: [Text(label, style: TextStyle(fontSize: 11, fontWeight: active ? FontWeight.w900 : FontWeight.w700)), if (count > 0) ...[const SizedBox(width: 7), Text(count.toString(), style: const TextStyle(fontSize: 11, color: AdminColors.muted))]]),
+  Widget _cat(String label, bool active, int? id, int count) => Padding(
+    padding: const EdgeInsets.only(right: 8),
+    child: MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: InkWell(
+        onTap: () => onSelect(id),
+        borderRadius: BorderRadius.circular(11),
+        hoverColor: AdminColors.amberSoft,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+          decoration: BoxDecoration(
+            color: active ? AdminColors.yellow : Colors.white,
+            borderRadius: BorderRadius.circular(11),
+            border: Border.all(
+              color: active ? AdminColors.yellow : AdminColors.line,
+            ),
+          ),
+          child: Row(
+            children: [
+              Text(label, style: TextStyle(fontSize: 11, fontWeight: active ? FontWeight.w900 : FontWeight.w700)),
+              if (count > 0) ...[
+                const SizedBox(width: 7),
+                Text(count.toString(), style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
+              ],
+            ],
+          ),
+        ),
+      ),
     ),
-  ));
+  );
 }
 
 class _CatalogueList extends StatelessWidget {
@@ -715,9 +740,10 @@ class _ProductTile extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => InkWell(
+  Widget build(BuildContext context) => _HoverSurface(
     onTap: onTap,
     borderRadius: BorderRadius.circular(14),
+    selected: selected,
     child: Container(
       decoration: BoxDecoration(
         color: selected ? AdminColors.amberSoft : Colors.white,
@@ -758,6 +784,65 @@ class _ProductTile extends StatelessWidget {
   );
 }
 
+class _HoverSurface extends StatefulWidget {
+  const _HoverSurface({
+    required this.child,
+    required this.onTap,
+    required this.borderRadius,
+    this.selected = false,
+  });
+
+  final Widget child;
+  final VoidCallback onTap;
+  final BorderRadius borderRadius;
+  final bool selected;
+
+  @override
+  State<_HoverSurface> createState() => _HoverSurfaceState();
+}
+
+class _HoverSurfaceState extends State<_HoverSurface> {
+  bool _hovered = false;
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final lift = _hovered && !_pressed;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() {
+        _hovered = false;
+        _pressed = false;
+      }),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        onTapDown: (_) => setState(() => _pressed = true),
+        onTapUp: (_) => setState(() => _pressed = false),
+        onTapCancel: () => setState(() => _pressed = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          transform: Matrix4.translationValues(0, lift ? -2 : 0, 0),
+          decoration: BoxDecoration(
+            borderRadius: widget.borderRadius,
+            boxShadow: lift
+                ? const [
+                    BoxShadow(
+                      color: Color(0x12000000),
+                      blurRadius: 18,
+                      offset: Offset(0, 7),
+                    ),
+                  ]
+                : const [],
+          ),
+          child: widget.child,
+        ),
+      ),
+    );
+  }
+}
+
 class _ProductRow extends StatelessWidget {
   const _ProductRow({required this.product, required this.selected, required this.onTap});
   final _CatalogueProduct product;
@@ -765,10 +850,18 @@ class _ProductRow extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => InkWell(
-    onTap: onTap,
-    borderRadius: BorderRadius.circular(11),
-    child: Container(
+  Widget build(BuildContext context) => MouseRegion(
+    cursor: SystemMouseCursors.click,
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(11),
+      hoverColor: AdminColors.amberSoft,
+      splashColor: AdminColors.amberSoft,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        curve: Curves.easeOut,
+        transform: Matrix4.translationValues(selected ? 2 : 0, 0, 0),
+        child: Container(
       margin: const EdgeInsets.only(bottom: 5),
       padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 6),
       decoration: BoxDecoration(color: selected ? AdminColors.amberSoft : Colors.transparent, borderRadius: BorderRadius.circular(11)),
@@ -857,58 +950,12 @@ class _ProductEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(17),
-        border: Border.all(color: AdminColors.line),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x09000000),
-            blurRadius: 18,
-            offset: Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Form(
-          key: form,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'ITEM DETAILS',
-                          style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.w900,
-                            letterSpacing: 1.2,
-                            color: AdminColors.green,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          creating ? 'Add Item' : 'Edit Item',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  shad.IconButton.ghost(
-                    onPressed: onClose,
-                    icon: const AdminIcon(HugeIcons.strokeRoundedCancel01, size: 18),
-                  ),
-                ],
-              ),
-              const Divider(height: 22),
+    return Form(
+      key: form,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 2),
               _label('Dish Name *', 'Required'),
               _field(
                 name,
@@ -1027,13 +1074,7 @@ class _ProductEditor extends StatelessWidget {
                   child: imagePreview.isNotEmpty
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(12),
-                          child: Image.network(
-                            imagePreview,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Center(
-                              child: Text('Preview unavailable'),
-                            ),
-                          ),
+                          child: _imagePreviewWidget(imagePreview),
                         )
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -1129,15 +1170,39 @@ class _ProductEditor extends StatelessWidget {
                     ),
                   ),
                 ),
-            ],
-          ),
-        ),
+        ],
       ),
     );
   }
 }
 
-Widget _label(String text, String? trailing) => Padding(
+Widget _imagePreviewWidget(String source) {
+  if (source.startsWith('data:image/')) {
+    try {
+      final comma = source.indexOf(',');
+      if (comma > 0) {
+        final bytes = base64Decode(source.substring(comma + 1));
+        return Image.memory(
+          bytes,
+          fit: BoxFit.cover,
+          gaplessPlayback: true,
+          errorBuilder: (_, __, ___) => const Center(
+            child: Text('Preview unavailable'),
+          ),
+        );
+      }
+    } catch (_) {}
+  }
+  return Image.network(
+    source,
+    fit: BoxFit.cover,
+    errorBuilder: (_, __, ___) => const Center(
+      child: Text('Preview unavailable'),
+    ),
+  );
+}
+
+$marker
   padding: const EdgeInsets.only(bottom: 5),
   child: Row(
     children: [
