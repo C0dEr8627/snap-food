@@ -14,10 +14,10 @@ abstract final class AdminColors {
   static const greenSoft = Color(0xFFE7F5EC);
   static const blue = Color(0xFF3867D6);
   static const blueSoft = Color(0xFFEAF0FF);
-  static const amberSoft = Color(0xFFFFF4CE);
+  static const amberSoft = Color(0xFFFFF4CE);\n  static const peach = Color(0xFFF9EEE7);\n  static const warning = Color(0xFFF05A3C);
 }
 
-void _notice(BuildContext context, String message) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), behavior: SnackBarBehavior.floating));
+void _notice(BuildContext context, String message, {bool error = false}) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: error ? AdminColors.red : null, behavior: SnackBarBehavior.floating));
 
 class _Pill extends StatelessWidget {
   const _Pill(this.text);
