@@ -30,24 +30,32 @@ class SnapFooddAdminApp extends StatelessWidget {
   const SnapFooddAdminApp({super.key});
 
   @override
-  Widget build(BuildContext context) => shad.ShadcnApp(
+  Widget build(BuildContext context) => MaterialApp(
     title: 'Snap Foodd Admin',
     debugShowCheckedModeBanner: false,
-    theme: shad.ThemeData(
-      colorScheme: shad.LegacyColorSchemes.lightZinc(),
-      radius: 0.65,
+    theme: ThemeData(
+      colorScheme: ColorScheme.fromSeed(seedColor: AdminColors.yellowDark),
+      scaffoldBackgroundColor: AdminColors.canvas,
+      useMaterial3: true,
     ),
-    // ShadcnApp owns the nearest Localizations scope, so MaterialApp outside
-    // it cannot provide MaterialLocalizations to Material TextField/Scaffold.
-    // Add the Material delegates inside that scope for mixed Material/shad UI.
-    home: Localizations(
-      locale: const Locale('en'),
-      delegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      child: const AdminAuthGate(),
+    home: shad.ShadcnApp(
+      title: 'Snap Foodd Admin',
+      debugShowCheckedModeBanner: false,
+      theme: shad.ThemeData(
+        colorScheme: shad.LegacyColorSchemes.lightZinc(),
+        radius: 0.65,
+      ),
+      // ShadcnApp creates its own localization scope. Restore the Material
+      // delegates inside it for Material TextField, Scaffold and Tooltip.
+      home: Localizations(
+        locale: const Locale('en'),
+        delegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        child: const AdminAuthGate(),
+      ),
     ),
   );
 }
