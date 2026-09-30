@@ -248,4 +248,104 @@ class AuthenticationTest extends TestCase
             ->assertJsonStructure(['message', 'errors', 'code'])
             ->assertJsonPath('code', 'NOT_FOUND');
     }
+
+    public function test_admin_password_login_returns_a_token_only_for_an_active_admin(): void
+    {
+        $admin = User::create([
+            'google_subject' => null,
+            'name' => 'Admin User',
+            'email' => 'admin@example.test',
+            'password' => password_hash('CorrectHorseBatteryStaple!', PASSWORD_BCRYPT),
+            'role' => User::ROLE_ADMIN,
+            'is_active' => true,
+        ]);
+
+        $this->postJson('/api/v1/auth/admin/password', [
+            'email' => $admin->email,
+            'password' => 'CorrectHorseBatteryStaple!',
+        ])->assertOk()
+            ->assertJsonPath('data.user.id', $admin->id)
+            ->assertJsonPath('data.user.role', 'ADMIN')
+            ->assertJsonStructure(['data' => ['token', 'user']]);
+
+        $this->assertDatabaseCount('personal_access_tokens', 1);
+    }
+
+    public function test_admin_password_login_rejects_non_admin_and_invalid_password(): void
+    {
+        User::create([
+            'google_subject' => null,
+            'name' => 'Customer User',
+            'email' => 'customer@example.test',
+            'password' => password_hash('CorrectHorseBatteryStaple!', PASSWORD_BCRYPT),
+            'role' => User::ROLE_CUSTOMER,
+            'is_active' => true,
+        ]);
+
+        $this->postJson('/api/v1/auth/admin/password', [
+            'email' => 'customer@example.test',
+            'password' => 'CorrectHorseBatteryStaple!',
+        ])->assertUnauthorized()
+            ->assertJsonPath('code', 'INVALID_CREDENTIALS');
+
+        $this->postJson('/api/v1/auth/admin/password', [
+            'email' => 'customer@example.test',
+            'password' => 'wrong-password',
+        ])->assertUnauthorized()
+            ->assertJsonPath('code', 'INVALID_CREDENTIALS');
+
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+    }
+
+    public function test_admin_google_login_requires_an_existing_admin_identity(): void
+    {
+        $admin = User::create([
+            'google_subject' => 'admin-google-sub',
+            'name' => 'Admin User',
+            'email' => 'admin@example.test',
+            'role' => User::ROLE_ADMIN,
+            'is_active' => true,
+        ]);
+
+        $this->mock(GoogleCredentialVerifier::class, function ($mock): void {
+            $mock->shouldReceive('verify')
+                ->once()
+                ->with('admin-google-token')
+                ->andReturn([
+                    'sub' => 'admin-google-sub',
+                    'name' => 'Updated Admin',
+                    'email' => 'admin@example.test',
+                ]);
+        });
+
+        $this->postJson('/api/v1/auth/admin/google', [
+            'credential' => 'admin-google-token',
+        ])->assertOk()
+            ->assertJsonPath('data.user.id', $admin->id)
+            ->assertJsonPath('data.user.role', 'ADMIN');
+
+        $this->assertDatabaseCount('personal_access_tokens', 1);
+    }
+
+    public function test_admin_google_login_does_not_create_a_new_account(): void
+    {
+        $this->mock(GoogleCredentialVerifier::class, function ($mock): void {
+            $mock->shouldReceive('verify')
+                ->once()
+                ->andReturn([
+                    'sub' => 'unprovisioned-google-sub',
+                    'name' => 'Unprovisioned User',
+                    'email' => 'unprovisioned@example.test',
+                ]);
+        });
+
+        $this->postJson('/api/v1/auth/admin/google', [
+            'credential' => 'google-token',
+        ])->assertForbidden()
+            ->assertJsonPath('code', 'ADMIN_ACCESS_REQUIRED');
+
+        $this->assertDatabaseCount('users', 0);
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+    }
+
 }
