@@ -1691,16 +1691,6 @@ Widget _label(String text, String? trailing) => Padding(
     ],
   ),
 );
-Widget _field(TextEditingController c, String hint, {String? label, int? maxLength, int maxLines = 1, TextInputType? keyboard, String? Function(String?)? validator}) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-  if (label != null) Padding(padding: const EdgeInsets.only(bottom: 5), child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted))),
-  TextFormField(controller: c, maxLength: maxLength, maxLines: maxLines, keyboardType: keyboard, validator: validator, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700), decoration: _inputDecoration(hint).copyWith(counterText: '')),
-]);
-
-Widget _dropdownField(String label, List<DropdownMenuItem<int?>> items, int? value, ValueChanged<int?> onChanged) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-  Padding(padding: const EdgeInsets.only(bottom: 5), child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted))),
-  SizedBox(height: 43, child: shad.Select<int?>(value: items.any((i) => i.value == value) ? value : (items.isEmpty ? null : items.first.value), onChanged: onChanged, placeholder: const Text('Select category'), itemBuilder: (context, item) => Text(item?.toString() ?? 'All categories'))),
-]);
-
 class _ErrorBanner extends StatelessWidget {
   const _ErrorBanner({required this.message, required this.onRetry}); final String message; final VoidCallback onRetry;
   @override Widget build(BuildContext context) => Container(width: double.infinity, margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.all(11), decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(10)), child: Row(children: [const AdminIcon(HugeIcons.strokeRoundedAlertCircle, size: 17, color: AdminColors.red), const SizedBox(width: 8), Expanded(child: Text(message, style: const TextStyle(fontSize: 11))), shad.OutlineButton(onPressed: onRetry, child: const Text('Retry', style: TextStyle(fontSize: 11)))]));
