@@ -97,7 +97,8 @@ class _AdminShellState extends State<AdminShell> {
                       Expanded(child: Text(section.label, style: Theme.of(context).textTheme.headlineSmall)),
                     ]),
                   ),
-                  _PageHeading(section: section, desktop: desktop),
+                  if (section != AdminSection.partners)
+                    _PageHeading(section: section, desktop: desktop),
                   const SizedBox(height: 24),
                   switch (section) {
                     AdminSection.dashboard => const DashboardPage(),
