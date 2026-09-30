@@ -786,7 +786,6 @@ class _PartnerActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Wrap(spacing: 2, children: [
         shad.IconButton.ghost(
-          tooltip: 'View available partner details',
           onPressed: () => shad.showOverlay<void>(context, shad.DialogConfiguration<void>(builder: (dialogContext) => shad.AlertDialog(
               title: Text(partner.name),
               content: SizedBox(
