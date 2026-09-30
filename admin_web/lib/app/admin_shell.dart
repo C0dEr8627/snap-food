@@ -36,15 +36,51 @@ class SnapFooddAdminApp extends StatelessWidget {
     theme: ThemeData(
       useMaterial3: true,
       scaffoldBackgroundColor: AdminColors.canvas,
-      colorScheme: ColorScheme.fromSeed(seedColor: AdminColors.yellow),
+      colorScheme: const ColorScheme(
+        brightness: Brightness.light,
+        primary: AdminColors.ink,
+        onPrimary: Colors.white,
+        primaryContainer: AdminColors.amberSoft,
+        onPrimaryContainer: AdminColors.ink,
+        secondary: AdminColors.yellowDark,
+        onSecondary: Colors.white,
+        secondaryContainer: AdminColors.amberSoft,
+        onSecondaryContainer: AdminColors.ink,
+        tertiary: AdminColors.red,
+        onTertiary: Colors.white,
+        tertiaryContainer: AdminColors.redSoft,
+        onTertiaryContainer: AdminColors.ink,
+        error: AdminColors.red,
+        onError: Colors.white,
+        errorContainer: AdminColors.redSoft,
+        onErrorContainer: AdminColors.ink,
+        surface: AdminColors.surface,
+        onSurface: AdminColors.ink,
+        surfaceContainerHighest: Color(0xFFF2F2F2),
+        onSurfaceVariant: Color(0xFF454545),
+        outline: Color(0xFF6B6B6B),
+        outlineVariant: Color(0xFFD0D0D0),
+        shadow: Colors.black,
+        scrim: Colors.black,
+        inverseSurface: AdminColors.ink,
+        onInverseSurface: Colors.white,
+        inversePrimary: AdminColors.yellow,
+      ),
       fontFamily: GoogleFonts.inter().fontFamily,
       textTheme: const TextTheme(
-        headlineLarge: TextStyle(fontSize: 40, height: 1.2, fontWeight: FontWeight.w800, color: AdminColors.ink, letterSpacing: -.8),
-        headlineSmall: TextStyle(fontSize: 26, height: 1.25, fontWeight: FontWeight.w800, color: AdminColors.ink),
-        titleLarge: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AdminColors.ink),
-        titleMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AdminColors.ink),
-        bodyMedium: TextStyle(fontSize: 13, color: AdminColors.ink, height: 1.45),
-        bodySmall: TextStyle(fontSize: 11, color: AdminColors.muted),
+        displayLarge: TextStyle(fontSize: 36, height: 1.15, fontWeight: FontWeight.w800, color: AdminColors.ink),
+        displayMedium: TextStyle(fontSize: 32, height: 1.2, fontWeight: FontWeight.w800, color: AdminColors.ink),
+        headlineLarge: TextStyle(fontSize: 28, height: 1.2, fontWeight: FontWeight.w800, color: AdminColors.ink),
+        headlineSmall: TextStyle(fontSize: 24, height: 1.25, fontWeight: FontWeight.w800, color: AdminColors.ink),
+        titleLarge: TextStyle(fontSize: 18, height: 1.3, fontWeight: FontWeight.w800, color: AdminColors.ink),
+        titleMedium: TextStyle(fontSize: 16, height: 1.35, fontWeight: FontWeight.w700, color: AdminColors.ink),
+        titleSmall: TextStyle(fontSize: 14, height: 1.35, fontWeight: FontWeight.w700, color: AdminColors.ink),
+        bodyLarge: TextStyle(fontSize: 16, height: 1.5, color: AdminColors.ink),
+        bodyMedium: TextStyle(fontSize: 14, height: 1.5, color: AdminColors.ink),
+        bodySmall: TextStyle(fontSize: 12, height: 1.45, color: Color(0xFF454545)),
+        labelLarge: TextStyle(fontSize: 14, height: 1.2, fontWeight: FontWeight.w700),
+        labelMedium: TextStyle(fontSize: 12, height: 1.2, fontWeight: FontWeight.w700),
+        labelSmall: TextStyle(fontSize: 11, height: 1.2, fontWeight: FontWeight.w700),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
@@ -52,6 +88,55 @@ class SnapFooddAdminApp extends StatelessWidget {
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: AdminColors.line)),
       ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          minimumSize: const Size(0, 44),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          tapTargetSize: MaterialTapTargetSize.padded,
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size(0, 44),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+          side: const BorderSide(color: Color(0xFF6B6B6B)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          tapTargetSize: MaterialTapTargetSize.padded,
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          minimumSize: const Size(0, 44),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+          tapTargetSize: MaterialTapTargetSize.padded,
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          minimumSize: const Size(44, 44),
+          iconSize: 22,
+          padding: const EdgeInsets.all(10),
+          tapTargetSize: MaterialTapTargetSize.padded,
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        isDense: false,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        filled: true,
+        fillColor: Colors.white,
+        labelStyle: const TextStyle(fontSize: 14, color: Color(0xFF454545)),
+        hintStyle: const TextStyle(fontSize: 14, color: Color(0xFF5C5C5C)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFF6B6B6B))),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFF6B6B6B))),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AdminColors.ink, width: 2)),
+        errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AdminColors.red, width: 1.5)),
+        focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AdminColors.red, width: 2)),
+      ),
+      dividerTheme: const DividerThemeData(color: Color(0xFFD0D0D0), thickness: 1, space: 1),
     ),
     home: const AdminAuthGate(),
   );
@@ -137,6 +222,8 @@ class _Sidebar extends StatelessWidget {
   Widget build(BuildContext context) => Material(
     color: Colors.white,
     child: SafeArea(
+      child: SingleChildScrollView(
+      padding: EdgeInsets.zero,
       child: Column(
         children: [
           Padding(
@@ -175,12 +262,17 @@ class _Sidebar extends StatelessWidget {
             final active = item == selected;
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(11),
-                onTap: () => onSelect(item),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
+              child: Semantics(
+                button: true,
+                selected: active,
+                label: item.label,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(11),
+                  onTap: () => onSelect(item),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    constraints: const BoxConstraints(minHeight: 48),
+                    padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
                   decoration: BoxDecoration(color: active ? AdminColors.amberSoft : Colors.transparent, borderRadius: BorderRadius.circular(11)),
                   child: Row(children: [
                     AdminIcon(item.icon, size: 18, color: active ? AdminColors.yellowDark : AdminColors.muted),
@@ -188,13 +280,13 @@ class _Sidebar extends StatelessWidget {
                     Expanded(child: Text(item.label, style: TextStyle(fontSize: 12.5, fontWeight: active ? FontWeight.w900 : FontWeight.w700, color: AdminColors.ink))),
                     if (active) const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 16, color: AdminColors.yellowDark),
                   ]),
+                  ),
                 ),
               ),
             );
           }),
-          const Spacer(),
           Padding(
-            padding: const EdgeInsets.fromLTRB(18, 12, 18, 10),
+            padding: const EdgeInsets.fromLTRB(18, 24, 18, 16),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               const Text('Flutter Engine', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: AdminColors.muted)),
               const SizedBox(height: 4),
@@ -208,6 +300,7 @@ class _Sidebar extends StatelessWidget {
             ]),
           ),
         ],
+      ),
       ),
     ),
   );
