@@ -489,17 +489,16 @@ class _CatalogueHeader extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     mainAxisAlignment: MainAxisAlignment.end,
     children: [
+      FilledButton.icon(
+        onPressed: onAddItem,
+        icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 17),
+        label: const Text('Add Product'),
+      ),
+      const SizedBox(width: 10),
       OutlinedButton.icon(
         onPressed: onCategories,
         icon: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
         label: const Text('Manage Categories'),
-      ),
-      const SizedBox(width: 10),
-      FilledButton.icon(
-        onPressed: onAddItem,
-        icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 17),
-        label: const Text('Add Item'),
-        style: FilledButton.styleFrom(backgroundColor: AdminColors.red, foregroundColor: Colors.white),
       ),
     ],
   );
