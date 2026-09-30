@@ -5,23 +5,23 @@ on:
     branches:
       - frontend
     paths:
-      - "**.dart"
-      - "pubspec.yaml"
-      - "pubspec.lock"
-      - "analysis_options.yaml"
-      - "assets/**"
-      - "android/**"
+      - "mobile_app/**/*.dart"
+      - "mobile_app/pubspec.yaml"
+      - "mobile_app/pubspec.lock"
+      - "mobile_app/analysis_options.yaml"
+      - "mobile_app/assets/**"
+      - "mobile_app/android/**"
       - ".github/workflows/flutter-ci.yml"
   push:
     branches:
       - developer-2-flutter
     paths:
-      - "**.dart"
-      - "pubspec.yaml"
-      - "pubspec.lock"
-      - "analysis_options.yaml"
-      - "assets/**"
-      - "android/**"
+      - "mobile_app/**/*.dart"
+      - "mobile_app/pubspec.yaml"
+      - "mobile_app/pubspec.lock"
+      - "mobile_app/analysis_options.yaml"
+      - "mobile_app/assets/**"
+      - "mobile_app/android/**"
       - ".github/workflows/flutter-ci.yml"
   workflow_dispatch:
 
@@ -36,6 +36,9 @@ jobs:
   flutter:
     name: Analyze, test and build Android
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile_app
     steps:
       - name: Checkout
         uses: actions/checkout@v4
