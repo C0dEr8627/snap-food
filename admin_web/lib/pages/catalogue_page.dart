@@ -532,12 +532,6 @@ class _CatalogueList extends StatelessWidget {
             icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 17),
             label: const Text('Add Product'),
           ),
-          const SizedBox(width: 10),
-          OutlinedButton.icon(
-            onPressed: onManageCategories,
-            icon: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
-            label: const Text('Manage Categories'),
-          ),
           const SizedBox(width: 8),
           Tooltip(
             message: gridView ? 'Switch to list view' : 'Switch to tile view',
