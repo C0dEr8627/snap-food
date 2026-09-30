@@ -134,7 +134,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
   void _showInvoice(_LedgerInvoice i) {
     shad.showOverlay<void>(
       context,
-      shad.DialogConfiguration<void>(
+      shad.DialogConfiguration(
         builder: (ctx) => shad.AlertDialog(
           title: Text(i.number, style: const TextStyle(fontWeight: FontWeight.w900)),
           content: SizedBox(
