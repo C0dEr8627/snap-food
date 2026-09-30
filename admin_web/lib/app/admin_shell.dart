@@ -216,10 +216,15 @@ class _Sidebar extends StatelessWidget {
 class _BrandMark extends StatelessWidget {
   const _BrandMark();
   @override
-  Widget build(BuildContext context) => Container(
-    width: 42, height: 42,
-    decoration: BoxDecoration(color: AdminColors.yellow, borderRadius: BorderRadius.circular(12)),
-    child: const Icon(Icons.restaurant_rounded, color: AdminColors.ink, size: 23),
+  Widget build(BuildContext context) => ClipRRect(
+    borderRadius: BorderRadius.circular(12),
+    child: SvgPicture.asset(
+      'assets/brand/snap_foodd_mark.svg',
+      width: 42,
+      height: 42,
+      fit: BoxFit.cover,
+      semanticsLabel: 'Snap Foodd',
+    ),
   );
 }
 
