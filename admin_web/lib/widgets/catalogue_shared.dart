@@ -114,7 +114,7 @@ class _CatalogueRepository {
   Future<_CatalogueProduct> save(_CatalogueProduct product) async {
     if (!liveEnabled) return product;
     final create = product.id == null;
-    final path = create ? '/products' : '/products/' + product.id.toString();
+    final path = create ? '/admin/products' : '/admin/products/' + product.id.toString();
     final res = create
       ? await http.post(_uri(path), headers: _headers, body: jsonEncode(product.toApiJson()))
       : await http.patch(_uri(path), headers: _headers, body: jsonEncode(product.toApiJson()));
@@ -125,13 +125,13 @@ class _CatalogueRepository {
   }
   Future<void> deactivate(_CatalogueProduct product) async {
     if (!liveEnabled || product.id == null) return;
-    final res = await http.delete(_uri('/products/' + product.id.toString()), headers: _headers);
+    final res = await http.delete(_uri('/admin/products/' + product.id.toString()), headers: _headers);
     if (res.statusCode < 200 || res.statusCode >= 300) throw _CatalogueApiException(res.statusCode, _message(res));
   }
   Future<_CatalogueCategory> saveCategory({int? id, required String name, required String slug, required int sortOrder, required bool active}) async {
     if (!liveEnabled) return _CatalogueCategory(id: id, name: name, slug: slug, sortOrder: sortOrder, active: active);
     final body = jsonEncode({'name': name.trim(), 'slug': slug.trim(), 'sort_order': sortOrder, 'is_active': active});
-    final res = id == null ? await http.post(_uri('/admin/categories'), headers: _headers, body: body) : await http.patch(_uri('/categories/' + id.toString()), headers: _headers, body: body);
+    final res = id == null ? await http.post(_uri('/admin/categories'), headers: _headers, body: body) : await http.patch(_uri('/admin/categories/' + id.toString()), headers: _headers, body: body);
     if (res.statusCode < 200 || res.statusCode >= 300) throw _CatalogueApiException(res.statusCode, _message(res));
     final root = jsonDecode(res.body);
     final data = root is Map && root['data'] is Map ? Map<String, dynamic>.from(root['data']) : <String, dynamic>{};
