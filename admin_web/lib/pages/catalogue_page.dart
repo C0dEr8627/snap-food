@@ -207,7 +207,7 @@ class _CataloguePageState extends State<CataloguePage> {
     final width = MediaQuery.sizeOf(context).width;
     final desktop = width >= 980;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      _CatalogueHeader(live: _live, onCategories: _manageCategories, onImport: () => _notice(context, 'CSV import is not exposed by the current Laravel API contract.', error: true), onAdd: _newProduct),
+      _CatalogueHeader(live: _live, onCategories: _manageCategories),
       const SizedBox(height: 18),
       _CategoryTabs(categories: _categories, selected: _categoryFilter, onSelect: (id) { setState(() => _categoryFilter = id); _load(keepSelection: false); }),
       const SizedBox(height: 16),
@@ -224,6 +224,7 @@ class _CataloguePageState extends State<CataloguePage> {
   Widget _buildProductPanel() => _CatalogueList(
     products: _products, search: _search, foodFilter: _foodFilter, stockFilter: _stockFilter, availabilityFilter: _availabilityFilter,
     loading: _loading, page: _page, lastPage: _lastPage, total: _total, selected: _selected,
+    onCreateProduct: _newProduct,
     onSearch: () { _page = 1; _load(keepSelection: true); }, onFood: (v) { setState(() => _foodFilter = v); if (!_live) setState(_applyPreviewFilters); },
     onStock: (v) { setState(() => _stockFilter = v); if (!_live) setState(_applyPreviewFilters); },
     onAvailability: (v) { setState(() => _availabilityFilter = v); if (!_live) setState(_applyPreviewFilters); },
@@ -343,23 +344,49 @@ class _Workspace extends StatelessWidget {
 }
 
 class _CatalogueHeader extends StatelessWidget {
-  const _CatalogueHeader({required this.live, required this.onCategories, required this.onImport, required this.onAdd});
-  final bool live; final VoidCallback onCategories, onImport, onAdd;
-  @override Widget build(BuildContext context) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [Container(width: 7, height: 7, decoration: const BoxDecoration(color: AdminColors.red, shape: BoxShape.circle)), const SizedBox(width: 7), const Text('HQ INVENTORY  •  CLUSTER', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w900, letterSpacing: 1.3, color: AdminColors.muted))]),
-        const SizedBox(height: 5), const Text('BANGALORE CENTRAL KITCHEN  #04', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
-        const SizedBox(height: 12), const Text('Catalogue Management', style: TextStyle(fontSize: 29, fontWeight: FontWeight.w900, letterSpacing: -.5)),
-        const SizedBox(height: 3), Text(live ? 'Live catalogue connected to Laravel API v1.' : 'Preview Data Mode • Live API activates when an admin bearer token is available.', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
-      ])),
-      Wrap(spacing: 8, runSpacing: 8, children: [
-        OutlinedButton.icon(onPressed: onCategories, icon: const Icon(Icons.folder_outlined, size: 16), label: const Text('Manage Categories')),
-        OutlinedButton.icon(onPressed: onImport, icon: const Icon(Icons.upload_file_rounded, size: 16), label: const Text('Bulk CSV Import')),
-        FilledButton.icon(onPressed: onAdd, icon: const Icon(Icons.add_rounded, size: 17), label: const Text('Add New Product'), style: FilledButton.styleFrom(backgroundColor: AdminColors.red, foregroundColor: Colors.white)),
-      ]),
-    ]),
-  ]);
+  const _CatalogueHeader({required this.live, required this.onCategories});
+  final bool live;
+  final VoidCallback onCategories;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(children: [
+                  Container(width: 7, height: 7, decoration: const BoxDecoration(color: AdminColors.red, shape: BoxShape.circle)),
+                  const SizedBox(width: 7),
+                  const Text('HQ INVENTORY  •  CLUSTER', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w900, letterSpacing: 1.3, color: AdminColors.muted)),
+                ]),
+                const SizedBox(height: 5),
+                const Text('BANGALORE CENTRAL KITCHEN  #04', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 12),
+                const Text('Catalogue Management', style: TextStyle(fontSize: 29, fontWeight: FontWeight.w900, letterSpacing: -.5)),
+                const SizedBox(height: 3),
+                Text(
+                  live
+                      ? 'Manage menu items and categories connected to the Laravel API.'
+                      : 'Preview Data Mode • Live API activates when an admin bearer token is available.',
+                  style: const TextStyle(fontSize: 11, color: AdminColors.muted),
+                ),
+              ],
+            ),
+          ),
+          OutlinedButton.icon(
+            onPressed: onCategories,
+            icon: const Icon(Icons.category_outlined, size: 17),
+            label: const Text('Manage Categories'),
+          ),
+        ],
+      ),
+    ],
+  );
 }
 
 class _CategoryTabs extends StatelessWidget {
@@ -430,6 +457,7 @@ class _CatalogueList extends StatelessWidget {
   final bool loading;
   final int page, lastPage, total;
   final _CatalogueProduct? selected;
+  final VoidCallback onCreateProduct;
   final VoidCallback onSearch;
   final ValueChanged<String> onFood, onStock, onAvailability;
   final ValueChanged<_CatalogueProduct> onSelect;
@@ -445,9 +473,16 @@ class _CatalogueList extends StatelessWidget {
           const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('PRODUCT CATALOGUE', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.1, color: AdminColors.muted)),
             SizedBox(height: 3),
-            Text('Menu items & inventory', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+            Text('Select an item to edit, or create a new one.', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
           ])),
-          IconButton(onPressed: () => _notice(context, 'Filters are applied below.'), icon: const Icon(Icons.tune_rounded, size: 18)),
+          FilledButton.icon(
+            onPressed: loading ? null : () => onCreateProduct(),
+            icon: const Icon(Icons.add_rounded, size: 16),
+            label: const Text('New Product'),
+            style: FilledButton.styleFrom(backgroundColor: AdminColors.red, foregroundColor: Colors.white),
+          ),
+          const SizedBox(width: 6),
+          IconButton(onPressed: () => _notice(context, 'Use the filters below to narrow the catalogue.'), icon: const Icon(Icons.tune_rounded, size: 18)),
         ]),
         const SizedBox(height: 12),
         Wrap(spacing: 8, runSpacing: 8, children: [
