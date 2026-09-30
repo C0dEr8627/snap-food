@@ -451,25 +451,13 @@ class _PartnerCommandHeader extends StatelessWidget {
         children: [
           shad.OutlineButton(
             onPressed: onExport,
-            icon: const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 17),
-            label: const Text('Export roster'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AdminColors.ink,
-              side: const BorderSide(color: AdminColors.line),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11)),
-              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 13),
-            ),
+            leading: const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 17),
+            child: const Text('Export roster'),
           ),
           shad.PrimaryButton(
             onPressed: onManualOnboard,
-            icon: const AdminIcon(HugeIcons.strokeRoundedUserAdd01, size: 17),
-            label: const Text('Manual onboard'),
-            style: FilledButton.styleFrom(
-              backgroundColor: AdminColors.yellow,
-              foregroundColor: AdminColors.ink,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11)),
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
-            ),
+            leading: const AdminIcon(HugeIcons.strokeRoundedUserAdd01, size: 17),
+            child: const Text('Manual onboard'),
           ),
         ],
       );
@@ -640,27 +628,15 @@ class _PartnerFilterBar extends StatelessWidget {
           child: LayoutBuilder(builder: (context, constraints) {
             final search = SizedBox(
               width: constraints.maxWidth < 700 ? double.infinity : 250,
-              height: 40,
-              child: TextField(
+              child: shad.TextField(
                 controller: controller,
+                hintText: 'Search name, email or partner ID',
                 style: const TextStyle(fontSize: 11),
-                decoration: InputDecoration(
-                  hintText: 'Search name, email or partner ID',
-                  hintStyle: const TextStyle(fontSize: 11),
-                  prefixIcon: const AdminIcon(HugeIcons.strokeRoundedSearch01, size: 18),
-                  suffixIcon: controller.text.isEmpty
-                      ? null
-                      : IconButton(
-                          tooltip: 'Clear search',
-                          onPressed: controller.clear,
-                          icon: const AdminIcon(HugeIcons.strokeRoundedCancel01, size: 16),
-                        ),
-                  filled: true,
-                  fillColor: AdminColors.canvas,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 9),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(9), borderSide: const BorderSide(color: AdminColors.line)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(9), borderSide: const BorderSide(color: AdminColors.line)),
-                ),
+                filled: true,
+                border: const Border.fromBorderSide(BorderSide(color: AdminColors.line)),
+                borderRadius: BorderRadius.circular(9),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                features: const [shad.InputClearFeature()],
               ),
             );
             final chips = Wrap(
@@ -1040,7 +1016,7 @@ class _KycQueueNotice extends StatelessWidget {
               Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
                 Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6), decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(18)), child: Text('${pendingPartners.length} pending on page', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.yellowDark))),
                 const SizedBox(height: 8),
-                OutlinedButton(onPressed: onReview, child: const Text('Filter pending')),
+                shad.OutlineButton(onPressed: onReview, child: const Text('Filter pending')),
               ]),
             ]),
             if (pendingPartners.isNotEmpty) ...[
@@ -1059,9 +1035,8 @@ class _KycQueueNotice extends StatelessWidget {
                       Text('Partner #${partner.id} • ${partner.email}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
                     ])),
                   ]);
-                  final action = FilledButton(
+                  final action = shad.PrimaryButton(
                     onPressed: busy ? null : () => onApprove(partner),
-                    style: FilledButton.styleFrom(backgroundColor: AdminColors.yellow, foregroundColor: AdminColors.ink, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9))),
                     child: const Text('Approve & activate', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
                   );
                   if (constraints.maxWidth < 540) {
