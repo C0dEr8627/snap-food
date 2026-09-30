@@ -306,54 +306,132 @@ class _CatalogueStats extends StatelessWidget {
 
 class _StatCard extends StatelessWidget {
   const _StatCard(this.label, this.value, this.caption, this.icon, {this.danger = false, this.warning = false});
-  final String label, value, caption; final IconData icon; final bool danger, warning;
-  @override Widget build(BuildContext context) => Container(padding: const EdgeInsets.all(15), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15), border: Border.all(color: AdminColors.line), boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 14, offset: Offset(0, 5))]), child: Row(children: [
-    Container(width: 38, height: 38, decoration: BoxDecoration(color: danger ? AdminColors.redSoft : warning ? AdminColors.peach : AdminColors.amberSoft, borderRadius: BorderRadius.circular(10)), child: Icon(icon, size: 19, color: danger ? AdminColors.red : warning ? AdminColors.warning : AdminColors.yellowDark)),
-    const SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text(label, style: const TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, letterSpacing: .8, color: AdminColors.muted)), const SizedBox(height: 3),
-      Row(children: [Text(value, style: TextStyle(fontSize: 21, fontWeight: FontWeight.w900, color: danger ? AdminColors.red : AdminColors.ink)), const SizedBox(width: 8), Flexible(child: Text(caption, style: const TextStyle(fontSize: 9, color: AdminColors.muted), overflow: TextOverflow.ellipsis))]),
-    ])),
-  ]);
+  final String label, value, caption;
+  final IconData icon;
+  final bool danger, warning;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(15),
+    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15), border: Border.all(color: AdminColors.line), boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 14, offset: Offset(0, 5))]),
+    child: Row(children: [
+      Container(width: 38, height: 38, decoration: BoxDecoration(color: danger ? AdminColors.redSoft : warning ? AdminColors.peach : AdminColors.amberSoft, borderRadius: BorderRadius.circular(10)), child: Icon(icon, size: 19, color: danger ? AdminColors.red : warning ? AdminColors.warning : AdminColors.yellowDark)),
+      const SizedBox(width: 12),
+      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text(label, style: const TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, letterSpacing: .8, color: AdminColors.muted)),
+        const SizedBox(height: 3),
+        Row(children: [
+          Text(value, style: TextStyle(fontSize: 21, fontWeight: FontWeight.w900, color: danger ? AdminColors.red : AdminColors.ink)),
+          const SizedBox(width: 8),
+          Flexible(child: Text(caption, style: const TextStyle(fontSize: 9, color: AdminColors.muted), overflow: TextOverflow.ellipsis)),
+        ]),
+      ])),
+    ]),
+  );
 }
 
 class _CatalogueList extends StatelessWidget {
   const _CatalogueList({required this.products, required this.search, required this.foodFilter, required this.stockFilter, required this.availabilityFilter, required this.loading, required this.page, required this.lastPage, required this.total, required this.selected, required this.onSearch, required this.onFood, required this.onStock, required this.onAvailability, required this.onSelect, required this.onPage});
-  final List<_CatalogueProduct> products; final TextEditingController search; final String foodFilter, stockFilter, availabilityFilter; final bool loading; final int page, lastPage, total; final _CatalogueProduct? selected;
-  final VoidCallback onSearch; final ValueChanged<String> onFood, onStock, onAvailability; final ValueChanged<_CatalogueProduct> onSelect; final ValueChanged<int> onPage;
-  @override Widget build(BuildContext context) => Container(decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(17), border: Border.all(color: AdminColors.line), boxShadow: const [BoxShadow(color: Color(0x07000000), blurRadius: 16, offset: Offset(0, 5))]), child: Padding(padding: const EdgeInsets.all(17), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Row(children: [const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('PRODUCT CATALOGUE', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.1, color: AdminColors.muted)), SizedBox(height: 3), Text('Menu items & inventory', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900))])), IconButton(onPressed: () => _notice(context, 'Filters are applied below.'), icon: const Icon(Icons.tune_rounded, size: 18))]),
-    const SizedBox(height: 12),
-    Wrap(spacing: 8, runSpacing: 8, children: [
-      SizedBox(width: 230, height: 40, child: TextField(controller: search, onSubmitted: (_) => onSearch(), decoration: _inputDecoration('Filter by dish...', Icons.search_rounded))),
-      _select('All Food Types', ['All Food Types', 'Pure Veg', 'Non-Veg', 'Contains Egg'], foodFilter, onFood),
-      _select('Stock', ['All', 'In Stock', 'Low Stock', 'Out of Stock'], stockFilter, onStock),
-      _select('Availability', ['All', 'Live', 'Hidden'], availabilityFilter, onAvailability),
-    ]),
-    const SizedBox(height: 16),
-    const Row(children: [Expanded(flex: 5, child: Text('PRODUCT', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))), Expanded(flex: 3, child: Text('CATEGORY', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))), SizedBox(width: 85, child: Text('STOCK', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted)))]),
-    const Divider(height: 18),
-    if (products.isEmpty && !loading) const Padding(padding: EdgeInsets.all(30), child: Center(child: Text('No products match these filters.', style: TextStyle(color: AdminColors.muted)))),
-    ...products.map((p) => _ProductRow(product: p, selected: selected?.id == p.id && selected == p, onTap: () => onSelect(p))),
-    const SizedBox(height: 10),
-    Row(children: [Expanded(child: Text('Showing ' + (total == 0 ? '0' : '1') + '–' + products.length.toString() + ' of ' + total.toString(), style: const TextStyle(fontSize: 9.5, color: AdminColors.muted))), IconButton(onPressed: page > 1 ? () => onPage(page - 1) : null, icon: const Icon(Icons.chevron_left_rounded, size: 18)), Text(page.toString(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900)), IconButton(onPressed: page < lastPage ? () => onPage(page + 1) : null, icon: const Icon(Icons.chevron_right_rounded, size: 18))]),
-  ])));
+  final List<_CatalogueProduct> products;
+  final TextEditingController search;
+  final String foodFilter, stockFilter, availabilityFilter;
+  final bool loading;
+  final int page, lastPage, total;
+  final _CatalogueProduct? selected;
+  final VoidCallback onSearch;
+  final ValueChanged<String> onFood, onStock, onAvailability;
+  final ValueChanged<_CatalogueProduct> onSelect;
+  final ValueChanged<int> onPage;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(17), border: Border.all(color: AdminColors.line), boxShadow: const [BoxShadow(color: Color(0x07000000), blurRadius: 16, offset: Offset(0, 5))]),
+    child: Padding(
+      padding: const EdgeInsets.all(17),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('PRODUCT CATALOGUE', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.1, color: AdminColors.muted)),
+            SizedBox(height: 3),
+            Text('Menu items & inventory', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+          ])),
+          IconButton(onPressed: () => _notice(context, 'Filters are applied below.'), icon: const Icon(Icons.tune_rounded, size: 18)),
+        ]),
+        const SizedBox(height: 12),
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          SizedBox(width: 230, height: 40, child: TextField(controller: search, onSubmitted: (_) => onSearch(), decoration: _inputDecoration('Filter by dish...', Icons.search_rounded))),
+          _select('All Food Types', ['All Food Types', 'Pure Veg', 'Non-Veg', 'Contains Egg'], foodFilter, onFood),
+          _select('Stock', ['All', 'In Stock', 'Low Stock', 'Out of Stock'], stockFilter, onStock),
+          _select('Availability', ['All', 'Live', 'Hidden'], availabilityFilter, onAvailability),
+        ]),
+        const SizedBox(height: 16),
+        const Row(children: [
+          Expanded(flex: 5, child: Text('PRODUCT', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
+          Expanded(flex: 3, child: Text('CATEGORY', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
+          SizedBox(width: 85, child: Text('STOCK', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
+        ]),
+        const Divider(height: 18),
+        if (products.isEmpty && !loading)
+          const Padding(padding: EdgeInsets.all(30), child: Center(child: Text('No products match these filters.', style: TextStyle(color: AdminColors.muted)))),
+        ...products.map((p) => _ProductRow(product: p, selected: selected?.id == p.id && selected == p, onTap: () => onSelect(p))),
+        const SizedBox(height: 10),
+        Row(children: [
+          Expanded(child: Text('Showing ' + (total == 0 ? '0' : '1') + '–' + products.length.toString() + ' of ' + total.toString(), style: const TextStyle(fontSize: 9.5, color: AdminColors.muted))),
+          IconButton(onPressed: page > 1 ? () => onPage(page - 1) : null, icon: const Icon(Icons.chevron_left_rounded, size: 18)),
+          Text(page.toString(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),
+          IconButton(onPressed: page < lastPage ? () => onPage(page + 1) : null, icon: const Icon(Icons.chevron_right_rounded, size: 18)),
+        ]),
+      ]),
+    ),
+  );
 }
 
-Widget _select(String label, List<String> items, String value, ValueChanged<String> onChanged) => Container(height: 40, padding: const EdgeInsets.symmetric(horizontal: 11), decoration: BoxDecoration(color: AdminColors.peach, borderRadius: BorderRadius.circular(10), border: Border.all(color: AdminColors.line)), child: DropdownButtonHideUnderline(child: DropdownButton<String>(value: items.contains(value) ? value : items.first, isDense: true, icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 17), style: const TextStyle(fontSize: 10.5, color: AdminColors.ink, fontWeight: FontWeight.w700), items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(), onChanged: (v) { if (v != null) onChanged(v); })));
+Widget _select(String label, List<String> items, String value, ValueChanged<String> onChanged) => Container(
+  height: 40,
+  padding: const EdgeInsets.symmetric(horizontal: 11),
+  decoration: BoxDecoration(color: AdminColors.peach, borderRadius: BorderRadius.circular(10), border: Border.all(color: AdminColors.line)),
+  child: DropdownButtonHideUnderline(child: DropdownButton<String>(
+    value: items.contains(value) ? value : items.first,
+    isDense: true,
+    icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 17),
+    style: const TextStyle(fontSize: 10.5, color: AdminColors.ink, fontWeight: FontWeight.w700),
+    items: items.map((e) => DropdownMenuItem<String>(value: e, child: Text(e))).toList(),
+    onChanged: (v) { if (v != null) onChanged(v); },
+  )),
+);
 
 class _ProductRow extends StatelessWidget {
   const _ProductRow({required this.product, required this.selected, required this.onTap});
-  final _CatalogueProduct product; final bool selected; final VoidCallback onTap;
-  @override Widget build(BuildContext context) => InkWell(onTap: onTap, borderRadius: BorderRadius.circular(11), child: Container(margin: const EdgeInsets.only(bottom: 5), padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 6), decoration: BoxDecoration(color: selected ? AdminColors.amberSoft : Colors.transparent, borderRadius: BorderRadius.circular(11)), child: Row(children: [
-    Expanded(flex: 5, child: Row(children: [
-      _Thumb(image: product.image, name: product.name), const SizedBox(width: 10), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [Flexible(child: Text(product.name, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w900), overflow: TextOverflow.ellipsis)), if (product.badge.isNotEmpty) ...[const SizedBox(width: 6), _Badge(product.badge)] ]),
-        const SizedBox(height: 3), Text(product.description, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 8.8, color: AdminColors.muted)),
-      ])),
-    ])),
-    Expanded(flex: 3, child: Text(product.categoryName, style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700), overflow: TextOverflow.ellipsis)),
-    SizedBox(width: 85, child: Text(product.outOfStock ? 'Sold out' : product.stock.toString() + ' units', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: product.outOfStock ? AdminColors.red : product.lowStock ? AdminColors.warning : AdminColors.ink))),
-  ]));
+  final _CatalogueProduct product;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(11),
+    child: Container(
+      margin: const EdgeInsets.only(bottom: 5),
+      padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 6),
+      decoration: BoxDecoration(color: selected ? AdminColors.amberSoft : Colors.transparent, borderRadius: BorderRadius.circular(11)),
+      child: Row(children: [
+        Expanded(flex: 5, child: Row(children: [
+          _Thumb(image: product.image, name: product.name),
+          const SizedBox(width: 10),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              Flexible(child: Text(product.name, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w900), overflow: TextOverflow.ellipsis)),
+              if (product.badge.isNotEmpty) ...[const SizedBox(width: 6), _Badge(product.badge)],
+            ]),
+            const SizedBox(height: 3),
+            Text(product.description, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 8.8, color: AdminColors.muted)),
+          ])),
+        ])),
+        Expanded(flex: 3, child: Text(product.categoryName, style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700), overflow: TextOverflow.ellipsis)),
+        SizedBox(width: 85, child: Text(product.outOfStock ? 'Sold out' : product.stock.toString() + ' units', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: product.outOfStock ? AdminColors.red : product.lowStock ? AdminColors.warning : AdminColors.ink))),
+      ]),
+    ),
+  );
 }
 
 class _Thumb extends StatelessWidget {
@@ -381,7 +459,18 @@ class _ProductEditor extends StatelessWidget {
     ]),
     const SizedBox(height: 12),
     _label('Dietary Classification', null),
-    Wrap(spacing: 6, children: ['Pure Veg', 'Non-Veg', 'Contains Egg'].map((e) => ChoiceChip(label: Text(e, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800)), selected: formDietary == e, onSelected: (_) => onDietary(e), selectedColor: AdminColors.yellow, side: const BorderSide(color: AdminColors.line)).toList()),
+    Wrap(
+      spacing: 6,
+      children: ['Pure Veg', 'Non-Veg', 'Contains Egg']
+          .map((e) => ChoiceChip(
+                label: Text(e, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800)),
+                selected: formDietary == e,
+                onSelected: (_) => onDietary(e),
+                selectedColor: AdminColors.yellow,
+                side: const BorderSide(color: AdminColors.line),
+              ))
+          .toList(),
+    ),
     const SizedBox(height: 12),
     Row(children: [
       Expanded(child: _field(price, '₹220', label: 'Base Price (₹)', keyboard: const TextInputType.numberWithOptions(decimal: true), validator: (v) { final n = double.tryParse(v ?? ''); return n == null || n < 0 ? 'Enter a valid price' : null; })),
