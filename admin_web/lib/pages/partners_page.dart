@@ -737,7 +737,7 @@ class _PartnerRoster extends StatelessWidget {
                   },
                 ),
               ),
-            );           );
+            );
           }),
         ]),
       );
