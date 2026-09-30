@@ -832,11 +832,7 @@ class _PartnerMobileCard extends StatelessWidget {
           const SizedBox(height: 10),
           Row(children: [
             Expanded(child: _PartnerDutyStatus(partner: partner)),
-            TextButton.icon(
-              onPressed: busy ? null : () => onApproval(partner, !partner.approved),
-              icon: AdminIcon(partner.approved ? HugeIcons.strokeRoundedSecurityBlock : HugeIcons.strokeRoundedCheckmarkCircle01, size: 16),
-              label: Text(partner.approved ? 'Remove approval' : 'Approve'),
-            ),
+            shad.OutlineButton(onPressed: busy ? null : () => onApproval(partner, !partner.approved), leading: AdminIcon(partner.approved ? HugeIcons.strokeRoundedSecurityBlock : HugeIcons.strokeRoundedCheckmarkCircle01, size: 16), child: Text(partner.approved ? 'Remove approval' : 'Approve')),
           ]),
           const Divider(height: 16, color: AdminColors.line),
         ]),
