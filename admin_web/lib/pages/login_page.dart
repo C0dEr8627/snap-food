@@ -107,16 +107,16 @@ class _LoginPageState extends State<LoginPage> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: AdminColors.redSoft,
+                            color: AdminAdminColors.redSoft,
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: AdminColors.red.withOpacity(.22)),
+                            border: Border.all(color: AdminAdminColors.red.withOpacity(.22)),
                           ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const AdminIcon(HugeIcons.strokeRoundedAlertCircle, size: 18, color: AdminColors.red),
+                              const AdminIcon(HugeIcons.strokeRoundedAlertCircle, size: 18, color: AdminAdminColors.red),
                               const SizedBox(width: 8),
-                              Expanded(child: Text(_error!, style: const TextStyle(fontSize: 11.5, color: AdminColors.red))),
+                              Expanded(child: Text(_error!, style: const TextStyle(fontSize: 11.5, color: AdminAdminColors.red))),
                             ],
                           ),
                         ),
@@ -166,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
     fillColor: Colors.white,
     border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AdminColors.line)),
     enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(11), borderSide: const BorderSide(color: AdminColors.line)),
-    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(11), borderSide: const BorderSide(color: AdminColors.yellowDark, width: 1.5)),
+    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(11), borderSide: const BorderSide(color: AdminAdminColors.yellowDark, width: 1.5)),
   );
 
   Future<void> _submitPassword() async {
