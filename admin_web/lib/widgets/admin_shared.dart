@@ -19,6 +19,26 @@ abstract final class AdminColors {
   static const warning = Color(0xFFF2AE2E);
 }
 
+
+typedef AdminIconData = List<List>;
+
+class AdminIcon extends StatelessWidget {
+  const AdminIcon(this.icon, {super.key, this.size = 24, this.color, this.strokeWidth = 1.8});
+
+  final AdminIconData icon;
+  final double size;
+  final Color? color;
+  final double strokeWidth;
+
+  @override
+  Widget build(BuildContext context) => HugeIcon(
+    icon: icon,
+    size: size,
+    color: color ?? DefaultTextStyle.of(context).style.color,
+    strokeWidth: strokeWidth,
+  );
+}
+
 void _notice(BuildContext context, String message, {bool error = false}) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: error ? AdminColors.red : null, behavior: SnackBarBehavior.floating));
 
 class _Pill extends StatelessWidget {
