@@ -139,7 +139,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
 class _InvoiceLedgerApi {
   const _InvoiceLedgerApi();
   String get base { final v = apiBaseUrl.trim(); return (v.isEmpty ? 'https://api.snapfoodd.in/api/v1' : v).replaceFirst(RegExp(r'/$'), ''); }
-  String get token => const String.fromEnvironment('API_TOKEN');
+  String get token => html.window.localStorage['snap_foodd_admin_token'] ?? '';
   Future<_InvoiceLedgerResult> list({required int page, required String search, required String status, DateTime? from, DateTime? to}) async {
     if (token.isEmpty) throw StateError('API_TOKEN is not configured. Real invoice records require an authenticated admin token.');
     final q = <String, String>{'page': page.toString(), 'per_page': '10', if (search.isNotEmpty) 'search': search, if (status != 'ALL') 'status': status, if (from != null) 'from': _isoDate(from), if (to != null) 'to': _isoDate(to)};
