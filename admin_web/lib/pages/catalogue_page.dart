@@ -955,7 +955,7 @@ class _ProductEditor extends StatelessWidget {
                   label: Text(
                     saving
                         ? 'Saving…'
-                        : 'Save to Catalogue (Laravel API v1)',
+                        : 'Save Item',
                   ),
                   style: FilledButton.styleFrom(
                     backgroundColor: AdminColors.red,
