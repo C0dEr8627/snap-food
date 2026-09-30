@@ -328,7 +328,7 @@ class _PageHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final actions = <Widget>[
-      FilledButton.icon(
+      shad.PrimaryButton(
         onPressed: onAddProduct ??
             () => _notice(
                   context,
@@ -336,24 +336,18 @@ class _PageHeading extends StatelessWidget {
                       ? 'Product creation will connect to the Laravel API.'
                       : 'This action will connect to the Laravel API.',
                 ),
-        icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 17),
-        label: Text(section == AdminSection.catalogue ? 'Add product' : 'Quick action'),
-        style: FilledButton.styleFrom(
-          backgroundColor: AdminColors.ink,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
+        leading: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 17),
+        child: Text(section == AdminSection.catalogue ? 'Add product' : 'Quick action'),
       ),
     ];
 
     if (section == AdminSection.catalogue && onManageCategories != null) {
       actions.addAll([
         const SizedBox(width: 10),
-        OutlinedButton.icon(
+        shad.OutlineButton(
           onPressed: onManageCategories,
-          icon: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
-          label: const Text('Manage Categories'),
+          leading: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
+          child: const Text('Manage Categories'),
         ),
       ]);
     }
