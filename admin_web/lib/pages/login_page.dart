@@ -22,13 +22,21 @@ class _LoginPageState extends State<LoginPage> {
     clientId: googleClientId.isEmpty ? null : googleClientId,
     scopes: const ['email', 'profile'],
   );
+  StreamSubscription<GoogleSignInAccount?>? _googleSubscription;
 
   bool _loading = false;
   bool _obscurePassword = true;
   String? _error;
 
   @override
+  void initState() {
+    super.initState();
+    _googleSubscription = _google.onCurrentUserChanged.listen(_handleGoogleAccount);
+  }
+
+  @override
   void dispose() {
+    _googleSubscription?.cancel();
     _email.dispose();
     _password.dispose();
     super.dispose();
@@ -128,15 +136,20 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 18),
                       const _OrDivider(),
                       const SizedBox(height: 18),
-                      OutlinedButton.icon(
-                        onPressed: _loading ? null : _submitGoogle,
-                        icon: const Icon(Icons.account_circle_outlined, size: 19),
-                        label: const Text('Continue with Google', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800)),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AdminColors.ink,
-                          minimumSize: const Size.fromHeight(50),
-                          side: const BorderSide(color: AdminColors.line),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11)),
+                      SizedBox(
+                        height: 50,
+                        child: IgnorePointer(
+                          ignoring: _loading,
+                          child: google_web.renderButton(
+                            configuration: const GSIButtonConfiguration(
+                              type: GSIButtonType.standard,
+                              theme: GSIButtonTheme.outline,
+                              size: GSIButtonSize.large,
+                              text: GSIButtonText.continueWith,
+                              shape: GSIButtonShape.rectangular,
+                              minimumWidth: 360,
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -172,13 +185,10 @@ class _LoginPageState extends State<LoginPage> {
     await _run(() => widget.auth.loginWithPassword(email: _email.text, password: _password.text));
   }
 
-  Future<void> _submitGoogle() async {
-    await _run(() async {
-      final account = await _google.signIn();
-      if (account == null) {
-        throw const AdminAuthException('Google sign-in was cancelled.');
-      }
+  Future<void> _handleGoogleAccount(GoogleSignInAccount? account) async {
+    if (account == null || _loading) return;
 
+    await _run(() async {
       final authentication = await account.authentication;
       final credential = authentication.idToken;
       if (credential == null || credential.isEmpty) {
