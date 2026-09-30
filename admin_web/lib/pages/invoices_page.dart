@@ -235,7 +235,7 @@ class _InvoiceLedgerCard extends StatelessWidget {
           DataCell(Text(_inr(i.total), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
           DataCell(Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Items ' + _inr(i.subtotal), style: const TextStyle(fontSize: 11)), Text('Delivery ' + _inr(i.deliveryFee), style: const TextStyle(fontSize: 11, color: AdminColors.muted)), const Text('GST details unavailable', style: TextStyle(fontSize: 11, color: AdminColors.muted))])),
           DataCell(_InvoiceStatus(i.paymentStatus)),
-          DataCell(IconButton(tooltip: 'View invoice details', onPressed: () => onView(i), icon: const AdminIcon(HugeIcons.strokeRoundedLinkSquare01, size: 17, color: AdminColors.yellowDark))),
+          DataCell(shad.IconButton.ghost(tooltip: 'View invoice details', onPressed: () => onView(i), icon: const AdminIcon(HugeIcons.strokeRoundedLinkSquare01, size: 17))),
         ])).toList(),
       ))),
       const Divider(height: 1, color: AdminColors.line),
@@ -257,7 +257,7 @@ class _InvoiceMobileCard extends StatelessWidget {
     Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(invoice.number, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)), const SizedBox(height: 3), Text('#ORDER-' + invoice.orderId.toString() + ' · ' + invoice.customer, style: const TextStyle(fontSize: 11, color: AdminColors.muted))])), _InvoiceStatus(invoice.paymentStatus)]),
     const SizedBox(height: 12), Row(children: [Expanded(child: Text(invoice.email.isEmpty ? 'No email recorded' : invoice.email, style: const TextStyle(fontSize: 11, color: AdminColors.muted))), Text(_inr(invoice.total), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900))]),
     const SizedBox(height: 7), Text('Items ' + _inr(invoice.subtotal) + ' · Delivery ' + _inr(invoice.deliveryFee), style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
-    const SizedBox(height: 7), Row(children: [Expanded(child: Text(invoice.paymentMethod, style: const TextStyle(fontSize: 11))), TextButton(onPressed: onView, child: const Text('View details'))]), const Divider(height: 1, color: AdminColors.line),
+    const SizedBox(height: 7), Row(children: [Expanded(child: Text(invoice.paymentMethod, style: const TextStyle(fontSize: 11))), shad.OutlineButton(onPressed: onView, child: const Text('View details'))]), const Divider(height: 1, color: AdminColors.line),
   ])));
 }
 
@@ -280,7 +280,7 @@ class _InvoiceStateCard extends StatelessWidget {
 
 class _InvoiceLoadingCard extends StatelessWidget {
   const _InvoiceLoadingCard();
-  @override Widget build(BuildContext context) => Container(width: double.infinity, padding: const EdgeInsets.all(24), decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(16)), child: const Column(children: [CircularProgressIndicator(), SizedBox(height: 14), Text('Loading invoice ledger…', style: TextStyle(fontSize: 12, color: AdminColors.muted))]));
+  @override Widget build(BuildContext context) => Container(width: double.infinity, padding: const EdgeInsets.all(24), decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(16)), child: const Column(children: [shad.CircularProgressIndicator(), SizedBox(height: 14), Text('Loading invoice ledger…', style: TextStyle(fontSize: 12, color: AdminColors.muted))]));
 }
 
 class _InvoiceDetailLine extends StatelessWidget {
