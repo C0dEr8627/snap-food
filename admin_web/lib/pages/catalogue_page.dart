@@ -128,10 +128,7 @@ class _CataloguePageState extends State<CataloguePage> {
       _notice(context, 'Create a category before adding an item.', error: true);
       return;
     }
-    await showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => Dialog(
+    await shad.showOverlay<void>(context, shad.DialogConfiguration<void>(builder: (dialogContext) => shad.Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 680, maxHeight: 760),
@@ -176,9 +173,8 @@ class _CataloguePageState extends State<CataloguePage> {
           ),
         ),
       ),
-    );
+    )).future;
   }
-
   Future<bool> _save() async {
     if (!_form.currentState!.validate()) return false;
     final product = _CatalogueProduct(
