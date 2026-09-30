@@ -299,7 +299,7 @@ class _CataloguePageState extends State<CataloguePage> {
           actions: [shad.OutlineButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Close'))],
         ),
       ),
-    );
+    ));
     if (mounted) await _load(keepSelection: true);
   }
 
