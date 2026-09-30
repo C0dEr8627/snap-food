@@ -129,9 +129,7 @@ class _PartnersPageState extends State<PartnersPage> {
       return;
     }
     final controller = TextEditingController();
-    final userId = await showDialog<int>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
+    final userId = await shad.showOverlay<int>(context, shad.DialogConfiguration<int>(builder: (dialogContext) => shad.AlertDialog(
         title: const Text('Manual partner onboarding'),
         content: SizedBox(
           width: 380,
@@ -644,10 +642,7 @@ class _PartnerFilterBar extends StatelessWidget {
               runSpacing: 7,
               children: options.map((option) {
                 final active = filter == option.$1;
-                return InkWell(
-                  onTap: () => onFilter(option.$1),
-                  borderRadius: BorderRadius.circular(9),
-                  child: Container(
+                return (active ? shad.Button.secondary : shad.Button.ghost)(onPressed: () => onFilter(option.$1), child: Row(mainAxisSize: MainAxisSize.min, children: [
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
                     decoration: BoxDecoration(
                       color: active ? AdminColors.amberSoft : AdminColors.canvas,
@@ -668,7 +663,7 @@ class _PartnerFilterBar extends StatelessWidget {
                 search,
                 const SizedBox(height: 10),
                 chips,
-                Align(alignment: Alignment.centerRight, child: IconButton(onPressed: loading ? null : onRefresh, tooltip: 'Refresh roster', icon: const AdminIcon(HugeIcons.strokeRoundedRefresh))),
+                Align(alignment: Alignment.centerRight, child: shad.IconButton.ghost(onPressed: loading ? null : onRefresh, tooltip: 'Refresh roster', icon: const AdminIcon(HugeIcons.strokeRoundedRefresh))),
               ]);
             }
             return Row(children: [
@@ -676,7 +671,7 @@ class _PartnerFilterBar extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: chips)),
               const SizedBox(width: 4),
-              IconButton(onPressed: loading ? null : onRefresh, tooltip: 'Refresh roster', icon: const AdminIcon(HugeIcons.strokeRoundedRefresh)),
+              shad.IconButton.ghost(onPressed: loading ? null : onRefresh, tooltip: 'Refresh roster', icon: const AdminIcon(HugeIcons.strokeRoundedRefresh)),
             ]);
           }),
         ),
@@ -810,7 +805,7 @@ class _PartnerActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Wrap(spacing: 2, children: [
-        IconButton(
+        shad.IconButton.ghost(
           tooltip: 'View available partner details',
           onPressed: () => showDialog<void>(
             context: context,
@@ -833,7 +828,7 @@ class _PartnerActions extends StatelessWidget {
           ),
           icon: const AdminIcon(HugeIcons.strokeRoundedLinkSquare01, size: 17),
         ),
-        IconButton(
+        shad.IconButton.ghost(
           tooltip: partner.approved ? 'Remove approval' : 'Approve partner',
           onPressed: busy ? null : () => onApproval(partner, !partner.approved),
           icon: AdminIcon(partner.approved ? HugeIcons.strokeRoundedSecurityCheck : HugeIcons.strokeRoundedCheckmarkCircle01, size: 18, color: partner.approved ? AdminColors.muted : AdminColors.green),
@@ -912,8 +907,8 @@ class _PartnerPagination extends StatelessWidget {
   Widget build(BuildContext context) => Row(children: [
         Text('Page $currentPage of $lastPage • $total partners', style: const TextStyle(fontSize: 11, color: AdminColors.muted, fontWeight: FontWeight.w700)),
         const Spacer(),
-        IconButton(tooltip: 'Previous page', onPressed: currentPage > 1 ? () => onPage(currentPage - 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowLeft01)),
-        IconButton(tooltip: 'Next page', onPressed: currentPage < lastPage ? () => onPage(currentPage + 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01)),
+        shad.IconButton.ghost(tooltip: 'Previous page', onPressed: currentPage > 1 ? () => onPage(currentPage - 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowLeft01)),
+        shad.IconButton.ghost(tooltip: 'Next page', onPressed: currentPage < lastPage ? () => onPage(currentPage + 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01)),
       ]);
 }
 
@@ -926,7 +921,7 @@ class _PartnerLoadingState extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(children: [
             const Row(children: [
-              SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+              shad.CircularProgressIndicator(size: 18, strokeWidth: 2),
               SizedBox(width: 11),
               Text('Loading delivery partners…', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
             ]),
@@ -958,7 +953,7 @@ class _PartnerErrorBanner extends StatelessWidget {
             const SizedBox(height: 3),
             Text(message, style: const TextStyle(fontSize: 11, color: AdminColors.ink, height: 1.4)),
           ])),
-          TextButton(onPressed: onRetry, child: const Text('Retry')),
+          shad.OutlineButton(onPressed: onRetry, child: const Text('Retry')),
         ]),
       );
 }
@@ -980,7 +975,7 @@ class _PartnerEmptyState extends StatelessWidget {
             const Text('Try another search or refresh the roster from the admin API.', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: AdminColors.muted)),
             if (hasQuery) ...[
               const SizedBox(height: 10),
-              TextButton(onPressed: onClear, child: const Text('Clear filters')),
+              shad.OutlineButton(onPressed: onClear, child: const Text('Clear filters')),
             ],
           ])),
         ),
