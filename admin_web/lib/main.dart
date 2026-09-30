@@ -5,6 +5,12 @@ import 'package:http/http.dart' as http;
 
 const apiBaseUrl = String.fromEnvironment('API_BASE_URL');
 
+part 'pages/dashboard_page.dart';
+part 'pages/orders_page.dart';
+part 'pages/catalogue_page.dart';
+part 'pages/partners_page.dart';
+part 'pages/invoices_page.dart';
+
 void main() => runApp(const SnapFooddAdminApp());
 
 abstract final class AdminColors {
@@ -330,46 +336,7 @@ class _PageHeading extends StatelessWidget {
 
 void _notice(BuildContext context, String message) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), behavior: SnackBarBehavior.floating));
 
-class DashboardPage extends StatelessWidget {
-  const DashboardPage({super.key});
 
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      const _ConnectionBanner(),
-      const SizedBox(height: 18),
-      LayoutBuilder(
-        builder: (context, c) {
-          final count = c.maxWidth >= 1000 ? 4 : c.maxWidth >= 650 ? 2 : 1;
-          return GridView.count(
-            crossAxisCount: count,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: count == 4 ? 1.35 : count == 2 ? 1.8 : 3.0,
-            children: const [_RevenueKpi(), _ActiveOrdersKpi(), _FleetKpi(), _SlaKpi()],
-          );
-        },
-      ),
-      const SizedBox(height: 20),
-      const _AttentionSection(),
-      const SizedBox(height: 20),
-      LayoutBuilder(
-        builder: (context, c) => c.maxWidth >= 1050
-          ? const Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Expanded(flex: 7, child: _WeeklySalesCard()),
-              SizedBox(width: 16),
-              Expanded(flex: 4, child: _KitchenPulseCard()),
-            ])
-          : const Column(children: [_WeeklySalesCard(), SizedBox(height: 16), _KitchenPulseCard()]),
-      ),
-      const SizedBox(height: 20),
-      const _LiveOrdersCard(),
-    ],
-  );
-}
 
 class _ConnectionBanner extends StatelessWidget {
   const _ConnectionBanner();
@@ -986,10 +953,7 @@ class _AdminOrderApi{
   }
 }
 
-class OrdersPage extends StatefulWidget{
-  const OrdersPage({super.key});
-  @override State<OrdersPage> createState()=>_OrdersPageState();
-}
+
 class _OrdersPageState extends State<OrdersPage>{
   final api=const _AdminOrderApi(),search=TextEditingController();
   final orders=List<_AdminOrder>.from(_previewOrders);
@@ -1160,32 +1124,7 @@ int _progressStep(String s){if(s=='PLACED')return 1;if(s=='ACCEPTED')return 2;if
 String _prettyStatus(String? s)=>(s??'UNKNOWN').replaceAll('_',' ');
 (Color,Color) _statusStyle(String s){if(['CANCELLED','DISPUTED','PREPARING'].contains(s))return(AdminColors.redSoft,AdminColors.red);if(['OUT_FOR_DELIVERY','DELIVERED'].contains(s))return(AdminColors.greenSoft,AdminColors.green);return(AdminColors.amberSoft,AdminColors.yellowDark);}
 
-class CataloguePage extends StatelessWidget {
-  const CataloguePage({super.key});
-  static const products = [
-    ['Classic Veg Burger', 'Burgers', '₹180', 'In stock', Icons.lunch_dining_rounded],
-    ['Paneer Tikka Wrap', 'Wraps', '₹220', 'In stock', Icons.breakfast_dining_rounded],
-    ['Masala Fries', 'Sides', '₹120', 'Low stock', Icons.fastfood_rounded],
-    ['Chocolate Brownie', 'Desserts', '₹140', 'In stock', Icons.cake_rounded],
-  ];
-  @override
-  Widget build(BuildContext context) => Column(children: [
-    Row(children: [
-      Expanded(child: Container(height: 44, padding: const EdgeInsets.symmetric(horizontal: 13), decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(11)), child: const Row(children: [Icon(Icons.search_rounded, size: 18, color: AdminColors.muted), SizedBox(width: 9), Text('Search products...', style: TextStyle(fontSize: 11, color: AdminColors.muted))]))),
-      const SizedBox(width: 10),
-      Container(height: 44, padding: const EdgeInsets.symmetric(horizontal: 12), decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(11)), child: const Row(children: [Text('All categories', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700)), SizedBox(width: 5), Icon(Icons.keyboard_arrow_down_rounded, size: 17)])),
-    ]),
-    const SizedBox(height: 16),
-    LayoutBuilder(builder: (context, c) {
-      final cols = c.maxWidth >= 1100 ? 4 : c.maxWidth >= 720 ? 2 : 1;
-      return GridView.builder(
-        itemCount: products.length, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: cols, crossAxisSpacing: 14, mainAxisSpacing: 14, childAspectRatio: 1.38),
-        itemBuilder: (context, i) => _ProductCard(product: products[i]),
-      );
-    }),
-  ]);
-}
+
 
 class _ProductCard extends StatelessWidget {
   const _ProductCard({required this.product});
@@ -1202,76 +1141,9 @@ class _ProductCard extends StatelessWidget {
   ])));
 }
 
-class PartnersPage extends StatelessWidget {
-  const PartnersPage({super.key});
-  static const rows = [
-    ['Vikram Joshi', 'DP-0084', 'Mumbai Central', 'Approved', 'Available'],
-    ['Neha Kulkarni', 'DP-0083', 'Andheri West', 'Approved', 'On delivery'],
-    ['Sameer Khan', 'DP-0082', 'Bandra', 'Pending review', 'Offline'],
-    ['Priya Nair', 'DP-0081', 'Powai', 'Approved', 'Available'],
-  ];
-  @override
-  Widget build(BuildContext context) => Column(children: [
-    LayoutBuilder(builder: (context, c) {
-      final cols = c.maxWidth >= 850 ? 3 : c.maxWidth >= 500 ? 2 : 1;
-      return GridView.count(crossAxisCount: cols, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), crossAxisSpacing: 13, mainAxisSpacing: 13, childAspectRatio: cols == 1 ? 3.2 : 2.1, children: const [
-        _Kpi(title: 'Total partners', value: '84', delta: '+6 this week', icon: Icons.groups_2_outlined, tone: AdminColors.amberSoft),
-        _Kpi(title: 'Available now', value: '21', delta: 'Online', icon: Icons.electric_bike_outlined, tone: AdminColors.greenSoft),
-        _Kpi(title: 'Pending review', value: '03', delta: 'Action needed', icon: Icons.pending_actions_rounded, tone: AdminColors.redSoft),
-      ]);
-    }),
-    const SizedBox(height: 17),
-    Card(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: DataTable(
-      headingTextStyle: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w900, color: AdminColors.muted),
-      columnSpacing: 28,
-      columns: const [DataColumn(label: Text('PARTNER')), DataColumn(label: Text('ID')), DataColumn(label: Text('AREA')), DataColumn(label: Text('KYC')), DataColumn(label: Text('AVAILABILITY')), DataColumn(label: Text('ACTION'))],
-      rows: rows.map((r) => DataRow(cells: [
-        DataCell(Text(r[0], style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11.5))),
-        DataCell(Text(r[1])),
-        DataCell(Text(r[2])),
-        DataCell(_Pill(r[3])),
-        DataCell(Text(r[4])),
-        DataCell(TextButton(onPressed: () => _notice(context, 'Partner review will use protected Laravel admin endpoints.'), child: const Text('Review'))),
-      ])).toList(),
-    ))),
-  ]);
-}
 
-class InvoicesPage extends StatelessWidget {
-  const InvoicesPage({super.key});
-  static const rows = [
-    ['INV-2026-1048', '#SF-1048', 'Aarav Mehta', '₹840', 'Pending delivery'],
-    ['INV-2026-1045', '#SF-1045', 'Ananya Rao', '₹980', 'Available'],
-    ['INV-2026-1041', '#SF-1041', 'Meera Shah', '₹1,560', 'Available'],
-    ['INV-2026-1038', '#SF-1038', 'Kabir Singh', '₹620', 'Available'],
-  ];
-  @override
-  Widget build(BuildContext context) => Column(children: [
-    Card(child: Padding(padding: const EdgeInsets.all(17), child: Row(children: [
-      Container(width: 38, height: 38, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(11)), child: const Icon(Icons.receipt_long_rounded, color: AdminColors.yellowDark)),
-      const SizedBox(width: 12),
-      const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Invoice centre', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900)),
-        SizedBox(height: 3),
-        Text('Invoice access follows delivered-order availability. Preview rows are illustrative.', style: TextStyle(fontSize: 10.5, color: AdminColors.muted)),
-      ])),
-    ]))),
-    const SizedBox(height: 15),
-    Card(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: DataTable(
-      headingTextStyle: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w900, color: AdminColors.muted),
-      columnSpacing: 28,
-      columns: const [DataColumn(label: Text('INVOICE')), DataColumn(label: Text('ORDER')), DataColumn(label: Text('CUSTOMER')), DataColumn(label: Text('AMOUNT')), DataColumn(label: Text('ACCESS')), DataColumn(label: Text('ACTION'))],
-      rows: rows.map((r) => DataRow(cells: [
-        DataCell(Text(r[0], style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11.5))),
-        DataCell(Text(r[1])),
-        DataCell(Text(r[2])),
-        DataCell(Text(r[3], style: const TextStyle(fontWeight: FontWeight.w800))),
-        DataCell(_Pill(r[4])),
-        DataCell(IconButton(onPressed: () => _notice(context, 'Invoice viewing will be connected to the Laravel API.'), icon: const Icon(Icons.open_in_new_rounded, size: 18))),
-      ])).toList(),
-    ))),
-  ]);
-}
+
+
 
 class _Pill extends StatelessWidget {
   const _Pill(this.text);
