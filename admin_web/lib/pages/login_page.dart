@@ -166,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
     fillColor: Colors.white,
     border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AdminColors.line)),
     enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(11), borderSide: const BorderSide(color: AdminColors.line)),
-    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(11), borderSide: const BorderSide(color: AdminAdminColors.yellowDark, width: 1.5)),
+    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(11), borderSide: const BorderSide(color: AdminAdminColors.amber, width: 1.5)),
   );
 
   Future<void> _submitPassword() async {
