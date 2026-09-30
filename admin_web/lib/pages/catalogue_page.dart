@@ -446,68 +446,416 @@ class _Badge extends StatelessWidget {
 }
 
 class _ProductEditor extends StatelessWidget {
-  const _ProductEditor({required this.form, required this.formCategoryId, required this.formDietary, required this.creating, required this.selected, required this.categories, required this.name, required this.slug, required this.description, required this.price, required this.prep, required this.stock, required this.tag, required this.imageUrl, required this.imagePreview, required this.uploading, required this.saving, required this.onClose, required this.onPickImage, required this.onSave, required this.onDeactivate, required this.onCategory, required this.onDietary});
-  final GlobalKey<FormState> form; final int? formCategoryId; final String formDietary; final bool creating, uploading, saving; final _CatalogueProduct? selected; final List<_CatalogueCategory> categories; final TextEditingController name, slug, description, price, prep, stock, tag, imageUrl; final String imagePreview; final VoidCallback onClose, onPickImage, onSave, onDeactivate; final ValueChanged<int?> onCategory; final ValueChanged<String> onDietary;
-  @override Widget build(BuildContext context) => Container(decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(17), border: Border.all(color: AdminColors.line), boxShadow: const [BoxShadow(color: Color(0x09000000), blurRadius: 18, offset: Offset(0, 6))]), child: Padding(padding: const EdgeInsets.all(18), child: Form(key: form, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('LIVE SYNC ENGINE', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, letterSpacing: 1.2, color: AdminColors.green)), const SizedBox(height: 5), Text(creating ? 'Add New Product' : 'Edit Product', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900))])), IconButton(onPressed: onClose, icon: const Icon(Icons.close_rounded, size: 18))]),
-    const Divider(height: 22),
-    _label('Dish Name *', 'Max 180 chars'), _field(name, 'Smokey Chicken Tikka Roll', maxLength: 180, validator: (v) => v == null || v.trim().isEmpty ? 'Dish name is required' : null),
-    const SizedBox(height: 12),
-    Row(children: [
-      Expanded(child: _dropdownField('Category', categories.map((c) => DropdownMenuItem<int?>(value: c.id, child: Text(c.name))).toList(), formCategoryId ?? (categories.isNotEmpty ? categories.first.id : null), onCategory)),
-      const SizedBox(width: 10), Expanded(child: _select('GST Slab', const ['5%', '12%', '18%'], selected?.gst ?? '5%', (_) {})),
-    ]),
-    const SizedBox(height: 12),
-    _label('Dietary Classification', null),
-    Wrap(
-      spacing: 6,
-      children: ['Pure Veg', 'Non-Veg', 'Contains Egg']
-          .map((e) => ChoiceChip(
-                label: Text(e, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800)),
-                selected: formDietary == e,
-                onSelected: (_) => onDietary(e),
-                selectedColor: AdminColors.yellow,
-                side: const BorderSide(color: AdminColors.line),
-              ))
-          .toList(),
-    ),
-    const SizedBox(height: 12),
-    Row(children: [
-      Expanded(child: _field(price, '₹220', label: 'Base Price (₹)', keyboard: const TextInputType.numberWithOptions(decimal: true), validator: (v) { final n = double.tryParse(v ?? ''); return n == null || n < 0 ? 'Enter a valid price' : null; })),
-      const SizedBox(width: 10), Expanded(child: _field(prep, '15', label: 'Prep Time (Min)', keyboard: TextInputType.number, validator: (v) { final n = int.tryParse(v ?? ''); return n == null || n < 1 || n > 300 ? '1–300 min' : null; })),
-    ]),
-    const SizedBox(height: 12),
-    _field(description, 'Charcoal roasted chicken tikka cubes, spiced onions, mint yogurt and flaky paratha bread.', label: 'Short Description', maxLines: 3),
-    const SizedBox(height: 12),
-    _label('Ingredients & Tags', null),
-    if (selected == null || selected!.tags.isEmpty)
-      const Text('No tags yet', style: TextStyle(fontSize: 9, color: AdminColors.muted))
-    else
-      Wrap(
-        spacing: 5,
-        runSpacing: 5,
-        children: selected!.tags.map((e) => InputChip(
-          label: Text(e, style: const TextStyle(fontSize: 9)),
-          onDeleted: () {
-            selected!.tags.remove(e);
-            (context as Element).markNeedsBuild();
-          },
-        )).toList(),
+  const _ProductEditor({
+    required this.form,
+    required this.formCategoryId,
+    required this.formDietary,
+    required this.creating,
+    required this.selected,
+    required this.categories,
+    required this.name,
+    required this.slug,
+    required this.description,
+    required this.price,
+    required this.prep,
+    required this.stock,
+    required this.tag,
+    required this.imageUrl,
+    required this.imagePreview,
+    required this.uploading,
+    required this.saving,
+    required this.onClose,
+    required this.onPickImage,
+    required this.onSave,
+    required this.onDeactivate,
+    required this.onCategory,
+    required this.onDietary,
+  });
+
+  final GlobalKey<FormState> form;
+  final int? formCategoryId;
+  final String formDietary;
+  final bool creating;
+  final bool uploading;
+  final bool saving;
+  final _CatalogueProduct? selected;
+  final List<_CatalogueCategory> categories;
+  final TextEditingController name;
+  final TextEditingController slug;
+  final TextEditingController description;
+  final TextEditingController price;
+  final TextEditingController prep;
+  final TextEditingController stock;
+  final TextEditingController tag;
+  final TextEditingController imageUrl;
+  final String imagePreview;
+  final VoidCallback onClose;
+  final VoidCallback onPickImage;
+  final VoidCallback onSave;
+  final VoidCallback onDeactivate;
+  final ValueChanged<int?> onCategory;
+  final ValueChanged<String> onDietary;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(17),
+        border: Border.all(color: AdminColors.line),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x09000000),
+            blurRadius: 18,
+            offset: Offset(0, 6),
+          ),
+        ],
       ),
-    const SizedBox(height: 8),
-    TextButton.icon(onPressed: () { if (tag.text.trim().isEmpty || selected == null) return; selected!.tags = [...selected!.tags, tag.text.trim()]; tag.clear(); (context as Element).markNeedsBuild(); }, icon: const Icon(Icons.add_rounded, size: 15), label: const Text('Add tag', style: TextStyle(fontSize: 9.5))),
-    const SizedBox(height: 10),
-    _label('Product Photography (1:1 Ratio)', null),
-    InkWell(onTap: uploading ? null : onPickImage, borderRadius: BorderRadius.circular(12), child: Container(width: double.infinity, height: 135, decoration: BoxDecoration(color: AdminColors.peach, borderRadius: BorderRadius.circular(12), border: Border.all(color: AdminColors.line)), child: imagePreview.isNotEmpty ? ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.network(imagePreview, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Center(child: Text('Preview unavailable')))) : Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(uploading ? Icons.hourglass_top_rounded : Icons.cloud_upload_outlined, size: 27, color: AdminColors.yellowDark), const SizedBox(height: 7), Text(uploading ? 'Reading image…' : 'Drop product image or browse file', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800)), const SizedBox(height: 4), const Text('PNG, JPG, WEBP up to 4MB', style: TextStyle(fontSize: 8.5, color: AdminColors.muted))]))),
-    const SizedBox(height: 8),
-    _field(imageUrl, 'https://...', label: 'Image URL (supported by current API)', validator: (_) => null),
-    const SizedBox(height: 14),
-    Row(children: [Expanded(child: _field(stock, '0', label: 'Stock Quantity', keyboard: TextInputType.number, validator: (v) => int.tryParse(v ?? '') == null || int.parse(v!) < 0 ? 'Enter stock' : null)), const SizedBox(width: 10), Expanded(child: SwitchListTile(contentPadding: EdgeInsets.zero, dense: true, title: const Text('Live on app', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800)), value: selected?.available ?? true, onChanged: (v) { if (selected != null) { selected!.available = v; } }))]),
-    const SizedBox(height: 14),
-    SizedBox(width: double.infinity, height: 46, child: FilledButton.icon(onPressed: saving ? null : onSave, icon: Icon(saving ? Icons.hourglass_top_rounded : Icons.save_rounded, size: 17), label: Text(saving ? 'Saving…' : 'Save to Catalogue (Laravel API v1)'), style: FilledButton.styleFrom(backgroundColor: AdminColors.red, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11))))),
-    if (!creating) Align(alignment: Alignment.center, child: TextButton(onPressed: saving ? null : onDeactivate, child: const Text('Deactivate product', style: TextStyle(fontSize: 9, color: AdminColors.red)))),
-    const SizedBox(height: 3), const Center(child: Text('Instant cache purge for user apps • server-side cache behavior applies', style: TextStyle(fontSize: 8, color: AdminColors.muted))),
-  ])));
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Form(
+          key: form,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'LIVE SYNC ENGINE',
+                          style: TextStyle(
+                            fontSize: 8.5,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.2,
+                            color: AdminColors.green,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          creating ? 'Add New Product' : 'Edit Product',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: onClose,
+                    icon: const Icon(Icons.close_rounded, size: 18),
+                  ),
+                ],
+              ),
+              const Divider(height: 22),
+              _label('Dish Name *', 'Max 180 chars'),
+              _field(
+                name,
+                'Smokey Chicken Tikka Roll',
+                maxLength: 180,
+                validator: (v) => v == null || v.trim().isEmpty
+                    ? 'Dish name is required'
+                    : null,
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _dropdownField(
+                      'Category',
+                      categories
+                          .map(
+                            (c) => DropdownMenuItem<int?>(
+                              value: c.id,
+                              child: Text(c.name),
+                            ),
+                          )
+                          .toList(),
+                      formCategoryId ??
+                          (categories.isNotEmpty ? categories.first.id : null),
+                      onCategory,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _select(
+                      'GST Slab',
+                      const ['5%', '12%', '18%'],
+                      selected?.gst ?? '5%',
+                      (_) {},
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _label('Dietary Classification', null),
+              Wrap(
+                spacing: 6,
+                children: ['Pure Veg', 'Non-Veg', 'Contains Egg']
+                    .map(
+                      (e) => ChoiceChip(
+                        label: Text(
+                          e,
+                          style: const TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        selected: formDietary == e,
+                        onSelected: (_) => onDietary(e),
+                        selectedColor: AdminColors.yellow,
+                        side: const BorderSide(color: AdminColors.line),
+                      ),
+                    )
+                    .toList(),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _field(
+                      price,
+                      '₹220',
+                      label: 'Base Price (₹)',
+                      keyboard: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      validator: (v) {
+                        final n = double.tryParse(v ?? '');
+                        return n == null || n < 0
+                            ? 'Enter a valid price'
+                            : null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _field(
+                      prep,
+                      '15',
+                      label: 'Prep Time (Min)',
+                      keyboard: TextInputType.number,
+                      validator: (v) {
+                        final n = int.tryParse(v ?? '');
+                        return n == null || n < 1 || n > 300
+                            ? '1–300 min'
+                            : null;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _field(
+                description,
+                'Charcoal roasted chicken tikka cubes, spiced onions, mint yogurt and flaky paratha bread.',
+                label: 'Short Description',
+                maxLines: 3,
+              ),
+              const SizedBox(height: 12),
+              _label('Ingredients & Tags', null),
+              if (selected == null || selected!.tags.isEmpty)
+                const Text(
+                  'No tags yet',
+                  style: TextStyle(fontSize: 9, color: AdminColors.muted),
+                )
+              else
+                Wrap(
+                  spacing: 5,
+                  runSpacing: 5,
+                  children: selected!.tags
+                      .map(
+                        (e) => InputChip(
+                          label: Text(
+                            e,
+                            style: const TextStyle(fontSize: 9),
+                          ),
+                          onDeleted: () {
+                            selected!.tags.remove(e);
+                            (context as Element).markNeedsBuild();
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+              const SizedBox(height: 8),
+              TextButton.icon(
+                onPressed: () {
+                  if (tag.text.trim().isEmpty || selected == null) return;
+                  selected!.tags = [
+                    ...selected!.tags,
+                    tag.text.trim(),
+                  ];
+                  tag.clear();
+                  (context as Element).markNeedsBuild();
+                },
+                icon: const Icon(Icons.add_rounded, size: 15),
+                label: const Text(
+                  'Add tag',
+                  style: TextStyle(fontSize: 9.5),
+                ),
+              ),
+              const SizedBox(height: 10),
+              _label('Product Photography (1:1 Ratio)', null),
+              InkWell(
+                onTap: uploading ? null : onPickImage,
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  width: double.infinity,
+                  height: 135,
+                  decoration: BoxDecoration(
+                    color: AdminColors.peach,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AdminColors.line),
+                  ),
+                  child: imagePreview.isNotEmpty
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            imagePreview,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => const Center(
+                              child: Text('Preview unavailable'),
+                            ),
+                          ),
+                        )
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              uploading
+                                  ? Icons.hourglass_top_rounded
+                                  : Icons.cloud_upload_outlined,
+                              size: 27,
+                              color: AdminColors.yellowDark,
+                            ),
+                            const SizedBox(height: 7),
+                            Text(
+                              uploading
+                                  ? 'Reading image…'
+                                  : 'Drop product image or browse file',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            const Text(
+                              'PNG, JPG, WEBP up to 4MB',
+                              style: TextStyle(
+                                fontSize: 8.5,
+                                color: AdminColors.muted,
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              _field(
+                imageUrl,
+                'https://...',
+                label: 'Image URL (supported by current API)',
+                validator: (_) => null,
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: _field(
+                      stock,
+                      '0',
+                      label: 'Stock Quantity',
+                      keyboard: TextInputType.number,
+                      validator: (v) {
+                        final value = int.tryParse(v ?? '');
+                        return value == null || value < 0
+                            ? 'Enter stock'
+                            : null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      title: const Text(
+                        'Live on app',
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      value: selected?.available ?? true,
+                      onChanged: (v) {
+                        if (selected != null) {
+                          selected!.available = v;
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              SizedBox(
+                width: double.infinity,
+                height: 46,
+                child: FilledButton.icon(
+                  onPressed: saving ? null : onSave,
+                  icon: Icon(
+                    saving
+                        ? Icons.hourglass_top_rounded
+                        : Icons.save_rounded,
+                    size: 17,
+                  ),
+                  label: Text(
+                    saving
+                        ? 'Saving…'
+                        : 'Save to Catalogue (Laravel API v1)',
+                  ),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AdminColors.red,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(11),
+                    ),
+                  ),
+                ),
+              ),
+              if (!creating)
+                Align(
+                  alignment: Alignment.center,
+                  child: TextButton(
+                    onPressed: saving ? null : onDeactivate,
+                    child: const Text(
+                      'Deactivate product',
+                      style: TextStyle(
+                        fontSize: 9,
+                        color: AdminColors.red,
+                      ),
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 3),
+              const Center(
+                child: Text(
+                  'Instant cache purge for user apps • server-side cache behavior applies',
+                  style: TextStyle(
+                    fontSize: 8,
+                    color: AdminColors.muted,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 Widget _label(String text, String? trailing) => Padding(
