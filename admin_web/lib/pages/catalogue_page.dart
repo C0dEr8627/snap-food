@@ -173,7 +173,7 @@ class _CataloguePageState extends State<CataloguePage> {
           ),
         ),
       ),
-    )).future;
+    ).future;
   }
   Future<bool> _save() async {
     final validationError = _validateProductForm();
@@ -299,7 +299,7 @@ class _CataloguePageState extends State<CataloguePage> {
           actions: [shad.OutlineButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Close'))],
         ),
       ),
-    ));
+    );
     if (mounted) await _load(keepSelection: true);
   }
 
@@ -433,8 +433,8 @@ class _CategoryManagerState extends State<_CategoryManager> {
 
     final result = await shad.showOverlay<bool>(
       context,
-      shad.DialogConfiguration(
-        builder: (c) => shad.AlertDialog(
+      shad.DialogConfiguration(),
+      builder: (c) => shad.AlertDialog(
           title: Text(category == null ? 'Add Category' : 'Edit Category'),
           content: SizedBox(
             width: 430,
