@@ -219,7 +219,7 @@ class _BrandMark extends StatelessWidget {
   Widget build(BuildContext context) => ClipRRect(
     borderRadius: BorderRadius.circular(12),
     child: SvgPicture.asset(
-      'assets/brand/snap_foodd_mark.svg',
+      'assets/brand/logo.svg',
       width: 42,
       height: 42,
       fit: BoxFit.cover,
