@@ -493,7 +493,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
                 title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w800)),
                 subtitle: Text((c.slug.isEmpty ? 'No slug' : c.slug) + ' • ' + c.count.toString() + ' product(s) • inactive'),
                 trailing: Wrap(spacing: 2, children: [
-                  shad.IconButton.ghost(tooltip: 'Activate category', onPressed: busy ? null : () => _setCategoryActive(c, true), icon: busy ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const AdminIcon(HugeIcons.strokeRoundedView, size: 18)),
+                  shad.IconButton.ghost(tooltip: 'Activate category', onPressed: busy ? null : () => _setCategoryActive(c, true), icon: busy ? const SizedBox(width: 18, height: 18, child: shad.CircularProgressIndicator(size: 18, strokeWidth: 2)) : const AdminIcon(HugeIcons.strokeRoundedView, size: 18)),
                   shad.IconButton.ghost(tooltip: c.count == 0 ? 'Delete permanently' : 'Move products before deleting', onPressed: busy || c.count > 0 ? null : () => _deleteCategory(c), icon: const AdminIcon(HugeIcons.strokeRoundedDelete02, size: 18, color: AdminColors.red)),
                 ]),
               );
