@@ -71,7 +71,7 @@ class OrderApiTest extends TestCase
         $product = $this->product();
 
         $response = $this->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/orders', $this->checkoutPayload($product));
+            ->postJson('/api/v1/consumer/orders', $this->checkoutPayload($product));
 
         $response->assertCreated()
             ->assertJsonPath('data.status', Order::STATUS_PLACED)
@@ -112,7 +112,7 @@ class OrderApiTest extends TestCase
         $payload['items'][0]['price'] = '1.00';
 
         $this->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/orders', $payload)
+            ->postJson('/api/v1/consumer/orders', $payload)
             ->assertCreated()
             ->assertJsonPath('data.subtotal', '299.00')
             ->assertJsonPath('data.items.0.unit_price', '299.00');
@@ -120,7 +120,7 @@ class OrderApiTest extends TestCase
         $product->update(['is_available' => false]);
 
         $this->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/orders', $this->checkoutPayload($product))
+            ->postJson('/api/v1/consumer/orders', $this->checkoutPayload($product))
             ->assertUnprocessable()
             ->assertJsonPath('code', 'VALIDATION_FAILED');
     }
@@ -132,18 +132,18 @@ class OrderApiTest extends TestCase
         $product = $this->product();
 
         $this->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/orders', $this->checkoutPayload($product, 1))
+            ->postJson('/api/v1/consumer/orders', $this->checkoutPayload($product, 1))
             ->assertCreated();
 
         $order = Order::firstOrFail();
 
         $this->actingAs($customer, 'sanctum')
-            ->getJson('/api/v1/orders')
+            ->getJson('/api/v1/consumer/orders')
             ->assertOk()
             ->assertJsonPath('data.total', 1);
 
         $this->actingAs($otherCustomer, 'sanctum')
-            ->getJson('/api/v1/orders/'.$order->id)
+            ->getJson('/api/v1/consumer/orders/'.$order->id)
             ->assertForbidden();
     }
 
@@ -153,11 +153,11 @@ class OrderApiTest extends TestCase
         $product = $this->product();
 
         $this->actingAs($admin, 'sanctum')
-            ->getJson('/api/v1/orders')
+            ->getJson('/api/v1/consumer/orders')
             ->assertForbidden();
 
         $this->actingAs($admin, 'sanctum')
-            ->postJson('/api/v1/orders', $this->checkoutPayload($product))
+            ->postJson('/api/v1/consumer/orders', $this->checkoutPayload($product))
             ->assertForbidden();
     }
 
@@ -168,7 +168,7 @@ class OrderApiTest extends TestCase
         $product = $this->product();
 
         $this->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/orders', $this->checkoutPayload($product, 1))
+            ->postJson('/api/v1/consumer/orders', $this->checkoutPayload($product, 1))
             ->assertCreated();
 
         $order = Order::firstOrFail();
@@ -193,7 +193,7 @@ class OrderApiTest extends TestCase
         $product = $this->product();
 
         $this->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/orders', $this->checkoutPayload($product, 1))
+            ->postJson('/api/v1/consumer/orders', $this->checkoutPayload($product, 1))
             ->assertCreated();
 
         $order = Order::firstOrFail();
@@ -215,7 +215,7 @@ class OrderApiTest extends TestCase
         $product = $this->product();
 
         $this->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/orders', $this->checkoutPayload($product, 1))
+            ->postJson('/api/v1/consumer/orders', $this->checkoutPayload($product, 1))
             ->assertCreated();
 
         $order = Order::firstOrFail();
@@ -233,7 +233,7 @@ class OrderApiTest extends TestCase
         $product = $this->product();
 
         $this->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/orders', $this->checkoutPayload($product, 1))
+            ->postJson('/api/v1/consumer/orders', $this->checkoutPayload($product, 1))
             ->assertCreated();
 
         $order = Order::firstOrFail();
