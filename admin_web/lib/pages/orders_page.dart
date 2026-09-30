@@ -61,7 +61,7 @@ class _OrdersPageState extends State<OrdersPage>{
       setState(() { orders..clear()..addAll(live); selectedId=live.isNotEmpty?live.first.id:null; loading=false; loadError=null; });
     } catch(e) {
       if(!mounted)return;
-      setState(()=>{loading=false,loadError=e.toString()});
+      setState(() { loading=false; loadError=e.toString(); });
     }
   }
   @override void dispose(){search.dispose();super.dispose();}
