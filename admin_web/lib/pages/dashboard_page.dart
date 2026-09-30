@@ -407,7 +407,7 @@ class _LiveOrdersCard extends StatelessWidget {
             SizedBox(height: 3),
             Text('Real-time telemetry updated via websocket /api/v1/orders/stream', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
           ])),
-          IconButton(tooltip: 'Export', onPressed: () => _notice(context, 'Export will use the existing orders service when connected.'), icon: const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 19)),
+          shad.IconButton.ghost(tooltip: 'Export', onPressed: () => _notice(context, 'Export will use the existing orders service when connected.'), icon: const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 19)),
         ]),
         const SizedBox(height: 13),
         const SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: [
@@ -599,7 +599,7 @@ class _OrdersTable extends StatelessWidget {
           DataCell(Text(r[2], style: const TextStyle(fontWeight: FontWeight.w800))),
           DataCell(Text(r[3])),
           DataCell(_Pill(r[4])),
-          DataCell(IconButton(onPressed: () => _notice(context, 'Order details will be connected to the Laravel API.'), icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 19))),
+          DataCell(shad.IconButton.ghost(onPressed: () => _notice(context, 'Order details will be connected to the Laravel API.'), icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 19))),
         ])).toList(),
       ),
     ),
