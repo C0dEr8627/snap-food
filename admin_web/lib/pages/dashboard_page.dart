@@ -132,7 +132,7 @@ class _DashboardKpi extends StatelessWidget {
         Text(secondary, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.green)),
         if (progress != null) ...[
           const SizedBox(height: 10),
-          ClipRRect(borderRadius: BorderRadius.circular(6), child: LinearProgressIndicator(value: progress, minHeight: 5, backgroundColor: AdminColors.canvas, color: AdminColors.yellow)),
+          const _DashboardProgress(value: progress),
           const SizedBox(height: 4),
           Text(progressLabel ?? '', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
         ],
@@ -350,10 +350,29 @@ class _KitchenPulseCard extends StatelessWidget {
               SizedBox(height: 2),
               Text('Batching window: 90 secs', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
             ])),
-            const Switch(value: true, onChanged: null, materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
+            const shad.Switch(value: true, onChanged: null),
           ]),
         ),
       ]),
+    ),
+  );
+}
+
+class _DashboardProgress extends StatelessWidget {
+  const _DashboardProgress({required this.value, this.color = AdminColors.yellow});
+  final double value;
+  final Color color;
+  @override
+  Widget build(BuildContext context) => ClipRRect(
+    borderRadius: BorderRadius.circular(6),
+    child: Container(
+      height: 5,
+      color: AdminColors.canvas,
+      alignment: Alignment.centerLeft,
+      child: FractionallySizedBox(
+        widthFactor: value.clamp(0.0, 1.0),
+        child: Container(color: color),
+      ),
     ),
   );
 }
@@ -375,7 +394,7 @@ class _KitchenItem extends StatelessWidget {
         const SizedBox(height: 3),
         Text('$tickets • $prep', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
         const SizedBox(height: 6),
-        ClipRRect(borderRadius: BorderRadius.circular(5), child: LinearProgressIndicator(value: capacity, minHeight: 4, backgroundColor: AdminColors.canvas, color: capacity > .9 ? AdminColors.red : AdminColors.yellowDark)),
+        _DashboardProgress(value: capacity, color: capacity > .9 ? AdminColors.red : AdminColors.yellowDark),
       ])),
       const SizedBox(width: 8),
       Text('${(capacity * 100).round()}% cap', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted)),
@@ -564,7 +583,7 @@ class _CardTitle extends StatelessWidget {
   const _CardTitle({required this.title, this.action});
   final String title; final String? action;
   @override
-  Widget build(BuildContext context) => Row(children: [Expanded(child: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900))), if (action != null) TextButton(onPressed: () => _notice(context, 'Use the Orders page for the complete queue.'), child: Text(action!, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.yellowDark)))]);
+  Widget build(BuildContext context) => Row(children: [Expanded(child: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900))), if (action != null) shad.Button.ghost(onPressed: () => _notice(context, 'Use the Orders page for the complete queue.'), child: Text(action!, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.yellowDark)))]);
 }
 
 class _OrdersTable extends StatelessWidget {
