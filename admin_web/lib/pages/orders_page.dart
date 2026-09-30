@@ -1,7 +1,8 @@
 part of '../main.dart';
 
 class OrdersPage extends StatefulWidget{
-  const OrdersPage({super.key});
+  const OrdersPage({super.key, this.searchQuery = ''});
+  final String searchQuery;
   @override State<OrdersPage> createState()=>_OrdersPageState();
 }
 
