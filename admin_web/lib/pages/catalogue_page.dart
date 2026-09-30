@@ -1049,7 +1049,12 @@ Widget _field(TextEditingController c, String hint, {String? label, int? maxLeng
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
     if (label != null) Padding(padding: const EdgeInsets.only(bottom: 5), child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted))),
-    shad.TextField(controller: c, maxLines: maxLines, keyboardType: keyboard, placeholder: Text(hint, style: const TextStyle(fontSize: 11, color: AdminColors.muted))),
+    shad.TextField(
+      controller: c,
+      maxLines: maxLines,
+      keyboardType: keyboard,
+      placeholder: Text(hint, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
+    ),
   ],
 );
 
@@ -1630,22 +1635,16 @@ class _ProductEditor extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      dense: true,
-                      title: const Text(
-                        'Live on app',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Text('Live on app', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
+                        const SizedBox(width: 8),
+                        shad.Switch(
+                          value: selected?.available ?? true,
+                          onChanged: (v) { if (selected != null) selected!.available = v; },
                         ),
-                      ),
-                      value: selected?.available ?? true,
-                      onChanged: (v) {
-                        if (selected != null) {
-                          selected!.available = v;
-                        }
-                      },
+                      ],
                     ),
                   ),
                 ],
@@ -1708,15 +1707,6 @@ Widget _dropdownField(String label, List<DropdownMenuItem<int?>> items, int? val
   Padding(padding: const EdgeInsets.only(bottom: 5), child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted))),
   SizedBox(height: 43, child: shad.Select<int?>(value: items.any((i) => i.value == value) ? value : (items.isEmpty ? null : items.first.value), onChanged: onChanged, placeholder: const Text('Select category'), itemBuilder: (context, item) => Text(item?.toString() ?? 'All categories'))),
 ]);
-
-InputDecoration _inputDecoration(String hint, [AdminIconData? icon]) => InputDecoration(
-  hintText: hint, hintStyle: const TextStyle(fontSize: 11, color: AdminColors.muted),
-  prefixIcon: icon == null ? null : AdminIcon(icon, size: 17, color: AdminColors.muted),
-  filled: true, fillColor: AdminColors.peach, contentPadding: const EdgeInsets.symmetric(horizontal: 11, vertical: 12),
-  border: OutlineInputBorder(borderRadius: BorderRadius.circular(9), borderSide: const BorderSide(color: AdminColors.line)),
-  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(9), borderSide: const BorderSide(color: AdminColors.line)),
-  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(9), borderSide: const BorderSide(color: AdminColors.yellowDark, width: 1.3)),
-);
 
 class _ErrorBanner extends StatelessWidget {
   const _ErrorBanner({required this.message, required this.onRetry}); final String message; final VoidCallback onRetry;
