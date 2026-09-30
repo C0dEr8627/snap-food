@@ -15,7 +15,7 @@ Laravel enforces identity, role, resource ownership, assignment ownership, accou
 ## Security
 Use the Laravel session/token mechanism selected during backend setup. Never commit OAuth secrets, DB credentials, access tokens or production env files. Never log credentials or sensitive customer data.
 
-Admin Flutter web uses the protected `/api/v1/auth/admin/*` bearer-token flow. The existing Laravel Blade admin routes continue to use the separate protected `web` session.
+Admin Flutter web uses the protected `/api/v1/admin/auth/*` bearer-token flow. The existing Laravel Blade admin routes continue to use the separate protected `web` session.
 
 ## Tests
 Invalid/expired Google credential, cancelled sign-in, invalid email/password, unauthorized Google admin, inactive account, expired session, logout and network failure.
