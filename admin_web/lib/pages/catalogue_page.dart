@@ -178,32 +178,28 @@ class _CataloguePageState extends State<CataloguePage> {
   }
 
   Future<void> _manageCategories() async {
-    final name = TextEditingController();
-    final slug = TextEditingController();
-    final order = TextEditingController(text: '0');
-    final result = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
-      title: const Text('Manage Categories'),
-      content: SizedBox(width: 420, child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Text('Existing categories: ' + _categories.length.toString(), style: const TextStyle(color: AdminColors.muted)),
-        const SizedBox(height: 16), _field(name, 'New category name'), const SizedBox(height: 10),
-        _field(slug, 'Slug (alpha-dash)'), const SizedBox(height: 10), _field(order, 'Sort order', keyboard: TextInputType.number),
-      ])),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Close')),
-        FilledButton(onPressed: () async {
-          if (name.text.trim().isEmpty || slug.text.trim().isEmpty) return;
-          try {
-            final c = await _repo.saveCategory(name: name.text, slug: slug.text, sortOrder: int.tryParse(order.text) ?? 0, active: true);
-            if (!_live) _categories = [..._categories, c];
-            else _categories = await _repo.categories();
-            if (context.mounted) Navigator.pop(context, true);
-            if (mounted) { setState(() {}); _notice(this.context, 'Category saved.'); }
-          } catch (e) { if (context.mounted) _notice(context, e.toString(), error: true); }
-        }, child: const Text('Add category')),
-      ],
-    ));
-    name.dispose(); slug.dispose(); order.dispose();
-    if (result == true && mounted) setState(() {});
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, dialogSetState) => AlertDialog(
+          title: const Text('Manage Categories'),
+          content: SizedBox(
+            width: 560,
+            child: _CategoryManager(
+              categories: _categories, live: _live, repository: _repo,
+              onChanged: () async {
+                final fresh = _live ? await _repo.categories() : _categories;
+                if (!mounted) return;
+                setState(() => _categories = fresh);
+                dialogSetState(() {});
+              },
+            ),
+          ),
+          actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Close'))],
+        ),
+      ),
+    );
+    if (mounted) await _load(keepSelection: true);
   }
 
   @override
@@ -237,11 +233,108 @@ class _CataloguePageState extends State<CataloguePage> {
   Widget _buildEditor() => _ProductEditor(
     form: _form, formCategoryId: _formCategoryId, formDietary: _formDietary, creating: _creating, selected: _selected, categories: _categories, name: _name, slug: _slug, description: _description,
     price: _price, prep: _prep, stock: _stock, tag: _tag, imageUrl: _imageUrl, imagePreview: _imagePreview, uploading: _uploading, saving: _saving,
-    onClose: _newProduct, onPickImage: _pickImage, onSave: _save, onDeactivate: _deactivate, onCategory: (v) { setState(() {}); if (_selected != null) _selected!.categoryId = v; },
+    onClose: _newProduct, onPickImage: _pickImage, onSave: _save, onDeactivate: _deactivate, onCategory: (v) { setState(() { _formCategoryId = v; }); if (_selected != null) _selected!.categoryId = v; },
     onDietary: (v) { if (_selected != null) _selected!.dietary = v; setState(() {}); },
   );
 }
 
+class _CategoryManager extends StatefulWidget {
+  const _CategoryManager({required this.categories, required this.live, required this.repository, required this.onChanged});
+  final List<_CatalogueCategory> categories;
+  final bool live;
+  final _CatalogueRepository repository;
+  final Future<void> Function() onChanged;
+  @override State<_CategoryManager> createState() => _CategoryManagerState();
+}
+
+class _CategoryManagerState extends State<_CategoryManager> {
+  int? _busyId;
+  Future<void> _saveCategory({int? id, required String name, required String slug, required int sortOrder, required bool active}) async {
+    setState(() => _busyId = id ?? -1);
+    try {
+      final saved = await widget.repository.saveCategory(id: id, name: name, slug: slug, sortOrder: sortOrder, active: active);
+      if (!widget.live) {
+        final list = [...widget.categories];
+        final index = list.indexWhere((c) => c.id == id);
+        if (index >= 0) list[index] = saved; else list.add(saved);
+        widget.categories..clear()..addAll(list);
+      }
+      await widget.onChanged();
+      if (mounted) _notice(context, id == null ? 'Category created successfully.' : 'Category updated successfully.');
+    } catch (e) { if (mounted) _notice(context, e.toString(), error: true); }
+    finally { if (mounted) setState(() => _busyId = null); }
+  }
+  Future<void> _deleteCategory(_CatalogueCategory category) async {
+    if (category.id == null) return;
+    final confirmed = await showDialog<bool>(context: context, builder: (c) => AlertDialog(
+      title: const Text('Delete category?'),
+      content: Text('This will deactivate "${category.name}". Products are not deleted.'),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
+        FilledButton(onPressed: () => Navigator.pop(c, true), style: FilledButton.styleFrom(backgroundColor: AdminColors.red), child: const Text('Delete')),
+      ],
+    ));
+    if (confirmed != true) return;
+    setState(() => _busyId = category.id);
+    try {
+      if (widget.live) {
+        final res = await http.delete(widget.repository._uri('/admin/categories/${category.id}'), headers: widget.repository._headers);
+        if (res.statusCode < 200 || res.statusCode >= 300) throw _CatalogueApiException(res.statusCode, _CatalogueRepository._message(res));
+      } else {
+        final list = [...widget.categories];
+        final index = list.indexWhere((c) => c.id == category.id);
+        if (index >= 0) list[index] = _CatalogueCategory(id: category.id, name: category.name, slug: category.slug, sortOrder: category.sortOrder, active: false, count: category.count);
+        widget.categories..clear()..addAll(list);
+      }
+      await widget.onChanged();
+      if (mounted) _notice(context, 'Category deleted (deactivated).');
+    } catch (e) { if (mounted) _notice(context, e.toString(), error: true); }
+    finally { if (mounted) setState(() => _busyId = null); }
+  }
+  Future<void> _openEditor([_CatalogueCategory? category]) async {
+    final name = TextEditingController(text: category?.name ?? '');
+    final slug = TextEditingController(text: category?.slug ?? '');
+    final order = TextEditingController(text: (category?.sortOrder ?? 0).toString());
+    final form = GlobalKey<FormState>();
+    final result = await showDialog<bool>(context: context, builder: (c) => AlertDialog(
+      title: Text(category == null ? 'Add Category' : 'Edit Category'),
+      content: SizedBox(width: 430, child: Form(key: form, child: Column(mainAxisSize: MainAxisSize.min, children: [
+        _field(name, 'Category name', maxLength: 120, validator: (v) => v == null || v.trim().isEmpty ? 'Category name is required' : null),
+        const SizedBox(height: 10),
+        _field(slug, 'Slug (alpha-dash)', maxLength: 140, validator: (v) { final value = v?.trim() ?? ''; if (value.isEmpty) return 'Slug is required'; if (!RegExp(r'^[A-Za-z0-9_-]+$').hasMatch(value)) return 'Use letters, numbers, - or _'; return null; }),
+        const SizedBox(height: 10),
+        _field(order, 'Sort order', keyboard: TextInputType.number, validator: (v) { final value = int.tryParse(v ?? ''); return value == null || value < 0 ? 'Enter 0 or greater' : null; }),
+      ]))),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
+        FilledButton(onPressed: () async {
+          if (!form.currentState!.validate()) return;
+          await _saveCategory(id: category?.id, name: name.text, slug: slug.text, sortOrder: int.tryParse(order.text) ?? 0, active: true);
+          if (c.mounted) Navigator.pop(c, true);
+        }, child: Text(category == null ? 'Create' : 'Save Changes')),
+      ],
+    ));
+    name.dispose(); slug.dispose(); order.dispose();
+    if (result == true && mounted) setState(() {});
+  }
+  @override Widget build(BuildContext context) {
+    final visible = widget.categories.where((c) => c.active).toList();
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Align(alignment: Alignment.centerRight, child: FilledButton.icon(onPressed: _busyId != null ? null : () => _openEditor(), icon: const Icon(Icons.add, size: 16), label: const Text('Add Category'))),
+      const SizedBox(height: 12),
+      if (visible.isEmpty) const Padding(padding: EdgeInsets.all(18), child: Text('No active categories yet.')) else ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 360),
+        child: ListView.separated(shrinkWrap: true, itemCount: visible.length, separatorBuilder: (_, __) => const Divider(height: 1), itemBuilder: (_, index) {
+          final c = visible[index]; final busy = _busyId == c.id;
+          return ListTile(dense: true, title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w800)), subtitle: Text(c.slug.isEmpty ? 'No slug' : c.slug), trailing: Wrap(spacing: 2, children: [
+            IconButton(tooltip: 'Edit', onPressed: busy ? null : () => _openEditor(c), icon: const Icon(Icons.edit_outlined, size: 18)),
+            IconButton(tooltip: 'Delete', onPressed: busy ? null : () => _deleteCategory(c), icon: busy ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.delete_outline, size: 18, color: AdminColors.red)),
+          ]));
+        }),
+      ),
+    ]);
+  }
+}
 class _Workspace extends StatelessWidget {
   const _Workspace({required this.list, required this.editor, required this.listFlex, required this.editorFlex});
   final Widget list, editor; final int listFlex, editorFlex;
