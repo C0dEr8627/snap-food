@@ -430,78 +430,189 @@ class _CategoryManagerState extends State<_CategoryManager> {
     final name = TextEditingController(text: category?.name ?? '');
     final slug = TextEditingController(text: category?.slug ?? '');
     final order = TextEditingController(text: (category?.sortOrder ?? 0).toString());
-    final form = GlobalKey<FormState>();
-    final result = await shad.showOverlay<bool>(context, shad.DialogConfiguration<bool>(builder: (c) => shad.AlertDialog(
-      title: Text(category == null ? 'Add Category' : 'Edit Category'),
-      content: SizedBox(width: 430, child: Form(key: form, child: Column(mainAxisSize: MainAxisSize.min, children: [
-        _field(name, 'Category name', maxLength: 120, validator: (v) => v == null || v.trim().isEmpty ? 'Category name is required' : null),
-        const SizedBox(height: 10),
-        _field(slug, 'Slug (alpha-dash)', maxLength: 140, validator: (v) { final value = v?.trim() ?? ''; if (value.isEmpty) return 'Slug is required'; if (!RegExp(r'^[A-Za-z0-9_-]+$').hasMatch(value)) return 'Use letters, numbers, - or _'; return null; }),
-        const SizedBox(height: 10),
-        _field(order, 'Sort order', keyboard: TextInputType.number, validator: (v) { final value = int.tryParse(v ?? ''); return value == null || value < 0 ? 'Enter 0 or greater' : null; }),
-      ]))),
-      actions: [
-        shad.OutlineButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
-        shad.PrimaryButton(onPressed: () async {
-          final categoryName = name.text.trim();
-          final categorySlug = slug.text.trim();
-          final categoryOrder = int.tryParse(order.text.trim());
-          if (categoryName.isEmpty) { _notice(c, 'Category name is required.', error: true); return; }
-          if (categorySlug.isEmpty || !RegExp(r'^[A-Za-z0-9_-]+(id: category?.id, name: categoryName, slug: categorySlug, sortOrder: categoryOrder, active: true);
-          if (c.mounted) Navigator.pop(c, true);
-        }, child: Text(category == null ? 'Create' : 'Save Changes')),
-      ],
-    ))).future;
-    name.dispose(); slug.dispose(); order.dispose();
+
+    final result = await shad.showOverlay<bool>(
+      context,
+      shad.DialogConfiguration<bool>(
+        builder: (c) => shad.AlertDialog(
+          title: Text(category == null ? 'Add Category' : 'Edit Category'),
+          content: SizedBox(
+            width: 430,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _field(name, 'Category name', maxLength: 120),
+                const SizedBox(height: 10),
+                _field(slug, 'Slug (alpha-dash)', maxLength: 140),
+                const SizedBox(height: 10),
+                _field(order, 'Sort order', keyboard: TextInputType.number),
+              ],
+            ),
+          ),
+          actions: [
+            shad.OutlineButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: const Text('Cancel'),
+            ),
+            shad.PrimaryButton(
+              onPressed: () async {
+                final categoryName = name.text.trim();
+                final categorySlug = slug.text.trim();
+                final categoryOrder = int.tryParse(order.text.trim());
+
+                if (categoryName.isEmpty) {
+                  _notice(c, 'Category name is required.', error: true);
+                  return;
+                }
+                if (categorySlug.isEmpty ||
+                    !RegExp(r'^[A-Za-z0-9_-]+$').hasMatch(categorySlug)) {
+                  _notice(c, 'Use letters, numbers, - or _ for the slug.', error: true);
+                  return;
+                }
+                if (categoryOrder == null || categoryOrder < 0) {
+                  _notice(c, 'Sort order must be 0 or greater.', error: true);
+                  return;
+                }
+
+                await _saveCategory(
+                  id: category?.id,
+                  name: categoryName,
+                  slug: categorySlug,
+                  sortOrder: categoryOrder,
+                  active: category?.active ?? true,
+                );
+                if (c.mounted) Navigator.pop(c, true);
+              },
+              child: Text(category == null ? 'Create' : 'Save Changes'),
+            ),
+          ],
+        ),
+      ),
+    ).future;
+
+    name.dispose();
+    slug.dispose();
+    order.dispose();
+
     if (result == true && mounted) setState(() {});
   }
-  @override Widget build(BuildContext context) {
+
+  @override
+  Widget build(BuildContext context) {
     final visible = widget.categories.where((c) => c.active).toList();
     final inactive = widget.categories.where((c) => !c.active).toList();
-    return Column(mainAxisSize: MainAxisSize.min, children: [
-      Align(alignment: Alignment.centerRight, child: shad.PrimaryButton(onPressed: _busyId != null ? null : () => _openEditor(), leading: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 16), child: const Text('Add Category'))),
-      const SizedBox(height: 12),
-      if (visible.isEmpty) const Padding(padding: EdgeInsets.all(18), child: Text('No active categories yet.')) else ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 360),
-        child: ListView.separated(shrinkWrap: true, itemCount: visible.length, separatorBuilder: (_, __) => const Divider(height: 1), itemBuilder: (_, index) {
-          final c = visible[index]; final busy = _busyId == c.id;
-          return ListTile(dense: true, title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w800)), subtitle: Text(c.slug.isEmpty ? 'No slug' : c.slug), trailing: Wrap(spacing: 2, children: [
-            shad.IconButton.ghost(tooltip: 'Edit category', onPressed: busy ? null : () => _openEditor(c), icon: const AdminIcon(HugeIcons.strokeRoundedEdit02, size: 18)),
-            shad.IconButton.ghost(tooltip: 'Deactivate category', onPressed: busy ? null : () => _setCategoryActive(c, false), icon: busy ? const shad.CircularProgressIndicator(size: 18, strokeWidth: 2) : const AdminIcon(HugeIcons.strokeRoundedViewOff, size: 18)),
-            shad.IconButton.ghost(tooltip: c.count == 0 ? 'Delete permanently' : 'Move products before deleting', onPressed: busy || c.count > 0 ? null : () => _deleteCategory(c), icon: const AdminIcon(HugeIcons.strokeRoundedDelete02, size: 18, color: AdminColors.red)),
-          ]));
-        }),
-      ),
-      if (inactive.isNotEmpty) ...[
-        const SizedBox(height: 18),
-        const Align(
-          alignment: Alignment.centerLeft,
-          child: Text('INACTIVE CATEGORIES', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1, color: AdminColors.muted)),
+
+    Widget categoryRow(_CatalogueCategory c, {required bool inactive}) {
+      final busy = _busyId == c.id;
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(c.name, style: const TextStyle(fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 2),
+                  Text(
+                    (c.slug.isEmpty ? 'No slug' : c.slug) +
+                        (inactive ? ' • ${c.count} product(s) • inactive' : ''),
+                    style: const TextStyle(fontSize: 11, color: AdminColors.muted),
+                  ),
+                ],
+              ),
+            ),
+            shad.IconButton.ghost(
+              tooltip: 'Edit category',
+              onPressed: inactive || busy ? null : () => _openEditor(c),
+              icon: const AdminIcon(HugeIcons.strokeRoundedEdit02, size: 18),
+            ),
+            if (inactive)
+              shad.IconButton.ghost(
+                tooltip: 'Activate category',
+                onPressed: busy ? null : () => _setCategoryActive(c, true),
+                icon: busy
+                    ? const shad.CircularProgressIndicator(size: 18, strokeWidth: 2)
+                    : const AdminIcon(HugeIcons.strokeRoundedView, size: 18),
+              )
+            else
+              shad.IconButton.ghost(
+                tooltip: 'Deactivate category',
+                onPressed: busy ? null : () => _setCategoryActive(c, false),
+                icon: busy
+                    ? const shad.CircularProgressIndicator(size: 18, strokeWidth: 2)
+                    : const AdminIcon(HugeIcons.strokeRoundedViewOff, size: 18),
+              ),
+            shad.IconButton.ghost(
+              tooltip: c.count == 0
+                  ? 'Delete permanently'
+                  : 'Move products before deleting',
+              onPressed: busy || c.count > 0 ? null : () => _deleteCategory(c),
+              icon: const AdminIcon(
+                HugeIcons.strokeRoundedDelete02,
+                size: 18,
+                color: AdminColors.red,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 6),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 220),
-          child: ListView.separated(
-            shrinkWrap: true,
-            itemCount: inactive.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
-            itemBuilder: (_, index) {
-              final c = inactive[index];
-              final busy = _busyId == c.id;
-              return ListTile(
-                dense: true,
-                title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w800)),
-                subtitle: Text((c.slug.isEmpty ? 'No slug' : c.slug) + ' • ' + c.count.toString() + ' product(s) • inactive'),
-                trailing: Wrap(spacing: 2, children: [
-                  shad.IconButton.ghost(tooltip: 'Activate category', onPressed: busy ? null : () => _setCategoryActive(c, true), icon: busy ? const SizedBox(width: 18, height: 18, child: shad.CircularProgressIndicator(size: 18, strokeWidth: 2)) : const AdminIcon(HugeIcons.strokeRoundedView, size: 18)),
-                  shad.IconButton.ghost(tooltip: c.count == 0 ? 'Delete permanently' : 'Move products before deleting', onPressed: busy || c.count > 0 ? null : () => _deleteCategory(c), icon: const AdminIcon(HugeIcons.strokeRoundedDelete02, size: 18, color: AdminColors.red)),
-                ]),
-              );
-            },
+      );
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Align(
+          alignment: Alignment.centerRight,
+          child: shad.PrimaryButton(
+            onPressed: _busyId != null ? null : () => _openEditor(),
+            leading: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 16),
+            child: const Text('Add Category'),
           ),
         ),
+        const SizedBox(height: 12),
+        if (visible.isEmpty)
+          const Padding(
+            padding: EdgeInsets.all(18),
+            child: Text('No active categories yet.'),
+          )
+        else
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 360),
+            child: ListView.separated(
+              shrinkWrap: true,
+              itemCount: visible.length,
+              separatorBuilder: (_, __) => const Divider(height: 1),
+              itemBuilder: (_, index) => categoryRow(visible[index], inactive: false),
+            ),
+          ),
+        if (inactive.isNotEmpty) ...[
+          const SizedBox(height: 18),
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'INACTIVE CATEGORIES',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1,
+                color: AdminColors.muted,
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 220),
+            child: ListView.separated(
+              shrinkWrap: true,
+              itemCount: inactive.length,
+              separatorBuilder: (_, __) => const Divider(height: 1),
+              itemBuilder: (_, index) => categoryRow(inactive[index], inactive: true),
+            ),
+          ),
+        ],
       ],
-    ]);
+    );
   }
 }
 class _CategoryTabs extends StatelessWidget {
