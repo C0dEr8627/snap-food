@@ -33,7 +33,9 @@ class _CatalogueProduct {
   Map<String, dynamic> toApiJson() => {
     'category_id': categoryId, 'name': name.trim(), 'slug': slug.trim(),
     'description': description.trim().isEmpty ? null : description.trim(),
-    'price': price.toStringAsFixed(2), 'image': image, 'stock_quantity': stock,
+    'price': price.toStringAsFixed(2),
+    if (image != null && image!.trim().isNotEmpty) 'image': image!.trim(),
+    'stock_quantity': stock,
     'is_available': available, 'is_active': active,
   };
 }
