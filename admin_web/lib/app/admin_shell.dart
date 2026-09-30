@@ -154,6 +154,19 @@ class AdminShell extends StatefulWidget {
 class _AdminShellState extends State<AdminShell> {
   AdminSection section = AdminSection.dashboard;
   final GlobalKey<_CataloguePageState> _catalogueKey = GlobalKey<_CataloguePageState>();
+  final TextEditingController _globalSearch = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _globalSearch.dispose();
+    super.dispose();
+  }
+
+  void _applyGlobalSearch() {
+    final value = _globalSearch.text.trim();
+    setState(() => _searchQuery = value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +181,14 @@ class _AdminShellState extends State<AdminShell> {
       body: Row(children: [
         if (desktop) SizedBox(width: 248, height: double.infinity, child: _Sidebar(selected: section, onSelect: _select)),
         Expanded(child: Column(children: [
-          _Header(desktop: desktop, user: widget.user, onLogout: widget.onLogout),
+          _Header(
+            desktop: desktop,
+            user: widget.user,
+            onLogout: widget.onLogout,
+            searchController: _globalSearch,
+            searchQuery: _searchQuery,
+            onSearch: _applyGlobalSearch,
+          ),
           Expanded(child: LayoutBuilder(builder: (context, constraints) => Scrollbar(thumbVisibility: desktop, child: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(desktop ? 24 : 16, 24, desktop ? 24 : 16, 32),
             child: Center(
@@ -200,10 +220,10 @@ class _AdminShellState extends State<AdminShell> {
                   const SizedBox(height: 24),
                   switch (section) {
                     AdminSection.dashboard => const DashboardPage(),
-                    AdminSection.orders => const OrdersPage(),
-                    AdminSection.catalogue => CataloguePage(key: _catalogueKey),
-                    AdminSection.partners => const PartnersPage(),
-                    AdminSection.invoices => const InvoicesPage(),
+                    AdminSection.orders => OrdersPage(searchQuery: _searchQuery),
+                    AdminSection.catalogue => CataloguePage(key: _catalogueKey, searchQuery: _searchQuery),
+                    AdminSection.partners => PartnersPage(searchQuery: _searchQuery),
+                    AdminSection.invoices => InvoicesPage(searchQuery: _searchQuery),
                   },
                   const SizedBox(height: 28),
                   const Center(child: Text('Snap Foodd Admin  •  Preview data • Laravel API v1', style: TextStyle(fontSize: 11, color: AdminColors.muted))),
@@ -229,7 +249,12 @@ class _Sidebar extends StatelessWidget {
   final bool compact;
 
   @override
-  Widget build(BuildContext context) => Material(
+  Widget build(BuildContext context) => Container(
+    decoration: const BoxDecoration(
+      color: Colors.white,
+      border: Border(right: BorderSide(color: AdminColors.line, width: 1)),
+    ),
+    child: Material(
     color: Colors.white,
     child: SafeArea(
       child: SingleChildScrollView(
@@ -284,6 +309,7 @@ class _Sidebar extends StatelessWidget {
         ],
       ),
       ),
+      ),
     ),
   );
 }
@@ -311,10 +337,20 @@ class _StatusDot extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.desktop, required this.user, required this.onLogout});
+  const _Header({
+    required this.desktop,
+    required this.user,
+    required this.onLogout,
+    required this.searchController,
+    required this.searchQuery,
+    required this.onSearch,
+  });
   final bool desktop;
   final AdminUser user;
   final Future<void> Function() onLogout;
+  final TextEditingController searchController;
+  final String searchQuery;
+  final VoidCallback onSearch;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -330,28 +366,35 @@ class _Header extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 560),
             padding: const EdgeInsets.symmetric(horizontal: 13),
             decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(11), border: Border.all(color: AdminColors.line)),
-            child: const Row(children: [
-              AdminIcon(HugeIcons.strokeRoundedSearch01, size: 19, color: AdminColors.muted),
-              SizedBox(width: 9),
-              Expanded(child: Text('Search orders, delivery partners, GST invoices...', style: TextStyle(fontSize: 11, color: AdminColors.muted))),
-            ]),
+            child: TextField(
+              controller: searchController,
+              onSubmitted: (_) => onSearch(),
+              textInputAction: TextInputAction.search,
+              style: const TextStyle(fontSize: 11, color: AdminColors.ink),
+              decoration: InputDecoration(
+                prefixIcon: const AdminIcon(HugeIcons.strokeRoundedSearch01, size: 19, color: AdminColors.muted),
+                hintText: 'Search this section...',
+                suffixIcon: searchQuery.isEmpty
+                    ? null
+                    : IconButton(
+                        tooltip: 'Clear search',
+                        onPressed: () {
+                          searchController.clear();
+                          onSearch();
+                        },
+                        icon: const AdminIcon(HugeIcons.strokeRoundedCancel01, size: 17, color: AdminColors.muted),
+                      ),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 11),
+              ),
+            ),
           ),
         )
       else
         const Expanded(child: Text('Snap Foodd Admin', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900))),
       if (desktop) const SizedBox(width: 16),
-      if (desktop)
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
-          decoration: BoxDecoration(color: AdminColors.greenSoft, borderRadius: BorderRadius.circular(10), border: Border.all(color: AdminColors.greenSoft)),
-          child: const Row(children: [
-            _StatusDot(color: AdminColors.green),
-            SizedBox(width: 7),
-            Text('api.snapfoodd.in/v1', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: AdminColors.ink)),
-            SizedBox(width: 7),
-            Text('• Live Connected', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: AdminColors.green)),
-          ]),
-        ),
       const SizedBox(width: 10),
       IconButton(tooltip: 'Notifications', onPressed: () => _notice(context, 'No new notifications in preview mode.'), icon: const AdminIcon(HugeIcons.strokeRoundedNotification01, size: 21, color: AdminColors.ink)),
       const SizedBox(width: 2),
