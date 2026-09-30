@@ -43,8 +43,18 @@ class _CataloguePageState extends State<CataloguePage> {
   @override
   void initState() {
     super.initState();
+    _search.text = widget.searchQuery;
     _live = _repo.liveEnabled;
     _load();
+  }
+
+  @override
+  void didUpdateWidget(covariant CataloguePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.searchQuery != widget.searchQuery && _search.text != widget.searchQuery) {
+      _search.text = widget.searchQuery;
+      _load(keepSelection: false);
+    }
   }
 
   @override
