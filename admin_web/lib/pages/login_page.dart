@@ -52,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 420),
-            child: Card(
+            child: AdminCard(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(30, 28, 30, 26),
                 child: Form(
