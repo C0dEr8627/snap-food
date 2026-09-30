@@ -28,7 +28,9 @@ class _CataloguePageState extends State<CataloguePage> {
   int _page = 1;
   int _lastPage = 1;
   int _total = _previewCatalogueProducts.length + 3;
-  bool _loading = false;\n  String _formDietary = 'Non-Veg';\n  int? _formCategoryId;
+  bool _loading = false;
+  String _formDietary = 'Non-Veg';
+  int? _formCategoryId;
   bool _saving = false;
   bool _uploading = false;
   bool _creating = true;
@@ -62,7 +64,8 @@ class _CataloguePageState extends State<CataloguePage> {
           if (!keepSelection) _selected = null;
         });
         if (_selected != null) {
-          final fresh = _products.where((x) => x.id == _selected!.id).firstOrNull;
+          _CatalogueProduct? fresh;
+          for (final item in _products) { if (item.id == _selected!.id) { fresh = item; break; } }
           if (fresh != null) _selectProduct(fresh);
         }
       } else {
@@ -94,7 +97,9 @@ class _CataloguePageState extends State<CataloguePage> {
 
   void _selectProduct(_CatalogueProduct product) {
     setState(() { _selected = product; _creating = false; });
-    _formCategoryId = product.categoryId;\n    _formDietary = product.dietary;\n    _name.text = product.name; _slug.text = product.slug; _description.text = product.description;
+    _formCategoryId = product.categoryId;
+    _formDietary = product.dietary;
+    _name.text = product.name; _slug.text = product.slug; _description.text = product.description;
     _price.text = product.price.toStringAsFixed(2); _prep.text = product.prepTime.toString(); _stock.text = product.stock.toString();
     _imageUrl.text = product.image ?? ''; _imagePreview = product.image ?? '';
   }
