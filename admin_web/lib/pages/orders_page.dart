@@ -137,7 +137,14 @@ class _OrdersPageState extends State<OrdersPage>{
     setState(()=>busy=true);try{final ref=await api.invoice(order.id);if(mounted)setState(()=>busy=false);if(mounted)_notice(context,ref==null?'Invoice endpoint exists; configure API_TOKEN for a real request.':'Invoice reference: '+ref);}catch(e){if(mounted){setState(()=>busy=false);_notice(context,e.toString());}}
   }
   Future<void> cancel(_AdminOrder order)async{
-    final ok=await showDialog<bool>(context:context,builder:(c)=>AlertDialog(title:const Text('Cancel order?'),content:Text('Confirm cancellation for '+order.id+'.'),actions:[TextButton(onPressed:()=>Navigator.pop(c,false),child:const Text('Keep order')),FilledButton(style:FilledButton.styleFrom(backgroundColor:AdminColors.red),onPressed:()=>Navigator.pop(c,true),child:const Text('Confirm cancel'))]));if(ok!=true)return;
+    final ok=await shad.showOverlay<bool>(context, shad.DialogConfiguration<bool>(builder:(c)=>shad.AlertDialog(
+      title: const Text('Cancel order?'),
+      content: Text('Confirm cancellation for ' + order.id + '.'),
+      actions: [
+        shad.OutlineButton(onPressed:()=>Navigator.pop(c,false),child:const Text('Keep order')),
+        shad.DestructiveButton(onPressed:()=>Navigator.pop(c,true),child:const Text('Confirm cancel')),
+      ],
+    ))).future;if(ok!=true)return;
     setState(()=>busy=true);try{await api.status(order.id,'CANCELLED');final i=orders.indexWhere((o)=>o.id==order.id);if(i>=0)orders[i]=order.withStatus('CANCELLED');if(mounted)setState(()=>busy=false);if(mounted)_notice(context,order.id+' cancelled.');}catch(e){if(mounted){setState(()=>busy=false);_notice(context,api.configured?e.toString():'Preview Data Mode: configure API_TOKEN for cancellation requests.');}}
   }
   void exportCsv(List<_AdminOrder> list){
