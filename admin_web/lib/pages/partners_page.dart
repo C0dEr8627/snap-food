@@ -787,9 +787,7 @@ class _PartnerActions extends StatelessWidget {
   Widget build(BuildContext context) => Wrap(spacing: 2, children: [
         shad.IconButton.ghost(
           tooltip: 'View available partner details',
-          onPressed: () => showDialog<void>(
-            context: context,
-            builder: (dialogContext) => AlertDialog(
+          onPressed: () => shad.showOverlay<void>(context, shad.DialogConfiguration<void>(builder: (dialogContext) => shad.AlertDialog(
               title: Text(partner.name),
               content: SizedBox(
                 width: 360,
@@ -803,9 +801,8 @@ class _PartnerActions extends StatelessWidget {
                   const Text('Vehicle, trip history, live GPS, phone, and rating are not supplied by the current API.', style: TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.5)),
                 ]),
               ),
-              actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Close'))],
-            ),
-          ),
+              actions: [shad.OutlineButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Close'))],
+            )),
           icon: const AdminIcon(HugeIcons.strokeRoundedLinkSquare01, size: 17),
         ),
         shad.IconButton.ghost(
