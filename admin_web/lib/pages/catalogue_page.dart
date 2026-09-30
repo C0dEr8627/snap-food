@@ -480,14 +480,6 @@ class _CategoryManagerState extends State<_CategoryManager> {
     ]);
   }
 }
-class _Workspace extends StatelessWidget {
-  const _Workspace({required this.list, required this.editor, required this.listFlex, required this.editorFlex});
-  final Widget list, editor; final int listFlex, editorFlex;
-  @override Widget build(BuildContext context) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Expanded(flex: listFlex, child: list), const SizedBox(width: 18), Expanded(flex: editorFlex, child: editor),
-  ]);
-}
-
 class _CatalogueHeader extends StatelessWidget {
   const _CatalogueHeader({required this.onCategories, required this.onAddItem});
   final VoidCallback onCategories;
