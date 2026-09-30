@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\Delivery\DeliveryLocationController;
 use App\Http\Controllers\Api\V1\Delivery\DeliveryPartnerOrderController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\Orders\AdminOrderAssignmentController;
+use App\Http\Controllers\Api\V1\Orders\AdminInvoiceController;
 use App\Http\Controllers\Api\V1\Orders\AdminOrderController;
 use App\Http\Controllers\Api\V1\Orders\InvoiceController;
 use App\Http\Controllers\Api\V1\Orders\OrderController;
@@ -43,6 +44,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     });
 
     Route::middleware('role:ADMIN')->group(function (): void {
+        Route::get('/admin/invoices', [AdminInvoiceController::class, 'index'])->name('api.v1.admin.invoices.index');
         Route::patch('/admin/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('api.v1.admin.orders.status');
         Route::post('/admin/orders/{order}/assignment', [AdminOrderAssignmentController::class, 'store'])->name('api.v1.admin.orders.assignment');
         Route::get('/admin/delivery-partners', [DeliveryPartnerController::class, 'index'])->name('api.v1.admin.delivery-partners.index');
