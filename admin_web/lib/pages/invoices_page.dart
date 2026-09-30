@@ -94,7 +94,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
       LayoutBuilder(builder: (context, c) {
         final columns = c.maxWidth >= 900 ? 4 : c.maxWidth >= 540 ? 2 : 1;
         return GridView.count(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), crossAxisCount: columns, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: columns == 1 ? 3.2 : columns == 4 ? 1.65 : 2.2, children: [
-          _InvoiceKpi(title: 'TAX INVOICES ISSUED', value: _loading ? '—' : _total.toString(), caption: 'Stored invoices matching filters', icon: HugeIcons.strokeRoundedInvoice01, accent: AdminAdminColors.yellowDark),
+          _InvoiceKpi(title: 'TAX INVOICES ISSUED', value: _loading ? '—' : _total.toString(), caption: 'Stored invoices matching filters', icon: HugeIcons.strokeRoundedInvoice01, accent: AdminAdminColors.amber),
           _InvoiceKpi(title: 'TOTAL NET BILLED', value: _loading ? '—' : _inr(_billed), caption: 'Invoice totals in current result set', icon: HugeIcons.strokeRoundedWallet01, accent: AdminColors.ink),
           _InvoiceKpi(title: 'PAID INVOICES', value: _loading ? '—' : _inr(_paidTotal), caption: _paidCount.toString() + ' marked PAID', icon: HugeIcons.strokeRoundedStoreVerified01, accent: AdminAdminColors.green),
           const _InvoiceKpi(title: 'RIDER PAYOUTS', value: 'Not available', caption: 'Payout ledger is not exposed by API', icon: HugeIcons.strokeRoundedDeliveryTruck01, accent: AdminColors.muted),
@@ -329,7 +329,7 @@ class _InvoiceLedgerCard extends StatelessWidget {
         Text('Displaying ' + (((page - 1) * 10) + 1).toString() + '–' + ((page - 1) * 10 + invoices.length).toString() + ' of ' + total.toString() + ' invoices', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
         Wrap(spacing: 5, children: [
           shad.OutlineButton(onPressed: page > 1 ? () => onPage(page - 1) : null, child: const Text('Previous')),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9), decoration: BoxDecoration(color: AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(9)), child: Text(page.toString() + ' / ' + lastPage.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminAdminColors.yellowDark))),
+          Container(padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9), decoration: BoxDecoration(color: AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(9)), child: Text(page.toString() + ' / ' + lastPage.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminAdminColors.amber))),
           shad.OutlineButton(onPressed: page < lastPage ? () => onPage(page + 1) : null, child: const Text('Next')),
         ]),
       ])),
@@ -352,7 +352,7 @@ class _InvoiceStatus extends StatelessWidget {
   @override Widget build(BuildContext context) {
     final paid = status == 'PAID', pending = status == 'PENDING';
     final bg = paid ? AdminAdminColors.greenSoft : pending ? AdminAdminColors.amberSoft : AdminAdminColors.redSoft;
-    final fg = paid ? AdminAdminColors.green : pending ? AdminAdminColors.yellowDark : AdminAdminColors.red;
+    final fg = paid ? AdminAdminColors.green : pending ? AdminAdminColors.amber : AdminAdminColors.red;
     return Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6), decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)), child: Text(status, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: fg)));
   }
 }
@@ -361,7 +361,7 @@ class _InvoiceStateCard extends StatelessWidget {
   const _InvoiceStateCard({required this.icon, required this.title, required this.message, required this.action, required this.onAction});
   final AdminIconData icon; final String title, message, action; final VoidCallback onAction;
   @override Widget build(BuildContext context) => Container(width: double.infinity, padding: const EdgeInsets.all(30), decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(16)),
-    child: Column(children: [AdminIcon(icon, size: 32, color: AdminAdminColors.yellowDark), const SizedBox(height: 12), Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)), const SizedBox(height: 6), Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11.5, color: AdminColors.muted, height: 1.5)), const SizedBox(height: 14), shad.PrimaryButton(onPressed: onAction, child: Text(action))]));
+    child: Column(children: [AdminIcon(icon, size: 32, color: AdminAdminColors.amber), const SizedBox(height: 12), Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)), const SizedBox(height: 6), Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11.5, color: AdminColors.muted, height: 1.5)), const SizedBox(height: 14), shad.PrimaryButton(onPressed: onAction, child: Text(action))]));
 }
 
 class _InvoiceLoadingCard extends StatelessWidget {
