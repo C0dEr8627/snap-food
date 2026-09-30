@@ -224,17 +224,35 @@ class _CataloguePageState extends State<CataloguePage> {
     final width = MediaQuery.sizeOf(context).width;
     final desktop = width >= 980;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      _CatalogueHeader(live: _live, onCategories: _manageCategories),
+      _CatalogueHeader(onCategories: _manageCategories),
       const SizedBox(height: 18),
-      _CategoryTabs(categories: _categories, selected: _categoryFilter, onSelect: (id) { setState(() => _categoryFilter = id); _load(keepSelection: false); }),
+      _CategoryTabs(
+        categories: _categories,
+        selected: _categoryFilter,
+        onSelect: (id) {
+          setState(() => _categoryFilter = id);
+          _load(keepSelection: false);
+        },
+      ),
       const SizedBox(height: 16),
-      _CatalogueStats(products: _live ? _products : _previewCatalogueProducts),
-      const SizedBox(height: 18),
       if (_error.isNotEmpty) _ErrorBanner(message: _error, onRetry: _load),
       if (_loading) const LinearProgressIndicator(minHeight: 2),
       const SizedBox(height: 8),
-      if (desktop) _Workspace(list: _buildProductPanel(), editor: _buildEditor(), listFlex: 62, editorFlex: 38)
-      else Column(children: [_buildProductPanel(), const SizedBox(height: 18), _buildEditor()]),
+      if (desktop)
+        _Workspace(
+          list: _buildProductPanel(),
+          editor: _buildEditor(),
+          listFlex: 62,
+          editorFlex: 38,
+        )
+      else
+        Column(
+          children: [
+            _buildProductPanel(),
+            const SizedBox(height: 18),
+            _buildEditor(),
+          ],
+        ),
     ]);
   }
 
@@ -421,46 +439,33 @@ class _Workspace extends StatelessWidget {
 }
 
 class _CatalogueHeader extends StatelessWidget {
-  const _CatalogueHeader({required this.live, required this.onCategories});
-  final bool live;
+  const _CatalogueHeader({required this.onCategories});
   final VoidCallback onCategories;
 
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
+  Widget build(BuildContext context) => Row(
+    crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(children: [
-                  Container(width: 7, height: 7, decoration: const BoxDecoration(color: AdminColors.red, shape: BoxShape.circle)),
-                  const SizedBox(width: 7),
-                  const Text('HQ INVENTORY  •  CLUSTER', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1.3, color: AdminColors.muted)),
-                ]),
-                const SizedBox(height: 5),
-                const Text('BANGALORE CENTRAL KITCHEN  #04', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 12),
-                const Text('Catalogue Management', style: TextStyle(fontSize: 29, fontWeight: FontWeight.w900, letterSpacing: -.5)),
-                const SizedBox(height: 3),
-                Text(
-                  live
-                      ? 'Manage menu items and categories connected to the Laravel API.'
-                      : 'Preview Data Mode • Live API activates when an admin bearer token is available.',
-                  style: const TextStyle(fontSize: 11, color: AdminColors.muted),
-                ),
-              ],
+      const Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Catalogue',
+              style: TextStyle(fontSize: 29, fontWeight: FontWeight.w900, letterSpacing: -.5),
             ),
-          ),
-          OutlinedButton.icon(
-            onPressed: onCategories,
-            icon: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
-            label: const Text('Manage Categories'),
-          ),
-        ],
+            SizedBox(height: 4),
+            Text(
+              'Manage categories and menu items.',
+              style: TextStyle(fontSize: 13, color: AdminColors.muted),
+            ),
+          ],
+        ),
+      ),
+      OutlinedButton.icon(
+        onPressed: onCategories,
+        icon: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
+        label: const Text('Manage Categories'),
       ),
     ],
   );
@@ -480,50 +485,6 @@ class _CategoryTabs extends StatelessWidget {
       child: Row(children: [Text(label, style: TextStyle(fontSize: 11, fontWeight: active ? FontWeight.w900 : FontWeight.w700)), if (count > 0) ...[const SizedBox(width: 7), Text(count.toString(), style: const TextStyle(fontSize: 11, color: AdminColors.muted))]]),
     ),
   ));
-}
-
-class _CatalogueStats extends StatelessWidget {
-  const _CatalogueStats({required this.products}); final List<_CatalogueProduct> products;
-  @override Widget build(BuildContext context) {
-    final total = products.length, active = products.where((p) => p.active && p.available).length, out = products.where((p) => p.outOfStock).length, low = products.where((p) => p.lowStock).length;
-    return LayoutBuilder(builder: (context, c) {
-      final cols = c.maxWidth >= 850 ? 4 : c.maxWidth >= 560 ? 2 : 1;
-      return GridView.count(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), crossAxisCount: cols, mainAxisSpacing: 12, crossAxisSpacing: 12, childAspectRatio: 2.6,
-        children: [
-          _StatCard('TOTAL MENU ITEMS', total.toString(), 'Kitchen catalogue', HugeIcons.strokeRoundedMenuRestaurant),
-          _StatCard('ACTIVE LIVE ON APP', active.toString(), total == 0 ? '0% Availability' : ((active / total) * 100).toStringAsFixed(1) + '% Availability', HugeIcons.strokeRoundedCheckmarkCircle01),
-          _StatCard('OUT OF STOCK', out.toString().padLeft(2, '0'), 'Hidden from user feed', HugeIcons.strokeRoundedBlocked, danger: true),
-          _StatCard('LOW STOCK ALERT', low.toString().padLeft(2, '0'), 'Requires raw prep reorder', HugeIcons.strokeRoundedAlert02, warning: true),
-        ],
-      );
-    });
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  const _StatCard(this.label, this.value, this.caption, this.icon, {this.danger = false, this.warning = false});
-  final String label, value, caption;
-  final AdminIconData icon;
-  final bool danger, warning;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(15),
-    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15), border: Border.all(color: AdminColors.line), boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 14, offset: Offset(0, 5))]),
-    child: Row(children: [
-      Container(width: 38, height: 38, decoration: BoxDecoration(color: danger ? AdminColors.redSoft : warning ? AdminColors.peach : AdminColors.amberSoft, borderRadius: BorderRadius.circular(10)), child: AdminIcon(icon, size: 19, color: danger ? AdminColors.red : warning ? AdminColors.warning : AdminColors.yellowDark)),
-      const SizedBox(width: 12),
-      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-        Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .8, color: AdminColors.muted)),
-        const SizedBox(height: 3),
-        Row(children: [
-          Text(value, style: TextStyle(fontSize: 21, fontWeight: FontWeight.w900, color: danger ? AdminColors.red : AdminColors.ink)),
-          const SizedBox(width: 8),
-          Flexible(child: Text(caption, style: const TextStyle(fontSize: 11, color: AdminColors.muted), overflow: TextOverflow.ellipsis)),
-        ]),
-      ])),
-    ]),
-  );
 }
 
 class _CatalogueList extends StatelessWidget {
@@ -547,27 +508,42 @@ class _CatalogueList extends StatelessWidget {
       padding: const EdgeInsets.all(17),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('PRODUCT CATALOGUE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1.1, color: AdminColors.muted)),
-            SizedBox(height: 3),
-            Text('Select an item to edit, or create a new one.', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
-          ])),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Items',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                ),
+                SizedBox(height: 3),
+                Text(
+                  'Select an item to edit or add a new item.',
+                  style: TextStyle(fontSize: 13, color: AdminColors.muted),
+                ),
+              ],
+            ),
+          ),
           FilledButton.icon(
             onPressed: loading ? null : () => onCreateProduct(),
             icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 16),
-            label: const Text('New Product'),
-            style: FilledButton.styleFrom(backgroundColor: AdminColors.red, foregroundColor: Colors.white),
+            label: const Text('Add Item'),
+            style: FilledButton.styleFrom(
+              backgroundColor: AdminColors.red,
+              foregroundColor: Colors.white,
+            ),
           ),
-          const SizedBox(width: 6),
-          IconButton(onPressed: () => _notice(context, 'Use the filters below to narrow the catalogue.'), icon: const AdminIcon(HugeIcons.strokeRoundedFilterHorizontal, size: 18)),
         ]),
         const SizedBox(height: 12),
-        Wrap(spacing: 8, runSpacing: 8, children: [
-          SizedBox(width: 230, height: 40, child: TextField(controller: search, onSubmitted: (_) => onSearch(), decoration: _inputDecoration('Filter by dish...', HugeIcons.strokeRoundedSearch01))),
-          _select('All Food Types', ['All Food Types', 'Pure Veg', 'Non-Veg', 'Contains Egg'], foodFilter, onFood),
-          _select('Stock', ['All', 'In Stock', 'Low Stock', 'Out of Stock'], stockFilter, onStock),
-          _select('Availability', ['All', 'Live', 'Hidden'], availabilityFilter, onAvailability),
-        ]),
+        SizedBox(
+          width: 300,
+          height: 44,
+          child: TextField(
+            controller: search,
+            onSubmitted: (_) => onSearch(),
+            decoration: _inputDecoration('Search items...', HugeIcons.strokeRoundedSearch01),
+          ),
+        ),
         const SizedBox(height: 16),
         const Row(children: [
           Expanded(flex: 5, child: Text('PRODUCT', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
@@ -730,7 +706,7 @@ class _ProductEditor extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'LIVE SYNC ENGINE',
+                          'ITEM DETAILS',
                           style: TextStyle(
                             fontSize: 12, fontWeight: FontWeight.w900,
                             letterSpacing: 1.2,
@@ -739,7 +715,7 @@ class _ProductEditor extends StatelessWidget {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          creating ? 'Add New Product' : 'Edit Product',
+                          creating ? 'Add Item' : 'Edit Item',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w900,
@@ -1036,7 +1012,7 @@ class _ProductEditor extends StatelessWidget {
                   child: TextButton(
                     onPressed: saving ? null : onDeactivate,
                     child: const Text(
-                      'Deactivate product',
+                      'Deactivate item',
                       style: TextStyle(
                         fontSize: 11,
                         color: AdminColors.red,
@@ -1044,16 +1020,6 @@ class _ProductEditor extends StatelessWidget {
                     ),
                   ),
                 ),
-              const SizedBox(height: 3),
-              const Center(
-                child: Text(
-                  'Instant cache purge for user apps • server-side cache behavior applies',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: AdminColors.muted,
-                  ),
-                ),
-              ),
             ],
           ),
         ),
