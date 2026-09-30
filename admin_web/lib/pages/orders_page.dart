@@ -206,24 +206,17 @@ class _OrderFilters extends StatelessWidget {
             children: [
               SizedBox(
                 width: 225,
-                height: 40,
-                child: TextField(
+                child: shad.TextField(
                   controller: controller,
+                  placeholder: const Text('Search by Order ID'),
                   style: const TextStyle(fontSize: 11),
-                  decoration: const InputDecoration(
-                    hintText: 'Search by Order ID',
-                    prefixIcon: AdminIcon(HugeIcons.strokeRoundedSearch01, size: 18),
-                    filled: true,
-                    fillColor: AdminColors.canvas,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(9)),
-                      borderSide: BorderSide(color: AdminColors.line),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(9)),
-                      borderSide: BorderSide(color: AdminColors.line),
-                    ),
-                  ),
+                  filled: true,
+                  border: const Border.fromBorderSide(BorderSide(color: AdminColors.line)),
+                  borderRadius: BorderRadius.circular(9),
+                  features: const [
+                    shad.InputLeadingFeature(AdminIcon(HugeIcons.strokeRoundedSearch01, size: 17)),
+                    shad.InputClearFeature(),
+                  ],
                 ),
               ),
               const SizedBox(width: 10),
@@ -254,25 +247,18 @@ class _FilterChip extends StatelessWidget{
     button:true,
     selected:active,
     label:label+' ('+count.toString()+')',
-    child:Material(
-      color:Colors.transparent,
-      child:InkWell(
-        onTap:onTap,
-        borderRadius:BorderRadius.circular(10),
-        child:ConstrainedBox(
-          constraints:const BoxConstraints(minHeight:44),
-          child:Container(
-            padding:const EdgeInsets.symmetric(horizontal:11,vertical:9),
-            decoration:BoxDecoration(color:active?AdminColors.amberSoft:Colors.white,borderRadius:BorderRadius.circular(10),border:Border.all(color:active?AdminColors.yellow:AdminColors.line)),
-            child:Row(mainAxisSize:MainAxisSize.min,children:[
-              Text(label,style:TextStyle(fontSize:12,fontWeight:FontWeight.w900,color:active?AdminColors.ink:AdminColors.muted)),
-              const SizedBox(width:7),
-              Container(padding:const EdgeInsets.symmetric(horizontal:6,vertical:3),decoration:BoxDecoration(color:active?AdminColors.yellow:AdminColors.canvas,borderRadius:BorderRadius.circular(6)),child:Text(count.toString(),style:const TextStyle(fontSize:12,fontWeight:FontWeight.w900))),
-            ]),
-          ),
+    child:(active ? shad.Button.secondary : shad.Button.ghost)(
+      onPressed:onTap,
+      child: Row(mainAxisSize:MainAxisSize.min,children:[
+        Text(label,style:TextStyle(fontSize:12,fontWeight:FontWeight.w900,color:active?AdminColors.ink:AdminColors.muted)),
+        const SizedBox(width:7),
+        Container(
+          padding:const EdgeInsets.symmetric(horizontal:6,vertical:3),
+          decoration:BoxDecoration(color:active?AdminColors.yellow:AdminColors.canvas,borderRadius:BorderRadius.circular(6)),
+          child:Text(count.toString(),style:const TextStyle(fontSize:12,fontWeight:FontWeight.w900)),
         ),
-      ),
-    ),
+      ]),
+    ).sized(minHeight:44),
   );
 }
 
@@ -308,7 +294,7 @@ class _OrderTableHeader extends StatelessWidget{const _OrderTableHeader();@overr
 
 class _OrderRow extends StatelessWidget{
   const _OrderRow({required this.order,required this.selected,required this.onTap});final _AdminOrder order;final bool selected;final VoidCallback onTap;
-  @override Widget build(BuildContext context)=>Material(color:selected?AdminColors.amberSoft:Colors.transparent,child:InkWell(onTap:onTap,child:Padding(padding:const EdgeInsets.symmetric(horizontal:10,vertical:10),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[
+  @override Widget build(BuildContext context)=>shad.Button.ghost(onPressed:onTap,child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[
     SizedBox(width:44,height:44,child:Checkbox(value:selected,onChanged:(_)=>onTap(),activeColor:AdminColors.red,semanticLabel:'Select '+order.id)),
     Expanded(flex:13,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(order.id,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),const SizedBox(height:3),Text(order.time,style:const TextStyle(fontSize: 11,color:AdminColors.muted))])),
     Expanded(flex:17,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(order.customer,maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize: 11,fontWeight:FontWeight.w800)),const SizedBox(height:3),Text(order.phone,maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize: 11,color:AdminColors.muted))])),
@@ -447,7 +433,7 @@ class _Bill extends StatelessWidget{
   @override Widget build(BuildContext context){final sub=o.total-69;Widget line(String a,String b,{bool strong=false})=>Row(children:[Expanded(child:Text(a,style:TextStyle(fontSize:strong?10:8.5,fontWeight:strong?FontWeight.w900:FontWeight.w600,color:strong?AdminColors.ink:AdminColors.muted))),Text(b,style:TextStyle(fontSize:strong?12.5:8.5,fontWeight:FontWeight.w900))]);return Container(padding:const EdgeInsets.all(12),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminColors.line)),child:Column(children:[line('Item Subtotal','₹'+sub.toStringAsFixed(2)),line('GST & Packaging Charges','₹69.00'),const Divider(height:17),line('Grand Total','₹'+o.total.toStringAsFixed(2),strong:true),const SizedBox(height:9),Row(children:[const Text('PAYMENT',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted)),const Spacer(),Container(padding:const EdgeInsets.symmetric(horizontal:7,vertical:4),decoration:BoxDecoration(color:AdminColors.greenSoft,borderRadius:BorderRadius.circular(6)),child:const Text('PAID',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.green))),const SizedBox(width:6),Text(o.payment,style:const TextStyle(fontSize: 11,color:AdminColors.muted))])]));}
 }
 
-class _EmptyOrders extends StatelessWidget{const _EmptyOrders({required this.onClear});final VoidCallback onClear;@override Widget build(BuildContext context)=>AdminCard(child:Padding(padding:const EdgeInsets.all(34),child:Center(child:Column(children:[const AdminIcon(HugeIcons.strokeRoundedInbox,size:34,color:AdminColors.muted),const SizedBox(height:9),const Text('No orders match this view',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)),const SizedBox(height:5),const Text('Try another status filter or clear the order search.',style:TextStyle(fontSize: 11,color:AdminColors.muted)),const SizedBox(height:12),OutlinedButton(onPressed:onClear,child:const Text('Clear filters'))]))));}
+class _EmptyOrders extends StatelessWidget{const _EmptyOrders({required this.onClear});final VoidCallback onClear;@override Widget build(BuildContext context)=>AdminCard(child:Padding(padding:const EdgeInsets.all(34),child:Center(child:Column(children:[const AdminIcon(HugeIcons.strokeRoundedInbox,size:34,color:AdminColors.muted),const SizedBox(height:9),const Text('No orders match this view',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)),const SizedBox(height:5),const Text('Try another status filter or clear the order search.',style:TextStyle(fontSize: 11,color:AdminColors.muted)),const SizedBox(height:12),shad.OutlineButton(onPressed:onClear,child:const Text('Clear filters'))]))));}
 
 const _previewOrders=<_AdminOrder>[
   _AdminOrder(id:'#SFD-9042',customer:'Aarav Mehra',phone:'+919820144521',address:'Flat 402 Wing B, Sea Green Apts, Juhu Beach Ext.',total:849,items:3,payment:'UPI',time:'14:32 (4m ago)',status:'PREPARING',partner:'Ramesh Patil',vehicle:'Ather 450X (MH-02-EH-4819)',lines:[_OrderLine(1,'Truffle Melt Burger','Extra Cheese',480),_OrderLine(1,'Peri Peri Crinkle Fries','Jalapeño Dip',160),_OrderLine(1,'Alphonso Mango Shake','No Sugar Added',140)]),
