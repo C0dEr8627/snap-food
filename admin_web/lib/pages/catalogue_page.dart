@@ -26,3 +26,18 @@ class CataloguePage extends StatelessWidget {
     }),
   ]);
 }
+
+class _ProductCard extends StatelessWidget {
+  const _ProductCard({required this.product});
+  final List<Object> product;
+  @override
+  Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    Expanded(child: Container(width: double.infinity, decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(14)), child: Icon(product[4] as IconData, size: 42, color: AdminColors.yellowDark))),
+    const SizedBox(height: 13),
+    Row(children: [Expanded(child: Text(product[0] as String, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w900))), _Pill(product[3] as String)]),
+    const SizedBox(height: 5),
+    Text(product[1] as String, style: const TextStyle(fontSize: 10, color: AdminColors.muted)),
+    const SizedBox(height: 8),
+    Text(product[2] as String, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900)),
+  ])));
+}
