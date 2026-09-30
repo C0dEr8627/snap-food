@@ -240,6 +240,37 @@ class _AdminAuthGateState extends State<AdminAuthGate> {
     });
   }
 
+  Future<void> _confirmLogout(BuildContext context) async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text(
+          'Log out?',
+          style: TextStyle(fontWeight: FontWeight.w900),
+        ),
+        content: const Text(
+          'Are you sure you want to log out of the Snap Foodd Admin Portal?',
+        ),
+        actions: [
+          shad.OutlineButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          shad.PrimaryButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Log out'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldLogout != true || !mounted) return;
+
+    await _auth.logout();
+    if (mounted) setState(() => _user = null);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_checking) {
@@ -255,10 +286,7 @@ class _AdminAuthGateState extends State<AdminAuthGate> {
 
     return AdminShell(
       user: _user!,
-      onLogout: () async {
-        await _auth.logout();
-        if (mounted) setState(() => _user = null);
-      },
+      onLogout: () => _confirmLogout(context),
     );
   }
 }
