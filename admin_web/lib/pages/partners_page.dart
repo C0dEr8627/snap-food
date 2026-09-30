@@ -143,39 +143,15 @@ class _PartnersPageState extends State<PartnersPage> {
                 style: TextStyle(fontSize: 12, color: AdminColors.muted, height: 1.5),
               ),
               const SizedBox(height: 14),
-              TextField(
-                controller: controller,
-                keyboardType: TextInputType.number,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  labelText: 'Existing user ID',
-                  hintText: 'Enter a user ID',
-                  border: OutlineInputBorder(),
-                ),
-              ),
+              shad.TextField(controller: controller, keyboardType: TextInputType.number, autofocus: true, label: const Text('Existing user ID'), placeholder: const Text('Enter a user ID')),
             ],
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final value = int.tryParse(controller.text.trim());
-              if (value == null || value < 1) {
-                _partnersNotice(dialogContext, 'Enter a valid positive user ID.', error: true);
-                return;
-              }
-              Navigator.pop(dialogContext, value);
-            },
-            style: FilledButton.styleFrom(backgroundColor: AdminColors.yellow),
-            child: const Text('Create partner', style: TextStyle(color: AdminColors.ink)),
-          ),
+          shad.OutlineButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+          shad.PrimaryButton(onPressed: () { final value = int.tryParse(controller.text.trim()); if (value == null || value < 1) { _partnersNotice(dialogContext, 'Enter a valid positive user ID.', error: true); return; } Navigator.pop(dialogContext, value); }, child: const Text('Create partner')),
         ],
-      ),
-    );
+      ))).future;
     controller.dispose();
     if (userId == null || !mounted) return;
 
