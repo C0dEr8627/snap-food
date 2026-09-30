@@ -144,7 +144,7 @@ class _OrdersPageState extends State<OrdersPage>{
         shad.OutlineButton(onPressed:()=>Navigator.pop(c,false),child:const Text('Keep order')),
         shad.DestructiveButton(onPressed:()=>Navigator.pop(c,true),child:const Text('Confirm cancel')),
       ],
-    ))).future;if(ok!=true)return;
+    )).future;if(ok!=true)return;
     setState(()=>busy=true);try{await api.status(order.id,'CANCELLED');final i=orders.indexWhere((o)=>o.id==order.id);if(i>=0)orders[i]=order.withStatus('CANCELLED');if(mounted)setState(()=>busy=false);if(mounted)_notice(context,order.id+' cancelled.');}catch(e){if(mounted){setState(()=>busy=false);_notice(context,api.configured?e.toString():'Preview Data Mode: configure API_TOKEN for cancellation requests.');}}
   }
   void exportCsv(List<_AdminOrder> list){
