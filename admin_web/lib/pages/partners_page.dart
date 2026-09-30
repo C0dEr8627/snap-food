@@ -40,6 +40,15 @@ class _PartnersPageState extends State<PartnersPage> {
     if (mounted) setState(() {});
   }
 
+  @override
+  void didUpdateWidget(covariant PartnersPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.searchQuery != widget.searchQuery && _search.text != widget.searchQuery) {
+      _search.text = widget.searchQuery;
+      _refreshView();
+    }
+  }
+
   Future<void> _loadPartners({int page = 1}) async {
     setState(() {
       _loading = true;
