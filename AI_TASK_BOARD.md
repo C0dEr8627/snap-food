@@ -39,7 +39,7 @@ Record decisions here only after the owner approves or they are already establis
 - Mobile: Flutter, Riverpod 3, go_router.
 - Identity: Google OAuth SSO; OTP deferred.
 - Payment: COD.
-- Admin: separate Laravel web dashboard.
+- Admin: separate Flutter Web GUI at `admin_web/`, integrated with the shared Laravel API; existing Blade dashboard retained during migration.
 - Maps: Google Maps Platform.
 - Tracking: active-trip only using HTTP updates and polling for MVP.
 - Hosting: GoDaddy; plan/capabilities unverified.
@@ -250,3 +250,16 @@ Record decisions here only after the owner approves or they are already establis
 - **Merge resolution:** the only files changed on both sides since the common base were `AI_TASK_BOARD.md` and `API_CONTRACT.md`; both were reconciled against the current backend-integrated `frontend` state.
 - **Verification note:** the previously observed Flutter CI analyzer/test stages passed before the Android debug build hit the Java heap limit; Android build success and physical-device/E2E verification remain pending.
 - **Next action:** run current-head Flutter CI after synchronization, then address any concrete build/test failures before merging PR #1 into `frontend`.
+
+
+## Architecture update — 2026-09-30 (Flutter Web admin setup)
+
+- **Approved target architecture recorded:** two Flutter applications and one backend. The root Flutter project remains the consumer + delivery-partner mobile app; `admin_web/` is the separate Flutter Web admin GUI; `backend/` remains the shared Laravel/PHP API and only MySQL access layer.
+- Updated `README.md`, `ARCHITECTURE.md` and `ADMIN.md` to reflect the target architecture and security boundaries.
+- Added `ADMIN_FLUTTER_WEB_PLAN.md` to track setup, authentication/API work, admin screens, CI and deployment validation.
+- Created the initial `admin_web/` Flutter scaffold with its own `pubspec.yaml`, entrypoint, browser shell and widget test.
+- Added `.github/workflows/admin-web-ci.yml` for independent dependency resolution, formatting, analysis, tests and Flutter Web release build.
+- **Status:** scaffold and documentation committed to `frontend`; CI workflow execution/result has not yet been verified. The scaffold is not a feature-complete admin GUI.
+- **Important migration rule:** keep the existing Laravel Blade admin dashboard until the Flutter Web replacement has feature coverage and passes API authorization, browser, hosting and end-to-end validation.
+- **Next actions:** verify Admin Flutter Web CI; audit admin authentication compatibility and CORS; then implement API client/session handling and the dashboard/catalogue/order/delivery-partner/invoice screens in small tested slices.
+- No deployment, production migration, backend API change or Blade-dashboard removal was performed.
