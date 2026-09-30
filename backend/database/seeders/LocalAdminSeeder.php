@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class LocalAdminSeeder extends Seeder
 {
@@ -14,8 +15,9 @@ class LocalAdminSeeder extends Seeder
         }
 
         $email = env('ADMIN_BOOTSTRAP_EMAIL');
+        $password = env('ADMIN_BOOTSTRAP_PASSWORD');
 
-        if (! is_string($email) || $email === '') {
+        if (! is_string($email) || $email === '' || ! is_string($password) || $password === '') {
             return;
         }
 
@@ -25,7 +27,7 @@ class LocalAdminSeeder extends Seeder
                 'name' => 'Local Admin',
                 'role' => User::ROLE_ADMIN,
                 'is_active' => true,
-                'google_subject' => null,
+                'password' => Hash::make($password),
             ],
         );
     }
