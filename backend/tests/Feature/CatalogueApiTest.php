@@ -97,11 +97,11 @@ class CatalogueApiTest extends TestCase
         $category = Category::create(['name' => 'Pizza', 'slug' => 'pizza']);
 
         $this->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/consumer/categories', ['name' => 'Pasta', 'slug' => 'pasta'])
+            ->postJson('/api/v1/admin/categories', ['name' => 'Pasta', 'slug' => 'pasta'])
             ->assertForbidden();
 
         $this->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/consumer/products', [
+            ->postJson('/api/v1/admin/products', [
                 'category_id' => $category->id,
                 'name' => 'Pasta',
                 'slug' => 'pasta',
@@ -116,12 +116,12 @@ class CatalogueApiTest extends TestCase
         $category = Category::create(['name' => 'Pizza', 'slug' => 'pizza']);
 
         $this->actingAs($admin, 'sanctum')
-            ->postJson('/api/v1/consumer/categories', ['name' => 'Burgers', 'slug' => 'burgers'])
+            ->postJson('/api/v1/admin/categories', ['name' => 'Burgers', 'slug' => 'burgers'])
             ->assertCreated()
             ->assertJsonPath('data.slug', 'burgers');
 
         $categoryResponse = $this->actingAs($admin, 'sanctum')
-            ->patchJson('/api/v1/consumer/categories/'.$category->id, ['name' => 'Pizza & More'])
+            ->patchJson('/api/v1/admin/categories/'.$category->id, ['name' => 'Pizza & More'])
             ->assertOk()
             ->assertJsonPath('data.name', 'Pizza & More');
 
@@ -135,12 +135,12 @@ class CatalogueApiTest extends TestCase
         ]);
 
         $this->actingAs($admin, 'sanctum')
-            ->patchJson('/api/v1/consumer/products/'.$product->id, ['price' => '349.00'])
+            ->patchJson('/api/v1/admin/products/'.$product->id, ['price' => '349.00'])
             ->assertOk()
             ->assertJsonPath('data.price', '349.00');
 
         $this->actingAs($admin, 'sanctum')
-            ->deleteJson('/api/v1/consumer/products/'.$product->id)
+            ->deleteJson('/api/v1/admin/products/'.$product->id)
             ->assertOk()
             ->assertJsonPath('data.is_active', false)
             ->assertJsonPath('data.is_available', false);
