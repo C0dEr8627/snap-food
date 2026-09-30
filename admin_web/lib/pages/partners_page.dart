@@ -272,8 +272,10 @@ class _PartnersPageState extends State<PartnersPage> {
         ],
         const SizedBox(height: 22),
         _KycQueueNotice(
-          pendingCount: _partners.where((partner) => !partner.approved).length,
+          pendingPartners: _partners.where((partner) => !partner.approved).toList(),
           onReview: () => setState(() => _filter = 'PENDING'),
+          onApprove: (partner) => _setApproval(partner, true),
+          busy: _busy,
         ),
         const SizedBox(height: 14),
         const _KycDataBoundary(),
@@ -1000,28 +1002,81 @@ class _PartnerEmptyState extends StatelessWidget {
 }
 
 class _KycQueueNotice extends StatelessWidget {
-  const _KycQueueNotice({required this.pendingCount, required this.onReview});
-  final int pendingCount;
+  const _KycQueueNotice({
+    required this.pendingPartners,
+    required this.onReview,
+    required this.onApprove,
+    required this.busy,
+  });
+  final List<_DeliveryPartnerRecord> pendingPartners;
   final VoidCallback onReview;
+  final Future<void> Function(_DeliveryPartnerRecord) onApprove;
+  final bool busy;
 
   @override
   Widget build(BuildContext context) => Card(
         child: Padding(
           padding: const EdgeInsets.all(17),
-          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Container(width: 42, height: 42, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.fact_check_outlined, color: AdminColors.yellowDark, size: 21)),
-            const SizedBox(width: 12),
-            const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Sarathi & UIDAI Automated KYC Queue', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
-              SizedBox(height: 4),
-              Text('The current API exposes partner approval flags only; it does not return KYC documents, OCR scores, document previews, or re-upload decisions.', style: TextStyle(fontSize: 10.5, color: AdminColors.muted, height: 1.5)),
-            ])),
-            const SizedBox(width: 8),
-            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-              Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6), decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(18)), child: Text('$pendingCount pending on page', style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: AdminColors.yellowDark))),
-              const SizedBox(height: 8),
-              OutlinedButton(onPressed: onReview, child: const Text('Review pending')),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Container(width: 42, height: 42, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.fact_check_outlined, color: AdminColors.yellowDark, size: 21)),
+              const SizedBox(width: 12),
+              const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Sarathi & UIDAI Automated KYC Queue', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
+                SizedBox(height: 4),
+                Text('Pending partner records from the admin API. Government document verification metadata is not currently exposed.', style: TextStyle(fontSize: 10.5, color: AdminColors.muted, height: 1.5)),
+              ])),
+              const SizedBox(width: 8),
+              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6), decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(18)), child: Text('${pendingPartners.length} pending on page', style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: AdminColors.yellowDark))),
+                const SizedBox(height: 8),
+                OutlinedButton(onPressed: onReview, child: const Text('Filter pending')),
+              ]),
             ]),
+            if (pendingPartners.isNotEmpty) ...[
+              const SizedBox(height: 14),
+              const Divider(height: 1, color: AdminColors.line),
+              const SizedBox(height: 8),
+              ...pendingPartners.map((partner) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 7),
+                child: LayoutBuilder(builder: (context, constraints) {
+                  final identity = Row(children: [
+                    Container(width: 34, height: 34, alignment: Alignment.center, decoration: BoxDecoration(color: AdminColors.peach, borderRadius: BorderRadius.circular(10)), child: Text(partner.name.trim().isEmpty ? 'DP' : partner.name.trim().split(RegExp(r'\\s+')).take(2).map((part) => part.isEmpty ? '' : part[0]).join().toUpperCase(), style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900))),
+                    const SizedBox(width: 10),
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(partner.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900)),
+                      const SizedBox(height: 2),
+                      Text('Partner #${partner.id} • ${partner.email}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 9.5, color: AdminColors.muted)),
+                    ])),
+                  ]);
+                  final action = FilledButton(
+                    onPressed: busy ? null : () => onApprove(partner),
+                    style: FilledButton.styleFrom(backgroundColor: AdminColors.yellow, foregroundColor: AdminColors.ink, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9))),
+                    child: const Text('Approve & activate', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800)),
+                  );
+                  if (constraints.maxWidth < 540) {
+                    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      identity,
+                      const SizedBox(height: 8),
+                      const Text('KYC documents / OCR score unavailable from current API', style: TextStyle(fontSize: 9.5, color: AdminColors.muted)),
+                      const SizedBox(height: 6),
+                      Align(alignment: Alignment.centerRight, child: action),
+                    ]);
+                  }
+                  return Row(children: [
+                    Expanded(child: identity),
+                    const SizedBox(width: 12),
+                    const Text('KYC metadata unavailable', style: TextStyle(fontSize: 9.5, color: AdminColors.muted)),
+                    const SizedBox(width: 12),
+                    action,
+                  ]);
+                }),
+              )),
+            ] else
+              const Padding(
+                padding: EdgeInsets.only(top: 15),
+                child: Text('No pending partner approvals on this page. KYC document queue requires a dedicated backend endpoint.', style: TextStyle(fontSize: 10.5, color: AdminColors.muted)),
+              ),
           ]),
         ),
       );
