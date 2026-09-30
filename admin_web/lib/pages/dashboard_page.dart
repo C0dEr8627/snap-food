@@ -636,10 +636,10 @@ class _OrdersTable extends StatelessWidget {
         columnWidths: const {
           0: shad.FixedTableSize(120),
           1: shad.FlexTableSize(flex: 2),
-          2: shad.FixedTableSize(width: 90),
-          3: shad.FixedTableSize(width: 90),
+          2: shad.FixedTableSize(90),
+          3: shad.FixedTableSize(90),
           4: shad.FixedTableSize(120),
-          5: shad.FixedTableSize(width: 90),
+          5: shad.FixedTableSize(90),
         },
       ),
     ),
