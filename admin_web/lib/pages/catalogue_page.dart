@@ -130,7 +130,7 @@ class _CataloguePageState extends State<CataloguePage> {
     }
     await shad.showOverlay<void>(context, shad.DialogConfiguration(), builder: (dialogContext) => shad.AlertDialog(
         title: Text(_creating ? 'Add Item' : 'Edit Item'),
-        child: ConstrainedBox(
+        content: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 680, maxHeight: 760),
           child: SingleChildScrollView(
             child: _ProductEditor(
