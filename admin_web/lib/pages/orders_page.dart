@@ -112,8 +112,8 @@ class _OrdersPageState extends State<OrdersPage>{
   int count(String f)=>orders.where((o)=>f=='ALL'||_orderFilter(o.status)==f).length;
 
   @override Widget build(BuildContext context){
-    if(loading) return const Center(child:Padding(padding:EdgeInsets.all(40),child:CircularProgressIndicator()));
-    if(loadError!=null) return Center(child:Padding(padding:EdgeInsets.all(40),child:Text(loadError!)));
+    if(loading) return const Center(child:Padding(padding:EdgeInsets.all(40),child:shad.CircularProgressIndicator()));
+    if(loadError!=null) return Center(child:Padding(padding:EdgeInsets.all(40),child:AdminCard(child:Padding(padding:EdgeInsets.all(22),child:Column(mainAxisSize:MainAxisSize.min,children:[const AdminIcon(HugeIcons.strokeRoundedAlert02,size:28,color:AdminColors.red),const SizedBox(height:10),const Text('Unable to load orders',style:TextStyle(fontWeight:FontWeight.w900)),const SizedBox(height:5),Text(loadError!,textAlign:TextAlign.center,style:const TextStyle(fontSize:11,color:AdminColors.muted)),const SizedBox(height:12),shad.OutlineButton(onPressed:_loadOrders,child:const Text('Retry'))])))));
     final list=filtered,order=selected,desktop=MediaQuery.sizeOf(context).width>=1120;
     final pages=list.isEmpty?1:((list.length-1)~/10)+1;if(page>pages)page=pages;
     final queue=_OrderQueue(orders:list,selectedId:order?.id,page:page,onPage:(v)=>setState(()=>page=v),onSelect:(v)=>setState(()=>selectedId=v));
