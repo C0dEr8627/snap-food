@@ -293,15 +293,19 @@ class _OrderQueue extends StatelessWidget{
 class _OrderTableHeader extends StatelessWidget{const _OrderTableHeader();@override Widget build(BuildContext context)=>const Padding(padding:EdgeInsets.fromLTRB(10,8,10,8),child:Row(children:[SizedBox(width:30),Expanded(flex:13,child:Text('ORDER ID & TIME',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted))),Expanded(flex:17,child:Text('CUSTOMER & PHONE',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted))),Expanded(flex:20,child:Text('ADDRESS',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted))),Expanded(flex:12,child:Text('ITEMS / TOTAL',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted))),Expanded(flex:12,child:Text('STATUS',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted)))]));}
 
 class _OrderRow extends StatelessWidget{
-  const _OrderRow({required this.order,required this.selected,required this.onTap});final _AdminOrder order;final bool selected;final VoidCallback onTap;
-  @override Widget build(BuildContext context)=>shad.Button.ghost(onPressed:onTap,child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[
-    SizedBox(width:44,height:44,child:Checkbox(value:selected,onChanged:(_)=>onTap(),activeColor:AdminColors.red,semanticLabel:'Select '+order.id)),
-    Expanded(flex:13,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(order.id,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),const SizedBox(height:3),Text(order.time,style:const TextStyle(fontSize: 11,color:AdminColors.muted))])),
-    Expanded(flex:17,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(order.customer,maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize: 11,fontWeight:FontWeight.w800)),const SizedBox(height:3),Text(order.phone,maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize: 11,color:AdminColors.muted))])),
-    Expanded(flex:20,child:Text(order.address,maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize: 11,color:AdminColors.muted,height:1.35))),
-    Expanded(flex:12,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('₹'+order.total.toStringAsFixed(2),style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),const SizedBox(height:3),Text(order.items.toString()+' items • '+order.payment,style:const TextStyle(fontSize: 11,color:AdminColors.muted))])),
-    Expanded(flex:12,child:Align(alignment:Alignment.topLeft,child:_OrderStatusBadge(order.status))),
-  ]))));
+  const _OrderRow({required this.order,required this.selected,required this.onTap});
+  final _AdminOrder order;final bool selected;final VoidCallback onTap;
+  @override Widget build(BuildContext context)=>shad.Button.ghost(
+    onPressed:onTap,
+    child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[
+      SizedBox(width:44,height:44,child:Center(child:shad.Checkbox(value:selected,onChanged:(_)=>onTap()))),
+      Expanded(flex:13,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(order.id,style:const TextStyle(fontSize:12,fontWeight:FontWeight.w900)),const SizedBox(height:3),Text(order.time,style:const TextStyle(fontSize:11,color:AdminColors.muted))])),
+      Expanded(flex:17,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(order.customer,maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:11,fontWeight:FontWeight.w800)),const SizedBox(height:3),Text(order.phone,maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:11,color:AdminColors.muted))])),
+      Expanded(flex:20,child:Text(order.address,maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:11,color:AdminColors.muted,height:1.35))),
+      Expanded(flex:12,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('₹'+order.total.toStringAsFixed(2),style:const TextStyle(fontSize:12,fontWeight:FontWeight.w900)),const SizedBox(height:3),Text(order.items.toString()+' items • '+order.payment,style:const TextStyle(fontSize:11,color:AdminColors.muted))])),
+      Expanded(flex:12,child:Align(alignment:Alignment.topLeft,child:_OrderStatusBadge(order.status))),
+    ]),
+  ).sized(width:double.infinity);
 }
 
 class _OrderStatusBadge extends StatelessWidget{
@@ -316,7 +320,7 @@ class _OrderDetails extends StatelessWidget{
     final o=order;if(o==null)return const AdminCard(child:Padding(padding:EdgeInsets.all(30),child:Center(child:Text('No selected order',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)))));
     final next=_nextStatus(o.status);
     return AdminCard(child:Padding(padding:const EdgeInsets.all(16),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-      Row(children:[Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(o.id,style:const TextStyle(fontSize:18,fontWeight:FontWeight.w900)),const SizedBox(height:5),Row(children:[_OrderStatusBadge(o.status),const SizedBox(width:7),if(apiConfigured)const Text('LIVE ACTIVE',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.green))])])),IconButton(tooltip:'Print',onPressed:()=>_notice(context,'Print is not wired in the existing admin app.'),icon:const AdminIcon(HugeIcons.strokeRoundedPrinter,size:18)),IconButton(tooltip:'Share',onPressed:()=>_notice(context,'Share is not wired in the existing admin app.'),icon:const AdminIcon(HugeIcons.strokeRoundedShare08,size:18))]),
+      Row(children:[Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(o.id,style:const TextStyle(fontSize:18,fontWeight:FontWeight.w900)),const SizedBox(height:5),Row(children:[_OrderStatusBadge(o.status),const SizedBox(width:7),if(apiConfigured)const Text('LIVE ACTIVE',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.green))])])),shad.IconButton.ghost(tooltip:'Print',onPressed:()=>_notice(context,'Print is not wired in the existing admin app.'),icon:const AdminIcon(HugeIcons.strokeRoundedPrinter,size:18)),shad.IconButton.ghost(tooltip:'Share',onPressed:()=>_notice(context,'Share is not wired in the existing admin app.'),icon:const AdminIcon(HugeIcons.strokeRoundedShare08,size:18))]),
       const SizedBox(height:5),Text('Placed at '+o.time+' IST • Estimated Dispatch: 8 min',style:const TextStyle(fontSize: 11,color:AdminColors.muted)),const SizedBox(height:15),
       _Panel(title:'Order Dispatch Progression',trailing:'Step '+_progressStep(o.status).toString()+' of 5',child:_Progression(o.status)),const SizedBox(height:12),
       LayoutBuilder(builder:(context,c)=>c.maxWidth>=500?Row(children:[Expanded(child:_PersonCard('CUSTOMER',o.customer,[o.phone,o.address],HugeIcons.strokeRoundedUser)),const SizedBox(width:10),Expanded(child:_PersonCard('DELIVERY PARTNER',o.partner??'Unassigned',[o.vehicle??'Awaiting partner assignment'],HugeIcons.strokeRoundedDeliveryTruck01,badge:o.partner==null?'UNASSIGNED':'ON DUTY'))]):Column(children:[_PersonCard('CUSTOMER',o.customer,[o.phone,o.address],HugeIcons.strokeRoundedUser),const SizedBox(height:10),_PersonCard('DELIVERY PARTNER',o.partner??'Unassigned',[o.vehicle??'Awaiting partner assignment'],HugeIcons.strokeRoundedDeliveryTruck01,badge:o.partner==null?'UNASSIGNED':'ON DUTY')])),
