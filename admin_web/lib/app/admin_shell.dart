@@ -8,7 +8,7 @@ extension on AdminSection {
     AdminSection.orders => 'Orders',
     AdminSection.catalogue => 'Catalogue',
     AdminSection.partners => 'Delivery partners',
-    AdminSection.invoices => 'Invoices & billing',
+    AdminSection.invoices => 'Invoices & Tax Billing Ledger',
   };
   IconData get icon => switch (this) {
     AdminSection.dashboard => Icons.space_dashboard_rounded,
@@ -22,7 +22,7 @@ extension on AdminSection {
     AdminSection.orders => 'Track every order from checkout to delivery.',
     AdminSection.catalogue => 'Manage menu items, categories and availability.',
     AdminSection.partners => 'Review delivery partners and KYC status.',
-    AdminSection.invoices => 'Keep order billing and invoice access organized.',
+    AdminSection.invoices => 'Reconcile invoice snapshots and review billing records.',
   };
 }
 
@@ -97,7 +97,7 @@ class _AdminShellState extends State<AdminShell> {
                       Expanded(child: Text(section.label, style: Theme.of(context).textTheme.headlineSmall)),
                     ]),
                   ),
-                  if (section != AdminSection.partners)
+                  if (section != AdminSection.partners && section != AdminSection.invoices)
                     _PageHeading(section: section, desktop: desktop),
                   const SizedBox(height: 24),
                   switch (section) {
