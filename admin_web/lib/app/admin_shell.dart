@@ -30,14 +30,26 @@ class SnapFooddAdminApp extends StatelessWidget {
   const SnapFooddAdminApp({super.key});
 
   @override
-  Widget build(BuildContext context) => shad.ShadcnApp(
+  Widget build(BuildContext context) => MaterialApp(
     title: 'Snap Foodd Admin',
     debugShowCheckedModeBanner: false,
-    theme: shad.ThemeData(
-      colorScheme: shad.LegacyColorSchemes.lightZinc(),
-      radius: 0.65,
+    theme: ThemeData(
+      colorScheme: ColorScheme.fromSeed(seedColor: AdminColors.yellowDark),
+      scaffoldBackgroundColor: AdminColors.canvas,
+      useMaterial3: true,
     ),
-    home: const AdminAuthGate(),
+    // Material widgets used alongside shadcn_flutter (Tooltip, Scaffold,
+    // TextFormField, dialogs and focus traversal) need MaterialLocalizations.
+    // ShadcnApp alone does not provide the Material localization delegates.
+    home: shad.ShadcnApp(
+      title: 'Snap Foodd Admin',
+      debugShowCheckedModeBanner: false,
+      theme: shad.ThemeData(
+        colorScheme: shad.LegacyColorSchemes.lightZinc(),
+        radius: 0.65,
+      ),
+      home: const AdminAuthGate(),
+    ),
   );
 }
 
