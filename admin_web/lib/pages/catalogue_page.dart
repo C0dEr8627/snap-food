@@ -722,7 +722,7 @@ class _ProductTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: selected ? AdminAdminColors.amberSoft : Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: selected ? AdminAdminColors.yellowDark : AdminColors.line, width: selected ? 1.4 : 1),
+        border: Border.all(color: selected ? AdminAdminColors.amber : AdminColors.line, width: selected ? 1.4 : 1),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -731,8 +731,8 @@ class _ProductTile extends StatelessWidget {
           child: Container(
             color: AdminColors.canvas,
             child: product.image != null && product.image!.isNotEmpty
-                ? Image.network(product.image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminAdminColors.yellowDark)))
-                : const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminAdminColors.yellowDark)),
+                ? Image.network(product.image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminAdminColors.amber)))
+                : const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminAdminColors.amber)),
           ),
         ),
         Expanded(child: Padding(
@@ -795,7 +795,7 @@ class _ProductRow extends StatelessWidget {
 class _Thumb extends StatelessWidget {
   const _Thumb({this.image, required this.name}); final String? image; final String name;
   @override Widget build(BuildContext context) => ClipRRect(borderRadius: BorderRadius.circular(10), child: Container(width: 50, height: 50, color: AdminColors.canvas, child: image != null && image!.isNotEmpty ? Image.network(image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _placeholder()) : _placeholder()));
-  Widget _placeholder() => const AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 22, color: AdminAdminColors.yellowDark);
+  Widget _placeholder() => const AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 22, color: AdminAdminColors.amber);
 }
 
 class _Badge extends StatelessWidget {
@@ -1043,7 +1043,7 @@ class _ProductEditor extends StatelessWidget {
                                   ? HugeIcons.strokeRoundedHourglass
                                   : HugeIcons.strokeRoundedCloudUpload,
                               size: 27,
-                              color: AdminAdminColors.yellowDark,
+                              color: AdminAdminColors.amber,
                             ),
                             const SizedBox(height: 7),
                             Text(
