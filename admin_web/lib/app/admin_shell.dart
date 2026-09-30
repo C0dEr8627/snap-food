@@ -30,25 +30,24 @@ class SnapFooddAdminApp extends StatelessWidget {
   const SnapFooddAdminApp({super.key});
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
+  Widget build(BuildContext context) => shad.ShadcnApp(
     title: 'Snap Foodd Admin',
     debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: AdminColors.yellowDark),
-      scaffoldBackgroundColor: AdminColors.canvas,
-      useMaterial3: true,
+    theme: shad.ThemeData(
+      colorScheme: shad.LegacyColorSchemes.lightZinc(),
+      radius: 0.65,
     ),
-    // Material widgets used alongside shadcn_flutter (Tooltip, Scaffold,
-    // TextFormField, dialogs and focus traversal) need MaterialLocalizations.
-    // ShadcnApp alone does not provide the Material localization delegates.
-    home: shad.ShadcnApp(
-      title: 'Snap Foodd Admin',
-      debugShowCheckedModeBanner: false,
-      theme: shad.ThemeData(
-        colorScheme: shad.LegacyColorSchemes.lightZinc(),
-        radius: 0.65,
-      ),
-      home: const AdminAuthGate(),
+    // ShadcnApp owns the nearest Localizations scope, so MaterialApp outside
+    // it cannot provide MaterialLocalizations to Material TextField/Scaffold.
+    // Add the Material delegates inside that scope for mixed Material/shad UI.
+    home: Localizations(
+      locale: const Locale('en'),
+      delegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      child: const AdminAuthGate(),
     ),
   );
 }
@@ -396,7 +395,7 @@ class _PageHeading extends StatelessWidget {
 
 
 String _initials(String name) {
-  final parts = name.trim().split(RegExp(r'\s+')).where((part) => part.isNotEmpty).toList();
+  final parts = name.trim().split(RegExp(r'\\s+')).where((part) => part.isNotEmpty).toList();
   if (parts.isEmpty) return 'AD';
   if (parts.length == 1) return parts.first.substring(0, parts.first.length > 1 ? 2 : 1).toUpperCase();
   return (parts.first[0] + parts.last[0]).toUpperCase();
