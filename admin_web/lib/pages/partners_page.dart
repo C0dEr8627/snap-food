@@ -642,19 +642,17 @@ class _PartnerFilterBar extends StatelessWidget {
               runSpacing: 7,
               children: options.map((option) {
                 final active = filter == option.$1;
-                return (active ? shad.Button.secondary : shad.Button.ghost)(onPressed: () => onFilter(option.$1), child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-                    decoration: BoxDecoration(
-                      color: active ? AdminColors.amberSoft : AdminColors.canvas,
-                      borderRadius: BorderRadius.circular(9),
-                      border: Border.all(color: active ? AdminColors.yellow : AdminColors.line),
+                return (active ? shad.Button.secondary : shad.Button.ghost)(
+                  onPressed: () => onFilter(option.$1),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    Text(option.$2, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: active ? AdminColors.ink : AdminColors.muted)),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      decoration: BoxDecoration(color: active ? AdminColors.yellow : AdminColors.canvas, borderRadius: BorderRadius.circular(6)),
+                      child: Text((counts[option.$1] ?? 0).toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
                     ),
-                    child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      Text(option.$2, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: active ? AdminColors.ink : AdminColors.muted)),
-                      const SizedBox(width: 6),
-                      Text((counts[option.$1] ?? 0).toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
-                    ]),
-                  ),
+                  ]),
                 );
               }).toList(),
             );
