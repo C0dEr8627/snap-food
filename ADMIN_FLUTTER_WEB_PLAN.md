@@ -14,11 +14,13 @@ The admin GUI is a separate client. Current screens use clearly labelled preview
 - [ ] Verify workflow against current branch head.
 
 ## Phase 1 — Design system and GUI foundation
-- [x] Match the mobile app's warm cream canvas, golden-yellow primary accent, food-red secondary accent and rounded cards.
-- [x] Add responsive admin shell with desktop sidebar, compact-screen drawer, top bar and preview/API configuration status.
-- [x] Add dashboard metrics, weekly sales visualization, operational queue and recent orders.
-- [x] Add orders, catalogue, delivery-partner and invoice layouts with illustrative data.
-- [x] Add section navigation, order filter chips, catalogue category filter and placeholder action feedback.
+- [x] Create the admin visual system from the references in `design-images/admin/` (dashboard, orders/fulfillment, catalogue/inventory, delivery-partner KYC, invoices/billing).
+- [x] Rework the Flutter Web shell to use the reference-led dark navigation rail, warm neutral canvas, yellow food accent, red operational accent, compact status pills and card/table hierarchy.
+- [x] Add responsive breakpoints so the desktop sidebar becomes a drawer on smaller viewports and grids/tables reflow or scroll without clipping.
+- [x] Add dashboard metrics, weekly sales visualization, live operational queue and recent orders.
+- [x] Add orders/fulfillment, catalogue/inventory, delivery-partner/KYC and invoice/billing pages with the reference information hierarchy.
+- [x] Add responsive product cards, KPI grids, filters, status pills and horizontal overflow handling for dense data tables.
+- [x] Keep all current page actions explicitly preview-only until Laravel API integration is implemented.
 - [x] Add widget tests for dashboard rendering, navigation and catalogue preview.
 - [ ] Run formatting, analysis, widget tests and Web release build; record actual CI result.
 
