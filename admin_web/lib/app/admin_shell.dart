@@ -165,7 +165,7 @@ class _AdminShellState extends State<AdminShell> {
         child: _Sidebar(selected: section, onSelect: _select, compact: true),
       ),
       body: Row(children: [
-        if (desktop) SizedBox(width: 248, child: _Sidebar(selected: section, onSelect: _select)),
+        if (desktop) SizedBox(width: 248, height: double.infinity, child: _Sidebar(selected: section, onSelect: _select)),
         Expanded(child: Column(children: [
           _Header(desktop: desktop, user: widget.user, onLogout: widget.onLogout),
           Expanded(child: LayoutBuilder(builder: (context, constraints) => Scrollbar(thumbVisibility: desktop, child: SingleChildScrollView(
@@ -240,20 +240,6 @@ class _Sidebar extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            margin: const EdgeInsets.fromLTRB(18, 0, 18, 18),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(12), border: Border.all(color: AdminColors.line)),
-            child: const Row(children: [
-              _StatusDot(color: AdminColors.red),
-              SizedBox(width: 8),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('IN-BLR-01', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.ink)),
-                SizedBox(height: 2),
-                Text('Preview Data Mode', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
-              ])),
-            ]),
-          ),
           const Padding(
             padding: EdgeInsets.fromLTRB(22, 0, 18, 9),
             child: Align(alignment: Alignment.centerLeft, child: Text('NAVIGATION', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.2, color: AdminColors.muted))),
@@ -285,20 +271,6 @@ class _Sidebar extends StatelessWidget {
               ),
             );
           }),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 24, 18, 16),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('Flutter Engine', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.muted)),
-              const SizedBox(height: 4),
-              const Text('api.snapfoodd.in/v1', style: TextStyle(fontSize: 11, color: AdminColors.ink, fontWeight: FontWeight.w700)),
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(7), border: Border.all(color: AdminColors.line)),
-                child: const Text('v3.22 Web', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.muted)),
-              ),
-            ]),
-          ),
         ],
       ),
       ),
