@@ -58,8 +58,14 @@ class CategoryController extends Controller
     {
         Gate::authorize('delete', $category);
 
-        $category->update(['is_active' => false]);
+        if ($category->products()->exists()) {
+            return response()->json([
+                'message' => 'Category cannot be permanently deleted while products are assigned to it. Deactivate it instead or move its products first.',
+            ], 409);
+        }
 
-        return response()->json(['data' => $category->refresh()]);
+        $category->delete();
+
+        return response()->json(['data' => ['id' => $category->id, 'deleted' => true]]);
     }
 }
