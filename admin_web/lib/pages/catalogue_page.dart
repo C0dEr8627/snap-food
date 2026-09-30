@@ -1466,18 +1466,11 @@ class _ProductEditor extends StatelessWidget {
                 spacing: 6,
                 children: ['Pure Veg', 'Non-Veg', 'Contains Egg']
                     .map(
-                      (e) => ChoiceChip(
-                        label: Text(
-                          e,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        selected: formDietary == e,
-                        onSelected: (_) => onDietary(e),
-                        selectedColor: AdminColors.yellow,
-                        side: const BorderSide(color: AdminColors.line),
+                      (e) => (formDietary == e
+                          ? shad.Button.secondary
+                          : shad.Button.ghost)(
+                        onPressed: () => onDietary(e),
+                        child: Text(e, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
                       ),
                     )
                     .toList(),
