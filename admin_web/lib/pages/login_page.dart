@@ -124,9 +124,11 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                       shad.PrimaryButton(
                         onPressed: _loading ? null : _submitPassword,
-                        child: _loading
-                            ? const SizedBox(width: 17, height: 17, child: CircularProgressIndicator(strokeWidth: 2))
-                            : const Text('Sign in', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
+                        child: Center(
+                          child: _loading
+                              ? const SizedBox(width: 17, height: 17, child: CircularProgressIndicator(strokeWidth: 2))
+                              : const Text('Sign in', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
+                        ),
                       ).sized(width: double.infinity, height: 46),
                       const SizedBox(height: 18),
                       const _OrDivider(),
