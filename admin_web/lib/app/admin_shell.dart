@@ -82,7 +82,7 @@ class _AdminShellState extends State<AdminShell> {
       body: Row(children: [
         if (desktop) SizedBox(width: 248, child: _Sidebar(selected: section, onSelect: _select)),
         Expanded(child: Column(children: [
-          _Header(desktop: desktop, user: user, onLogout: onLogout),
+          _Header(desktop: desktop, user: widget.user, onLogout: widget.onLogout),
           Expanded(child: LayoutBuilder(builder: (context, constraints) => SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(desktop ? 24 : 16, 24, desktop ? 24 : 16, 32),
             child: Center(
