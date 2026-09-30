@@ -49,7 +49,7 @@ class _ConnectionBanner extends StatelessWidget {
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       child: Row(children: [
-        Container(width: 34, height: 34, decoration: BoxDecoration(color: AdminColors.greenSoft, borderRadius: BorderRadius.circular(9)), child: const Icon(Icons.cloud_done_outlined, size: 18, color: AdminColors.green)),
+        Container(width: 34, height: 34, decoration: BoxDecoration(color: AdminColors.greenSoft, borderRadius: BorderRadius.circular(9)), child: const AdminIcon(HugeIcons.strokeRoundedCloudSavingDone01, size: 18, color: AdminColors.green)),
         const SizedBox(width: 11),
         const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('Laravel API v1 Connected', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w900)),
@@ -77,7 +77,7 @@ class _RevenueKpi extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const _DashboardKpi(
     label: "TODAY'S REVENUE", value: '₹1,42,850', secondary: '+14.8% vs last week',
-    footer: 'Settled Orders: 382    •    AOV: ₹374', icon: Icons.account_balance_wallet_outlined, iconTone: AdminColors.amberSoft,
+    footer: 'Settled Orders: 382    •    AOV: ₹374', icon: HugeIcons.strokeRoundedWallet01, iconTone: AdminColors.amberSoft,
   );
 }
 
@@ -86,7 +86,7 @@ class _ActiveOrdersKpi extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const _DashboardKpi(
     label: 'ACTIVE ORDERS', value: '64', secondary: 'In-flight',
-    footer: '18 New   •   26 Kitchen   •   20 Out', icon: Icons.local_mall_outlined, iconTone: AdminColors.redSoft, progress: .72,
+    footer: '18 New   •   26 Kitchen   •   20 Out', icon: HugeIcons.strokeRoundedShoppingBag01, iconTone: AdminColors.redSoft, progress: .72,
   );
 }
 
@@ -95,7 +95,7 @@ class _FleetKpi extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const _DashboardKpi(
     label: 'FLEET STATUS', value: '42', secondary: 'Partners Online',
-    footer: 'Zone: Koramangala – HSR   •   36 on Trip', icon: Icons.two_wheeler_outlined, iconTone: AdminColors.greenSoft,
+    footer: 'Zone: Koramangala – HSR   •   36 on Trip', icon: HugeIcons.strokeRoundedMotorbike02, iconTone: AdminColors.greenSoft,
     progress: .85, progressLabel: '85% Utilized    •    6 Available',
   );
 }
@@ -105,14 +105,14 @@ class _SlaKpi extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const _DashboardKpi(
     label: 'AVG SLA DELIVERY', value: '24.2 mins', secondary: 'Target: < 30 mins (Optimal)',
-    footer: 'Prep SLA: 12.4m    •    Transit: 11.8m', icon: Icons.timer_outlined, iconTone: AdminColors.blueSoft,
+    footer: 'Prep SLA: 12.4m    •    Transit: 11.8m', icon: HugeIcons.strokeRoundedTimer02, iconTone: AdminColors.blueSoft,
   );
 }
 
 class _DashboardKpi extends StatelessWidget {
   const _DashboardKpi({required this.label, required this.value, required this.secondary, required this.footer, required this.icon, required this.iconTone, this.progress, this.progressLabel});
   final String label, value, secondary, footer;
-  final IconData icon;
+  final AdminIconData icon;
   final Color iconTone;
   final double? progress;
   final String? progressLabel;
@@ -124,7 +124,7 @@ class _DashboardKpi extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Expanded(child: Text(label, style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w900, letterSpacing: .5, color: AdminColors.muted))),
-          Container(width: 31, height: 31, decoration: BoxDecoration(color: iconTone, borderRadius: BorderRadius.circular(9)), child: Icon(icon, size: 16, color: AdminColors.ink)),
+          Container(width: 31, height: 31, decoration: BoxDecoration(color: iconTone, borderRadius: BorderRadius.circular(9)), child: AdminIcon(icon, size: 16, color: AdminColors.ink)),
         ]),
         const SizedBox(height: 11),
         Text(value, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w900, height: 1)),
@@ -185,7 +185,7 @@ class _AttentionItem extends StatelessWidget {
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(color: danger ? AdminColors.redSoft : AdminColors.canvas, borderRadius: BorderRadius.circular(10), border: Border.all(color: danger ? AdminColors.redSoft : AdminColors.line)),
     child: Row(children: [
-      Container(width: 30, height: 30, decoration: BoxDecoration(color: danger ? Colors.white : AdminColors.amberSoft, borderRadius: BorderRadius.circular(8)), child: Icon(danger ? Icons.priority_high_rounded : Icons.assignment_late_outlined, size: 15, color: danger ? AdminColors.red : AdminColors.yellowDark)),
+      Container(width: 30, height: 30, decoration: BoxDecoration(color: danger ? Colors.white : AdminColors.amberSoft, borderRadius: BorderRadius.circular(8)), child: AdminIcon(danger ? HugeIcons.strokeRoundedAlert02 : HugeIcons.strokeRoundedTask01, size: 15, color: danger ? AdminColors.red : AdminColors.yellowDark)),
       const SizedBox(width: 9),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
         Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w900)),
@@ -334,17 +334,17 @@ class _KitchenPulseCard extends StatelessWidget {
           Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6), decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(7)), child: const Text('12 Cloud Kitchens', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w800))),
         ]),
         const SizedBox(height: 12),
-        const _KitchenItem(name: 'Biryani Central HQ', tickets: '24 live tickets', prep: '9 min avg prep', capacity: .98, icon: Icons.rice_bowl_rounded),
+        const _KitchenItem(name: 'Biryani Central HQ', tickets: '24 live tickets', prep: '9 min avg prep', capacity: .98, icon: HugeIcons.strokeRoundedRiceBowl01),
         const SizedBox(height: 9),
-        const _KitchenItem(name: 'Burger Shack 5th Blo...', tickets: '16 live tickets', prep: '6 min avg prep', capacity: .72, icon: Icons.lunch_dining_rounded),
+        const _KitchenItem(name: 'Burger Shack 5th Blo...', tickets: '16 live tickets', prep: '6 min avg prep', capacity: .72, icon: HugeIcons.strokeRoundedRestaurant01),
         const SizedBox(height: 9),
-        const _KitchenItem(name: 'Crust & Co Pizzeria', tickets: '11 live tickets', prep: '14 min avg prep', capacity: .64, icon: Icons.local_pizza_rounded),
+        const _KitchenItem(name: 'Crust & Co Pizzeria', tickets: '11 live tickets', prep: '14 min avg prep', capacity: .64, icon: HugeIcons.strokeRoundedPizza01),
         const SizedBox(height: 13),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 10),
           decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(10)),
           child: Row(children: [
-            const Icon(Icons.flash_on_rounded, size: 17, color: AdminColors.yellowDark),
+            const AdminIcon(HugeIcons.strokeRoundedFlash, size: 17, color: AdminColors.yellowDark),
             const SizedBox(width: 8),
             const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text('Express Auto-Dispatch', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w900)),
@@ -363,13 +363,13 @@ class _KitchenItem extends StatelessWidget {
   const _KitchenItem({required this.name, required this.tickets, required this.prep, required this.capacity, required this.icon});
   final String name, tickets, prep;
   final double capacity;
-  final IconData icon;
+  final AdminIconData icon;
   @override
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.all(10),
     decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(10)),
     child: Row(children: [
-      Container(width: 38, height: 38, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(9)), child: Icon(icon, size: 18, color: AdminColors.yellowDark)),
+      Container(width: 38, height: 38, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(9)), child: AdminIcon(icon, size: 18, color: AdminColors.yellowDark)),
       const SizedBox(width: 9),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),
@@ -407,7 +407,7 @@ class _LiveOrdersCard extends StatelessWidget {
             SizedBox(height: 3),
             Text('Real-time telemetry updated via websocket /api/v1/orders/stream', style: TextStyle(fontSize: 9, color: AdminColors.muted)),
           ])),
-          IconButton(tooltip: 'Export', onPressed: () => _notice(context, 'Export will use the existing orders service when connected.'), icon: const Icon(Icons.download_outlined, size: 19)),
+          IconButton(tooltip: 'Export', onPressed: () => _notice(context, 'Export will use the existing orders service when connected.'), icon: const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 19)),
         ]),
         const SizedBox(height: 13),
         const SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: [
@@ -599,7 +599,7 @@ class _OrdersTable extends StatelessWidget {
           DataCell(Text(r[2], style: const TextStyle(fontWeight: FontWeight.w800))),
           DataCell(Text(r[3])),
           DataCell(_Pill(r[4])),
-          DataCell(IconButton(onPressed: () => _notice(context, 'Order details will be connected to the Laravel API.'), icon: const Icon(Icons.chevron_right_rounded, size: 19))),
+          DataCell(IconButton(onPressed: () => _notice(context, 'Order details will be connected to the Laravel API.'), icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 19))),
         ])).toList(),
       ),
     ),
