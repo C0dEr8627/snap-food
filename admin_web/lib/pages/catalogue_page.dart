@@ -118,7 +118,8 @@ class _CataloguePageState extends State<CataloguePage> {
           ? _slug.text.trim()
           : _name.text.trim().toLowerCase()
               .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
-              .replaceAll(RegExp(r'^-+|-+
+              .replaceAll(RegExp(r'^-+|-+$'), ''),
+      description: _description.text.trim(),
       categoryId: _formCategoryId ?? (_selected?.categoryId ?? (_categories.isNotEmpty ? _categories.first.id : null)),
       categoryName: _selected?.categoryName ?? (_categories.isNotEmpty ? _categories.first.name : ''),
       price: double.tryParse(_price.text.trim()) ?? 0, stock: int.tryParse(_stock.text.trim()) ?? 0,
