@@ -132,7 +132,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
   }
 
   void _showInvoice(_LedgerInvoice i) {
-    showDialog<void>(context: context, builder: (ctx) => AlertDialog(title: Text(i.number, style: const TextStyle(fontWeight: FontWeight.w900)),
+    shad.showOverlay<void>(context, shad.DialogConfiguration<void>(builder: (ctx) => shad.AlertDialog(title: Text(i.number, style: const TextStyle(fontWeight: FontWeight.w900)),
       content: SizedBox(width: 430, child: SingleChildScrollView(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
         _InvoiceDetailLine('Order', '#' + i.orderId.toString()), _InvoiceDetailLine('Customer', i.customer), _InvoiceDetailLine('Email', i.email.isEmpty ? 'Not provided' : i.email),
         _InvoiceDetailLine('Issued at', i.issuedAt ?? 'Not recorded'), const Divider(height: 24),
