@@ -193,10 +193,9 @@ class _AttentionItem extends StatelessWidget {
         Text(detail, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
       ])),
       const SizedBox(width: 6),
-      TextButton(
+      shad.OutlineButton(
         onPressed: () => _notice(context, '$action flow will connect to the existing admin service.'),
-        style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-        child: Text(action, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: danger ? AdminColors.red : AdminColors.yellowDark)),
+        child: Text(action, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
       ),
     ]),
   );
@@ -442,8 +441,8 @@ class _LiveOrdersCard extends StatelessWidget {
                 Text(o[8], style: const TextStyle(fontWeight: FontWeight.w800)), Text(o[9], style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
               ]))),
               DataCell(Row(mainAxisSize: MainAxisSize.min, children: [
-                TextButton(onPressed: () => _notice(context, 'Action will connect to the existing order workflow.'), child: Text(o[6] == 'NEW' ? 'Accept' : o[6] == 'PREPARING' ? 'KDS View' : o[6] == 'OUT FOR DELIVERY' ? 'Track GPS' : 'Invoice', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
-                TextButton(onPressed: () => _notice(context, 'Order detail route will use the existing navigation flow.'), child: const Text('View', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
+                shad.OutlineButton(onPressed: () => _notice(context, 'Action will connect to the existing order workflow.'), child: Text(o[6] == 'NEW' ? 'Accept' : o[6] == 'PREPARING' ? 'KDS View' : o[6] == 'OUT FOR DELIVERY' ? 'Track GPS' : 'Invoice', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
+                shad.OutlineButton(onPressed: () => _notice(context, 'Order detail route will use the existing navigation flow.'), child: const Text('View', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
               ])),
             ])).toList(),
           ),
