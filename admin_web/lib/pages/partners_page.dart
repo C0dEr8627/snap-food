@@ -789,27 +789,49 @@ class _PartnerActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Wrap(spacing: 2, children: [
         shad.IconButton.ghost(
-          onPressed: () => shad.showOverlay<void>(context, shad.DialogConfiguration(), builder: (dialogContext) => shad.AlertDialog(
-              title: Text(partner.name),
-              content: SizedBox(
-                width: 360,
-                child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  _DetailLine(label: 'Partner ID', value: partner.id.toString()),
-                  _DetailLine(label: 'Email', value: partner.email),
-                  _DetailLine(label: 'Approval', value: partner.approved ? 'Approved' : 'Pending approval'),
-                  _DetailLine(label: 'Account active', value: partner.active ? 'Yes' : 'No'),
-                  _DetailLine(label: 'Available', value: partner.available ? 'Yes' : 'No'),
-                  const SizedBox(height: 8),
-                  const Text('Vehicle, trip history, live GPS, phone, and rating are not supplied by the current API.', style: TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.5)),
-                ]),
+          onPressed: () {
+            shad.showOverlay<void>(
+              context,
+              shad.DialogConfiguration(),
+              builder: (dialogContext) => shad.AlertDialog(
+                title: Text(partner.name),
+                content: SizedBox(
+                  width: 360,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _DetailLine(label: 'Partner ID', value: partner.id.toString()),
+                      _DetailLine(label: 'Email', value: partner.email),
+                      _DetailLine(label: 'Approval', value: partner.approved ? 'Approved' : 'Pending approval'),
+                      _DetailLine(label: 'Account active', value: partner.active ? 'Yes' : 'No'),
+                      _DetailLine(label: 'Available', value: partner.available ? 'Yes' : 'No'),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Vehicle, trip history, live GPS, phone, and rating are not supplied by the current API.',
+                        style: TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.5),
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  shad.OutlineButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: const Text('Close'),
+                  ),
+                ],
               ),
-              actions: [shad.OutlineButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Close'))],
-            ))),
+            );
+          },
           icon: const AdminIcon(HugeIcons.strokeRoundedLinkSquare01, size: 17),
         ),
         shad.IconButton.ghost(
           onPressed: busy ? null : () => onApproval(partner, !partner.approved),
-          icon: AdminIcon(partner.approved ? HugeIcons.strokeRoundedSecurityCheck : HugeIcons.strokeRoundedCheckmarkCircle01, size: 18, color: partner.approved ? AdminColors.muted : AdminColors.green),
+          icon: AdminIcon(
+            partner.approved ? HugeIcons.strokeRoundedSecurityCheck : HugeIcons.strokeRoundedCheckmarkCircle01,
+            size: 18,
+            color: partner.approved ? AdminColors.muted : AdminColors.green,
+          ),
         ),
       ]);
 }
