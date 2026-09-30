@@ -155,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 20),
                       const Text(
                         'Admin access only • All sign-in attempts are verified by the Laravel API.',
-                        style: TextStyle(fontSize: 9.5, color: AdminColors.muted, height: 1.4),
+                        style: TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.4),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -290,7 +290,7 @@ class _LoginBrand extends StatelessWidget {
       const SizedBox(height: 12),
       const Text('SNAP FOODD', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900, letterSpacing: 1.1)),
       const SizedBox(height: 2),
-      const Text('ADMIN PORTAL', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 1.7, color: AdminColors.muted)),
+      const Text('ADMIN PORTAL', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1.7, color: AdminColors.muted)),
     ],
   );
 }
@@ -304,7 +304,7 @@ class _OrDivider extends StatelessWidget {
       const Expanded(child: Divider(color: AdminColors.line)),
       const Padding(
         padding: EdgeInsets.symmetric(horizontal: 12),
-        child: Text('OR', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: AdminColors.muted)),
+        child: Text('OR', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.muted)),
       ),
       const Expanded(child: Divider(color: AdminColors.line)),
     ],
