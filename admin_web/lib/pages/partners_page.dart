@@ -91,7 +91,7 @@ class _PartnersPageState extends State<PartnersPage> {
 
   Future<void> _setApproval(_DeliveryPartnerRecord partner, bool approved) async {
     if (!_api.configured) {
-      _notice(context, 'Configure API_TOKEN to change partner approval.', error: true);
+      _partnersNotice(context, 'Configure API_TOKEN to change partner approval.', error: true);
       return;
     }
     setState(() => _busy = true);
@@ -103,19 +103,19 @@ class _PartnersPageState extends State<PartnersPage> {
         if (index >= 0) _partners[index] = updated;
         _busy = false;
       });
-      _notice(context, approved
+      _partnersNotice(context, approved
           ? 'Partner approval saved.'
           : 'Partner approval removed. Availability was disabled by the server.');
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy = false);
-      _notice(context, e.toString().replaceFirst('Bad state: ', ''), error: true);
+      _partnersNotice(context, e.toString().replaceFirst('Bad state: ', ''), error: true);
     }
   }
 
   Future<void> _manualOnboard() async {
     if (!_api.configured) {
-      _notice(context, 'Configure API_TOKEN to onboard a delivery partner.', error: true);
+      _partnersNotice(context, 'Configure API_TOKEN to onboard a delivery partner.', error: true);
       return;
     }
     final controller = TextEditingController();
@@ -157,7 +157,7 @@ class _PartnersPageState extends State<PartnersPage> {
             onPressed: () {
               final value = int.tryParse(controller.text.trim());
               if (value == null || value < 1) {
-                _notice(dialogContext, 'Enter a valid positive user ID.', error: true);
+                _partnersNotice(dialogContext, 'Enter a valid positive user ID.', error: true);
                 return;
               }
               Navigator.pop(dialogContext, value);
@@ -177,11 +177,11 @@ class _PartnersPageState extends State<PartnersPage> {
       if (!mounted) return;
       setState(() => _busy = false);
       await _loadPartners(page: 1);
-      if (mounted) _notice(context, 'Partner record created. Admin approval is still required.');
+      if (mounted) _partnersNotice(context, 'Partner record created. Admin approval is still required.');
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy = false);
-      _notice(context, e.toString().replaceFirst('Bad state: ', ''), error: true);
+      _partnersNotice(context, e.toString().replaceFirst('Bad state: ', ''), error: true);
     }
   }
 
@@ -323,9 +323,9 @@ class _DeliveryPartnerApi {
         : <_DeliveryPartnerRecord>[];
     return _DeliveryPartnerPage(
       items: items,
-      total: _asInt(pageData['total'], items.length),
-      currentPage: _asInt(pageData['current_page'], page),
-      lastPage: _asInt(pageData['last_page'], 1),
+      total: _partnersAsInt(pageData['total'], items.length),
+      currentPage: _partnersAsInt(pageData['current_page'], page),
+      lastPage: _partnersAsInt(pageData['last_page'], 1),
     );
   }
 
@@ -405,7 +405,7 @@ class _DeliveryPartnerRecord {
   factory _DeliveryPartnerRecord.fromJson(Map json) {
     final user = json['user'] is Map ? json['user'] as Map : const {};
     return _DeliveryPartnerRecord(
-      id: _asInt(json['id'], 0),
+      id: _partnersAsInt(json['id'], 0),
       name: (user['name'] ?? 'Unnamed partner').toString(),
       email: (user['email'] ?? 'No email on file').toString(),
       approved: json['is_approved'] == true,
@@ -418,7 +418,7 @@ class _DeliveryPartnerRecord {
   _DeliveryPartnerRecord withApprovalFrom(_DeliveryPartnerRecord other) => other;
 }
 
-int _asInt(dynamic value, int fallback) =>
+int _partnersAsInt(dynamic value, int fallback) =>
     value is int ? value : int.tryParse(value?.toString() ?? '') ?? fallback;
 
 class _PartnerCommandHeader extends StatelessWidget {
@@ -1101,7 +1101,7 @@ class _KycDataBoundary extends StatelessWidget {
       );
 }
 
-void _notice(BuildContext context, String message, {bool error = false}) =>
+void _partnersNotice(BuildContext context, String message, {bool error = false}) =>
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message),
       backgroundColor: error ? AdminColors.red : null,
