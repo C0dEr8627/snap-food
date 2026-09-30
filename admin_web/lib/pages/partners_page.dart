@@ -735,7 +735,7 @@ class _PartnerIdentity extends StatelessWidget {
         height: 36,
         alignment: Alignment.center,
         decoration: BoxDecoration(color: AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(11)),
-        child: Text(initials.isEmpty ? 'DP' : initials, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminAdminColors.yellowDark)),
+        child: Text(initials.isEmpty ? 'DP' : initials, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminAdminColors.amber)),
       ),
       const SizedBox(width: 10),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -776,7 +776,7 @@ class _ApprovalPill extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
         decoration: BoxDecoration(color: approved ? AdminAdminColors.greenSoft : AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(18)),
-        child: Text(approved ? 'APPROVED' : 'PENDING', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: approved ? AdminAdminColors.green : AdminAdminColors.yellowDark)),
+        child: Text(approved ? 'APPROVED' : 'PENDING', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: approved ? AdminAdminColors.green : AdminAdminColors.amber)),
       );
 }
 
@@ -964,7 +964,7 @@ class _PartnerEmptyState extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 34),
           child: Center(child: Column(children: [
-            Container(width: 48, height: 48, decoration: BoxDecoration(color: AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(15)), child: const AdminIcon(HugeIcons.strokeRoundedDeliveryTruck01, color: AdminAdminColors.yellowDark, size: 24)),
+            Container(width: 48, height: 48, decoration: BoxDecoration(color: AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(15)), child: const AdminIcon(HugeIcons.strokeRoundedDeliveryTruck01, color: AdminAdminColors.amber, size: 24)),
             const SizedBox(height: 12),
             Text(hasQuery ? 'No partners match these filters' : 'No delivery partners found', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
             const SizedBox(height: 5),
@@ -996,7 +996,7 @@ class _KycQueueNotice extends StatelessWidget {
           padding: const EdgeInsets.all(17),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(width: 42, height: 42, decoration: BoxDecoration(color: AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(12)), child: const AdminIcon(HugeIcons.strokeRoundedTaskDone01, color: AdminAdminColors.yellowDark, size: 21)),
+              Container(width: 42, height: 42, decoration: BoxDecoration(color: AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(12)), child: const AdminIcon(HugeIcons.strokeRoundedTaskDone01, color: AdminAdminColors.amber, size: 21)),
               const SizedBox(width: 12),
               const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text('Sarathi & UIDAI Automated KYC Queue', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
@@ -1005,7 +1005,7 @@ class _KycQueueNotice extends StatelessWidget {
               ])),
               const SizedBox(width: 8),
               Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6), decoration: BoxDecoration(color: AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(18)), child: Text('${pendingPartners.length} pending on page', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminAdminColors.yellowDark))),
+                Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6), decoration: BoxDecoration(color: AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(18)), child: Text('${pendingPartners.length} pending on page', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminAdminColors.amber))),
                 const SizedBox(height: 8),
                 shad.OutlineButton(onPressed: onReview, child: const Text('Filter pending')),
               ]),
