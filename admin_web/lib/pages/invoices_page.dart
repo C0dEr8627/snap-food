@@ -104,14 +104,15 @@ class _InvoicesPageState extends State<InvoicesPage> {
       Container(padding: const EdgeInsets.all(14), decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(16)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Wrap(spacing: 10, runSpacing: 10, crossAxisAlignment: WrapCrossAlignment.center, children: [
-            SizedBox(width: mobile ? width - 66 : 310, child: TextField(controller: _search, onSubmitted: (_) => _load(page: 1),
-              decoration: InputDecoration(prefixIcon: const AdminIcon(HugeIcons.strokeRoundedSearch01, size: 19), hintText: 'Search invoice, order, customer, email…', isDense: true, filled: true, fillColor: AdminColors.canvas,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                suffixIcon: IconButton(tooltip: 'Search invoices', onPressed: () => _load(page: 1), icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 18))))),
+            SizedBox(width: mobile ? width - 66 : 310, child: shad.TextField(controller: _search, onSubmitted: (_) => _load(page: 1),
+              hintText: 'Search invoice, order, customer, email…', filled: true,
+              border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(12),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              features: const [shad.InputClearFeature()])),
             shad.OutlineButton(onPressed: () => _pickDate(true), leading: const AdminIcon(HugeIcons.strokeRoundedCalendar03, size: 15), child: Text(_from == null ? 'From date' : _date(_from!))),
             shad.OutlineButton(onPressed: () => _pickDate(false), leading: const AdminIcon(HugeIcons.strokeRoundedCalendar03, size: 15), child: Text(_to == null ? 'To date' : _date(_to!))),
             shad.PrimaryButton(onPressed: () => _load(page: 1), child: const Text('Apply')),
-            TextButton(onPressed: _reset, child: const Text('Reset')),
+            shad.OutlineButton(onPressed: _reset, child: const Text('Reset')),
           ]),
           const SizedBox(height: 12),
           Wrap(spacing: 8, runSpacing: 8, children: [
@@ -142,7 +143,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
             Expanded(child: Text((item['product_name'] ?? 'Item').toString() + ' × ' + (item['quantity'] ?? 1).toString(), style: const TextStyle(fontSize: 12))),
             Text(_inr(_number(item['line_total'])), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
           ])))],
-      ]))), actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close'))]));
+      ]))), actions: [shad.OutlineButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close'))]));
   }
 }
 
