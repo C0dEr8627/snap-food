@@ -709,29 +709,35 @@ class _PartnerRoster extends StatelessWidget {
             }
             return SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: DataTable(
-                headingRowHeight: 42,
-                dataRowMinHeight: 66,
-                dataRowMaxHeight: 78,
-                columnSpacing: 24,
-                horizontalMargin: 16,
-                headingTextStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted),
-                columns: const [
-                  DataColumn(label: Text('PARTNER / IDENTITY')),
-                  DataColumn(label: Text('CONTACT')),
-                  DataColumn(label: Text('DUTY STATUS')),
-                  DataColumn(label: Text('APPROVAL')),
-                  DataColumn(label: Text('QUICK ACTIONS')),
-                ],
-                rows: partners.map((partner) => DataRow(cells: [
-                  DataCell(SizedBox(width: 175, child: _PartnerIdentity(partner: partner))),
-                  DataCell(SizedBox(width: 185, child: Text(partner.email, style: const TextStyle(fontSize: 11)))),
-                  DataCell(_PartnerDutyStatus(partner: partner)),
-                  DataCell(_ApprovalPill(approved: partner.approved)),
-                  DataCell(_PartnerActions(partner: partner, busy: busy, onApproval: onApproval)),
-                ])).toList(),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 780),
+                child: shad.Table(
+                  rows: [
+                    shad.TableHeader(cells: const [
+                      shad.TableCell(child: Text('PARTNER / IDENTITY')),
+                      shad.TableCell(child: Text('CONTACT')),
+                      shad.TableCell(child: Text('DUTY STATUS')),
+                      shad.TableCell(child: Text('APPROVAL')),
+                      shad.TableCell(child: Text('QUICK ACTIONS')),
+                    ]),
+                    ...partners.map((partner) => shad.TableRow(cells: [
+                      shad.TableCell(child: SizedBox(width: 175, child: _PartnerIdentity(partner: partner))),
+                      shad.TableCell(child: SizedBox(width: 185, child: Text(partner.email, style: const TextStyle(fontSize: 11)))),
+                      shad.TableCell(child: _PartnerDutyStatus(partner: partner)),
+                      shad.TableCell(child: _ApprovalPill(approved: partner.approved)),
+                      shad.TableCell(child: _PartnerActions(partner: partner, busy: busy, onApproval: onApproval)),
+                    ])),
+                  ],
+                  columnWidths: const {
+                    0: shad.FlexTableSize(flex: 2),
+                    1: shad.FlexTableSize(flex: 2),
+                    2: shad.FlexTableSize(flex: 1),
+                    3: shad.FixedTableSize(width: 120),
+                    4: shad.FixedTableSize(width: 150),
+                  },
+                ),
               ),
-            );
+            );           );
           }),
         ]),
       );
