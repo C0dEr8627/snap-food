@@ -28,7 +28,7 @@ class _CataloguePageState extends State<CataloguePage> {
   int _page = 1;
   int _lastPage = 1;
   int _total = _previewCatalogueProducts.length + 3;
-  bool _loading = false;\n  String _formDietary = 'Non-Veg';
+  bool _loading = false;\n  String _formDietary = 'Non-Veg';\n  int? _formCategoryId;
   bool _saving = false;
   bool _uploading = false;
   bool _creating = true;
@@ -94,13 +94,13 @@ class _CataloguePageState extends State<CataloguePage> {
 
   void _selectProduct(_CatalogueProduct product) {
     setState(() { _selected = product; _creating = false; });
-    _name.text = product.name; _slug.text = product.slug; _description.text = product.description;
+    _formCategoryId = product.categoryId;\n    _formDietary = product.dietary;\n    _name.text = product.name; _slug.text = product.slug; _description.text = product.description;
     _price.text = product.price.toStringAsFixed(2); _prep.text = product.prepTime.toString(); _stock.text = product.stock.toString();
     _imageUrl.text = product.image ?? ''; _imagePreview = product.image ?? '';
   }
 
   void _newProduct() {
-    setState(() { _selected = null; _creating = true; _error = ''; _imagePreview = ''; _formDietary = 'Non-Veg'; });
+    setState(() { _selected = null; _creating = true; _error = ''; _imagePreview = ''; _formDietary = 'Non-Veg'; _formCategoryId = _categories.isNotEmpty ? _categories.first.id : null; });
     _name.clear(); _slug.clear(); _description.clear(); _price.clear(); _prep.text = '15'; _stock.text = '0'; _imageUrl.clear(); _tag.clear();
   }
 
@@ -109,7 +109,7 @@ class _CataloguePageState extends State<CataloguePage> {
     final product = _CatalogueProduct(
       id: _creating ? null : _selected?.id,
       name: _name.text.trim(), slug: _slug.text.trim(), description: _description.text.trim(),
-      categoryId: _categoryFilter ?? (_selected?.categoryId ?? (_categories.isNotEmpty ? _categories.first.id : null)),
+      categoryId: _formCategoryId ?? (_selected?.categoryId ?? (_categories.isNotEmpty ? _categories.first.id : null)),
       categoryName: _selected?.categoryName ?? (_categories.isNotEmpty ? _categories.first.name : ''),
       price: double.tryParse(_price.text.trim()) ?? 0, stock: int.tryParse(_stock.text.trim()) ?? 0,
       available: true, active: true, image: _imageUrl.text.trim().isEmpty ? null : _imageUrl.text.trim(),
@@ -230,7 +230,7 @@ class _CataloguePageState extends State<CataloguePage> {
   );
 
   Widget _buildEditor() => _ProductEditor(
-    form: _form, creating: _creating, selected: _selected, categories: _categories, name: _name, slug: _slug, description: _description,
+    form: _form, formCategoryId: _formCategoryId, formDietary: _formDietary, creating: _creating, selected: _selected, categories: _categories, name: _name, slug: _slug, description: _description,
     price: _price, prep: _prep, stock: _stock, tag: _tag, imageUrl: _imageUrl, imagePreview: _imagePreview, uploading: _uploading, saving: _saving,
     onClose: _newProduct, onPickImage: _pickImage, onSave: _save, onDeactivate: _deactivate, onCategory: (v) { setState(() {}); if (_selected != null) _selected!.categoryId = v; },
     onDietary: (v) { if (_selected != null) _selected!.dietary = v; setState(() {}); },
@@ -363,20 +363,20 @@ class _Badge extends StatelessWidget {
 }
 
 class _ProductEditor extends StatelessWidget {
-  const _ProductEditor({required this.form, required this.creating, required this.selected, required this.categories, required this.name, required this.slug, required this.description, required this.price, required this.prep, required this.stock, required this.tag, required this.imageUrl, required this.imagePreview, required this.uploading, required this.saving, required this.onClose, required this.onPickImage, required this.onSave, required this.onDeactivate, required this.onCategory, required this.onDietary});
-  final GlobalKey<FormState> form; final bool creating, uploading, saving; final _CatalogueProduct? selected; final List<_CatalogueCategory> categories; final TextEditingController name, slug, description, price, prep, stock, tag, imageUrl; final String imagePreview; final VoidCallback onClose, onPickImage, onSave, onDeactivate; final ValueChanged<int?> onCategory; final ValueChanged<String> onDietary;
+  const _ProductEditor({required this.form, required this.formCategoryId, required this.formDietary, required this.creating, required this.selected, required this.categories, required this.name, required this.slug, required this.description, required this.price, required this.prep, required this.stock, required this.tag, required this.imageUrl, required this.imagePreview, required this.uploading, required this.saving, required this.onClose, required this.onPickImage, required this.onSave, required this.onDeactivate, required this.onCategory, required this.onDietary});
+  final GlobalKey<FormState> form; final int? formCategoryId; final String formDietary; final bool creating, uploading, saving; final _CatalogueProduct? selected; final List<_CatalogueCategory> categories; final TextEditingController name, slug, description, price, prep, stock, tag, imageUrl; final String imagePreview; final VoidCallback onClose, onPickImage, onSave, onDeactivate; final ValueChanged<int?> onCategory; final ValueChanged<String> onDietary;
   @override Widget build(BuildContext context) => Container(decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(17), border: Border.all(color: AdminColors.line), boxShadow: const [BoxShadow(color: Color(0x09000000), blurRadius: 18, offset: Offset(0, 6))]), child: Padding(padding: const EdgeInsets.all(18), child: Form(key: form, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
     Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('LIVE SYNC ENGINE', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, letterSpacing: 1.2, color: AdminColors.green)), const SizedBox(height: 5), Text(creating ? 'Add New Product' : 'Edit Product', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900))]), IconButton(onPressed: onClose, icon: const Icon(Icons.close_rounded, size: 18))]),
     const Divider(height: 22),
     _label('Dish Name *', 'Max 180 chars'), _field(name, 'Smokey Chicken Tikka Roll', maxLength: 180, validator: (v) => v == null || v.trim().isEmpty ? 'Dish name is required' : null),
     const SizedBox(height: 12),
     Row(children: [
-      Expanded(child: _dropdownField('Category', categories.map((c) => DropdownMenuItem<int?>(value: c.id, child: Text(c.name))).toList(), selected?.categoryId ?? (categories.isNotEmpty ? categories.first.id : null), onCategory)),
+      Expanded(child: _dropdownField('Category', categories.map((c) => DropdownMenuItem<int?>(value: c.id, child: Text(c.name))).toList(), formCategoryId ?? (categories.isNotEmpty ? categories.first.id : null), onCategory)),
       const SizedBox(width: 10), Expanded(child: _select('GST Slab', const ['5%', '12%', '18%'], selected?.gst ?? '5%', (_) {})),
     ]),
     const SizedBox(height: 12),
     _label('Dietary Classification', null),
-    Wrap(spacing: 6, children: ['Pure Veg', 'Non-Veg', 'Contains Egg'].map((e) => ChoiceChip(label: Text(e, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800)), selected: (selected?.dietary ?? 'Non-Veg') == e, onSelected: (_) => onDietary(e), selectedColor: AdminColors.yellow, side: const BorderSide(color: AdminColors.line)).toList()),
+    Wrap(spacing: 6, children: ['Pure Veg', 'Non-Veg', 'Contains Egg'].map((e) => ChoiceChip(label: Text(e, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800)), selected: formDietary == e, onSelected: (_) => onDietary(e), selectedColor: AdminColors.yellow, side: const BorderSide(color: AdminColors.line)).toList()),
     const SizedBox(height: 12),
     Row(children: [
       Expanded(child: _field(price, '₹220', label: 'Base Price (₹)', keyboard: const TextInputType.numberWithOptions(decimal: true), validator: (v) { final n = double.tryParse(v ?? ''); return n == null || n < 0 ? 'Enter a valid price' : null; })),
