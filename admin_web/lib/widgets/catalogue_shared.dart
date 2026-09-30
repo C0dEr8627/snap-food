@@ -137,6 +137,21 @@ class _CatalogueRepository {
     final data = root is Map && root['data'] is Map ? Map<String, dynamic>.from(root['data']) : <String, dynamic>{};
     return _CatalogueCategory.fromJson(data);
   }
+  Future<_CatalogueCategory> setCategoryActive(int id, bool active) async {
+    if (!liveEnabled) return _CatalogueCategory(id: id, name: '', active: active);
+    final res = await http.patch(
+      _uri('/admin/categories/' + id.toString()),
+      headers: _headers,
+      body: jsonEncode({'is_active': active}),
+    );
+    if (res.statusCode < 200 || res.statusCode >= 300) {
+      throw _CatalogueApiException(res.statusCode, _message(res));
+    }
+    final root = jsonDecode(res.body);
+    final data = root is Map && root['data'] is Map ? Map<String, dynamic>.from(root['data']) : <String, dynamic>{};
+    return _CatalogueCategory.fromJson(data);
+  }
+
   Future<void> deleteCategory(int id) async {
     if (!liveEnabled) return;
     final res = await http.delete(_uri('/admin/categories/' + id.toString()), headers: _headers);
