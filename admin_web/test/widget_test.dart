@@ -15,7 +15,10 @@ void main() {
     await tester.tap(find.text('Orders').first);
     await tester.pumpAndSettle();
     expect(find.text('Track every order from checkout to delivery.'), findsOneWidget);
-    expect(find.text('#SF-1048'), findsOneWidget);
+    expect(find.text('#SFD-9042'), findsOneWidget);
+    expect(find.text('LIVE ORDERS'), findsOneWidget);
+    expect(find.text('ORDER QUEUE'), findsOneWidget);
+    expect(find.text('Order Dispatch Progression'), findsOneWidget);
   });
 
   testWidgets('catalogue section displays products and category filter', (tester) async {
