@@ -433,7 +433,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
 
     final result = await shad.showOverlay<bool>(
       context,
-      shad.DialogConfiguration<bool>(
+      shad.DialogConfiguration(
         builder: (c) => shad.AlertDialog(
           title: Text(category == null ? 'Add Category' : 'Edit Category'),
           content: SizedBox(
@@ -541,9 +541,6 @@ class _CategoryManagerState extends State<_CategoryManager> {
                     : const AdminIcon(HugeIcons.strokeRoundedViewOff, size: 18),
               ),
             shad.IconButton.ghost(
-              tooltip: c.count == 0
-                  ? 'Delete permanently'
-                  : 'Move products before deleting',
               onPressed: busy || c.count > 0 ? null : () => _deleteCategory(c),
               icon: const AdminIcon(
                 HugeIcons.strokeRoundedDelete02,
