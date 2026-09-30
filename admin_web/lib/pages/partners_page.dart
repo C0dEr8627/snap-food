@@ -801,7 +801,7 @@ class _PartnerActions extends StatelessWidget {
                 ]),
               ),
               actions: [shad.OutlineButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Close'))],
-            )),
+            ))),
           icon: const AdminIcon(HugeIcons.strokeRoundedLinkSquare01, size: 17),
         ),
         shad.IconButton.ghost(
