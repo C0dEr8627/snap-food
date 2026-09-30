@@ -132,20 +132,70 @@ class _InvoicesPageState extends State<InvoicesPage> {
   }
 
   void _showInvoice(_LedgerInvoice i) {
-    shad.showOverlay<void>(context, shad.DialogConfiguration<void>(builder: (ctx) => shad.AlertDialog(title: Text(i.number, style: const TextStyle(fontWeight: FontWeight.w900)),
-      content: SizedBox(width: 430, child: SingleChildScrollView(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-        _InvoiceDetailLine('Order', '#' + i.orderId.toString()), _InvoiceDetailLine('Customer', i.customer), _InvoiceDetailLine('Email', i.email.isEmpty ? 'Not provided' : i.email),
-        _InvoiceDetailLine('Issued at', i.issuedAt ?? 'Not recorded'), const Divider(height: 24),
-        _InvoiceDetailLine('Item subtotal', _inr(i.subtotal)), _InvoiceDetailLine('Delivery fee', _inr(i.deliveryFee)), _InvoiceDetailLine('Invoice total', _inr(i.total), strong: true),
-        _InvoiceDetailLine('Payment method', i.paymentMethod), _InvoiceDetailLine('Payment status', i.paymentStatus), _InvoiceDetailLine('File reference', i.fileReference ?? 'No downloadable file reference stored'),
-        if (i.items.isNotEmpty) ...[const SizedBox(height: 12), const Text('ITEM SNAPSHOT', style: TextStyle(fontSize: 11, letterSpacing: 1.1, fontWeight: FontWeight.w900, color: AdminColors.muted)), const SizedBox(height: 8),
-          ...i.items.map((item) => Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Row(children: [
-            Expanded(child: Text((item['product_name'] ?? 'Item').toString() + ' × ' + (item['quantity'] ?? 1).toString(), style: const TextStyle(fontSize: 12))),
-            Text(_inr(_number(item['line_total'])), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
-          ])))],
-      ]))), actions: [shad.OutlineButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close'))]));
+    shad.showOverlay<void>(
+      context,
+      shad.DialogConfiguration<void>(
+        builder: (ctx) => shad.AlertDialog(
+          title: Text(i.number, style: const TextStyle(fontWeight: FontWeight.w900)),
+          content: SizedBox(
+            width: 430,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _InvoiceDetailLine('Order', '#'+i.orderId.toString()),
+                  _InvoiceDetailLine('Customer', i.customer),
+                  _InvoiceDetailLine('Email', i.email.isEmpty ? 'Not provided' : i.email),
+                  _InvoiceDetailLine('Issued at', i.issuedAt ?? 'Not recorded'),
+                  const Divider(height: 24),
+                  _InvoiceDetailLine('Item subtotal', _inr(i.subtotal)),
+                  _InvoiceDetailLine('Delivery fee', _inr(i.deliveryFee)),
+                  _InvoiceDetailLine('Invoice total', _inr(i.total), strong: true),
+                  _InvoiceDetailLine('Payment method', i.paymentMethod),
+                  _InvoiceDetailLine('Payment status', i.paymentStatus),
+                  _InvoiceDetailLine('File reference', i.fileReference ?? 'No downloadable file reference stored'),
+                  if (i.items.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    const Text(
+                      'ITEM SNAPSHOT',
+                      style: TextStyle(fontSize: 11, letterSpacing: 1.1, fontWeight: FontWeight.w900, color: AdminColors.muted),
+                    ),
+                    const SizedBox(height: 8),
+                    ...i.items.map(
+                      (item) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                (item['product_name'] ?? 'Item').toString() + ' × ' + (item['quantity'] ?? 1).toString(),
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ),
+                            Text(
+                              _inr(_number(item['line_total'])),
+                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            shad.OutlineButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
-}
 
 class _InvoiceLedgerApi {
   const _InvoiceLedgerApi();
