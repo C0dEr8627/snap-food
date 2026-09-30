@@ -314,6 +314,7 @@ class _CataloguePageState extends State<CataloguePage> {
     gridView: _gridView,
     onToggleView: () => setState(() => _gridView = !_gridView),
     onCreateProduct: _newProduct,
+    onManageCategories: _manageCategories,
     onSearch: () { _page = 1; _load(keepSelection: true); },
     onFood: (v) { setState(() => _foodFilter = v); if (!_live) setState(_applyPreviewFilters); },
     onStock: (v) { setState(() => _stockFilter = v); if (!_live) setState(_applyPreviewFilters); },
@@ -500,7 +501,7 @@ class _CatalogueList extends StatelessWidget {
     required this.products, required this.search, required this.foodFilter, required this.stockFilter,
     required this.availabilityFilter, required this.loading, required this.page, required this.lastPage,
     required this.total, required this.selected, required this.gridView, required this.onToggleView,
-    required this.onCreateProduct, required this.onSearch, required this.onFood, required this.onStock,
+    required this.onCreateProduct, required this.onManageCategories, required this.onSearch, required this.onFood, required this.onStock,
     required this.onAvailability, required this.onSelect, required this.onPage,
   });
   final List<_CatalogueProduct> products;
@@ -509,7 +510,7 @@ class _CatalogueList extends StatelessWidget {
   final bool loading, gridView;
   final int page, lastPage, total;
   final _CatalogueProduct? selected;
-  final VoidCallback onToggleView, onCreateProduct, onSearch;
+  final VoidCallback onToggleView, onCreateProduct, onManageCategories, onSearch;
   final ValueChanged<String> onFood, onStock, onAvailability;
   final ValueChanged<_CatalogueProduct> onSelect;
   final ValueChanged<int> onPage;
@@ -526,6 +527,18 @@ class _CatalogueList extends StatelessWidget {
             SizedBox(height: 3),
             Text('Select an item to edit. Use tile or list view.', style: TextStyle(fontSize: 13, color: AdminColors.muted)),
           ])),
+          FilledButton.icon(
+            onPressed: onCreateProduct,
+            icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 17),
+            label: const Text('Add Product'),
+          ),
+          const SizedBox(width: 10),
+          OutlinedButton.icon(
+            onPressed: onManageCategories,
+            icon: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
+            label: const Text('Manage Categories'),
+          ),
+          const SizedBox(width: 8),
           Tooltip(
             message: gridView ? 'Switch to list view' : 'Switch to tile view',
             child: IconButton(
