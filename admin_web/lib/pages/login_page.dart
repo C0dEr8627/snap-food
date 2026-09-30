@@ -97,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                           decoration: BoxDecoration(
                             color: AdminColors.redSoft,
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: AdminColors.red.withValues(alpha: .22)),
+                            border: Border.all(color: AdminColors.red.withOpacity(.22)),
                           ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
