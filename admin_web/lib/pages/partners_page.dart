@@ -708,8 +708,8 @@ class _PartnerRoster extends StatelessWidget {
                     0: shad.FlexTableSize(flex: 2),
                     1: shad.FlexTableSize(flex: 2),
                     2: shad.FlexTableSize(flex: 1),
-                    3: shad.FixedTableSize(width: 120),
-                    4: shad.FixedTableSize(width: 150),
+                    3: shad.FixedTableSize(120),
+                    4: shad.FixedTableSize(150),
                   },
                 ),
               ),
@@ -879,8 +879,8 @@ class _PartnerPagination extends StatelessWidget {
   Widget build(BuildContext context) => Row(children: [
         Text('Page $currentPage of $lastPage • $total partners', style: const TextStyle(fontSize: 11, color: AdminColors.muted, fontWeight: FontWeight.w700)),
         const Spacer(),
-        shad.IconButton.ghost(tooltip: 'Previous page', onPressed: currentPage > 1 ? () => onPage(currentPage - 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowLeft01)),
-        shad.IconButton.ghost(tooltip: 'Next page', onPressed: currentPage < lastPage ? () => onPage(currentPage + 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01)),
+        shad.IconButton.ghost(onPressed: currentPage > 1 ? () => onPage(currentPage - 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowLeft01)),
+        shad.IconButton.ghost(onPressed: currentPage < lastPage ? () => onPage(currentPage + 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01)),
       ]);
 }
 
