@@ -487,7 +487,6 @@ class _CategoryManagerState extends State<_CategoryManager> {
             ),
           ],
         ),
-      ),
     ).future;
 
     name.dispose();
