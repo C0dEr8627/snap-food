@@ -149,7 +149,6 @@ class _LoginPageState extends State<LoginPage> {
                               size: google_web.GSIButtonSize.large,
                               text: google_web.GSIButtonText.continueWith,
                               shape: google_web.GSIButtonShape.rectangular,
-                              minimumWidth: 0,
                             ),
                           ),
                         ),
