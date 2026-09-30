@@ -20,51 +20,54 @@ Route::post('/auth/google', [AuthController::class, 'google'])
     ->middleware('throttle:auth-google')
     ->name('api.v1.auth.google');
 
-Route::post('/auth/admin/password', [AuthController::class, 'adminPassword'])
+Route::post('/admin/auth/password', [AuthController::class, 'adminPassword'])
     ->middleware('throttle:admin-login')
-    ->name('api.v1.auth.admin.password');
+    ->name('api.v1.admin.auth.password');
 
-Route::post('/auth/admin/google', [AuthController::class, 'adminGoogle'])
+Route::post('/admin/auth/google', [AuthController::class, 'adminGoogle'])
     ->middleware('throttle:admin-login')
-    ->name('api.v1.auth.admin.google');
+    ->name('api.v1.admin.auth.google');
 
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/me', [AuthController::class, 'me'])->name('api.v1.me');
     Route::post('/auth/logout', [AuthController::class, 'logout'])->name('api.v1.auth.logout');
 
-    Route::get('/categories', [CategoryController::class, 'index'])->name('api.v1.categories.index');
-    Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('api.v1.categories.show');
-    Route::get('/products', [ProductController::class, 'index'])->name('api.v1.products.index');
-    Route::get('/products/{product}', [ProductController::class, 'show'])->name('api.v1.products.show');
-
-    Route::middleware('role:CUSTOMER')->group(function (): void {
-        Route::get('/orders', [OrderController::class, 'index'])->name('api.v1.orders.index');
-        Route::post('/orders', [OrderController::class, 'store'])->name('api.v1.orders.store');
-        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('api.v1.orders.show');
-        Route::get('/orders/{order}/tracking', [DeliveryLocationController::class, 'show'])->name('api.v1.orders.tracking');
-        Route::get('/orders/{order}/invoice', [InvoiceController::class, 'show'])->name('api.v1.orders.invoice');
+    Route::prefix('consumer')->name('api.v1.consumer.')->middleware('role:CUSTOMER')->group(function (): void {
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
+        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+        Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::get('/orders/{order}/tracking', [DeliveryLocationController::class, 'show'])->name('orders.tracking');
+        Route::get('/orders/{order}/invoice', [InvoiceController::class, 'show'])->name('orders.invoice');
     });
 
-    Route::middleware('role:DELIVERY_PARTNER')->group(function (): void {
-        Route::get('/delivery/assignments', [DeliveryPartnerOrderController::class, 'index'])->name('api.v1.delivery.assignments.index');
-        Route::patch('/delivery/assignments/{assignment}/status', [DeliveryPartnerOrderController::class, 'updateStatus'])->name('api.v1.delivery.assignments.status');
-        Route::post('/delivery/assignments/{assignment}/location', [DeliveryLocationController::class, 'store'])->name('api.v1.delivery.assignments.location');
+    Route::prefix('delivery')->name('api.v1.delivery.')->middleware('role:DELIVERY_PARTNER')->group(function (): void {
+        Route::get('/assignments', [DeliveryPartnerOrderController::class, 'index'])->name('assignments.index');
+        Route::patch('/assignments/{assignment}/status', [DeliveryPartnerOrderController::class, 'updateStatus'])->name('assignments.status');
+        Route::post('/assignments/{assignment}/location', [DeliveryLocationController::class, 'store'])->name('assignments.location');
     });
 
-    Route::middleware('role:ADMIN')->group(function (): void {
-        Route::get('/admin/invoices', [AdminInvoiceController::class, 'index'])->name('api.v1.admin.invoices.index');
-        Route::patch('/admin/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('api.v1.admin.orders.status');
-        Route::post('/admin/orders/{order}/assignment', [AdminOrderAssignmentController::class, 'store'])->name('api.v1.admin.orders.assignment');
-        Route::get('/admin/delivery-partners', [DeliveryPartnerController::class, 'index'])->name('api.v1.admin.delivery-partners.index');
-        Route::post('/admin/delivery-partners', [DeliveryPartnerController::class, 'store'])->name('api.v1.admin.delivery-partners.store');
-        Route::patch('/admin/delivery-partners/{deliveryPartner}/approval', [DeliveryPartnerController::class, 'updateApproval'])->name('api.v1.admin.delivery-partners.approval');
-        Route::post('/categories', [CategoryController::class, 'store'])->name('api.v1.categories.store');
-        Route::patch('/categories/{category}', [CategoryController::class, 'update'])->name('api.v1.categories.update');
-        Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('api.v1.categories.destroy');
-        Route::post('/products', [ProductController::class, 'store'])->name('api.v1.products.store');
-        Route::patch('/products/{product}', [ProductController::class, 'update'])->name('api.v1.products.update');
-        Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('api.v1.products.destroy');
-        Route::get('/admin/orders/{order}/tracking', [DeliveryLocationController::class, 'show'])->name('api.v1.admin.orders.tracking');
-        Route::get('/admin/orders/{order}/invoice', [InvoiceController::class, 'show'])->name('api.v1.admin.orders.invoice');
+    Route::prefix('admin')->name('api.v1.admin.')->middleware('role:ADMIN')->group(function (): void {
+        Route::get('/invoices', [AdminInvoiceController::class, 'index'])->name('invoices.index');
+        Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
+        Route::post('/orders/{order}/assignment', [AdminOrderAssignmentController::class, 'store'])->name('orders.assignment');
+        Route::get('/orders/{order}/tracking', [DeliveryLocationController::class, 'show'])->name('orders.tracking');
+        Route::get('/orders/{order}/invoice', [InvoiceController::class, 'show'])->name('orders.invoice');
+        Route::get('/delivery-partners', [DeliveryPartnerController::class, 'index'])->name('delivery-partners.index');
+        Route::post('/delivery-partners', [DeliveryPartnerController::class, 'store'])->name('delivery-partners.store');
+        Route::patch('/delivery-partners/{deliveryPartner}/approval', [DeliveryPartnerController::class, 'updateApproval'])->name('delivery-partners.approval');
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::patch('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+        Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+        Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+        Route::patch('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+        Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     });
 });
