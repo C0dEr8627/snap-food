@@ -283,8 +283,7 @@ class _CataloguePageState extends State<CataloguePage> {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      _CatalogueHeader(onCategories: _manageCategories, onAddItem: _newProduct),
-      const SizedBox(height: 16),
+      const SizedBox(height: 8),
       _CategoryTabs(
         categories: _categories,
         selected: _categoryFilter,
@@ -480,30 +479,6 @@ class _CategoryManagerState extends State<_CategoryManager> {
     ]);
   }
 }
-class _CatalogueHeader extends StatelessWidget {
-  const _CatalogueHeader({required this.onCategories, required this.onAddItem});
-  final VoidCallback onCategories;
-  final VoidCallback onAddItem;
-
-  @override
-  Widget build(BuildContext context) => Row(
-    mainAxisAlignment: MainAxisAlignment.end,
-    children: [
-      FilledButton.icon(
-        onPressed: onAddItem,
-        icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 17),
-        label: const Text('Add Product'),
-      ),
-      const SizedBox(width: 10),
-      OutlinedButton.icon(
-        onPressed: onCategories,
-        icon: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
-        label: const Text('Manage Categories'),
-      ),
-    ],
-  );
-}
-
 class _CategoryTabs extends StatelessWidget {
   const _CategoryTabs({required this.categories, required this.selected, required this.onSelect});
   final List<_CatalogueCategory> categories; final int? selected; final ValueChanged<int?> onSelect;
