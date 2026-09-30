@@ -28,7 +28,7 @@ class ApiSurfaceTest extends TestCase
         $this->postJson('/api/v1/admin/auth/password', [
             'email' => 'missing@example.test',
             'password' => 'invalid',
-        ])->assertStatus(422);
+        ])->assertUnauthorized();
 
         $this->postJson('/api/v1/auth/admin/password', [
             'email' => 'missing@example.test',
