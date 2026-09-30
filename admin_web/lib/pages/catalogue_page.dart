@@ -281,7 +281,7 @@ class _CategoryTabs extends StatelessWidget {
     onTap: () => onSelect(id), borderRadius: BorderRadius.circular(11), child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
       decoration: BoxDecoration(color: active ? AdminColors.yellow : Colors.white, borderRadius: BorderRadius.circular(11), border: Border.all(color: active ? AdminColors.yellow : AdminColors.line)),
-      child: Row(children: [Text(label, style: TextStyle(fontSize: 10.5, fontWeight: active ? FontWeight.w900 : FontWeight.w700)), if (count > 0) ...[const SizedBox(width: 7), Text(count.toString(), style: const TextStyle(fontSize: 9, color: AdminColors.muted))]],
+      child: Row(children: [Text(label, style: TextStyle(fontSize: 10.5, fontWeight: active ? FontWeight.w900 : FontWeight.w700)), if (count > 0) ...[const SizedBox(width: 7), Text(count.toString(), style: const TextStyle(fontSize: 9, color: AdminColors.muted))]]),
     ),
   ));
 }
@@ -339,7 +339,7 @@ class _CatalogueList extends StatelessWidget {
   ])));
 }
 
-Widget _select(String label, List<String> items, String value, ValueChanged<String> onChanged) => Container(height: 40, padding: const EdgeInsets.symmetric(horizontal: 11), decoration: BoxDecoration(color: AdminColors.peach, borderRadius: BorderRadius.circular(10), border: Border.all(color: AdminColors.line)), child: DropdownButtonHideUnderline(child: DropdownButton<String>(value: items.contains(value) ? value : items.first, isDense: true, icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 17), style: const TextStyle(fontSize: 10.5, color: AdminColors.ink, fontWeight: FontWeight.w700), items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(), onChanged: (v) { if (v != null) onChanged(v); }}));
+Widget _select(String label, List<String> items, String value, ValueChanged<String> onChanged) => Container(height: 40, padding: const EdgeInsets.symmetric(horizontal: 11), decoration: BoxDecoration(color: AdminColors.peach, borderRadius: BorderRadius.circular(10), border: Border.all(color: AdminColors.line)), child: DropdownButtonHideUnderline(child: DropdownButton<String>(value: items.contains(value) ? value : items.first, isDense: true, icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 17), style: const TextStyle(fontSize: 10.5, color: AdminColors.ink, fontWeight: FontWeight.w700), items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(), onChanged: (v) { if (v != null) onChanged(v); })));
 
 class _ProductRow extends StatelessWidget {
   const _ProductRow({required this.product, required this.selected, required this.onTap});
@@ -371,7 +371,7 @@ class _ProductEditor extends StatelessWidget {
   const _ProductEditor({required this.form, required this.formCategoryId, required this.formDietary, required this.creating, required this.selected, required this.categories, required this.name, required this.slug, required this.description, required this.price, required this.prep, required this.stock, required this.tag, required this.imageUrl, required this.imagePreview, required this.uploading, required this.saving, required this.onClose, required this.onPickImage, required this.onSave, required this.onDeactivate, required this.onCategory, required this.onDietary});
   final GlobalKey<FormState> form; final int? formCategoryId; final String formDietary; final bool creating, uploading, saving; final _CatalogueProduct? selected; final List<_CatalogueCategory> categories; final TextEditingController name, slug, description, price, prep, stock, tag, imageUrl; final String imagePreview; final VoidCallback onClose, onPickImage, onSave, onDeactivate; final ValueChanged<int?> onCategory; final ValueChanged<String> onDietary;
   @override Widget build(BuildContext context) => Container(decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(17), border: Border.all(color: AdminColors.line), boxShadow: const [BoxShadow(color: Color(0x09000000), blurRadius: 18, offset: Offset(0, 6))]), child: Padding(padding: const EdgeInsets.all(18), child: Form(key: form, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('LIVE SYNC ENGINE', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, letterSpacing: 1.2, color: AdminColors.green)), const SizedBox(height: 5), Text(creating ? 'Add New Product' : 'Edit Product', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900))]), IconButton(onPressed: onClose, icon: const Icon(Icons.close_rounded, size: 18))]),
+    Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('LIVE SYNC ENGINE', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, letterSpacing: 1.2, color: AdminColors.green)), const SizedBox(height: 5), Text(creating ? 'Add New Product' : 'Edit Product', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900))])), IconButton(onPressed: onClose, icon: const Icon(Icons.close_rounded, size: 18))]),
     const Divider(height: 22),
     _label('Dish Name *', 'Max 180 chars'), _field(name, 'Smokey Chicken Tikka Roll', maxLength: 180, validator: (v) => v == null || v.trim().isEmpty ? 'Dish name is required' : null),
     const SizedBox(height: 12),
