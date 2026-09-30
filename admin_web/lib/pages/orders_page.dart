@@ -30,6 +30,17 @@ class _AdminOrder {
   _AdminOrder withStatus(String value)=>_AdminOrder(id:id,customer:customer,phone:phone,address:address,total:total,items:items,payment:payment,time:time,status:value,lines:lines,partner:partner,vehicle:vehicle);
 }
 
+
+int _toInt(dynamic value){
+  if(value is int)return value;
+  return int.tryParse(value?.toString()??'')??0;
+}
+
+double _toDouble(dynamic value){
+  if(value is num)return value.toDouble();
+  return double.tryParse(value?.toString()??'')??0;
+}
+
 class _OrderLine{const _OrderLine(this.qty,this.name,this.modifier,this.price);final int qty;final String name,modifier;final double price;}
 
 
