@@ -273,7 +273,7 @@ class _InvoiceLedgerCard extends StatelessWidget {
             },
           ),
         ),
-      )
+      ),
       const Divider(height: 1, color: AdminColors.line),
       Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), child: Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center, spacing: 12, runSpacing: 10, children: [
         Text('Displaying ' + (((page - 1) * 10) + 1).toString() + '–' + ((page - 1) * 10 + invoices.length).toString() + ' of ' + total.toString() + ' invoices', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
