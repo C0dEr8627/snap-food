@@ -36,7 +36,7 @@ Do not mark a milestone complete based only on code existing. Require a verified
 
 Record decisions here only after the owner approves or they are already established in the project docs:
 - Backend: Laravel/PHP + MySQL.
-- Mobile: Flutter, Riverpod 3, go_router.
+- Mobile: Flutter, Riverpod 3, go_router; project lives under `mobile_app/`.
 - Identity: Google OAuth SSO; OTP deferred.
 - Payment: COD.
 - Admin: separate Flutter Web GUI at `admin_web/`, integrated with the shared Laravel API; existing Blade dashboard retained during migration.
@@ -263,3 +263,13 @@ Record decisions here only after the owner approves or they are already establis
 - **Important migration rule:** keep the existing Laravel Blade admin dashboard until the Flutter Web replacement has feature coverage and passes API authorization, browser, hosting and end-to-end validation.
 - **Next actions:** verify Admin Flutter Web CI; audit admin authentication compatibility and CORS; then implement API client/session handling and the dashboard/catalogue/order/delivery-partner/invoice screens in small tested slices.
 - No deployment, production migration, backend API change or Blade-dashboard removal was performed.
+
+
+## Repository organization update — 2026-09-30
+
+- Moved the consumer + delivery partner Flutter project from the repository root into `mobile_app/` in commit `3061ff3c9b37ef22d6226077fed200c8777cff02`.
+- Moved tracked Flutter source, tests, Android project files, assets, web shell, dependency manifest, analyzer options and Gradle wrapper files while preserving file contents/blob identities.
+- Kept `backend/`, `admin_web/`, project documentation and design references at the repository root.
+- Excluded `.dart_tool/` because it is generated Flutter tooling cache, not source.
+- Updated the mobile CI and Android launcher icon workflow paths to use `mobile_app/`.
+- Verification still required: run the mobile CI and launcher workflow after this layout change; update any developer-branch workflows and local scripts that still assume Flutter files are at the repository root.
