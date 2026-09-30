@@ -277,11 +277,15 @@ class _LoginBrand extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(color: AdminColors.yellow, borderRadius: BorderRadius.circular(16)),
-        child: const Icon(Icons.restaurant_rounded, color: AdminColors.ink, size: 30),
+      ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: SvgPicture.asset(
+          'assets/brand/snap_foodd_mark.svg',
+          width: 56,
+          height: 56,
+          fit: BoxFit.cover,
+          semanticsLabel: 'Snap Foodd',
+        ),
       ),
       const SizedBox(height: 12),
       const Text('SNAP FOODD', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900, letterSpacing: 1.1)),
