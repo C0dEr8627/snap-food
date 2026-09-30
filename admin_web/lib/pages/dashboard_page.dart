@@ -132,7 +132,7 @@ class _DashboardKpi extends StatelessWidget {
         Text(secondary, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.green)),
         if (progress != null) ...[
           const SizedBox(height: 10),
-          const _DashboardProgress(value: progress),
+          _DashboardProgress(value: progress),
           const SizedBox(height: 4),
           Text(progressLabel ?? '', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
         ],
@@ -425,7 +425,7 @@ class _LiveOrdersCard extends StatelessWidget {
             SizedBox(height: 3),
             Text('Real-time telemetry updated via websocket /api/v1/orders/stream', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
           ])),
-          shad.IconButton.ghost(tooltip: 'Export', onPressed: () => _notice(context, 'Export will use the existing orders service when connected.'), icon: const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 19)),
+          shad.IconButton.ghost(onPressed: () => _notice(context, 'Export will use the existing orders service when connected.'), icon: const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 19)),
         ]),
         const SizedBox(height: 13),
         const SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: [
@@ -470,14 +470,14 @@ class _LiveOrdersCard extends StatelessWidget {
               ])),
             ],
             columnWidths: const {
-              0: shad.FixedTableSize(width: 110),
+              0: shad.FixedTableSize(110),
               1: shad.FlexTableSize(flex: 1),
               2: shad.FlexTableSize(flex: 2),
-              3: shad.FixedTableSize(width: 110),
-              4: shad.FixedTableSize(width: 125),
-              5: shad.FixedTableSize(width: 100),
-              6: shad.FixedTableSize(width: 115),
-              7: shad.FixedTableSize(width: 230),
+              3: shad.FixedTableSize(110),
+              4: shad.FixedTableSize(125),
+              5: shad.FixedTableSize(100),
+              6: shad.FixedTableSize(115),
+              7: shad.FixedTableSize(230),
             },
           ),
         ),
@@ -634,16 +634,14 @@ class _OrdersTable extends StatelessWidget {
           ])),
         ],
         columnWidths: const {
-          0: shad.FixedTableSize(width: 120),
+          0: shad.FixedTableSize(120),
           1: shad.FlexTableSize(flex: 2),
           2: shad.FixedTableSize(width: 90),
           3: shad.FixedTableSize(width: 90),
-          4: shad.FixedTableSize(width: 120),
+          4: shad.FixedTableSize(120),
           5: shad.FixedTableSize(width: 90),
         },
       ),
-
-}
     ),
   );
 }
