@@ -1272,14 +1272,24 @@ Widget _imagePreviewWidget(String source) {
   );
 }
 
-$marker
+Widget _label(String text, String? trailing) => Padding(
   padding: const EdgeInsets.only(bottom: 5),
   child: Row(
     children: [
-      Text(text, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted)),
+      Text(
+        text,
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w900,
+          color: AdminColors.muted,
+        ),
+      ),
       if (trailing != null) ...[
         const SizedBox(width: 6),
-        Text(trailing!, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
+        Text(
+          trailing!,
+          style: const TextStyle(fontSize: 11, color: AdminColors.muted),
+        ),
       ],
     ],
   ),
