@@ -210,7 +210,7 @@ class _CataloguePageState extends State<CataloguePage> {
       } else {
         await _load(keepSelection: false);
       }
-      if (!mounted) return;
+      if (!mounted) return false;
       _notice(context, _creating ? 'Item created successfully.' : 'Item updated successfully.');
       _creating = false;
       _selected = saved;
