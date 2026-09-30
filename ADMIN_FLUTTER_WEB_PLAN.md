@@ -1,21 +1,21 @@
 # Admin Flutter Web — Setup and Implementation Plan
 
 ## Decision
-- Root Flutter project: consumer + delivery partner mobile app.
-- \`admin_web/\`: standalone Flutter Web admin GUI.
-- \`backend/\`: Laravel/PHP API and sole database owner.
+- `mobile_app/`: consumer + delivery partner mobile app.
+- `admin_web/`: standalone Flutter Web admin GUI.
+- `backend/`: Laravel/PHP API and sole database owner.
 
 This plan tracks the new admin-web client only. The scaffold does not mean admin features are complete.
 
 ## Phase 0 — Scaffold and independent verification
-- [x] Create standalone Flutter project boundary at \`admin_web/\`.
+- [x] Create standalone Flutter project boundary at `admin_web/`.
 - [x] Add entrypoint, browser HTML shell, dependency manifest and starter widget test.
 - [x] Add independent GitHub Actions workflow for formatting, analysis, tests and Web build.
 - [x] Document architecture and preserve current Blade dashboard during migration.
 - [ ] Verify workflow against current branch head.
 
 ## Phase 1 — Admin auth and API foundation
-- [ ] Audit current Laravel admin web-session routes and \`/api/v1\` ADMIN bearer-token routes.
+- [ ] Audit current Laravel admin web-session routes and `/api/v1` ADMIN bearer-token routes.
 - [ ] Confirm browser authentication flow with the project owner based on existing backend capabilities; do not store privileged server secrets in browser code.
 - [ ] Implement API transport, normalized errors, timeout handling and safe logging.
 - [ ] Implement login/logout/session-expiry UX and route guards.
@@ -40,13 +40,13 @@ This plan tracks the new admin-web client only. The scaffold does not mean admin
 
 ## Commands
 From repository root, once Flutter SDK is installed:
-\`\`\`sh
+```sh
 cd admin_web
 flutter pub get
 dart format --output=none --set-exit-if-changed .
 flutter analyze
 flutter test
 flutter build web --release --dart-define=API_BASE_URL=https://YOUR_API_HOST/api/v1
-\`\`\`
+```
 
-Do not put private keys, OAuth client secrets, database credentials or server secrets in \`--dart-define\`; web build values are public to users.
+Do not put private keys, OAuth client secrets, database credentials or server secrets in `--dart-define`; web build values are public to users.
