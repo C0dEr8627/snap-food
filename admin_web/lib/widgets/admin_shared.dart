@@ -10,9 +10,9 @@ abstract final class AdminColors {
   static const yellowDark = Color(0xFFA61C1C);
   static const red = Color(0xFFD92929);
   static const redSoft = Color(0x1AD92929);
-  static const green = Color(0xFFA61C1C);
+  static const green = Color(0xFFF2AE2E);
   static const greenSoft = Color(0x1AF2AE2E);
-  static const blue = Color(0xFFA61C1C);
+  static const blue = Color(0xFF0D0D0D);
   static const blueSoft = Color(0x14F2D022);
   static const amberSoft = Color(0x33F2D022);
   static const peach = Color(0x1AF2AE2E);
