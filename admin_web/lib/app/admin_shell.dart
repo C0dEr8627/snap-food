@@ -58,7 +58,10 @@ class SnapFooddAdminApp extends StatelessWidget {
 }
 
 class AdminShell extends StatefulWidget {
-  const AdminShell({super.key});
+  const AdminShell({super.key, required this.user, required this.onLogout});
+
+  final AdminUser user;
+  final Future<void> Function() onLogout;
   @override
   State<AdminShell> createState() => _AdminShellState();
 }
@@ -79,7 +82,7 @@ class _AdminShellState extends State<AdminShell> {
       body: Row(children: [
         if (desktop) SizedBox(width: 248, child: _Sidebar(selected: section, onSelect: _select)),
         Expanded(child: Column(children: [
-          _Header(desktop: desktop),
+          _Header(desktop: desktop, user: user, onLogout: onLogout),
           Expanded(child: LayoutBuilder(builder: (context, constraints) => SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(desktop ? 24 : 16, 24, desktop ? 24 : 16, 32),
             child: Center(
@@ -228,8 +231,10 @@ class _StatusDot extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.desktop});
+  const _Header({required this.desktop, required this.user, required this.onLogout});
   final bool desktop;
+  final AdminUser user;
+  final Future<void> Function() onLogout;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -270,16 +275,16 @@ class _Header extends StatelessWidget {
       const SizedBox(width: 10),
       IconButton(tooltip: 'Notifications', onPressed: () => _notice(context, 'No new notifications in preview mode.'), icon: const Icon(Icons.notifications_none_rounded, size: 21, color: AdminColors.ink)),
       const SizedBox(width: 2),
-      Container(width: 34, height: 34, decoration: BoxDecoration(color: AdminColors.ink, borderRadius: BorderRadius.circular(10)), alignment: Alignment.center, child: const Text('SA', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900))),
+      Container(width: 34, height: 34, decoration: BoxDecoration(color: AdminColors.ink, borderRadius: BorderRadius.circular(10)), alignment: Alignment.center, child: Text(_initials(user.name), style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900))),
       if (desktop) ...[
         const SizedBox(width: 9),
-        const Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Super Admin', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w900)),
-          SizedBox(height: 2),
-          Text('HQ Control', style: TextStyle(fontSize: 9, color: AdminColors.muted)),
+        Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(user.name, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w900)),
+          const SizedBox(height: 2),
+          Text(user.email, style: const TextStyle(fontSize: 9, color: AdminColors.muted)),
         ]),
         const SizedBox(width: 8),
-        IconButton(tooltip: 'Logout', onPressed: null, icon: Icon(Icons.logout_rounded, size: 18, color: AdminColors.muted)),
+        IconButton(tooltip: 'Logout', onPressed: onLogout, icon: const Icon(Icons.logout_rounded, size: 18, color: AdminColors.muted)),
       ],
     ]),
   );
@@ -303,4 +308,12 @@ class _PageHeading extends StatelessWidget {
       style: FilledButton.styleFrom(backgroundColor: AdminColors.ink, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
     ),
   ]);
+}
+
+
+String _initials(String name) {
+  final parts = name.trim().split(RegExp(r'\\s+')).where((part) => part.isNotEmpty).toList();
+  if (parts.isEmpty) return 'AD';
+  if (parts.length == 1) return parts.first.substring(0, parts.first.length > 1 ? 2 : 1).toUpperCase();
+  return (parts.first[0] + parts.last[0]).toUpperCase();
 }
