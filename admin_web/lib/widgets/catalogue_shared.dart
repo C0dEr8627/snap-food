@@ -137,6 +137,14 @@ class _CatalogueRepository {
     final data = root is Map && root['data'] is Map ? Map<String, dynamic>.from(root['data']) : <String, dynamic>{};
     return _CatalogueCategory.fromJson(data);
   }
+  Future<void> deleteCategory(int id) async {
+    if (!liveEnabled) return;
+    final res = await http.delete(_uri('/admin/categories/' + id.toString()), headers: _headers);
+    if (res.statusCode < 200 || res.statusCode >= 300) {
+      throw _CatalogueApiException(res.statusCode, _message(res));
+    }
+  }
+
   static String _message(http.Response res) {
     try { final v = jsonDecode(res.body); if (v is Map && v['message'] != null) return v['message'].toString(); } catch (_) {}
     return 'Catalogue API request failed (' + res.statusCode.toString() + ').';
