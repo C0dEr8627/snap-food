@@ -3,13 +3,13 @@ import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-const apiBaseUrl = String.fromEnvironment('API_BASE_URL');
-
 part 'pages/dashboard_page.dart';
 part 'pages/orders_page.dart';
 part 'pages/catalogue_page.dart';
 part 'pages/partners_page.dart';
 part 'pages/invoices_page.dart';
+
+const apiBaseUrl = String.fromEnvironment('API_BASE_URL');
 
 void main() => runApp(const SnapFooddAdminApp());
 
@@ -1017,14 +1017,78 @@ class _OrdersHeader extends StatelessWidget{
   });
 }
 
-class _OrderFilters extends StatelessWidget{
-  const _OrderFilters({required this.controller,required this.active,required this.count,required this.onChange});
-  final TextEditingController controller;final String active;final int Function(String) count;final ValueChanged<String> onChange;
-  static const data=[('ALL','All Orders'),('PLACED','Pending'),('PREP','Kitchen Prep'),('OUT','Out for Delivery'),('DELIVERED','Delivered'),('DISPUTED','Disputed')];
-  @override Widget build(BuildContext context)=>Card(child:Padding(padding:const EdgeInsets.all(12),child:SingleChildScrollView(scrollDirection:Axis.horizontal,child:Row(children:[
-    SizedBox(width:225,height:40,child:TextField(controller:controller,style:const TextStyle(fontSize:10.5),decoration:InputDecoration(hintText:'Search by Order ID',prefixIcon:const Icon(Icons.search_rounded,size:18),filled:true,fillColor:AdminColors.canvas,border:OutlineInputBorder(borderRadius:BorderRadius.all(Radius.circular(9)),borderSide:BorderSide(color:AdminColors.line)),enabledBorder:OutlineInputBorder(borderRadius:BorderRadius.all(Radius.circular(9)),borderSide:BorderSide(color:AdminColors.line))))),
-    const SizedBox(width:10),...data.map((d)=>Padding(padding:const EdgeInsets.only(right:7),child:_FilterChip(label:d.$2,value:d.$1,active:active==d.$1,count:count(d.$1),onTap:()=>onChange(d.$1)))),
-  ])));
+class _OrderFilters extends StatelessWidget {
+  const _OrderFilters({
+    required this.controller,
+    required this.active,
+    required this.count,
+    required this.onChange,
+  });
+
+  final TextEditingController controller;
+  final String active;
+  final int Function(String) count;
+  final ValueChanged<String> onChange;
+
+  static const data = [
+    ('ALL', 'All Orders'),
+    ('PLACED', 'Pending'),
+    ('PREP', 'Kitchen Prep'),
+    ('OUT', 'Out for Delivery'),
+    ('DELIVERED', 'Delivered'),
+    ('DISPUTED', 'Disputed'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              SizedBox(
+                width: 225,
+                height: 40,
+                child: TextField(
+                  controller: controller,
+                  style: const TextStyle(fontSize: 10.5),
+                  decoration: const InputDecoration(
+                    hintText: 'Search by Order ID',
+                    prefixIcon: Icon(Icons.search_rounded, size: 18),
+                    filled: true,
+                    fillColor: AdminColors.canvas,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(9)),
+                      borderSide: BorderSide(color: AdminColors.line),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(9)),
+                      borderSide: BorderSide(color: AdminColors.line),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              ...data.map(
+                (d) => Padding(
+                  padding: const EdgeInsets.only(right: 7),
+                  child: _FilterChip(
+                    label: d.$2,
+                    value: d.$1,
+                    active: active == d.$1,
+                    count: count(d.$1),
+                    onTap: () => onChange(d.$1),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _FilterChip extends StatelessWidget{
@@ -1085,13 +1149,93 @@ class _Panel extends StatelessWidget{
   const _Panel({required this.title,required this.child,required this.trailing});final String title,trailing;final Widget child;
   @override Widget build(BuildContext context)=>Container(width:double.infinity,padding:const EdgeInsets.all(12),decoration:BoxDecoration(color:AdminColors.canvas,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminColors.line)),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Row(children:[Expanded(child:Text(title,style:const TextStyle(fontSize:8.5,fontWeight:FontWeight.w900,letterSpacing:.5))),Text(trailing,style:const TextStyle(fontSize:8.5,fontWeight:FontWeight.w900,color:AdminColors.muted))]),const SizedBox(height:9),child]));
 }
-class _Progression extends StatelessWidget{
-  const _Progression(this.status);final String status;
-  @override Widget build(BuildContext context){const s=['PLACED','ACCEPTED','PREPARING','OUT_FOR_DELIVERY','DELIVERED'];final current=_progressStep(status)-1;return Row(children:[for(var i=0;i<s.length;i++)...[
-    Expanded(child:Column(children:[Container(width:25,height:25,decoration:BoxDecoration(color:i<current?AdminColors.yellow:i==current?AdminColors.red:Colors.white,shape:BoxShape.circle,border:Border.all(color:i<=current?Colors.transparent:AdminColors.line)),alignment:Alignment.center,child:i<current?const Icon(Icons.check_rounded,size:14,color:AdminColors.ink):Text((i+1).toString(),style:TextStyle(fontSize:8,fontWeight:FontWeight.w900,color:i==current?Colors.white:AdminColors.muted))),const SizedBox(height:5),Text(_prettyStatus(s[i]),textAlign:TextAlign.center,style:TextStyle(fontSize:6.5,fontWeight:FontWeight.w800,color:i==current?AdminColors.red:AdminColors.muted))])),
-    if(i<s.length-1)Expanded(child:Container(height:2,margin:const EdgeInsets.only(bottom:22),color:i<current?AdminColors.yellow:AdminColors.line))
-  ]]));}
+class _Progression extends StatelessWidget {
+  const _Progression(this.status);
+
+  final String status;
+
+  @override
+  Widget build(BuildContext context) {
+    const statuses = [
+      'PLACED',
+      'ACCEPTED',
+      'PREPARING',
+      'OUT_FOR_DELIVERY',
+      'DELIVERED',
+    ];
+    final current = _progressStep(status) - 1;
+
+    return Row(
+      children: [
+        for (var i = 0; i < statuses.length; i++) ...[
+          Expanded(
+            child: Column(
+              children: [
+                Container(
+                  width: 25,
+                  height: 25,
+                  decoration: BoxDecoration(
+                    color: i < current
+                        ? AdminColors.yellow
+                        : i == current
+                            ? AdminColors.red
+                            : Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: i <= current
+                          ? Colors.transparent
+                          : AdminColors.line,
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: i < current
+                      ? const Icon(
+                          Icons.check_rounded,
+                          size: 14,
+                          color: AdminColors.ink,
+                        )
+                      : Text(
+                          (i + 1).toString(),
+                          style: TextStyle(
+                            fontSize: 8,
+                            fontWeight: FontWeight.w900,
+                            color: i == current
+                                ? Colors.white
+                                : AdminColors.muted,
+                          ),
+                        ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  _prettyStatus(statuses[i]),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 6.5,
+                    fontWeight: FontWeight.w800,
+                    color: i == current
+                        ? AdminColors.red
+                        : AdminColors.muted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (i < statuses.length - 1)
+            Expanded(
+              child: Container(
+                height: 2,
+                margin: const EdgeInsets.only(bottom: 22),
+                color: i < current
+                    ? AdminColors.yellow
+                    : AdminColors.line,
+              ),
+            ),
+        ],
+      ],
+    );
+  }
 }
+
 class _PersonCard extends StatelessWidget{
   const _PersonCard(this.title,this.name,this.lines,this.icon,{this.badge});final String title,name;final List<String> lines;final IconData icon;final String? badge;
   @override Widget build(BuildContext context)=>Container(padding:const EdgeInsets.all(11),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminColors.line)),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
