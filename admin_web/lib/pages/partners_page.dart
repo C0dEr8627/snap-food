@@ -963,7 +963,7 @@ class _PartnerErrorBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFF2C9C2))),
+        decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(12), border: Border.all(color: const AdminColors.redSoft)),
         child: Row(children: [
           const Icon(Icons.cloud_off_rounded, color: AdminColors.red, size: 20),
           const SizedBox(width: 10),
