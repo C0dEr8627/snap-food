@@ -502,24 +502,6 @@ class _PageButton extends StatelessWidget {
   );
 }
 
-class _Kpi extends StatelessWidget {
-  const _Kpi({required this.title, required this.value, required this.delta, required this.icon, required this.tone});
-  final String title, value, delta;
-  final IconData icon;
-  final Color tone;
-  @override
-  Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(18), child: Row(children: [
-    Container(width: 43, height: 43, decoration: BoxDecoration(color: tone, borderRadius: BorderRadius.circular(13)), child: Icon(icon, size: 20, color: AdminColors.ink)),
-    const SizedBox(width: 13),
-    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text(title, style: const TextStyle(fontSize: 11, color: AdminColors.muted, fontWeight: FontWeight.w700)),
-      const SizedBox(height: 5),
-      Text(value, style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w900)),
-    ])),
-    Text(delta, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w800, color: AdminColors.green)),
-  ])));
-}
-
 class _SalesCard extends StatelessWidget {
   const _SalesCard();
   @override
