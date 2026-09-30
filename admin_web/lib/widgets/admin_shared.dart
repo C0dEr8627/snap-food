@@ -1,22 +1,22 @@
 part of '../main.dart';
 
 abstract final class AdminColors {
-  static const ink = Color(0xFF0D0D0D);
-  static const muted = Color(0xFF4A4A4A);
-  static const canvas = Color(0x14F2D022);
+  static const ink = Color(0xFF18181B);
+  static const muted = Color(0xFF71717A);
+  static const canvas = Color(0xFFF7F7F8);
   static const surface = Colors.white;
-  static const line = Color(0xFFB7B7B7);
-  static const yellow = Color(0xFFF2D022);
-  static const yellowDark = Color(0xFFA61C1C);
-  static const red = Color(0xFFD92929);
-  static const redSoft = Color(0x1AD92929);
-  static const green = Color(0xFF7A5A00);
-  static const greenSoft = Color(0x1AF2AE2E);
-  static const blue = Color(0xFF0D0D0D);
-  static const blueSoft = Color(0x14F2D022);
-  static const amberSoft = Color(0x33F2D022);
-  static const peach = Color(0x1AF2AE2E);
-  static const warning = Color(0xFF7A5A00);
+  static const line = Color(0xFFE4E4E7);
+  static const yellow = Color(0xFFFACC15);
+  static const yellowDark = Color(0xFFA16207);
+  static const red = Color(0xFFDC2626);
+  static const redSoft = Color(0x1ADC2626);
+  static const green = Color(0xFF16A34A);
+  static const greenSoft = Color(0x1A16A34A);
+  static const blue = Color(0xFF2563EB);
+  static const blueSoft = Color(0x1A2563EB);
+  static const amberSoft = Color(0x1AFACC15);
+  static const peach = Color(0x1AF59E0B);
+  static const warning = Color(0xFFA16207);
 }
 
 
