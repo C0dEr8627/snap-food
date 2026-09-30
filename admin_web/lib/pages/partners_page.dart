@@ -486,7 +486,7 @@ class _PartnerCommandHeader extends StatelessWidget {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          const Expanded(child: title),
+          Expanded(child: title),
           const SizedBox(width: 14),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
