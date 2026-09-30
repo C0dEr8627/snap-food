@@ -21,7 +21,9 @@ Error shape (API requests return JSON):
 Common HTTP/code mapping: 401 `UNAUTHORIZED` (invalid Google credential uses `INVALID_GOOGLE_CREDENTIAL`); 403 `FORBIDDEN` (or the explicit `ACCOUNT_INACTIVE` response); 404 `NOT_FOUND`; 409 `CONFLICT` or `ORDER_STATE_CONFLICT`; 422 `VALIDATION_FAILED`; 429 `RATE_LIMITED`. Do not depend on framework exception text for UI copy. Validation errors map field names to arrays of messages. Some business errors such as invalid Google credentials and inactive accounts have dedicated codes.
 
 ## Auth
-`POST /auth/google` · `GET /me` · `POST /auth/logout`
+`POST /auth/google` · `POST /auth/admin/password` · `POST /auth/admin/google` · `GET /me` · `POST /auth/logout`
+
+Admin Flutter web authentication uses bearer tokens issued by the Laravel API. `POST /auth/admin/password` accepts `{ "email": "admin@example.com", "password": "..." }` and only authenticates active `ADMIN` users with a configured password. `POST /auth/admin/google` accepts `{ "credential": "<Google ID token>" }`, verifies the credential server-side, and only authenticates an active pre-provisioned `ADMIN` account. It does not auto-create customer accounts. Both admin login routes are rate-limited. The Flutter admin client stores only the returned application bearer token in browser storage and calls `GET /me` before rendering the dashboard.
 
 ## Catalogue
 `GET /categories` · `GET /categories/{category}` · `GET /products` · `GET /products/{product}`. ADMIN catalogue writes use `POST /categories`, `PATCH /categories/{category}`, `DELETE /categories/{category}`, `POST /products`, `PATCH /products/{product}` and `DELETE /products/{product}`. Delete operations soft-deactivate records; product deactivation also sets `is_available=false`. Catalogue list responses use `data` containing a Laravel paginator; search uses `search`, product category filtering uses `category_id`, and `per_page` is bounded to 1–100.
