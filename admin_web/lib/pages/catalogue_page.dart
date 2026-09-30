@@ -129,7 +129,27 @@ class _CataloguePageState extends State<CataloguePage> {
       return;
     }
     await shad.showOverlay<void>(context, shad.DialogConfiguration(), builder: (dialogContext) => shad.AlertDialog(
-        title: Text(_creating ? 'Add Item' : 'Edit Item'),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(_creating ? 'Add Item' : 'Edit Item'),
+            ),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => Navigator.of(dialogContext).pop(),
+                borderRadius: BorderRadius.circular(18),
+                child: const SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: Center(
+                    child: Icon(Icons.close_rounded, size: 19),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
         content: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 680, maxHeight: 760),
           child: SingleChildScrollView(
@@ -1130,10 +1150,13 @@ class _ProductEditor extends StatelessWidget {
               shad.OutlineButton(onPressed: () { if (tag.text.trim().isEmpty || selected == null) return; selected!.tags = [...selected!.tags, tag.text.trim()]; tag.clear(); (context as Element).markNeedsBuild(); }, leading: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 15), child: const Text('Add tag', style: TextStyle(fontSize: 11))),
               const SizedBox(height: 10),
               _label('Item Image', null),
-              InkWell(
-                onTap: uploading ? null : onPickImage,
+              Material(
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
-                child: Container(
+                child: InkWell(
+                  onTap: uploading ? null : onPickImage,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
                   width: double.infinity,
                   height: 135,
                   decoration: BoxDecoration(
@@ -1175,9 +1198,10 @@ class _ProductEditor extends StatelessWidget {
                               ),
                             ),
                           ],
+                          ),
                         ),
-                ),
-              ),
+                      ),
+                    ),
               const SizedBox(height: 8),
               _field(
                 imageUrl,
