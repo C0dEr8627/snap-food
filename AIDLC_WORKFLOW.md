@@ -1,84 +1,68 @@
 # Snap Foodd — AI Development Lifecycle (AIDLC)
 
-This file defines how two AI coding agents work in parallel, test their changes, and integrate safely. It is a workflow, not a claim that autonomous CI/deployment has already been configured.
+This file defines how AI coding agents plan, implement, verify and integrate changes. It is a workflow, not a claim that autonomous CI/deployment is configured.
 
 ## 1. Branch model
 
 ```text
-frontend  (integration/base branch; documentation and accepted integration)
-├── developer-1-backend-admin  (Laravel, MySQL, admin, API)
-└── developer-2-flutter        (Flutter, auth UI, customer/delivery app, Maps)
+frontend  (shared integration/base branch)
+├── developer-1-backend-admin  (Laravel, MySQL, admin/API)
+└── developer-2-flutter        (Flutter customer/delivery apps)
 ```
 
-Both work branches must be created from the latest `frontend` commit. They are independent siblings, not branches created from each other.
+Work branches should start from the latest `frontend` commit and remain independent siblings. Follow the task owner's explicit branch instruction. Do not commit directly to `frontend` for application implementation unless the repository owner explicitly directs it; documentation-only maintenance may be performed on the branch explicitly requested by the owner.
 
-**Important:** GitHub branch names are shared repository refs. If an AI agent uses a local checkout, it must push commits to its assigned remote branch. An agent must not commit directly to `frontend`.
+## 2. Start instructions
 
-## 2. Start instructions for each AI
-
-### AI 1 — Backend/Admin
-1. Open `DEVELOPER_1_PLAN.md` and all referenced docs.
-2. Confirm the active branch is `developer-1-backend-admin`.
-3. Inspect the repo before changing anything.
-4. Start at the first incomplete task in the plan.
-5. Commit focused changes to its own branch only.
-6. Update task checkboxes only for work actually completed; include tests/results.
-7. Open a PR targeting `frontend` when a coherent slice is ready.
-
-### AI 2 — Flutter
-1. Open `DEVELOPER_2_PLAN.md` and all referenced docs.
-2. Confirm the active branch is `developer-2-flutter`.
-3. Inspect the repo before changing anything.
-4. Start at the first incomplete task in the plan.
-5. Commit focused changes to its own branch only.
-6. Update task checkboxes only for work actually completed; include tests/results.
-7. Open a PR targeting `frontend` when a coherent slice is ready.
+Before coding:
+1. Read `README.md`, `AI_RULES.md`, `AIDLC_WORKFLOW.md`, `AI_TASK_BOARD.md`, and relevant product/architecture/API/auth/database/design docs.
+2. Confirm the target branch and inspect the current implementation and recent history.
+3. Identify the next incomplete task from `AI_TASK_BOARD.md`, open issues, or the user's explicit request. Do not depend on deleted per-developer plan files.
+4. Preserve existing architecture and UI unless the task explicitly calls for a change.
 
 ## 3. Parallel work boundaries
 
-| Area | Developer 1 | Developer 2 |
+| Area | Backend/Admin owner | Flutter owner |
 |---|---|---|
-| Laravel app, migrations, policies, API | Owner | Do not modify |
-| Admin web dashboard | Owner | Do not modify |
-| Flutter screens, Riverpod, routing | Do not modify | Owner |
-| Maps UI/GPS adapter | Backend endpoint/authorization only | Owner |
-| API contract | Propose/coordinate changes | Propose/coordinate changes |
-| Shared root docs | Propose changes via PR; avoid conflicting edits | Propose changes via PR; avoid conflicting edits |
+| Laravel app, migrations, policies, API | Owns | Do not modify |
+| Laravel Blade admin | Owns | Do not modify |
+| Flutter screens, Riverpod, routing | Do not modify | Owns |
+| Maps UI/GPS adapter | Backend endpoint/authorization only | Owns client |
+| API contract | Coordinate changes | Coordinate changes |
+| Shared root docs | Coordinate changes and avoid conflicting edits | Coordinate changes and avoid conflicting edits |
 
-Avoid both agents editing the same files. Shared API/schema docs should be changed only with a coordinated contract update. If a change affects the other agent, create a concise contract proposal and communicate it in the PR before implementing incompatible assumptions.
+Avoid concurrent edits to the same files. Coordinate API/schema changes before implementing incompatible assumptions.
 
 ## 4. Contract-first integration
 
-Before a feature is built in parallel, confirm:
+Before parallel implementation, confirm:
 - method/path and API version;
 - authentication mechanism and role requirement;
 - request and response examples;
 - validation/error shape;
-- pagination/timestamps/money representation;
+- pagination, timestamps and money representation;
 - state transitions and side effects;
 - ownership checks and concurrency/idempotency behavior.
 
-If backend is not ready, Developer 2 may use fake repositories matching the written contract. Do not make up a different payload just to unblock the UI.
+When backend implementation is not ready, Flutter may use a fake repository matching the written contract. Do not invent a different payload to unblock UI work.
 
 ## 5. Required task loop
 
-For every task, each AI follows this sequence:
-
-1. **Read** the task plan, related docs and existing implementation.
+1. **Read** task, related docs and existing implementation.
 2. **Plan** the smallest implementation and identify files/tests.
 3. **Implement** only the scoped change.
-4. **Verify** with formatter, static analysis, unit/integration tests or build commands available.
+4. **Verify** with formatter, static analysis, tests or build commands available.
 5. **Inspect diff** for secrets, generated files, unrelated edits, broken navigation and architecture drift.
 6. **Document** changed contracts/config/setup and actual test outcomes.
-7. **Commit** to its assigned branch with a conventional, focused message.
-8. **Report** commit SHA, changed files, test commands/results, limitations and next task.
-9. **PR** to `frontend`; do not merge automatically unless the repository owner explicitly asks.
+7. **Commit** focused changes to the explicitly assigned branch.
+8. **Report** commit SHA, changed files, commands/results, limitations and next task.
+9. **Integrate** through a reviewable PR to `frontend`, unless the repository owner explicitly directs a different workflow.
 
-Never claim a command ran if it did not. If tooling or hosting prevents a test, mark it **NOT RUN** and explain why.
+Never claim a command ran if it did not. If a test cannot be run, mark it **NOT RUN** and explain why.
 
 ## 6. Commit convention
 
-Use focused Conventional Commit-style messages:
+Use focused Conventional Commit-style messages, for example:
 - `docs: ...`
 - `chore(backend): ...`
 - `feat(auth): ...`
@@ -90,13 +74,13 @@ Use focused Conventional Commit-style messages:
 - `test(...): ...`
 - `fix(...): ...`
 
-One logical change per commit where practical. Do not squash/rewrite shared remote history without permission.
+One logical change per commit where practical. Do not rewrite shared remote history without permission.
 
 ## 7. Pull request checklist
 
-Every PR must include:
+Every PR should include:
 - [ ] Summary and scope
-- [ ] Related plan/task phase
+- [ ] Related task/milestone
 - [ ] API/schema/config changes
 - [ ] Tests run with exact results, or why not run
 - [ ] Security and authorization considerations
@@ -105,17 +89,17 @@ Every PR must include:
 - [ ] Known limitations and follow-up tasks
 - [ ] Confirmation no secrets or personal data were added
 
-PR target is `frontend`, never the production/default branch unless explicitly changed by the owner.
+PR target is normally `frontend`.
 
 ## 8. Integration sequence
 
 1. Keep `frontend` as the shared integration base.
-2. Merge small, reviewable PRs into `frontend`; avoid waiting for each developer's entire plan to finish.
+2. Merge small, reviewable PRs; do not wait for an entire plan to finish.
 3. Integrate auth contract first, then catalogue, checkout/orders, admin operations, delivery and tracking.
-4. After a PR is merged, each developer fetches the updated `frontend` and rebases/merges it into their work branch carefully. Resolve conflicts without overwriting the other developer's work.
+4. After a PR merges, each developer brings the updated `frontend` into their work branch carefully.
 5. Do not force-push shared branches.
-6. Run the relevant test suite on the combined branch after each integration.
-7. Keep release/deployment separate from ordinary feature merges.
+6. Run relevant tests on the combined branch after integration.
+7. Keep release/deployment separate from feature integration.
 
 If one branch depends on code not yet merged from the other, use the documented contract/fakes rather than cherry-picking unrelated work without agreement.
 
@@ -123,31 +107,30 @@ If one branch depends on code not yet merged from the other, use the documented 
 
 **Ready:** task has an owner, acceptance criteria, relevant contract, dependencies and test approach.
 
-**Done:** implementation exists, validation/authz is present, tests were actually run where possible, docs updated, diff reviewed and PR report is complete.
+**Done:** implementation exists, authorization/validation is present, relevant tests were actually run where possible, docs updated, diff reviewed and report completed. Deployment readiness additionally requires hosting verification, cross-client checks and human release approval.
 
 ## 10. Human approval gates
 
 AI agents must not independently:
 - deploy to production or run destructive production migrations;
 - rotate/change production credentials;
-- alter GoDaddy hosting/domain/DNS settings;
+- alter hosting/domain/DNS settings;
 - change Google OAuth/Maps billing or access policies;
 - introduce payment providers or collect real customer data;
 - merge around failing checks or unresolved security findings.
 
-## 11. Current starting order
+## 11. Current integration milestones
 
-- **Developer 1:** Phase 0 hosting/environment discovery, then Phase 1 Laravel/MySQL foundation.
-- **Developer 2:** Phase 0 Flutter audit/baseline, then Phase 1 API client foundation using the written contract.
-- **Shared gate:** freeze Google SSO request/response and session-token format before end-to-end auth integration.
-- **First end-to-end milestone:** Google sign-in → Laravel verification → MySQL user → Flutter authenticated session.
-- **Second milestone:** admin creates product → customer sees product → customer places COD order → admin sees order.
-- **Third milestone:** admin assigns delivery → partner accepts → active location updates → customer sees partner → partner completes delivery.
+Use `AI_TASK_BOARD.md` for the shared milestone state and evidence. Current high-level sequence:
+- confirm external hosting capabilities;
+- verify Flutter authentication/session restoration against the Laravel contract;
+- complete cross-client integration and browser/device checks;
+- document release acceptance and obtain explicit human approval.
 
 ## 12. Reusable kickoff prompts
 
-### Developer 1 prompt
-"You are AI Developer 1 for Snap Foodd. Work only on branch `developer-1-backend-admin`. Read `AI_RULES.md`, `AIDLC_WORKFLOW.md`, `DEVELOPER_1_PLAN.md` and all relevant architecture/API/auth/database/admin docs first. Inspect existing code, continue from the first incomplete task, and follow the plan in small tested slices. Do not modify Flutter-owned files. Commit to your branch only, never `frontend`. Report actual commands/results, commit SHA, blockers and next task. Do not deploy or change production infrastructure."
+### Backend/Admin
+"Work on the explicitly assigned backend/admin branch. Read `AI_RULES.md`, `AIDLC_WORKFLOW.md`, `AI_TASK_BOARD.md` and the relevant architecture/API/auth/database/admin docs. Inspect existing code, continue from the next incomplete task, preserve existing architecture, verify with actual commands, and report commit SHA, files, test results, blockers and next task. Do not deploy or change production infrastructure."
 
-### Developer 2 prompt
-"You are AI Developer 2 for Snap Foodd. Work only on branch `developer-2-flutter`. Read `AI_RULES.md`, `AIDLC_WORKFLOW.md`, `DEVELOPER_2_PLAN.md` and all relevant architecture/API/auth/design/tracking docs first. Inspect existing code, preserve current UI and continue from the first incomplete task. Do not modify Laravel/backend-owned files. Commit to your branch only, never `frontend`. Use fake repositories matching the contract when APIs are not ready. Report actual commands/results, commit SHA, blockers and next task. Do not deploy or change production infrastructure."
+### Flutter
+"Work on the explicitly assigned Flutter branch. Read `AI_RULES.md`, `AIDLC_WORKFLOW.md`, `AI_TASK_BOARD.md` and relevant architecture/API/auth/design/tracking docs. Inspect existing code, preserve existing UI unless explicitly asked to change it, and use repositories matching the documented API contract. Verify with actual commands and report commit SHA, files, test results, blockers and next task. Do not deploy or change production infrastructure."
