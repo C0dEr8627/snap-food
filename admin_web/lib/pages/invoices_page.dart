@@ -196,6 +196,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
       ),
     );
   }
+}
 
 class _InvoiceLedgerApi {
   const _InvoiceLedgerApi();
