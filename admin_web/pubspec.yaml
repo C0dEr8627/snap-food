@@ -22,4 +22,4 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/brand/snap_foodd_mark.svg
+    - assets/brand/logo.svg
