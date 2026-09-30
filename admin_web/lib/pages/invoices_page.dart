@@ -1,7 +1,8 @@
 part of '../main.dart';
 
 class InvoicesPage extends StatefulWidget {
-  const InvoicesPage({super.key});
+  const InvoicesPage({super.key, this.searchQuery = ''});
+  final String searchQuery;
   @override State<InvoicesPage> createState() => _InvoicesPageState();
 }
 
