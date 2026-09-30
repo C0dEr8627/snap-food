@@ -41,6 +41,22 @@ class AdminIcon extends StatelessWidget {
 
 void _notice(BuildContext context, String message, {bool error = false}) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: error ? AdminColors.red : null, behavior: SnackBarBehavior.floating));
 
+class AdminCard extends StatelessWidget {
+  const AdminCard({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => shad.Card(
+    filled: true,
+    fillColor: Colors.white,
+    borderColor: AdminColors.line,
+    borderRadius: BorderRadius.circular(14),
+    borderWidth: 1,
+    child: child,
+  );
+}
+
 class _Pill extends StatelessWidget {
   const _Pill(this.text);
   final String text;
