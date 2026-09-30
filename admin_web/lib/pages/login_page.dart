@@ -18,7 +18,10 @@ class _LoginPageState extends State<LoginPage> {
   final _email = TextEditingController();
   final _password = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _google = GoogleSignIn(scopes: const ['email', 'profile']);
+  final _google = GoogleSignIn(
+    clientId: googleClientId.isEmpty ? null : googleClientId,
+    scopes: const ['email', 'profile'],
+  );
 
   bool _loading = false;
   bool _obscurePassword = true;
