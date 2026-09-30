@@ -548,7 +548,7 @@ class _CatalogueList extends StatelessWidget {
         const SizedBox(height: 12),
         SizedBox(
           height: 44,
-          child: shad.TextField(controller: search, onSubmitted: (_) => onSearch(), placeholder: const Text('Search items...'), leading: const AdminIcon(HugeIcons.strokeRoundedSearch01, size: 17)),
+          child: shad.TextField(controller: search, onSubmitted: (_) => onSearch(), placeholder: const Text('Search items...'), features: const [shad.InputLeadingFeature(AdminIcon(HugeIcons.strokeRoundedSearch01, size: 17))]),
         ),
         const SizedBox(height: 16),
         if (products.isEmpty && !loading)
@@ -580,9 +580,9 @@ class _CatalogueList extends StatelessWidget {
         const SizedBox(height: 10),
         Row(children: [
           Expanded(child: Text('Showing ' + (total == 0 ? '0' : '1') + '–' + products.length.toString() + ' of ' + total.toString(), style: const TextStyle(fontSize: 11, color: AdminColors.muted))),
-          IconButton(onPressed: page > 1 ? () => onPage(page - 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowLeft01, size: 18)),
+          shad.IconButton.ghost(onPressed: page > 1 ? () => onPage(page - 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowLeft01, size: 18)),
           Text(page.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
-          IconButton(onPressed: page < lastPage ? () => onPage(page + 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 18)),
+          shad.IconButton.ghost(onPressed: page < lastPage ? () => onPage(page + 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 18)),
         ]),
       ]),
     ),
