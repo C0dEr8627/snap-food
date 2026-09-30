@@ -34,7 +34,7 @@ class SnapFooddAdminApp extends StatelessWidget {
     title: 'Snap Foodd Admin',
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: AdminAdminColors.yellowDark),
+      colorScheme: ColorScheme.fromSeed(seedColor: AdminAdminColors.amber),
       scaffoldBackgroundColor: AdminColors.canvas,
       useMaterial3: true,
     ),
