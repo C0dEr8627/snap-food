@@ -151,7 +151,7 @@ class DeliveryLocationTest extends TestCase
         ]);
 
         $this->actingAs($customer, 'sanctum')
-            ->getJson('/api/v1/orders/'.$assignment->order_id.'/tracking')
+            ->getJson('/api/v1/consumer/orders/'.$assignment->order_id.'/tracking')
             ->assertOk()
             ->assertJsonPath('data.location.latitude', '19.0760900')
             ->assertJsonPath('data.is_stale', true);
@@ -165,7 +165,7 @@ class DeliveryLocationTest extends TestCase
         $assignment = $this->assignment($customer, $partner);
 
         $this->actingAs($other, 'sanctum')
-            ->getJson('/api/v1/orders/'.$assignment->order_id.'/tracking')
+            ->getJson('/api/v1/consumer/orders/'.$assignment->order_id.'/tracking')
             ->assertForbidden();
     }
 
