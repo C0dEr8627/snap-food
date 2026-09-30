@@ -510,7 +510,7 @@ class _StatCard extends StatelessWidget {
 }
 
 class _CatalogueList extends StatelessWidget {
-  const _CatalogueList({required this.products, required this.search, required this.foodFilter, required this.stockFilter, required this.availabilityFilter, required this.loading, required this.page, required this.lastPage, required this.total, required this.selected, required this.onSearch, required this.onFood, required this.onStock, required this.onAvailability, required this.onSelect, required this.onPage});
+  const _CatalogueList({required this.products, required this.search, required this.foodFilter, required this.stockFilter, required this.availabilityFilter, required this.loading, required this.page, required this.lastPage, required this.total, required this.selected, required this.onCreateProduct, required this.onSearch, required this.onFood, required this.onStock, required this.onAvailability, required this.onSelect, required this.onPage});
   final List<_CatalogueProduct> products;
   final TextEditingController search;
   final String foodFilter, stockFilter, availabilityFilter;
