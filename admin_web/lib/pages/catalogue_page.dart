@@ -810,10 +810,7 @@ class _ProductEditor extends StatelessWidget {
                 name,
                 'Smokey Chicken Tikka Roll',
                 maxLength: 180,
-                validator: (v) => v == null || v.trim().isEmpty
-                    ? 'Dish name is required'
-                    : null,
-              ),
+                              ),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -842,8 +839,11 @@ class _ProductEditor extends StatelessWidget {
                 spacing: 6,
                 children: ['Pure Veg', 'Non-Veg', 'Contains Egg']
                     .map(
-                      (e) => (formDietary == e ? shad.Button.secondary : shad.Button.ghost)(onPressed: () => onDietary(e), child: Text(e, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)))
-                        
+                      (e) => (formDietary == e
+                          ? shad.Button.secondary
+                          : shad.Button.ghost)(
+                        onPressed: () => onDietary(e),
+                        child: Text(e, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
                       ),
                     )
                     .toList(),
@@ -859,13 +859,7 @@ class _ProductEditor extends StatelessWidget {
                       keyboard: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      validator: (v) {
-                        final n = double.tryParse(v ?? '');
-                        return n == null || n < 0
-                            ? 'Enter a valid price'
-                            : null;
-                      },
-                    ),
+                                          ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -874,13 +868,7 @@ class _ProductEditor extends StatelessWidget {
                       '15',
                       label: 'Prep Time (Min)',
                       keyboard: TextInputType.number,
-                      validator: (v) {
-                        final n = int.tryParse(v ?? '');
-                        return n == null || n < 1 || n > 300
-                            ? '1–300 min'
-                            : null;
-                      },
-                    ),
+                                          ),
                   ),
                 ],
               ),
@@ -980,8 +968,7 @@ class _ProductEditor extends StatelessWidget {
                 imageUrl,
                 'https://...',
                 label: 'Image URL',
-                validator: (_) => null,
-              ),
+                              ),
               const SizedBox(height: 14),
               Row(
                 children: [
@@ -991,13 +978,7 @@ class _ProductEditor extends StatelessWidget {
                       '0',
                       label: 'Stock Quantity',
                       keyboard: TextInputType.number,
-                      validator: (v) {
-                        final value = int.tryParse(v ?? '');
-                        return value == null || value < 0
-                            ? 'Enter stock'
-                            : null;
-                      },
-                    ),
+                                          ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
