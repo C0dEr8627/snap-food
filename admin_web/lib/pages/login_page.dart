@@ -77,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                         controller: _email,
                         keyboardType: TextInputType.emailAddress,
                         autofillHints: const [AutofillHints.username, AutofillHints.email],
-                        decoration: _fieldDecoration('Email address', Icons.email_outlined),
+                        decoration: _fieldDecoration('Email address', HugeIcons.strokeRoundedMail01),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) return 'Enter your email address.';
                           if (!value.contains('@')) return 'Enter a valid email address.';
@@ -91,11 +91,11 @@ class _LoginPageState extends State<LoginPage> {
                         autofillHints: const [AutofillHints.password],
                         decoration: _fieldDecoration(
                           'Password',
-                          Icons.lock_outline_rounded,
+                          HugeIcons.strokeRoundedLock,
                           suffix: IconButton(
                             tooltip: _obscurePassword ? 'Show password' : 'Hide password',
                             onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                            icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                            icon: AdminIcon(_obscurePassword ? HugeIcons.strokeRoundedView : HugeIcons.strokeRoundedViewOff),
                           ),
                         ),
                         validator: (value) => value == null || value.length < 8 ? 'Enter your password.' : null,
@@ -113,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Icon(Icons.error_outline_rounded, size: 18, color: AdminColors.red),
+                              const AdminIcon(HugeIcons.strokeRoundedAlertCircle, size: 18, color: AdminColors.red),
                               const SizedBox(width: 8),
                               Expanded(child: Text(_error!, style: const TextStyle(fontSize: 11.5, color: AdminColors.red))),
                             ],
@@ -169,9 +169,9 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  InputDecoration _fieldDecoration(String label, IconData icon, {Widget? suffix}) => InputDecoration(
+  InputDecoration _fieldDecoration(String label, AdminIconData icon, {Widget? suffix}) => InputDecoration(
     labelText: label,
-    prefixIcon: Icon(icon, size: 19),
+    prefixIcon: AdminIcon(icon, size: 19),
     suffixIcon: suffix,
     filled: true,
     fillColor: Colors.white,
