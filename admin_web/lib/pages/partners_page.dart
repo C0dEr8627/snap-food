@@ -441,7 +441,7 @@ class _PartnerCommandHeader extends StatelessWidget {
         children: [
           OutlinedButton.icon(
             onPressed: onExport,
-            icon: const Icon(Icons.download_rounded, size: 17),
+            icon: const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 17),
             label: const Text('Export roster'),
             style: OutlinedButton.styleFrom(
               foregroundColor: AdminColors.ink,
@@ -452,7 +452,7 @@ class _PartnerCommandHeader extends StatelessWidget {
           ),
           FilledButton.icon(
             onPressed: onManualOnboard,
-            icon: const Icon(Icons.person_add_alt_1_rounded, size: 17),
+            icon: const AdminIcon(HugeIcons.strokeRoundedUserAdd01, size: 17),
             label: const Text('Manual onboard'),
             style: FilledButton.styleFrom(
               backgroundColor: AdminColors.yellow,
@@ -544,10 +544,10 @@ class _FleetSummary extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       final columns = constraints.maxWidth >= 900 ? 4 : constraints.maxWidth >= 560 ? 2 : 1;
       final cards = [
-        _FleetKpiCard(title: 'TOTAL FLEET STRENGTH', value: loading ? '—' : total.toString(), caption: 'Partners registered in backend', icon: Icons.electric_moped_rounded, tone: AdminColors.amberSoft),
-        _FleetKpiCard(title: 'APPROVED & ACTIVE', value: loading ? '—' : approved.toString(), caption: 'On the current result page', icon: Icons.bolt_rounded, tone: AdminColors.greenSoft),
-        _FleetKpiCard(title: 'AVAILABLE NOW', value: loading ? '—' : available.toString(), caption: 'Availability reported by API', icon: Icons.route_rounded, tone: AdminColors.blueSoft),
-        _FleetKpiCard(title: 'PENDING APPROVAL', value: loading ? '—' : pending.toString(), caption: 'Needs admin decision on this page', icon: Icons.pending_actions_rounded, tone: AdminColors.redSoft),
+        _FleetKpiCard(title: 'TOTAL FLEET STRENGTH', value: loading ? '—' : total.toString(), caption: 'Partners registered in backend', icon: HugeIcons.strokeRoundedScooterElectric, tone: AdminColors.amberSoft),
+        _FleetKpiCard(title: 'APPROVED & ACTIVE', value: loading ? '—' : approved.toString(), caption: 'On the current result page', icon: HugeIcons.strokeRoundedFlash, tone: AdminColors.greenSoft),
+        _FleetKpiCard(title: 'AVAILABLE NOW', value: loading ? '—' : available.toString(), caption: 'Availability reported by API', icon: HugeIcons.strokeRoundedRoute01, tone: AdminColors.blueSoft),
+        _FleetKpiCard(title: 'PENDING APPROVAL', value: loading ? '—' : pending.toString(), caption: 'Needs admin decision on this page', icon: HugeIcons.strokeRoundedTask01, tone: AdminColors.redSoft),
       ];
       return GridView.count(
         crossAxisCount: columns,
@@ -573,7 +573,7 @@ class _FleetKpiCard extends StatelessWidget {
   final String title;
   final String value;
   final String caption;
-  final IconData icon;
+  final AdminIconData icon;
   final Color tone;
 
   @override
@@ -587,7 +587,7 @@ class _FleetKpiCard extends StatelessWidget {
                 width: 33,
                 height: 33,
                 decoration: BoxDecoration(color: tone, borderRadius: BorderRadius.circular(10)),
-                child: Icon(icon, size: 17, color: AdminColors.ink),
+                child: AdminIcon(icon, size: 17, color: AdminColors.ink),
               ),
             ]),
             const Spacer(),
@@ -637,13 +637,13 @@ class _PartnerFilterBar extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: 'Search name, email or partner ID',
                   hintStyle: const TextStyle(fontSize: 10.5),
-                  prefixIcon: const Icon(Icons.search_rounded, size: 18),
+                  prefixIcon: const AdminIcon(HugeIcons.strokeRoundedSearch01, size: 18),
                   suffixIcon: controller.text.isEmpty
                       ? null
                       : IconButton(
                           tooltip: 'Clear search',
                           onPressed: controller.clear,
-                          icon: const Icon(Icons.close_rounded, size: 16),
+                          icon: const AdminIcon(HugeIcons.strokeRoundedCancel01, size: 16),
                         ),
                   filled: true,
                   fillColor: AdminColors.canvas,
@@ -682,7 +682,7 @@ class _PartnerFilterBar extends StatelessWidget {
                 search,
                 const SizedBox(height: 10),
                 chips,
-                Align(alignment: Alignment.centerRight, child: IconButton(onPressed: loading ? null : onRefresh, tooltip: 'Refresh roster', icon: const Icon(Icons.refresh_rounded))),
+                Align(alignment: Alignment.centerRight, child: IconButton(onPressed: loading ? null : onRefresh, tooltip: 'Refresh roster', icon: const AdminIcon(HugeIcons.strokeRoundedRefresh))),
               ]);
             }
             return Row(children: [
@@ -690,7 +690,7 @@ class _PartnerFilterBar extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: chips)),
               const SizedBox(width: 4),
-              IconButton(onPressed: loading ? null : onRefresh, tooltip: 'Refresh roster', icon: const Icon(Icons.refresh_rounded)),
+              IconButton(onPressed: loading ? null : onRefresh, tooltip: 'Refresh roster', icon: const AdminIcon(HugeIcons.strokeRoundedRefresh)),
             ]);
           }),
         ),
@@ -845,12 +845,12 @@ class _PartnerActions extends StatelessWidget {
               actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Close'))],
             ),
           ),
-          icon: const Icon(Icons.open_in_new_rounded, size: 17),
+          icon: const AdminIcon(HugeIcons.strokeRoundedLinkSquare01, size: 17),
         ),
         IconButton(
           tooltip: partner.approved ? 'Remove approval' : 'Approve partner',
           onPressed: busy ? null : () => onApproval(partner, !partner.approved),
-          icon: Icon(partner.approved ? Icons.verified_user_outlined : Icons.check_circle_outline_rounded, size: 18, color: partner.approved ? AdminColors.muted : AdminColors.green),
+          icon: AdminIcon(partner.approved ? HugeIcons.strokeRoundedSecurityCheck : HugeIcons.strokeRoundedCheckmarkCircle01, size: 18, color: partner.approved ? AdminColors.muted : AdminColors.green),
         ),
       ]);
 }
@@ -876,7 +876,7 @@ class _PartnerMobileCard extends StatelessWidget {
             Expanded(child: _PartnerDutyStatus(partner: partner)),
             TextButton.icon(
               onPressed: busy ? null : () => onApproval(partner, !partner.approved),
-              icon: Icon(partner.approved ? Icons.remove_moderator_outlined : Icons.check_circle_outline_rounded, size: 16),
+              icon: AdminIcon(partner.approved ? HugeIcons.strokeRoundedSecurityBlock : HugeIcons.strokeRoundedCheckmarkCircle01, size: 16),
               label: Text(partner.approved ? 'Remove approval' : 'Approve'),
             ),
           ]),
@@ -926,8 +926,8 @@ class _PartnerPagination extends StatelessWidget {
   Widget build(BuildContext context) => Row(children: [
         Text('Page $currentPage of $lastPage • $total partners', style: const TextStyle(fontSize: 10, color: AdminColors.muted, fontWeight: FontWeight.w700)),
         const Spacer(),
-        IconButton(tooltip: 'Previous page', onPressed: currentPage > 1 ? () => onPage(currentPage - 1) : null, icon: const Icon(Icons.chevron_left_rounded)),
-        IconButton(tooltip: 'Next page', onPressed: currentPage < lastPage ? () => onPage(currentPage + 1) : null, icon: const Icon(Icons.chevron_right_rounded)),
+        IconButton(tooltip: 'Previous page', onPressed: currentPage > 1 ? () => onPage(currentPage - 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowLeft01)),
+        IconButton(tooltip: 'Next page', onPressed: currentPage < lastPage ? () => onPage(currentPage + 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01)),
       ]);
 }
 
@@ -965,7 +965,7 @@ class _PartnerErrorBanner extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(12), border: Border.all(color: AdminColors.redSoft)),
         child: Row(children: [
-          const Icon(Icons.cloud_off_rounded, color: AdminColors.red, size: 20),
+          const AdminIcon(HugeIcons.strokeRoundedCloud, color: AdminColors.red, size: 20),
           const SizedBox(width: 10),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const Text('Delivery partner data could not be loaded', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w900, color: AdminColors.red)),
@@ -987,7 +987,7 @@ class _PartnerEmptyState extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 34),
           child: Center(child: Column(children: [
-            Container(width: 48, height: 48, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.delivery_dining_rounded, color: AdminColors.yellowDark, size: 24)),
+            Container(width: 48, height: 48, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(15)), child: const AdminIcon(HugeIcons.strokeRoundedDeliveryTruck01, color: AdminColors.yellowDark, size: 24)),
             const SizedBox(height: 12),
             Text(hasQuery ? 'No partners match these filters' : 'No delivery partners found', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
             const SizedBox(height: 5),
@@ -1019,7 +1019,7 @@ class _KycQueueNotice extends StatelessWidget {
           padding: const EdgeInsets.all(17),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(width: 42, height: 42, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.fact_check_outlined, color: AdminColors.yellowDark, size: 21)),
+              Container(width: 42, height: 42, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(12)), child: const AdminIcon(HugeIcons.strokeRoundedTaskDone01, color: AdminColors.yellowDark, size: 21)),
               const SizedBox(width: 12),
               const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text('Sarathi & UIDAI Automated KYC Queue', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
@@ -1091,7 +1091,7 @@ class _KycDataBoundary extends StatelessWidget {
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(12), border: Border.all(color: AdminColors.line)),
         child: const Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Icon(Icons.info_outline_rounded, color: AdminColors.muted, size: 18),
+          AdminIcon(HugeIcons.strokeRoundedInformationCircle, color: AdminColors.muted, size: 18),
           SizedBox(width: 10),
           Expanded(child: Text(
             'KYC integration boundary: no document URLs, UIDAI/Sarathi verification metadata, trust scores, rejection endpoint, or re-upload endpoint were found in the existing API. These controls are intentionally not simulated. The existing approval endpoint is used only for its supported approve/unapprove action.',
