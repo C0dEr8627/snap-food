@@ -544,7 +544,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
               icon: const AdminIcon(
                 HugeIcons.strokeRoundedDelete02,
                 size: 18,
-                color: AdminAdminColors.red,
+                color: AdminColors.red,
               ),
             ),
           ],
@@ -618,7 +618,7 @@ class _CategoryTabs extends StatelessWidget {
   Widget _cat(String label, bool active, int? id, int count) => Padding(padding: const EdgeInsets.only(right: 8), child: InkWell(
     onTap: () => onSelect(id), borderRadius: BorderRadius.circular(11), child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-      decoration: BoxDecoration(color: active ? AdminAdminColors.yellow : Colors.white, borderRadius: BorderRadius.circular(11), border: Border.all(color: active ? AdminAdminColors.yellow : AdminColors.line)),
+      decoration: BoxDecoration(color: active ? AdminColors.yellow : Colors.white, borderRadius: BorderRadius.circular(11), border: Border.all(color: active ? AdminColors.yellow : AdminColors.line)),
       child: Row(children: [Text(label, style: TextStyle(fontSize: 11, fontWeight: active ? FontWeight.w900 : FontWeight.w700)), if (count > 0) ...[const SizedBox(width: 7), Text(count.toString(), style: const TextStyle(fontSize: 11, color: AdminColors.muted))]]),
     ),
   ));
@@ -720,9 +720,9 @@ class _ProductTile extends StatelessWidget {
     borderRadius: BorderRadius.circular(14),
     child: Container(
       decoration: BoxDecoration(
-        color: selected ? AdminAdminColors.amberSoft : Colors.white,
+        color: selected ? AdminColors.amberSoft : Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: selected ? AdminAdminColors.amber : AdminColors.line, width: selected ? 1.4 : 1),
+        border: Border.all(color: selected ? AdminColors.amber : AdminColors.line, width: selected ? 1.4 : 1),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -731,8 +731,8 @@ class _ProductTile extends StatelessWidget {
           child: Container(
             color: AdminColors.canvas,
             child: product.image != null && product.image!.isNotEmpty
-                ? Image.network(product.image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminAdminColors.amber)))
-                : const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminAdminColors.amber)),
+                ? Image.network(product.image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminColors.amber)))
+                : const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminColors.amber)),
           ),
         ),
         Expanded(child: Padding(
@@ -749,7 +749,7 @@ class _ProductTile extends StatelessWidget {
             const SizedBox(height: 8),
             Row(children: [
               Expanded(child: Text('₹' + product.price.toStringAsFixed(0), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900))),
-              Text(product.outOfStock ? 'Sold out' : product.stock.toString() + ' units', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: product.outOfStock ? AdminAdminColors.red : product.lowStock ? AdminColors.warning : AdminColors.ink)),
+              Text(product.outOfStock ? 'Sold out' : product.stock.toString() + ' units', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: product.outOfStock ? AdminColors.red : product.lowStock ? AdminColors.warning : AdminColors.ink)),
             ]),
           ]),
         )),
@@ -771,7 +771,7 @@ class _ProductRow extends StatelessWidget {
     child: Container(
       margin: const EdgeInsets.only(bottom: 5),
       padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 6),
-      decoration: BoxDecoration(color: selected ? AdminAdminColors.amberSoft : Colors.transparent, borderRadius: BorderRadius.circular(11)),
+      decoration: BoxDecoration(color: selected ? AdminColors.amberSoft : Colors.transparent, borderRadius: BorderRadius.circular(11)),
       child: Row(children: [
         Expanded(flex: 5, child: Row(children: [
           _Thumb(image: product.image, name: product.name),
@@ -786,7 +786,7 @@ class _ProductRow extends StatelessWidget {
           ])),
         ])),
         Expanded(flex: 3, child: Text(product.categoryName, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700), overflow: TextOverflow.ellipsis)),
-        SizedBox(width: 85, child: Text(product.outOfStock ? 'Sold out' : product.stock.toString() + ' units', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: product.outOfStock ? AdminAdminColors.red : product.lowStock ? AdminColors.warning : AdminColors.ink))),
+        SizedBox(width: 85, child: Text(product.outOfStock ? 'Sold out' : product.stock.toString() + ' units', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: product.outOfStock ? AdminColors.red : product.lowStock ? AdminColors.warning : AdminColors.ink))),
       ]),
     ),
   );
@@ -795,12 +795,12 @@ class _ProductRow extends StatelessWidget {
 class _Thumb extends StatelessWidget {
   const _Thumb({this.image, required this.name}); final String? image; final String name;
   @override Widget build(BuildContext context) => ClipRRect(borderRadius: BorderRadius.circular(10), child: Container(width: 50, height: 50, color: AdminColors.canvas, child: image != null && image!.isNotEmpty ? Image.network(image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _placeholder()) : _placeholder()));
-  Widget _placeholder() => const AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 22, color: AdminAdminColors.amber);
+  Widget _placeholder() => const AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 22, color: AdminColors.amber);
 }
 
 class _Badge extends StatelessWidget {
   const _Badge(this.text); final String text;
-  @override Widget build(BuildContext context) { final danger = text == 'Sold Out' || text.contains('Left'); final seasonal = text == 'Seasonal'; return Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3), decoration: BoxDecoration(color: danger ? AdminAdminColors.redSoft : seasonal ? AdminAdminColors.amberSoft : AdminAdminColors.redSoft, borderRadius: BorderRadius.circular(5)), child: Text(text, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: danger ? AdminAdminColors.red : AdminColors.ink))); }
+  @override Widget build(BuildContext context) { final danger = text == 'Sold Out' || text.contains('Left'); final seasonal = text == 'Seasonal'; return Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3), decoration: BoxDecoration(color: danger ? AdminColors.redSoft : seasonal ? AdminColors.amberSoft : AdminColors.redSoft, borderRadius: BorderRadius.circular(5)), child: Text(text, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: danger ? AdminColors.red : AdminColors.ink))); }
 }
 
 // Product editor intentionally uses a block-bodied build method to keep widget nesting balanced.
@@ -888,7 +888,7 @@ class _ProductEditor extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12, fontWeight: FontWeight.w900,
                             letterSpacing: 1.2,
-                            color: AdminAdminColors.green,
+                            color: AdminColors.green,
                           ),
                         ),
                         const SizedBox(height: 5),
@@ -1043,7 +1043,7 @@ class _ProductEditor extends StatelessWidget {
                                   ? HugeIcons.strokeRoundedHourglass
                                   : HugeIcons.strokeRoundedCloudUpload,
                               size: 27,
-                              color: AdminAdminColors.amber,
+                              color: AdminColors.amber,
                             ),
                             const SizedBox(height: 7),
                             Text(
@@ -1124,7 +1124,7 @@ class _ProductEditor extends StatelessWidget {
                       'Deactivate item',
                       style: TextStyle(
                         fontSize: 11,
-                        color: AdminAdminColors.red,
+                        color: AdminColors.red,
                       ),
                     ),
                   ),
@@ -1187,5 +1187,5 @@ Widget _dropdownField(String label, List<DropdownMenuItem<int?>> items, int? val
 
 class _ErrorBanner extends StatelessWidget {
   const _ErrorBanner({required this.message, required this.onRetry}); final String message; final VoidCallback onRetry;
-  @override Widget build(BuildContext context) => Container(width: double.infinity, margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.all(11), decoration: BoxDecoration(color: AdminAdminColors.redSoft, borderRadius: BorderRadius.circular(10)), child: Row(children: [const AdminIcon(HugeIcons.strokeRoundedAlertCircle, size: 17, color: AdminAdminColors.red), const SizedBox(width: 8), Expanded(child: Text(message, style: const TextStyle(fontSize: 11))), shad.OutlineButton(onPressed: onRetry, child: const Text('Retry', style: TextStyle(fontSize: 11)))]));
+  @override Widget build(BuildContext context) => Container(width: double.infinity, margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.all(11), decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(10)), child: Row(children: [const AdminIcon(HugeIcons.strokeRoundedAlertCircle, size: 17, color: AdminColors.red), const SizedBox(width: 8), Expanded(child: Text(message, style: const TextStyle(fontSize: 11))), shad.OutlineButton(onPressed: onRetry, child: const Text('Retry', style: TextStyle(fontSize: 11)))]));
 }
