@@ -113,7 +113,7 @@ class _OrdersPageState extends State<OrdersPage>{
 
   @override Widget build(BuildContext context){
     if(loading) return const Center(child:Padding(padding:EdgeInsets.all(40),child:shad.CircularProgressIndicator()));
-    if(loadError!=null) return Center(child:Padding(padding:EdgeInsets.all(40),child:AdminCard(child:Padding(padding:EdgeInsets.all(22),child:Column(mainAxisSize:MainAxisSize.min,children:[const AdminIcon(HugeIcons.strokeRoundedAlert02,size:28,color:AdminAdminColors.red),const SizedBox(height:10),const Text('Unable to load orders',style:TextStyle(fontWeight:FontWeight.w900)),const SizedBox(height:5),Text(loadError!,textAlign:TextAlign.center,style:const TextStyle(fontSize:11,color:AdminColors.muted)),const SizedBox(height:12),shad.OutlineButton(onPressed:_loadOrders,child:const Text('Retry'))])))));
+    if(loadError!=null) return Center(child:Padding(padding:EdgeInsets.all(40),child:AdminCard(child:Padding(padding:EdgeInsets.all(22),child:Column(mainAxisSize:MainAxisSize.min,children:[const AdminIcon(HugeIcons.strokeRoundedAlert02,size:28,color:AdminColors.red),const SizedBox(height:10),const Text('Unable to load orders',style:TextStyle(fontWeight:FontWeight.w900)),const SizedBox(height:5),Text(loadError!,textAlign:TextAlign.center,style:const TextStyle(fontSize:11,color:AdminColors.muted)),const SizedBox(height:12),shad.OutlineButton(onPressed:_loadOrders,child:const Text('Retry'))])))));
     final list=filtered,order=selected,desktop=MediaQuery.sizeOf(context).width>=1120;
     final pages=list.isEmpty?1:((list.length-1)~/10)+1;if(page>pages)page=pages;
     final queue=_OrderQueue(orders:list,selectedId:order?.id,page:page,onPage:(v)=>setState(()=>page=v),onSelect:(v)=>setState(()=>selectedId=v));
@@ -164,8 +164,8 @@ class _OrdersHeader extends StatelessWidget{
       SizedBox(height:8),Text('Dual-channel Flutter engine view for real-time dispatch, kitchen KOT, and fleet tracking.',style:TextStyle(fontSize:11.5,color:AdminColors.muted)),
     ]);
     final actions=Wrap(spacing:8,runSpacing:8,children:[
-      Container(padding:const EdgeInsets.symmetric(horizontal:11,vertical:10),decoration:BoxDecoration(color:apiConfigured?AdminAdminColors.greenSoft:AdminAdminColors.redSoft,borderRadius:BorderRadius.circular(10),border:Border.all(color:AdminColors.line)),child:Row(mainAxisSize:MainAxisSize.min,children:[_StatusDot(color:apiConfigured?AdminAdminColors.green:AdminAdminColors.red),const SizedBox(width:7),const Text('NODE IN-BLR-01',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900))])),
-      Container(padding:const EdgeInsets.symmetric(horizontal:11,vertical:10),decoration:BoxDecoration(color:AdminAdminColors.amberSoft,borderRadius:BorderRadius.circular(10),border:Border.all(color:AdminColors.line)),child:const Row(mainAxisSize:MainAxisSize.min,children:[_StatusDot(color:AdminAdminColors.amber),SizedBox(width:7),Text('Auto Sync 5s Active',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900))])),
+      Container(padding:const EdgeInsets.symmetric(horizontal:11,vertical:10),decoration:BoxDecoration(color:apiConfigured?AdminColors.greenSoft:AdminColors.redSoft,borderRadius:BorderRadius.circular(10),border:Border.all(color:AdminColors.line)),child:Row(mainAxisSize:MainAxisSize.min,children:[_StatusDot(color:apiConfigured?AdminColors.green:AdminColors.red),const SizedBox(width:7),const Text('NODE IN-BLR-01',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900))])),
+      Container(padding:const EdgeInsets.symmetric(horizontal:11,vertical:10),decoration:BoxDecoration(color:AdminColors.amberSoft,borderRadius:BorderRadius.circular(10),border:Border.all(color:AdminColors.line)),child:const Row(mainAxisSize:MainAxisSize.min,children:[_StatusDot(color:AdminColors.amber),SizedBox(width:7),Text('Auto Sync 5s Active',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900))])),
       shad.OutlineButton(onPressed:onExport,leading:const AdminIcon(HugeIcons.strokeRoundedDownload01,size:16),child:const Text('Export CSV')),
       shad.PrimaryButton(onPressed:onPos,leading:const AdminIcon(HugeIcons.strokeRoundedCashier,size:17),child:const Text('Manual POS Order')),
     ]);
@@ -254,7 +254,7 @@ class _FilterChip extends StatelessWidget{
         const SizedBox(width:7),
         Container(
           padding:const EdgeInsets.symmetric(horizontal:6,vertical:3),
-          decoration:BoxDecoration(color:active?AdminAdminColors.yellow:AdminColors.canvas,borderRadius:BorderRadius.circular(6)),
+          decoration:BoxDecoration(color:active?AdminColors.yellow:AdminColors.canvas,borderRadius:BorderRadius.circular(6)),
           child:Text(count.toString(),style:const TextStyle(fontSize:12,fontWeight:FontWeight.w900)),
         ),
       ]),
@@ -320,15 +320,15 @@ class _OrderDetails extends StatelessWidget{
     final o=order;if(o==null)return const AdminCard(child:Padding(padding:EdgeInsets.all(30),child:Center(child:Text('No selected order',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)))));
     final next=_nextStatus(o.status);
     return AdminCard(child:Padding(padding:const EdgeInsets.all(16),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-      Row(children:[Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(o.id,style:const TextStyle(fontSize:18,fontWeight:FontWeight.w900)),const SizedBox(height:5),Row(children:[_OrderStatusBadge(o.status),const SizedBox(width:7),if(apiConfigured)const Text('LIVE ACTIVE',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminAdminColors.green))])])),shad.IconButton.ghost(onPressed:()=>_notice(context,'Print is not wired in the existing admin app.'),icon:const AdminIcon(HugeIcons.strokeRoundedPrinter,size:18)),shad.IconButton.ghost(onPressed:()=>_notice(context,'Share is not wired in the existing admin app.'),icon:const AdminIcon(HugeIcons.strokeRoundedShare08,size:18))]),
+      Row(children:[Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(o.id,style:const TextStyle(fontSize:18,fontWeight:FontWeight.w900)),const SizedBox(height:5),Row(children:[_OrderStatusBadge(o.status),const SizedBox(width:7),if(apiConfigured)const Text('LIVE ACTIVE',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.green))])])),shad.IconButton.ghost(onPressed:()=>_notice(context,'Print is not wired in the existing admin app.'),icon:const AdminIcon(HugeIcons.strokeRoundedPrinter,size:18)),shad.IconButton.ghost(onPressed:()=>_notice(context,'Share is not wired in the existing admin app.'),icon:const AdminIcon(HugeIcons.strokeRoundedShare08,size:18))]),
       const SizedBox(height:5),Text('Placed at '+o.time+' IST • Estimated Dispatch: 8 min',style:const TextStyle(fontSize: 11,color:AdminColors.muted)),const SizedBox(height:15),
       _Panel(title:'Order Dispatch Progression',trailing:'Step '+_progressStep(o.status).toString()+' of 5',child:_Progression(o.status)),const SizedBox(height:12),
       LayoutBuilder(builder:(context,c)=>c.maxWidth>=500?Row(children:[Expanded(child:_PersonCard('CUSTOMER',o.customer,[o.phone,o.address],HugeIcons.strokeRoundedUser)),const SizedBox(width:10),Expanded(child:_PersonCard('DELIVERY PARTNER',o.partner??'Unassigned',[o.vehicle??'Awaiting partner assignment'],HugeIcons.strokeRoundedDeliveryTruck01,badge:o.partner==null?'UNASSIGNED':'ON DUTY'))]):Column(children:[_PersonCard('CUSTOMER',o.customer,[o.phone,o.address],HugeIcons.strokeRoundedUser),const SizedBox(height:10),_PersonCard('DELIVERY PARTNER',o.partner??'Unassigned',[o.vehicle??'Awaiting partner assignment'],HugeIcons.strokeRoundedDeliveryTruck01,badge:o.partner==null?'UNASSIGNED':'ON DUTY')])),
       const SizedBox(height:12),
-      _Panel(title:'ITEMIZED KITCHEN MANIFEST',trailing:'KOT Ticket: #08',child:Column(children:o.lines.map((l)=>Padding(padding:const EdgeInsets.symmetric(vertical:7),child:Row(children:[Container(width:24,height:24,alignment:Alignment.center,decoration:BoxDecoration(color:AdminAdminColors.amberSoft,borderRadius:BorderRadius.circular(6)),child:Text(l.qty.toString()+'x',style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),const SizedBox(width:9),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(l.name,style:const TextStyle(fontSize: 11,fontWeight:FontWeight.w800)),if(l.modifier.isNotEmpty)Text(l.modifier,style:const TextStyle(fontSize: 11,color:AdminColors.muted))])),Text('₹'+l.price.toStringAsFixed(2),style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))]))).toList())),const SizedBox(height:12),
+      _Panel(title:'ITEMIZED KITCHEN MANIFEST',trailing:'KOT Ticket: #08',child:Column(children:o.lines.map((l)=>Padding(padding:const EdgeInsets.symmetric(vertical:7),child:Row(children:[Container(width:24,height:24,alignment:Alignment.center,decoration:BoxDecoration(color:AdminColors.amberSoft,borderRadius:BorderRadius.circular(6)),child:Text(l.qty.toString()+'x',style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),const SizedBox(width:9),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(l.name,style:const TextStyle(fontSize: 11,fontWeight:FontWeight.w800)),if(l.modifier.isNotEmpty)Text(l.modifier,style:const TextStyle(fontSize: 11,color:AdminColors.muted))])),Text('₹'+l.price.toStringAsFixed(2),style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))]))).toList())),const SizedBox(height:12),
       _Bill(o),const SizedBox(height:12),
       shad.PrimaryButton(onPressed:busy||next==null?null:onAdvance,leading:const AdminIcon(HugeIcons.strokeRoundedMotorbike02,size:18),child:Text(busy?'Updating…':'Advance to '+_prettyStatus(next??o.status))).sized(width:double.infinity,height:46),
-      const SizedBox(height:8),Wrap(spacing:7,runSpacing:7,children:[shad.OutlineButton(onPressed:onInvoice,leading:const AdminIcon(HugeIcons.strokeRoundedInvoice01,size:15),child:const Text('Tax Invoice')),shad.OutlineButton(onPressed:()=>_notice(context,'KOT printing is not wired in the existing admin app.'),leading:const AdminIcon(HugeIcons.strokeRoundedPrinter,size:15),child:const Text('Print KOT')),shad.OutlineButton(onPressed:onCancel,leading:const AdminIcon(HugeIcons.strokeRoundedCancel01,size:15,color:AdminAdminColors.red),child:const Text('Reject / Cancel'))])
+      const SizedBox(height:8),Wrap(spacing:7,runSpacing:7,children:[shad.OutlineButton(onPressed:onInvoice,leading:const AdminIcon(HugeIcons.strokeRoundedInvoice01,size:15),child:const Text('Tax Invoice')),shad.OutlineButton(onPressed:()=>_notice(context,'KOT printing is not wired in the existing admin app.'),leading:const AdminIcon(HugeIcons.strokeRoundedPrinter,size:15),child:const Text('Print KOT')),shad.OutlineButton(onPressed:onCancel,leading:const AdminIcon(HugeIcons.strokeRoundedCancel01,size:15,color:AdminColors.red),child:const Text('Reject / Cancel'))])
     ])));
   }
 }
@@ -365,9 +365,9 @@ class _Progression extends StatelessWidget {
                   height: 25,
                   decoration: BoxDecoration(
                     color: i < current
-                        ? AdminAdminColors.yellow
+                        ? AdminColors.yellow
                         : i == current
-                            ? AdminAdminColors.red
+                            ? AdminColors.red
                             : Colors.white,
                     shape: BoxShape.circle,
                     border: Border.all(
@@ -401,7 +401,7 @@ class _Progression extends StatelessWidget {
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: i == current
-                        ? AdminAdminColors.red
+                        ? AdminColors.red
                         : AdminColors.muted,
                   ),
                 ),
@@ -414,7 +414,7 @@ class _Progression extends StatelessWidget {
                 height: 2,
                 margin: const EdgeInsets.only(bottom: 22),
                 color: i < current
-                    ? AdminAdminColors.yellow
+                    ? AdminColors.yellow
                     : AdminColors.line,
               ),
             ),
@@ -427,14 +427,14 @@ class _Progression extends StatelessWidget {
 class _PersonCard extends StatelessWidget{
   const _PersonCard(this.title,this.name,this.lines,this.icon,{this.badge});final String title,name;final List<String> lines;final AdminIconData icon;final String? badge;
   @override Widget build(BuildContext context)=>Container(padding:const EdgeInsets.all(11),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminColors.line)),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-    Row(children:[AdminIcon(icon,size:16,color:AdminAdminColors.amber),const SizedBox(width:6),Text(title,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted)),const Spacer(),if(badge!=null)Container(padding:const EdgeInsets.symmetric(horizontal:6,vertical:4),decoration:BoxDecoration(color:badge=='ON DUTY'?AdminAdminColors.greenSoft:AdminAdminColors.redSoft,borderRadius:BorderRadius.circular(6)),child:Text(badge!,style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:badge=='ON DUTY'?AdminAdminColors.green:AdminAdminColors.red)))]),
+    Row(children:[AdminIcon(icon,size:16,color:AdminColors.amber),const SizedBox(width:6),Text(title,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted)),const Spacer(),if(badge!=null)Container(padding:const EdgeInsets.symmetric(horizontal:6,vertical:4),decoration:BoxDecoration(color:badge=='ON DUTY'?AdminColors.greenSoft:AdminColors.redSoft,borderRadius:BorderRadius.circular(6)),child:Text(badge!,style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:badge=='ON DUTY'?AdminColors.green:AdminColors.red)))]),
     const SizedBox(height:8),Text(name,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),const SizedBox(height:4),...lines.map((l)=>Padding(padding:const EdgeInsets.only(top:2),child:Text(l,maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize: 11,color:AdminColors.muted,height:1.3)))),
   ]));
 }
 
 class _Bill extends StatelessWidget{
   const _Bill(this.o);final _AdminOrder o;
-  @override Widget build(BuildContext context){final sub=o.total-69;Widget line(String a,String b,{bool strong=false})=>Row(children:[Expanded(child:Text(a,style:TextStyle(fontSize:strong?10:8.5,fontWeight:strong?FontWeight.w900:FontWeight.w600,color:strong?AdminColors.ink:AdminColors.muted))),Text(b,style:TextStyle(fontSize:strong?12.5:8.5,fontWeight:FontWeight.w900))]);return Container(padding:const EdgeInsets.all(12),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminColors.line)),child:Column(children:[line('Item Subtotal','₹'+sub.toStringAsFixed(2)),line('GST & Packaging Charges','₹69.00'),const Divider(height:17),line('Grand Total','₹'+o.total.toStringAsFixed(2),strong:true),const SizedBox(height:9),Row(children:[const Text('PAYMENT',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted)),const Spacer(),Container(padding:const EdgeInsets.symmetric(horizontal:7,vertical:4),decoration:BoxDecoration(color:AdminAdminColors.greenSoft,borderRadius:BorderRadius.circular(6)),child:const Text('PAID',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminAdminColors.green))),const SizedBox(width:6),Text(o.payment,style:const TextStyle(fontSize: 11,color:AdminColors.muted))])]));}
+  @override Widget build(BuildContext context){final sub=o.total-69;Widget line(String a,String b,{bool strong=false})=>Row(children:[Expanded(child:Text(a,style:TextStyle(fontSize:strong?10:8.5,fontWeight:strong?FontWeight.w900:FontWeight.w600,color:strong?AdminColors.ink:AdminColors.muted))),Text(b,style:TextStyle(fontSize:strong?12.5:8.5,fontWeight:FontWeight.w900))]);return Container(padding:const EdgeInsets.all(12),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminColors.line)),child:Column(children:[line('Item Subtotal','₹'+sub.toStringAsFixed(2)),line('GST & Packaging Charges','₹69.00'),const Divider(height:17),line('Grand Total','₹'+o.total.toStringAsFixed(2),strong:true),const SizedBox(height:9),Row(children:[const Text('PAYMENT',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted)),const Spacer(),Container(padding:const EdgeInsets.symmetric(horizontal:7,vertical:4),decoration:BoxDecoration(color:AdminColors.greenSoft,borderRadius:BorderRadius.circular(6)),child:const Text('PAID',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.green))),const SizedBox(width:6),Text(o.payment,style:const TextStyle(fontSize: 11,color:AdminColors.muted))])]));}
 }
 
 class _EmptyOrders extends StatelessWidget{const _EmptyOrders({required this.onClear});final VoidCallback onClear;@override Widget build(BuildContext context)=>AdminCard(child:Padding(padding:const EdgeInsets.all(34),child:Center(child:Column(children:[const AdminIcon(HugeIcons.strokeRoundedInbox,size:34,color:AdminColors.muted),const SizedBox(height:9),const Text('No orders match this view',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)),const SizedBox(height:5),const Text('Try another status filter or clear the order search.',style:TextStyle(fontSize: 11,color:AdminColors.muted)),const SizedBox(height:12),shad.OutlineButton(onPressed:onClear,child:const Text('Clear filters'))]))));}
@@ -456,4 +456,4 @@ String _orderFilter(String s){if(s=='PLACED')return 'PLACED';if(['ACCEPTED','PRE
 String? _nextStatus(String s)=>const {'PLACED':'ACCEPTED','ACCEPTED':'PREPARING','PREPARING':'READY_FOR_PICKUP','READY_FOR_PICKUP':'ASSIGNED','ASSIGNED':'PICKED_UP','PICKED_UP':'OUT_FOR_DELIVERY','OUT_FOR_DELIVERY':'DELIVERED'}[s];
 int _progressStep(String s){if(s=='PLACED')return 1;if(s=='ACCEPTED')return 2;if(s=='PREPARING')return 3;if(['READY_FOR_PICKUP','ASSIGNED','PICKED_UP','OUT_FOR_DELIVERY'].contains(s))return 4;if(s=='DELIVERED')return 5;return 1;}
 String _prettyStatus(String? s)=>(s??'UNKNOWN').replaceAll('_',' ');
-(Color,Color) _statusStyle(String s){if(['CANCELLED','DISPUTED','PREPARING'].contains(s))return(AdminAdminColors.redSoft,AdminAdminColors.red);if(['OUT_FOR_DELIVERY','DELIVERED'].contains(s))return(AdminAdminColors.greenSoft,AdminAdminColors.green);return(AdminAdminColors.amberSoft,AdminAdminColors.amber);}
+(Color,Color) _statusStyle(String s){if(['CANCELLED','DISPUTED','PREPARING'].contains(s))return(AdminColors.redSoft,AdminColors.red);if(['OUT_FOR_DELIVERY','DELIVERED'].contains(s))return(AdminColors.greenSoft,AdminColors.green);return(AdminColors.amberSoft,AdminColors.amber);}
