@@ -10,12 +10,12 @@ extension on AdminSection {
     AdminSection.partners => 'Delivery partners',
     AdminSection.invoices => 'Invoices & Tax Billing Ledger',
   };
-  IconData get icon => switch (this) {
-    AdminSection.dashboard => Icons.space_dashboard_rounded,
-    AdminSection.orders => Icons.receipt_long_rounded,
-    AdminSection.catalogue => Icons.inventory_2_rounded,
-    AdminSection.partners => Icons.delivery_dining_rounded,
-    AdminSection.invoices => Icons.receipt_rounded,
+  AdminIconData get icon => switch (this) {
+    AdminSection.dashboard => HugeIcons.strokeRoundedDashboardSquare01,
+    AdminSection.orders => HugeIcons.strokeRoundedInvoice01,
+    AdminSection.catalogue => HugeIcons.strokeRoundedPackage01,
+    AdminSection.partners => HugeIcons.strokeRoundedDeliveryTruck01,
+    AdminSection.invoices => HugeIcons.strokeRoundedInvoice,
   };
   String get subtitle => switch (this) {
     AdminSection.dashboard => 'A clear view of today’s business and operations.',
@@ -37,7 +37,7 @@ class SnapFooddAdminApp extends StatelessWidget {
       useMaterial3: true,
       scaffoldBackgroundColor: AdminColors.canvas,
       colorScheme: ColorScheme.fromSeed(seedColor: AdminColors.yellow),
-      fontFamily: 'Plus Jakarta Sans',
+      fontFamily: GoogleFonts.inter().fontFamily,
       textTheme: const TextTheme(
         headlineLarge: TextStyle(fontSize: 40, height: 1.2, fontWeight: FontWeight.w800, color: AdminColors.ink, letterSpacing: -.8),
         headlineSmall: TextStyle(fontSize: 26, height: 1.25, fontWeight: FontWeight.w800, color: AdminColors.ink),
@@ -94,7 +94,7 @@ class _AdminShellState extends State<AdminShell> {
                     child: Row(children: [
                       Builder(builder: (context) => IconButton.filledTonal(
                         onPressed: () => Scaffold.of(context).openDrawer(),
-                        icon: const Icon(Icons.menu_rounded),
+                        icon: const AdminIcon(HugeIcons.strokeRoundedMenu01),
                       )),
                       const SizedBox(width: 12),
                       Expanded(child: Text(section.label, style: Theme.of(context).textTheme.headlineSmall)),
@@ -183,10 +183,10 @@ class _Sidebar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
                   decoration: BoxDecoration(color: active ? AdminColors.amberSoft : Colors.transparent, borderRadius: BorderRadius.circular(11)),
                   child: Row(children: [
-                    Icon(item.icon, size: 18, color: active ? AdminColors.yellowDark : AdminColors.muted),
+                    AdminIcon(item.icon, size: 18, color: active ? AdminColors.yellowDark : AdminColors.muted),
                     const SizedBox(width: 12),
                     Expanded(child: Text(item.label, style: TextStyle(fontSize: 12.5, fontWeight: active ? FontWeight.w900 : FontWeight.w700, color: AdminColors.ink))),
-                    if (active) const Icon(Icons.chevron_right_rounded, size: 16, color: AdminColors.yellowDark),
+                    if (active) const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 16, color: AdminColors.yellowDark),
                   ]),
                 ),
               ),
@@ -256,7 +256,7 @@ class _Header extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 13),
             decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(11), border: Border.all(color: AdminColors.line)),
             child: const Row(children: [
-              Icon(Icons.search_rounded, size: 19, color: AdminColors.muted),
+              AdminIcon(HugeIcons.strokeRoundedSearch01, size: 19, color: AdminColors.muted),
               SizedBox(width: 9),
               Expanded(child: Text('Search orders, delivery partners, GST invoices...', style: TextStyle(fontSize: 11, color: AdminColors.muted))),
             ]),
@@ -278,7 +278,7 @@ class _Header extends StatelessWidget {
           ]),
         ),
       const SizedBox(width: 10),
-      IconButton(tooltip: 'Notifications', onPressed: () => _notice(context, 'No new notifications in preview mode.'), icon: const Icon(Icons.notifications_none_rounded, size: 21, color: AdminColors.ink)),
+      IconButton(tooltip: 'Notifications', onPressed: () => _notice(context, 'No new notifications in preview mode.'), icon: const AdminIcon(HugeIcons.strokeRoundedNotification01, size: 21, color: AdminColors.ink)),
       const SizedBox(width: 2),
       Container(width: 34, height: 34, decoration: BoxDecoration(color: AdminColors.ink, borderRadius: BorderRadius.circular(10)), alignment: Alignment.center, child: Text(_initials(user.name), style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900))),
       if (desktop) ...[
@@ -289,7 +289,7 @@ class _Header extends StatelessWidget {
           Text(user.email, style: const TextStyle(fontSize: 9, color: AdminColors.muted)),
         ]),
         const SizedBox(width: 8),
-        IconButton(tooltip: 'Logout', onPressed: onLogout, icon: const Icon(Icons.logout_rounded, size: 18, color: AdminColors.muted)),
+        IconButton(tooltip: 'Logout', onPressed: onLogout, icon: const AdminIcon(HugeIcons.strokeRoundedLogout01, size: 18, color: AdminColors.muted)),
       ],
     ]),
   );
@@ -308,7 +308,7 @@ class _PageHeading extends StatelessWidget {
     ])),
     if (desktop) FilledButton.icon(
       onPressed: () => _notice(context, section == AdminSection.catalogue ? 'Product creation will connect to the Laravel API.' : 'This action will connect to the Laravel API.'),
-      icon: const Icon(Icons.add_rounded, size: 17),
+      icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 17),
       label: Text(section == AdminSection.catalogue ? 'Add product' : 'Quick action'),
       style: FilledButton.styleFrom(backgroundColor: AdminColors.ink, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
     ),
