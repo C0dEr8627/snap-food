@@ -334,7 +334,7 @@ class _SalesCard extends StatelessWidget {
     SizedBox(height: 170, child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: const [
       _ChartBar(day: 'MON', h: .42), _ChartBar(day: 'TUE', h: .60), _ChartBar(day: 'WED', h: .51), _ChartBar(day: 'THU', h: .78), _ChartBar(day: 'FRI', h: .65), _ChartBar(day: 'SAT', h: .92, active: true), _ChartBar(day: 'SUN', h: .73),
     ])),
-  ]));
+  ])));
 }
 
 class _ChartBar extends StatelessWidget {
@@ -363,7 +363,8 @@ class _OpsCard extends StatelessWidget {
     const _Progress(label: 'Ready for pickup', value: '09', fraction: .38, color: AdminColors.green),
     const SizedBox(height: 17),
     const _Progress(label: 'Out for delivery', value: '18', fraction: .52, color: AdminColors.blue),
-  ]));
+  ])));
+}
 }
 
 class _Progress extends StatelessWidget {
@@ -382,6 +383,44 @@ class _CardTitle extends StatelessWidget {
   final String title; final String? action;
   @override
   Widget build(BuildContext context) => Row(children: [Expanded(child: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900))), if (action != null) TextButton(onPressed: () => _notice(context, 'Use the Orders page for the complete queue.'), child: Text(action!, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.yellowDark)))]);
+}
+
+class _OrdersTable extends StatelessWidget {
+  const _OrdersTable();
+
+  static const rows = [
+    ['#SF-1048', 'Aarav Mehta', '₹840', '12:42 PM', 'Preparing'],
+    ['#SF-1045', 'Ananya Rao', '₹980', '12:36 PM', 'Ready'],
+    ['#SF-1041', 'Meera Shah', '₹1,560', '12:19 PM', 'Out for delivery'],
+  ];
+
+  @override
+  Widget build(BuildContext context) => Card(
+    child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: DataTable(
+        headingTextStyle: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w900, color: AdminColors.muted),
+        dataTextStyle: const TextStyle(fontSize: 11.5, color: AdminColors.ink),
+        columnSpacing: 30,
+        columns: const [
+          DataColumn(label: Text('ORDER')),
+          DataColumn(label: Text('CUSTOMER')),
+          DataColumn(label: Text('TOTAL')),
+          DataColumn(label: Text('TIME')),
+          DataColumn(label: Text('STATUS')),
+          DataColumn(label: Text('ACTION')),
+        ],
+        rows: rows.map((r) => DataRow(cells: [
+          DataCell(Text(r[0], style: const TextStyle(fontWeight: FontWeight.w900))),
+          DataCell(Text(r[1])),
+          DataCell(Text(r[2], style: const TextStyle(fontWeight: FontWeight.w800))),
+          DataCell(Text(r[3])),
+          DataCell(_Pill(r[4])),
+          DataCell(IconButton(onPressed: () => _notice(context, 'Order details will be connected to the Laravel API.'), icon: const Icon(Icons.chevron_right_rounded, size: 19))),
+        ])).toList(),
+      ),
+    ),
+  );
 }
 
 class OrdersPage extends StatelessWidget {
