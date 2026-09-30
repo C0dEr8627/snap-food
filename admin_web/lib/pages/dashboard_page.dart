@@ -185,7 +185,7 @@ class _AttentionItem extends StatelessWidget {
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(color: danger ? AdminAdminColors.redSoft : AdminColors.canvas, borderRadius: BorderRadius.circular(10), border: Border.all(color: danger ? AdminAdminColors.redSoft : AdminColors.line)),
     child: Row(children: [
-      Container(width: 30, height: 30, decoration: BoxDecoration(color: danger ? Colors.white : AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(8)), child: AdminIcon(danger ? HugeIcons.strokeRoundedAlert02 : HugeIcons.strokeRoundedTask01, size: 15, color: danger ? AdminAdminColors.red : AdminAdminColors.yellowDark)),
+      Container(width: 30, height: 30, decoration: BoxDecoration(color: danger ? Colors.white : AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(8)), child: AdminIcon(danger ? HugeIcons.strokeRoundedAlert02 : HugeIcons.strokeRoundedTask01, size: 15, color: danger ? AdminAdminColors.red : AdminAdminColors.amber)),
       const SizedBox(width: 9),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
         Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
@@ -235,8 +235,8 @@ class _WeeklySalesCard extends StatelessWidget {
         const Wrap(alignment: WrapAlignment.end, spacing: 12, runSpacing: 5, children: [
           _LegendDot(color: AdminAdminColors.yellow, label: 'Regular Weekday'),
           _LegendDot(color: AdminAdminColors.red, label: 'Current Date'),
-          _LegendDot(color: AdminAdminColors.yellowDark, label: 'Peak Dinner Rush'),
-          Text('Detailed Analytics →', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminAdminColors.yellowDark)),
+          _LegendDot(color: AdminAdminColors.amber, label: 'Peak Dinner Rush'),
+          Text('Detailed Analytics →', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminAdminColors.amber)),
         ]),
       ]),
     ),
@@ -305,7 +305,7 @@ class _SalesChartPainter extends CustomPainter {
       final x = left + slot * i + slot * .22;
       final w = slot * .56;
       final y = top + chartHeight - barHeight;
-      final color = i == 3 ? AdminAdminColors.red : i == 5 ? AdminAdminColors.yellowDark : AdminAdminColors.yellow;
+      final color = i == 3 ? AdminAdminColors.red : i == 5 ? AdminAdminColors.amber : AdminAdminColors.yellow;
       canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(x, y, w, barHeight), const Radius.circular(5)), Paint()..color = color);
       textPainter.text = TextSpan(text: '₹${(values[i] / 1000).round()}k', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: i == 3 ? AdminAdminColors.red : AdminColors.ink));
       textPainter.layout();
@@ -343,7 +343,7 @@ class _KitchenPulseCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 10),
           decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(10)),
           child: Row(children: [
-            const AdminIcon(HugeIcons.strokeRoundedFlash, size: 17, color: AdminAdminColors.yellowDark),
+            const AdminIcon(HugeIcons.strokeRoundedFlash, size: 17, color: AdminAdminColors.amber),
             const SizedBox(width: 8),
             const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text('Express Auto-Dispatch', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
@@ -387,14 +387,14 @@ class _KitchenItem extends StatelessWidget {
     padding: const EdgeInsets.all(10),
     decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(10)),
     child: Row(children: [
-      Container(width: 38, height: 38, decoration: BoxDecoration(color: AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(9)), child: AdminIcon(icon, size: 18, color: AdminAdminColors.yellowDark)),
+      Container(width: 38, height: 38, decoration: BoxDecoration(color: AdminAdminColors.amberSoft, borderRadius: BorderRadius.circular(9)), child: AdminIcon(icon, size: 18, color: AdminAdminColors.amber)),
       const SizedBox(width: 9),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
         const SizedBox(height: 3),
         Text('$tickets • $prep', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
         const SizedBox(height: 6),
-        _DashboardProgress(value: capacity, color: capacity > .9 ? AdminAdminColors.red : AdminAdminColors.yellowDark),
+        _DashboardProgress(value: capacity, color: capacity > .9 ? AdminAdminColors.red : AdminAdminColors.amber),
       ])),
       const SizedBox(width: 8),
       Text('${(capacity * 100).round()}% cap', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted)),
@@ -514,7 +514,7 @@ class _OrderStatus extends StatelessWidget {
       'OUT FOR DELIVERY' => AdminAdminColors.yellow,
       _ => AdminAdminColors.greenSoft,
     };
-    final Color fg = status == 'NEW' ? AdminAdminColors.red : status == 'OUT FOR DELIVERY' ? AdminColors.ink : status == 'DELIVERED' ? AdminAdminColors.green : AdminAdminColors.yellowDark;
+    final Color fg = status == 'NEW' ? AdminAdminColors.red : status == 'OUT FOR DELIVERY' ? AdminColors.ink : status == 'DELIVERED' ? AdminAdminColors.green : AdminAdminColors.amber;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)),
@@ -575,7 +575,7 @@ class _OpsCard extends StatelessWidget {
     const SizedBox(height: 20),
     const _Progress(label: 'New orders', value: '12', fraction: .78, color: AdminAdminColors.red),
     const SizedBox(height: 17),
-    const _Progress(label: 'Preparing', value: '24', fraction: .62, color: AdminAdminColors.yellowDark),
+    const _Progress(label: 'Preparing', value: '24', fraction: .62, color: AdminAdminColors.amber),
     const SizedBox(height: 17),
     const _Progress(label: 'Ready for pickup', value: '09', fraction: .38, color: AdminAdminColors.green),
     const SizedBox(height: 17),
@@ -598,7 +598,7 @@ class _CardTitle extends StatelessWidget {
   const _CardTitle({required this.title, this.action});
   final String title; final String? action;
   @override
-  Widget build(BuildContext context) => Row(children: [Expanded(child: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900))), if (action != null) shad.Button.ghost(onPressed: () => _notice(context, 'Use the Orders page for the complete queue.'), child: Text(action!, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminAdminColors.yellowDark)))]);
+  Widget build(BuildContext context) => Row(children: [Expanded(child: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900))), if (action != null) shad.Button.ghost(onPressed: () => _notice(context, 'Use the Orders page for the complete queue.'), child: Text(action!, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminAdminColors.amber)))]);
 }
 
 class _OrdersTable extends StatelessWidget {
