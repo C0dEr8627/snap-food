@@ -52,19 +52,19 @@ class _ConnectionBanner extends StatelessWidget {
         Container(width: 34, height: 34, decoration: BoxDecoration(color: AdminColors.greenSoft, borderRadius: BorderRadius.circular(9)), child: const AdminIcon(HugeIcons.strokeRoundedCloudSavingDone01, size: 18, color: AdminColors.green)),
         const SizedBox(width: 11),
         const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Laravel API v1 Connected', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w900)),
+          Text('Laravel API v1 Connected', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
           SizedBox(height: 2),
-          Text('https://api.snapfoodd.in/api/v1', style: TextStyle(fontSize: 9.5, color: AdminColors.muted)),
+          Text('https://api.snapfoodd.in/api/v1', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
           SizedBox(height: 2),
-          Text('Demo / Preview Data Mode Active (Phase 1 Baseline • Flutter Web Engine v3.22)', style: TextStyle(fontSize: 9.5, color: AdminColors.muted)),
+          Text('Demo / Preview Data Mode Active (Phase 1 Baseline • Flutter Web Engine v3.22)', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
         ])),
         if (MediaQuery.sizeOf(context).width >= 650) ...[
-          const Text('Ping: 34ms', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: AdminColors.muted)),
+          const Text('Ping: 34ms', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.muted)),
           const SizedBox(width: 12),
           OutlinedButton(
             onPressed: () => _notice(context, 'Sync state is ready for the live API connection.'),
             style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 9), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)), side: const BorderSide(color: AdminColors.line)),
-            child: const Text('Sync State', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800)),
+            child: const Text('Sync State', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
           ),
         ],
       ]),
@@ -123,21 +123,21 @@ class _DashboardKpi extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Expanded(child: Text(label, style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w900, letterSpacing: .5, color: AdminColors.muted))),
+          Expanded(child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .5, color: AdminColors.muted))),
           Container(width: 31, height: 31, decoration: BoxDecoration(color: iconTone, borderRadius: BorderRadius.circular(9)), child: AdminIcon(icon, size: 16, color: AdminColors.ink)),
         ]),
         const SizedBox(height: 11),
         Text(value, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w900, height: 1)),
         const SizedBox(height: 7),
-        Text(secondary, style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: AdminColors.green)),
+        Text(secondary, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.green)),
         if (progress != null) ...[
           const SizedBox(height: 10),
           ClipRRect(borderRadius: BorderRadius.circular(6), child: LinearProgressIndicator(value: progress, minHeight: 5, backgroundColor: AdminColors.canvas, color: AdminColors.yellow)),
           const SizedBox(height: 4),
-          Text(progressLabel ?? '', style: const TextStyle(fontSize: 8.5, color: AdminColors.muted)),
+          Text(progressLabel ?? '', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
         ],
         const Spacer(),
-        Text(footer, style: const TextStyle(fontSize: 8.5, color: AdminColors.muted, height: 1.25)),
+        Text(footer, style: const TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.25)),
       ]),
     ),
   );
@@ -155,7 +155,7 @@ class _AttentionSection extends StatelessWidget {
           const _StatusDot(color: AdminColors.red),
           const SizedBox(width: 8),
           const Expanded(child: Text('Immediate Attention Required', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w900))),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5), decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(8)), child: const Text('3 Priorities', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: AdminColors.red))),
+          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5), decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(8)), child: const Text('3 Priorities', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.red))),
         ]),
         const SizedBox(height: 13),
         LayoutBuilder(builder: (context, c) {
@@ -188,15 +188,15 @@ class _AttentionItem extends StatelessWidget {
       Container(width: 30, height: 30, decoration: BoxDecoration(color: danger ? Colors.white : AdminColors.amberSoft, borderRadius: BorderRadius.circular(8)), child: AdminIcon(danger ? HugeIcons.strokeRoundedAlert02 : HugeIcons.strokeRoundedTask01, size: 15, color: danger ? AdminColors.red : AdminColors.yellowDark)),
       const SizedBox(width: 9),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-        Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w900)),
+        Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
         const SizedBox(height: 3),
-        Text(detail, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 8.5, color: AdminColors.muted)),
+        Text(detail, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
       ])),
       const SizedBox(width: 6),
       TextButton(
         onPressed: () => _notice(context, '$action flow will connect to the existing admin service.'),
         style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-        child: Text(action, style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: danger ? AdminColors.red : AdminColors.yellowDark)),
+        child: Text(action, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: danger ? AdminColors.red : AdminColors.yellowDark)),
       ),
     ]),
   );
@@ -216,9 +216,9 @@ class _WeeklySalesCard extends StatelessWidget {
           const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('Weekly Sales & Dispatch Volume', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
             SizedBox(height: 3),
-            Text('Monday through Sunday aggregate revenue with peak order milestones', style: TextStyle(fontSize: 9.5, color: AdminColors.muted)),
+            Text('Monday through Sunday aggregate revenue with peak order milestones', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
           ])),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6), decoration: BoxDecoration(color: AdminColors.greenSoft, borderRadius: BorderRadius.circular(8)), child: const Text('Live Cluster', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, color: AdminColors.green))),
+          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6), decoration: BoxDecoration(color: AdminColors.greenSoft, borderRadius: BorderRadius.circular(8)), child: const Text('Live Cluster', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.green))),
         ]),
         const SizedBox(height: 14),
         const Row(children: [
@@ -237,7 +237,7 @@ class _WeeklySalesCard extends StatelessWidget {
           _LegendDot(color: AdminColors.yellow, label: 'Regular Weekday'),
           _LegendDot(color: AdminColors.red, label: 'Current Date'),
           _LegendDot(color: AdminColors.yellowDark, label: 'Peak Dinner Rush'),
-          Text('Detailed Analytics →', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w900, color: AdminColors.yellowDark)),
+          Text('Detailed Analytics →', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.yellowDark)),
         ]),
       ]),
     ),
@@ -249,9 +249,9 @@ class _MetricLabel extends StatelessWidget {
   final String label, value;
   @override
   Widget build(BuildContext context) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Text(label, style: const TextStyle(fontSize: 8.5, color: AdminColors.muted)),
+    Text(label, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
     const SizedBox(height: 2),
-    Text(value, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w900)),
+    Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
   ]);
 }
 
@@ -263,7 +263,7 @@ class _ChartToggle extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
     decoration: BoxDecoration(color: active ? AdminColors.ink : AdminColors.canvas, borderRadius: BorderRadius.circular(7)),
-    child: Text(label, style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w800, color: active ? Colors.white : AdminColors.muted)),
+    child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: active ? Colors.white : AdminColors.muted)),
   );
 }
 
@@ -275,7 +275,7 @@ class _LegendDot extends StatelessWidget {
   Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
     Container(width: 7, height: 7, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(2))),
     const SizedBox(width: 4),
-    Text(label, style: const TextStyle(fontSize: 8, color: AdminColors.muted)),
+    Text(label, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
   ]);
 }
 
@@ -296,7 +296,7 @@ class _SalesChartPainter extends CustomPainter {
     for (var i = 0; i < 4; i++) {
       final y = top + chartHeight * i / 3;
       canvas.drawLine(Offset(left, y), Offset(size.width - right, y), gridPaint);
-      textPainter.text = TextSpan(text: gridLabels[i], style: const TextStyle(fontSize: 8, color: AdminColors.muted));
+      textPainter.text = TextSpan(text: gridLabels[i], style: const TextStyle(fontSize: 11, color: AdminColors.muted));
       textPainter.layout();
       textPainter.paint(canvas, Offset(0, y - 5));
     }
@@ -308,10 +308,10 @@ class _SalesChartPainter extends CustomPainter {
       final y = top + chartHeight - barHeight;
       final color = i == 3 ? AdminColors.red : i == 5 ? AdminColors.yellowDark : AdminColors.yellow;
       canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(x, y, w, barHeight), const Radius.circular(5)), Paint()..color = color);
-      textPainter.text = TextSpan(text: '₹${(values[i] / 1000).round()}k', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w800, color: i == 3 ? AdminColors.red : AdminColors.ink));
+      textPainter.text = TextSpan(text: '₹${(values[i] / 1000).round()}k', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: i == 3 ? AdminColors.red : AdminColors.ink));
       textPainter.layout();
       textPainter.paint(canvas, Offset(x + (w - textPainter.width) / 2, y - 14));
-      textPainter.text = TextSpan(text: labels[i], style: TextStyle(fontSize: 8.5, fontWeight: i == 3 ? FontWeight.w900 : FontWeight.w700, color: i == 3 ? AdminColors.red : AdminColors.muted));
+      textPainter.text = TextSpan(text: labels[i], style: TextStyle(fontSize: 11, fontWeight: i == 3 ? FontWeight.w900 : FontWeight.w700, color: i == 3 ? AdminColors.red : AdminColors.muted));
       textPainter.layout();
       textPainter.paint(canvas, Offset(x + (w - textPainter.width) / 2, size.height - 18));
     }
@@ -331,7 +331,7 @@ class _KitchenPulseCard extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           const Expanded(child: Text('Kitchen Hubs Pulse', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900))),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6), decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(7)), child: const Text('12 Cloud Kitchens', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w800))),
+          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6), decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(7)), child: const Text('12 Cloud Kitchens', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800))),
         ]),
         const SizedBox(height: 12),
         const _KitchenItem(name: 'Biryani Central HQ', tickets: '24 live tickets', prep: '9 min avg prep', capacity: .98, icon: HugeIcons.strokeRoundedRiceBowl01),
@@ -347,9 +347,9 @@ class _KitchenPulseCard extends StatelessWidget {
             const AdminIcon(HugeIcons.strokeRoundedFlash, size: 17, color: AdminColors.yellowDark),
             const SizedBox(width: 8),
             const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Express Auto-Dispatch', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w900)),
+              Text('Express Auto-Dispatch', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
               SizedBox(height: 2),
-              Text('Batching window: 90 secs', style: TextStyle(fontSize: 8.5, color: AdminColors.muted)),
+              Text('Batching window: 90 secs', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
             ])),
             const Switch(value: true, onChanged: null, materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
           ]),
@@ -372,14 +372,14 @@ class _KitchenItem extends StatelessWidget {
       Container(width: 38, height: 38, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(9)), child: AdminIcon(icon, size: 18, color: AdminColors.yellowDark)),
       const SizedBox(width: 9),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),
+        Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
         const SizedBox(height: 3),
-        Text('$tickets • $prep', style: const TextStyle(fontSize: 8, color: AdminColors.muted)),
+        Text('$tickets • $prep', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
         const SizedBox(height: 6),
         ClipRRect(borderRadius: BorderRadius.circular(5), child: LinearProgressIndicator(value: capacity, minHeight: 4, backgroundColor: AdminColors.canvas, color: capacity > .9 ? AdminColors.red : AdminColors.yellowDark)),
       ])),
       const SizedBox(width: 8),
-      Text('${(capacity * 100).round()}% cap', style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w900, color: AdminColors.muted)),
+      Text('${(capacity * 100).round()}% cap', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted)),
     ]),
   );
 }
@@ -405,7 +405,7 @@ class _LiveOrdersCard extends StatelessWidget {
           const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('Recent Live Order Stream', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
             SizedBox(height: 3),
-            Text('Real-time telemetry updated via websocket /api/v1/orders/stream', style: TextStyle(fontSize: 9, color: AdminColors.muted)),
+            Text('Real-time telemetry updated via websocket /api/v1/orders/stream', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
           ])),
           IconButton(tooltip: 'Export', onPressed: () => _notice(context, 'Export will use the existing orders service when connected.'), icon: const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 19)),
         ]),
@@ -417,8 +417,8 @@ class _LiveOrdersCard extends StatelessWidget {
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: DataTable(
-            headingTextStyle: const TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, color: AdminColors.muted),
-            dataTextStyle: const TextStyle(fontSize: 9.5, color: AdminColors.ink),
+            headingTextStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted),
+            dataTextStyle: const TextStyle(fontSize: 11, color: AdminColors.ink),
             columnSpacing: 22, horizontalMargin: 4,
             columns: const [
               DataColumn(label: Text('ORDER ID')), DataColumn(label: Text('CUSTOMER')), DataColumn(label: Text('ITEMS SUMMARY')),
@@ -429,28 +429,28 @@ class _LiveOrdersCard extends StatelessWidget {
               DataCell(Text(o[0], style: const TextStyle(fontWeight: FontWeight.w900))),
               DataCell(SizedBox(width: 125, child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(o[1], style: const TextStyle(fontWeight: FontWeight.w800)),
-                if (o[2].isNotEmpty) Text(o[2], style: const TextStyle(fontSize: 8, color: AdminColors.muted)),
+                if (o[2].isNotEmpty) Text(o[2], style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
               ]))),
               DataCell(SizedBox(width: 260, child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(o[3], maxLines: 1, overflow: TextOverflow.ellipsis),
-                Text(o[4], maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 8, color: AdminColors.muted)),
+                Text(o[4], maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
               ]))),
               DataCell(Text(o[5], style: const TextStyle(fontWeight: FontWeight.w900))),
               DataCell(_OrderStatus(o[6])),
               DataCell(Text(o[7])),
               DataCell(SizedBox(width: 80, child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(o[8], style: const TextStyle(fontWeight: FontWeight.w800)), Text(o[9], style: const TextStyle(fontSize: 8, color: AdminColors.muted)),
+                Text(o[8], style: const TextStyle(fontWeight: FontWeight.w800)), Text(o[9], style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
               ]))),
               DataCell(Row(mainAxisSize: MainAxisSize.min, children: [
-                TextButton(onPressed: () => _notice(context, 'Action will connect to the existing order workflow.'), child: Text(o[6] == 'NEW' ? 'Accept' : o[6] == 'PREPARING' ? 'KDS View' : o[6] == 'OUT FOR DELIVERY' ? 'Track GPS' : 'Invoice', style: const TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900))),
-                TextButton(onPressed: () => _notice(context, 'Order detail route will use the existing navigation flow.'), child: const Text('View', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900))),
+                TextButton(onPressed: () => _notice(context, 'Action will connect to the existing order workflow.'), child: Text(o[6] == 'NEW' ? 'Accept' : o[6] == 'PREPARING' ? 'KDS View' : o[6] == 'OUT FOR DELIVERY' ? 'Track GPS' : 'Invoice', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
+                TextButton(onPressed: () => _notice(context, 'Order detail route will use the existing navigation flow.'), child: const Text('View', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
               ])),
             ])).toList(),
           ),
         ),
         const SizedBox(height: 7),
         const Row(children: [
-          Expanded(child: Text('Showing 1 to 4 of 64 active telemetry records', style: TextStyle(fontSize: 8.5, color: AdminColors.muted))),
+          Expanded(child: Text('Showing 1 to 4 of 64 active telemetry records', style: TextStyle(fontSize: 11, color: AdminColors.muted))),
           _PageButton(label: 'Previous'), SizedBox(width: 4), _PageButton(label: '1', active: true), SizedBox(width: 4), _PageButton(label: '2'), SizedBox(width: 4), _PageButton(label: '3'), SizedBox(width: 4), _PageButton(label: 'Next'),
         ]),
       ]),
@@ -466,7 +466,7 @@ class _OrderTab extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
     decoration: BoxDecoration(color: active ? AdminColors.ink : AdminColors.canvas, borderRadius: BorderRadius.circular(8), border: Border.all(color: active ? AdminColors.ink : AdminColors.line)),
-    child: Text(text, style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w800, color: active ? Colors.white : AdminColors.muted)),
+    child: Text(text, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: active ? Colors.white : AdminColors.muted)),
   );
 }
 
@@ -485,7 +485,7 @@ class _OrderStatus extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)),
-      child: Text(status, style: TextStyle(fontSize: 7.5, fontWeight: FontWeight.w900, color: fg)),
+      child: Text(status, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: fg)),
     );
   }
 }
@@ -498,7 +498,7 @@ class _PageButton extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
     decoration: BoxDecoration(color: active ? AdminColors.yellow : Colors.white, borderRadius: BorderRadius.circular(7), border: Border.all(color: active ? AdminColors.yellow : AdminColors.line)),
-    child: Text(label, style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w800)),
+    child: Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
   );
 }
 
@@ -510,9 +510,9 @@ class _SalesCard extends StatelessWidget {
       const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text('Sales overview', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
         SizedBox(height: 3),
-        Text('Weekly order volume · preview data', style: TextStyle(fontSize: 10.5, color: AdminColors.muted)),
+        Text('Weekly order volume · preview data', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
       ])),
-      Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7), decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(9)), child: const Text('This week', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700))),
+      Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7), decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(9)), child: const Text('This week', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700))),
     ]),
     const SizedBox(height: 25),
     SizedBox(height: 182, child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: const [
@@ -528,7 +528,7 @@ class _ChartBar extends StatelessWidget {
   Widget build(BuildContext context) => Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
     Expanded(child: Align(alignment: Alignment.bottomCenter, child: FractionallySizedBox(heightFactor: h, child: Container(width: 24, decoration: BoxDecoration(color: active ? AdminColors.red : AdminColors.yellow, borderRadius: BorderRadius.circular(7)))))),
     const SizedBox(height: 9),
-    Text(day, style: TextStyle(fontSize: 8.5, fontWeight: active ? FontWeight.w900 : FontWeight.w600, color: active ? AdminColors.red : AdminColors.muted)),
+    Text(day, style: TextStyle(fontSize: 11, fontWeight: active ? FontWeight.w900 : FontWeight.w600, color: active ? AdminColors.red : AdminColors.muted)),
   ]));
 }
 
@@ -538,7 +538,7 @@ class _OpsCard extends StatelessWidget {
   Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(21), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
     const Text('Live operations', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
     const SizedBox(height: 3),
-    const Text('Current order queue', style: TextStyle(fontSize: 10.5, color: AdminColors.muted)),
+    const Text('Current order queue', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
     const SizedBox(height: 20),
     const _Progress(label: 'New orders', value: '12', fraction: .78, color: AdminColors.red),
     const SizedBox(height: 17),
@@ -555,7 +555,7 @@ class _Progress extends StatelessWidget {
   final String label, value; final double fraction; final Color color;
   @override
   Widget build(BuildContext context) => Column(children: [
-    Row(children: [Expanded(child: Text(label, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700))), Text(value, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w900))]),
+    Row(children: [Expanded(child: Text(label, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700))), Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))]),
     const SizedBox(height: 7),
     ClipRRect(borderRadius: BorderRadius.circular(8), child: LinearProgressIndicator(value: fraction, minHeight: 6, backgroundColor: AdminColors.canvas, color: color)),
   ]);
@@ -582,7 +582,7 @@ class _OrdersTable extends StatelessWidget {
     child: SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: DataTable(
-        headingTextStyle: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w900, color: AdminColors.muted),
+        headingTextStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted),
         dataTextStyle: const TextStyle(fontSize: 11.5, color: AdminColors.ink),
         columnSpacing: 30,
         columns: const [
