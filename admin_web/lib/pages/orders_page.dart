@@ -241,7 +241,30 @@ class _OrderFilters extends StatelessWidget {
 class _FilterChip extends StatelessWidget{
   const _FilterChip({required this.label,required this.value,required this.active,required this.count,required this.onTap});
   final String label,value;final bool active;final int count;final VoidCallback onTap;
-  @override Widget build(BuildContext context)=>InkWell(onTap:onTap,borderRadius:BorderRadius.circular(10),child:Container(padding:const EdgeInsets.symmetric(horizontal:11,vertical:8),decoration:BoxDecoration(color:active?AdminColors.amberSoft:Colors.white,borderRadius:BorderRadius.circular(10),border:Border.all(color:active?AdminColors.yellow:AdminColors.line)),child:Row(mainAxisSize:MainAxisSize.min,children:[Text(label,style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:active?AdminColors.ink:AdminColors.muted)),const SizedBox(width:7),Container(padding:const EdgeInsets.symmetric(horizontal:6,vertical:3),decoration:BoxDecoration(color:active?AdminColors.yellow:AdminColors.canvas,borderRadius:BorderRadius.circular(6)),child:Text(count.toString(),style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)))])));
+  @override Widget build(BuildContext context)=>Semantics(
+    button:true,
+    selected:active,
+    label:label+' ('+count.toString()+')',
+    child:Material(
+      color:Colors.transparent,
+      child:InkWell(
+        onTap:onTap,
+        borderRadius:BorderRadius.circular(10),
+        child:ConstrainedBox(
+          constraints:const BoxConstraints(minHeight:44),
+          child:Container(
+            padding:const EdgeInsets.symmetric(horizontal:11,vertical:9),
+            decoration:BoxDecoration(color:active?AdminColors.amberSoft:Colors.white,borderRadius:BorderRadius.circular(10),border:Border.all(color:active?AdminColors.yellow:AdminColors.line)),
+            child:Row(mainAxisSize:MainAxisSize.min,children:[
+              Text(label,style:TextStyle(fontSize:12,fontWeight:FontWeight.w900,color:active?AdminColors.ink:AdminColors.muted)),
+              const SizedBox(width:7),
+              Container(padding:const EdgeInsets.symmetric(horizontal:6,vertical:3),decoration:BoxDecoration(color:active?AdminColors.yellow:AdminColors.canvas,borderRadius:BorderRadius.circular(6)),child:Text(count.toString(),style:const TextStyle(fontSize:12,fontWeight:FontWeight.w900))),
+            ]),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 class _OrderQueue extends StatelessWidget{
@@ -251,7 +274,22 @@ class _OrderQueue extends StatelessWidget{
     final start=(page-1)*10,visible=orders.skip(start).take(10).toList(),pages=orders.isEmpty?1:((orders.length-1)~/10)+1;
     return Card(child:Padding(padding:const EdgeInsets.fromLTRB(14,14,14,10),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
       Row(children:[const Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('ORDER QUEUE',style:TextStyle(fontSize:12,fontWeight:FontWeight.w900)),SizedBox(height:3)])),Text('Showing '+visible.length.toString()+' of '+orders.length.toString()+' active tickets',style:const TextStyle(fontSize: 11,color:AdminColors.muted)),const SizedBox(width:10),Container(padding:const EdgeInsets.symmetric(horizontal:9,vertical:7),decoration:BoxDecoration(color:AdminColors.canvas,borderRadius:BorderRadius.circular(8),border:Border.all(color:AdminColors.line)),child:const Row(children:[AdminIcon(HugeIcons.strokeRoundedSortingUp,size:15,color:AdminColors.muted),SizedBox(width:4),Text('Live Recency',style:TextStyle(fontSize: 11,fontWeight:FontWeight.w800))]))]),
-      const SizedBox(height:12),const _OrderTableHeader(),const Divider(height:1,color:AdminColors.line),...visible.map((o)=>_OrderRow(order:o,selected:o.id==selectedId,onTap:()=>onSelect(o.id))),const Divider(height:1,color:AdminColors.line),
+      const SizedBox(height:12),
+      Scrollbar(
+        thumbVisibility:true,
+        child:SingleChildScrollView(
+          scrollDirection:Axis.horizontal,
+          child:ConstrainedBox(
+            constraints:const BoxConstraints(minWidth:720),
+            child:Column(children:[
+              const _OrderTableHeader(),
+              const Divider(height:1,color:AdminColors.line),
+              ...visible.map((o)=>_OrderRow(order:o,selected:o.id==selectedId,onTap:()=>onSelect(o.id))),
+              const Divider(height:1,color:AdminColors.line),
+            ]),
+          ),
+        ),
+      ),
       Row(children:[const Text('Rows per page: 10',style:TextStyle(fontSize: 11,color:AdminColors.muted,fontWeight:FontWeight.w700)),const Spacer(),Text((start+1).toString()+'–'+(start+visible.length).toString()+' of '+orders.length.toString(),style:const TextStyle(fontSize: 11,color:AdminColors.muted,fontWeight:FontWeight.w800)),IconButton(tooltip:'Previous page',onPressed:page>1?()=>onPage(page-1):null,icon:const AdminIcon(HugeIcons.strokeRoundedArrowLeft01,size:18),visualDensity:VisualDensity.compact),IconButton(tooltip:'Next page',onPressed:page<pages?()=>onPage(page+1):null,icon:const AdminIcon(HugeIcons.strokeRoundedArrowRight01,size:18),visualDensity:VisualDensity.compact)]),
     ])));
   }
@@ -262,7 +300,7 @@ class _OrderTableHeader extends StatelessWidget{const _OrderTableHeader();@overr
 class _OrderRow extends StatelessWidget{
   const _OrderRow({required this.order,required this.selected,required this.onTap});final _AdminOrder order;final bool selected;final VoidCallback onTap;
   @override Widget build(BuildContext context)=>Material(color:selected?AdminColors.amberSoft:Colors.transparent,child:InkWell(onTap:onTap,child:Padding(padding:const EdgeInsets.symmetric(horizontal:10,vertical:10),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[
-    SizedBox(width:30,child:Checkbox(value:selected,onChanged:(_)=>onTap(),activeColor:AdminColors.red,visualDensity:VisualDensity.compact,materialTapTargetSize:MaterialTapTargetSize.shrinkWrap,semanticLabel:'Select '+order.id)),
+    SizedBox(width:44,height:44,child:Checkbox(value:selected,onChanged:(_)=>onTap(),activeColor:AdminColors.red,semanticLabel:'Select '+order.id)),
     Expanded(flex:13,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(order.id,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),const SizedBox(height:3),Text(order.time,style:const TextStyle(fontSize: 11,color:AdminColors.muted))])),
     Expanded(flex:17,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(order.customer,maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize: 11,fontWeight:FontWeight.w800)),const SizedBox(height:3),Text(order.phone,maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize: 11,color:AdminColors.muted))])),
     Expanded(flex:20,child:Text(order.address,maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize: 11,color:AdminColors.muted,height:1.35))),
