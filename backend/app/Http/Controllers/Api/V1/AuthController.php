@@ -9,6 +9,7 @@ use App\Services\Auth\GoogleCredentialVerifier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
@@ -51,12 +52,10 @@ class AuthController extends Controller
                 return $user;
             }
 
-            $updates = [
+            $user->fill([
                 'name' => $identity['name'],
                 'email' => $identity['email'],
-            ];
-
-            $user->fill($updates);
+            ]);
 
             if ($user->isDirty()) {
                 $user->save();
@@ -65,22 +64,94 @@ class AuthController extends Controller
             return $user;
         });
 
-        if (! $user->is_active) {
+        return $this->issueTokenOrReject($user);
+    }
+
+    public function adminPassword(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email', 'max:255'],
+            'password' => ['required', 'string', 'min:8', 'max:255'],
+        ]);
+
+        $user = User::where('email', $validated['email'])->first();
+
+        if (
+            $user === null
+            || ! $user->is_active
+            || ! $user->hasRole(User::ROLE_ADMIN)
+            || $user->password === null
+            || ! Hash::check($validated['password'], $user->password)
+        ) {
             return response()->json([
-                'message' => 'This account is inactive.',
+                'message' => 'The email or password is incorrect.',
                 'errors' => (object) [],
-                'code' => 'ACCOUNT_INACTIVE',
+                'code' => 'INVALID_CREDENTIALS',
+            ], 401);
+        }
+
+        return $this->issueToken($user);
+    }
+
+    public function adminGoogle(
+        GoogleLoginRequest $request,
+        GoogleCredentialVerifier $verifier,
+    ): JsonResponse {
+        try {
+            $identity = $verifier->verify($request->string('credential')->toString());
+        } catch (RuntimeException) {
+            Log::warning('Admin Google credential verification failed.', [
+                'route' => $request->route()?->getName(),
+            ]);
+
+            return response()->json([
+                'message' => 'The Google credential could not be verified.',
+                'errors' => (object) [],
+                'code' => 'INVALID_GOOGLE_CREDENTIAL',
+            ], 401);
+        }
+
+        $user = User::where('google_subject', $identity['sub'])->first();
+
+        if ($user === null && app()->environment('local')) {
+            $bootstrapEmail = config('services.google.admin_bootstrap_email');
+
+            if (
+                is_string($bootstrapEmail)
+                && $bootstrapEmail !== ''
+                && is_string($identity['email'])
+                && strcasecmp($identity['email'], $bootstrapEmail) === 0
+            ) {
+                $user = User::where('email', $bootstrapEmail)->first();
+
+                if ($user !== null && $user->is_active && $user->hasRole(User::ROLE_ADMIN)) {
+                    $user->forceFill([
+                        'google_subject' => $identity['sub'],
+                        'name' => $identity['name'],
+                        'email' => $identity['email'],
+                    ])->save();
+                }
+            }
+        }
+
+        if ($user === null || ! $user->is_active || ! $user->hasRole(User::ROLE_ADMIN)) {
+            return response()->json([
+                'message' => 'This Google account is not authorized for the admin dashboard.',
+                'errors' => (object) [],
+                'code' => 'ADMIN_ACCESS_REQUIRED',
             ], 403);
         }
 
-        $token = $user->createToken('flutter')->plainTextToken;
-
-        return response()->json([
-            'data' => [
-                'token' => $token,
-                'user' => $user,
-            ],
+        $user->fill([
+            'name' => $identity['name'],
+            'email' => $identity['email'],
         ]);
+
+        if ($user->isDirty()) {
+            $user->save();
+        }
+
+        return $this->issueToken($user);
     }
 
     public function me(Request $request): JsonResponse
@@ -111,6 +182,29 @@ class AuthController extends Controller
         return response()->json([
             'data' => [
                 'message' => 'Logged out successfully.',
+            ],
+        ]);
+    }
+
+    private function issueTokenOrReject(User $user): JsonResponse
+    {
+        if (! $user->is_active) {
+            return response()->json([
+                'message' => 'This account is inactive.',
+                'errors' => (object) [],
+                'code' => 'ACCOUNT_INACTIVE',
+            ], 403);
+        }
+
+        return $this->issueToken($user);
+    }
+
+    private function issueToken(User $user): JsonResponse
+    {
+        return response()->json([
+            'data' => [
+                'token' => $user->createToken('flutter')->plainTextToken,
+                'user' => $user,
             ],
         ]);
     }
