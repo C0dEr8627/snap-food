@@ -183,7 +183,7 @@ class _AttentionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(color: danger ? AdminColors.redSoft : AdminColors.canvas, borderRadius: BorderRadius.circular(10), border: Border.all(color: danger ? const Color(0xFFF0C8BE) : AdminColors.line)),
+    decoration: BoxDecoration(color: danger ? AdminColors.redSoft : AdminColors.canvas, borderRadius: BorderRadius.circular(10), border: Border.all(color: danger ? const AdminColors.redSoft : AdminColors.line)),
     child: Row(children: [
       Container(width: 30, height: 30, decoration: BoxDecoration(color: danger ? Colors.white : AdminColors.amberSoft, borderRadius: BorderRadius.circular(8)), child: Icon(danger ? Icons.priority_high_rounded : Icons.assignment_late_outlined, size: 15, color: danger ? AdminColors.red : AdminColors.yellowDark)),
       const SizedBox(width: 9),
