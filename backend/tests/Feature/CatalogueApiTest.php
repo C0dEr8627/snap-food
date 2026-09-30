@@ -56,13 +56,13 @@ class CatalogueApiTest extends TestCase
         ]);
 
         $this->actingAs($customer, 'sanctum')
-            ->getJson('/api/v1/categories')
+            ->getJson('/api/v1/consumer/categories')
             ->assertOk()
             ->assertJsonPath('data.data.0.slug', 'pizza')
             ->assertJsonCount(1, 'data.data');
 
         $this->actingAs($customer, 'sanctum')
-            ->getJson('/api/v1/products?search=Margherita')
+            ->getJson('/api/v1/consumer/products?search=Margherita')
             ->assertOk()
             ->assertJsonPath('data.data.0.slug', 'margherita')
             ->assertJsonCount(1, 'data.data');
@@ -83,7 +83,7 @@ class CatalogueApiTest extends TestCase
         }
 
         $response = $this->actingAs($customer, 'sanctum')
-            ->getJson('/api/v1/products?search=Beta&per_page=1');
+            ->getJson('/api/v1/consumer/products?search=Beta&per_page=1');
 
         $response->assertOk()
             ->assertJsonPath('data.per_page', 1)
@@ -97,11 +97,11 @@ class CatalogueApiTest extends TestCase
         $category = Category::create(['name' => 'Pizza', 'slug' => 'pizza']);
 
         $this->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/categories', ['name' => 'Pasta', 'slug' => 'pasta'])
+            ->postJson('/api/v1/consumer/categories', ['name' => 'Pasta', 'slug' => 'pasta'])
             ->assertForbidden();
 
         $this->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/products', [
+            ->postJson('/api/v1/consumer/products', [
                 'category_id' => $category->id,
                 'name' => 'Pasta',
                 'slug' => 'pasta',
@@ -116,12 +116,12 @@ class CatalogueApiTest extends TestCase
         $category = Category::create(['name' => 'Pizza', 'slug' => 'pizza']);
 
         $this->actingAs($admin, 'sanctum')
-            ->postJson('/api/v1/categories', ['name' => 'Burgers', 'slug' => 'burgers'])
+            ->postJson('/api/v1/consumer/categories', ['name' => 'Burgers', 'slug' => 'burgers'])
             ->assertCreated()
             ->assertJsonPath('data.slug', 'burgers');
 
         $categoryResponse = $this->actingAs($admin, 'sanctum')
-            ->patchJson('/api/v1/categories/'.$category->id, ['name' => 'Pizza & More'])
+            ->patchJson('/api/v1/consumer/categories/'.$category->id, ['name' => 'Pizza & More'])
             ->assertOk()
             ->assertJsonPath('data.name', 'Pizza & More');
 
@@ -135,12 +135,12 @@ class CatalogueApiTest extends TestCase
         ]);
 
         $this->actingAs($admin, 'sanctum')
-            ->patchJson('/api/v1/products/'.$product->id, ['price' => '349.00'])
+            ->patchJson('/api/v1/consumer/products/'.$product->id, ['price' => '349.00'])
             ->assertOk()
             ->assertJsonPath('data.price', '349.00');
 
         $this->actingAs($admin, 'sanctum')
-            ->deleteJson('/api/v1/products/'.$product->id)
+            ->deleteJson('/api/v1/consumer/products/'.$product->id)
             ->assertOk()
             ->assertJsonPath('data.is_active', false)
             ->assertJsonPath('data.is_available', false);
@@ -148,7 +148,7 @@ class CatalogueApiTest extends TestCase
 
     public function test_catalogue_requires_authentication(): void
     {
-        $this->getJson('/api/v1/products')->assertUnauthorized();
-        $this->getJson('/api/v1/categories')->assertUnauthorized();
+        $this->getJson('/api/v1/consumer/products')->assertUnauthorized();
+        $this->getJson('/api/v1/consumer/categories')->assertUnauthorized();
     }
 }
