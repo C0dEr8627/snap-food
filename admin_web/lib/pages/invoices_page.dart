@@ -76,18 +76,18 @@ class _InvoicesPageState extends State<InvoicesPage> {
           const Text('Reconcile delivered orders, review billing snapshots, and manage invoice records.', style: TextStyle(fontSize: 12, height: 1.5, color: AdminColors.muted)),
         ])),
         Wrap(spacing: 8, children: [
-          OutlinedButton.icon(onPressed: _exporting ? null : _exportPage, icon: _exporting ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.download_rounded, size: 17), label: const Text('Export current page CSV')),
-          FilledButton.icon(onPressed: () => _notice(context, 'GSTR-1 export is not available in the current backend API.', error: true), style: FilledButton.styleFrom(backgroundColor: AdminColors.yellow, foregroundColor: AdminColors.ink), icon: const Icon(Icons.receipt_long_rounded, size: 17), label: const Text('Export GSTR-1')),
+          OutlinedButton.icon(onPressed: _exporting ? null : _exportPage, icon: _exporting ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2)) : const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 17), label: const Text('Export current page CSV')),
+          FilledButton.icon(onPressed: () => _notice(context, 'GSTR-1 export is not available in the current backend API.', error: true), style: FilledButton.styleFrom(backgroundColor: AdminColors.yellow, foregroundColor: AdminColors.ink), icon: const AdminIcon(HugeIcons.strokeRoundedInvoice01, size: 17), label: const Text('Export GSTR-1')),
         ]),
       ]),
       const SizedBox(height: 20),
       LayoutBuilder(builder: (context, c) {
         final columns = c.maxWidth >= 900 ? 4 : c.maxWidth >= 540 ? 2 : 1;
         return GridView.count(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), crossAxisCount: columns, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: columns == 1 ? 3.2 : columns == 4 ? 1.65 : 2.2, children: [
-          _InvoiceKpi(title: 'TAX INVOICES ISSUED', value: _loading ? '—' : _total.toString(), caption: 'Stored invoices matching filters', icon: Icons.receipt_long_rounded, accent: AdminColors.yellowDark),
-          _InvoiceKpi(title: 'TOTAL NET BILLED', value: _loading ? '—' : _inr(_billed), caption: 'Invoice totals in current result set', icon: Icons.account_balance_wallet_outlined, accent: AdminColors.ink),
-          _InvoiceKpi(title: 'PAID INVOICES', value: _loading ? '—' : _inr(_paidTotal), caption: _paidCount.toString() + ' marked PAID', icon: Icons.verified_outlined, accent: AdminColors.green),
-          const _InvoiceKpi(title: 'RIDER PAYOUTS', value: 'Not available', caption: 'Payout ledger is not exposed by API', icon: Icons.delivery_dining_rounded, accent: AdminColors.muted),
+          _InvoiceKpi(title: 'TAX INVOICES ISSUED', value: _loading ? '—' : _total.toString(), caption: 'Stored invoices matching filters', icon: HugeIcons.strokeRoundedInvoice01, accent: AdminColors.yellowDark),
+          _InvoiceKpi(title: 'TOTAL NET BILLED', value: _loading ? '—' : _inr(_billed), caption: 'Invoice totals in current result set', icon: HugeIcons.strokeRoundedWallet01, accent: AdminColors.ink),
+          _InvoiceKpi(title: 'PAID INVOICES', value: _loading ? '—' : _inr(_paidTotal), caption: _paidCount.toString() + ' marked PAID', icon: HugeIcons.strokeRoundedStoreVerified01, accent: AdminColors.green),
+          const _InvoiceKpi(title: 'RIDER PAYOUTS', value: 'Not available', caption: 'Payout ledger is not exposed by API', icon: HugeIcons.strokeRoundedDeliveryTruck01, accent: AdminColors.muted),
         ]);
       }),
       const SizedBox(height: 18),
@@ -95,11 +95,11 @@ class _InvoicesPageState extends State<InvoicesPage> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Wrap(spacing: 10, runSpacing: 10, crossAxisAlignment: WrapCrossAlignment.center, children: [
             SizedBox(width: mobile ? width - 66 : 310, child: TextField(controller: _search, onSubmitted: (_) => _load(page: 1),
-              decoration: InputDecoration(prefixIcon: const Icon(Icons.search_rounded, size: 19), hintText: 'Search invoice, order, customer, email…', isDense: true, filled: true, fillColor: AdminColors.canvas,
+              decoration: InputDecoration(prefixIcon: const AdminIcon(HugeIcons.strokeRoundedSearch01, size: 19), hintText: 'Search invoice, order, customer, email…', isDense: true, filled: true, fillColor: AdminColors.canvas,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                suffixIcon: IconButton(tooltip: 'Search invoices', onPressed: () => _load(page: 1), icon: const Icon(Icons.arrow_forward_rounded, size: 18))))),
-            OutlinedButton.icon(onPressed: () => _pickDate(true), icon: const Icon(Icons.calendar_today_rounded, size: 15), label: Text(_from == null ? 'From date' : _date(_from!))),
-            OutlinedButton.icon(onPressed: () => _pickDate(false), icon: const Icon(Icons.event_rounded, size: 15), label: Text(_to == null ? 'To date' : _date(_to!))),
+                suffixIcon: IconButton(tooltip: 'Search invoices', onPressed: () => _load(page: 1), icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 18))))),
+            OutlinedButton.icon(onPressed: () => _pickDate(true), icon: const AdminIcon(HugeIcons.strokeRoundedCalendar03, size: 15), label: Text(_from == null ? 'From date' : _date(_from!))),
+            OutlinedButton.icon(onPressed: () => _pickDate(false), icon: const AdminIcon(HugeIcons.strokeRoundedCalendar03, size: 15), label: Text(_to == null ? 'To date' : _date(_to!))),
             FilledButton(onPressed: () => _load(page: 1), style: FilledButton.styleFrom(backgroundColor: AdminColors.yellow, foregroundColor: AdminColors.ink), child: const Text('Apply')),
             TextButton(onPressed: _reset, child: const Text('Reset')),
           ]),
@@ -111,9 +111,9 @@ class _InvoicesPageState extends State<InvoicesPage> {
           ]),
         ])),
       const SizedBox(height: 16),
-      if (_error != null) _InvoiceStateCard(icon: Icons.cloud_off_rounded, title: 'Unable to load invoices', message: _error!, action: 'Retry', onAction: () => _load(page: _page))
+      if (_error != null) _InvoiceStateCard(icon: HugeIcons.strokeRoundedCloud, title: 'Unable to load invoices', message: _error!, action: 'Retry', onAction: () => _load(page: _page))
       else if (_loading) const _InvoiceLoadingCard()
-      else if (_items.isEmpty) _InvoiceStateCard(icon: Icons.receipt_long_outlined, title: 'No invoices found', message: 'Try changing your search, date range, or payment status filter.', action: 'Reset filters', onAction: _reset)
+      else if (_items.isEmpty) _InvoiceStateCard(icon: HugeIcons.strokeRoundedInvoice01, title: 'No invoices found', message: 'Try changing your search, date range, or payment status filter.', action: 'Reset filters', onAction: _reset)
       else _InvoiceLedgerCard(invoices: _items, mobile: mobile, page: _page, total: _total, lastPage: _lastPage, onPage: (p) => _load(page: p), onView: _showInvoice),
       const SizedBox(height: 12),
       const Text('Stored invoice snapshots only. GST splits, gateway references, refund/reconciliation events, and rider payouts are not currently exposed by the backend.', style: TextStyle(fontSize: 10.5, color: AdminColors.muted, height: 1.5)),
@@ -181,17 +181,17 @@ class _InvoiceBreadcrumb extends StatelessWidget {
   const _InvoiceBreadcrumb();
   @override Widget build(BuildContext context) => const Wrap(spacing: 7, crossAxisAlignment: WrapCrossAlignment.center, children: [
     Text('ACCOUNTING & COMPLIANCE', style: TextStyle(fontSize: 9, letterSpacing: 1.2, fontWeight: FontWeight.w900, color: AdminColors.muted)),
-    Icon(Icons.circle, size: 4, color: AdminColors.warning),
+    AdminIcon(HugeIcons.strokeRoundedCircle, size: 4, color: AdminColors.warning),
     Text('INVOICE LEDGER', style: TextStyle(fontSize: 9, letterSpacing: 1.2, fontWeight: FontWeight.w900, color: AdminColors.warning)),
   ]);
 }
 
 class _InvoiceKpi extends StatelessWidget {
   const _InvoiceKpi({required this.title, required this.value, required this.caption, required this.icon, required this.accent});
-  final String title, value, caption; final IconData icon; final Color accent;
+  final String title, value, caption; final AdminIconData icon; final Color accent;
   @override Widget build(BuildContext context) => Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: AdminColors.line)),
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Row(children: [Expanded(child: Text(title, style: const TextStyle(fontSize: 9, letterSpacing: .7, fontWeight: FontWeight.w900, color: AdminColors.muted))), Icon(icon, size: 18, color: accent)]),
+      Row(children: [Expanded(child: Text(title, style: const TextStyle(fontSize: 9, letterSpacing: .7, fontWeight: FontWeight.w900, color: AdminColors.muted))), AdminIcon(icon, size: 18, color: accent)]),
       const SizedBox(height: 12), Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: value == 'Not available' ? 16 : 22, fontWeight: FontWeight.w900, color: AdminColors.ink, letterSpacing: -.5)),
       const SizedBox(height: 5), Text(caption, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 10, color: AdminColors.muted, height: 1.4)),
     ]));
@@ -225,7 +225,7 @@ class _InvoiceLedgerCard extends StatelessWidget {
           DataCell(Text(_inr(i.total), style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w900))),
           DataCell(Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Items ' + _inr(i.subtotal), style: const TextStyle(fontSize: 10.5)), Text('Delivery ' + _inr(i.deliveryFee), style: const TextStyle(fontSize: 10, color: AdminColors.muted)), const Text('GST details unavailable', style: TextStyle(fontSize: 9, color: AdminColors.muted))])),
           DataCell(_InvoiceStatus(i.paymentStatus)),
-          DataCell(IconButton(tooltip: 'View invoice details', onPressed: () => onView(i), icon: const Icon(Icons.open_in_new_rounded, size: 17, color: AdminColors.yellowDark))),
+          DataCell(IconButton(tooltip: 'View invoice details', onPressed: () => onView(i), icon: const AdminIcon(HugeIcons.strokeRoundedLinkSquare01, size: 17, color: AdminColors.yellowDark))),
         ])).toList(),
       ))),
       const Divider(height: 1, color: AdminColors.line),
@@ -263,9 +263,9 @@ class _InvoiceStatus extends StatelessWidget {
 
 class _InvoiceStateCard extends StatelessWidget {
   const _InvoiceStateCard({required this.icon, required this.title, required this.message, required this.action, required this.onAction});
-  final IconData icon; final String title, message, action; final VoidCallback onAction;
+  final AdminIconData icon; final String title, message, action; final VoidCallback onAction;
   @override Widget build(BuildContext context) => Container(width: double.infinity, padding: const EdgeInsets.all(30), decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(16)),
-    child: Column(children: [Icon(icon, size: 32, color: AdminColors.yellowDark), const SizedBox(height: 12), Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)), const SizedBox(height: 6), Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11.5, color: AdminColors.muted, height: 1.5)), const SizedBox(height: 14), FilledButton(onPressed: onAction, style: FilledButton.styleFrom(backgroundColor: AdminColors.yellow, foregroundColor: AdminColors.ink), child: Text(action))]));
+    child: Column(children: [AdminIcon(icon, size: 32, color: AdminColors.yellowDark), const SizedBox(height: 12), Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)), const SizedBox(height: 6), Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11.5, color: AdminColors.muted, height: 1.5)), const SizedBox(height: 14), FilledButton(onPressed: onAction, style: FilledButton.styleFrom(backgroundColor: AdminColors.yellow, foregroundColor: AdminColors.ink), child: Text(action))]));
 }
 
 class _InvoiceLoadingCard extends StatelessWidget {
