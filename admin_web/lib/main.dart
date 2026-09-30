@@ -15,5 +15,6 @@ part 'pages/partners_page.dart';
 part 'pages/invoices_page.dart';
 
 const apiBaseUrl = String.fromEnvironment('API_BASE_URL');
+const googleClientId = String.fromEnvironment('GOOGLE_CLIENT_ID');
 
 void main() => runApp(const SnapFooddAdminApp());
