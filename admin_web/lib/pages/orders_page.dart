@@ -204,7 +204,7 @@ class _OrderRow extends StatelessWidget{
     Expanded(flex:20,child:Text(order.address,maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:8.5,color:AdminColors.muted,height:1.35))),
     Expanded(flex:12,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('₹'+order.total.toStringAsFixed(2),style:const TextStyle(fontSize:9.5,fontWeight:FontWeight.w900)),const SizedBox(height:3),Text(order.items.toString()+' items • '+order.payment,style:const TextStyle(fontSize:7.5,color:AdminColors.muted))])),
     Expanded(flex:12,child:Align(alignment:Alignment.topLeft,child:_OrderStatusBadge(order.status))),
-  ])));
+  ]))));
 }
 
 class _OrderStatusBadge extends StatelessWidget{
