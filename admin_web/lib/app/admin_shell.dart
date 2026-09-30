@@ -53,7 +53,7 @@ class SnapFooddAdminApp extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: AdminColors.line)),
       ),
     ),
-    home: const AdminShell(),
+    home: const AdminAuthGate(),
   );
 }
 
@@ -312,7 +312,7 @@ class _PageHeading extends StatelessWidget {
 
 
 String _initials(String name) {
-  final parts = name.trim().split(RegExp(r'\\s+')).where((part) => part.isNotEmpty).toList();
+  final parts = name.trim().split(RegExp(r'\s+')).where((part) => part.isNotEmpty).toList();
   if (parts.isEmpty) return 'AD';
   if (parts.length == 1) return parts.first.substring(0, parts.first.length > 1 ? 2 : 1).toUpperCase();
   return (parts.first[0] + parts.last[0]).toUpperCase();
