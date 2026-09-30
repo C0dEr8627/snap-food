@@ -28,7 +28,7 @@ class _CataloguePageState extends State<CataloguePage> {
   int _page = 1;
   int _lastPage = 1;
   int _total = _previewCatalogueProducts.length + 3;
-  bool _loading = false;
+  bool _loading = false;\n  String _formDietary = 'Non-Veg';
   bool _saving = false;
   bool _uploading = false;
   bool _creating = true;
@@ -100,7 +100,7 @@ class _CataloguePageState extends State<CataloguePage> {
   }
 
   void _newProduct() {
-    setState(() { _selected = null; _creating = true; _error = ''; _imagePreview = ''; });
+    setState(() { _selected = null; _creating = true; _error = ''; _imagePreview = ''; _formDietary = 'Non-Veg'; });
     _name.clear(); _slug.clear(); _description.clear(); _price.clear(); _prep.text = '15'; _stock.text = '0'; _imageUrl.clear(); _tag.clear();
   }
 
@@ -113,7 +113,7 @@ class _CataloguePageState extends State<CataloguePage> {
       categoryName: _selected?.categoryName ?? (_categories.isNotEmpty ? _categories.first.name : ''),
       price: double.tryParse(_price.text.trim()) ?? 0, stock: int.tryParse(_stock.text.trim()) ?? 0,
       available: true, active: true, image: _imageUrl.text.trim().isEmpty ? null : _imageUrl.text.trim(),
-      dietary: _selected?.dietary ?? 'Non-Veg', prepTime: int.tryParse(_prep.text.trim()) ?? 15,
+      dietary: _selected?.dietary ?? _formDietary, prepTime: int.tryParse(_prep.text.trim()) ?? 15,
       tags: _selected?.tags ?? [],
     );
     if (product.categoryId == null) { _notice(context, 'Select a category before saving.', error: true); return; }
@@ -372,7 +372,7 @@ class _ProductEditor extends StatelessWidget {
     const SizedBox(height: 12),
     Row(children: [
       Expanded(child: _dropdownField('Category', categories.map((c) => DropdownMenuItem<int?>(value: c.id, child: Text(c.name))).toList(), selected?.categoryId ?? (categories.isNotEmpty ? categories.first.id : null), onCategory)),
-      const SizedBox(width: 10), Expanded(child: _field(_price, 'GST / Tax: 5% food & beverage', label: 'GST Slab', validator: (_) => null)),
+      const SizedBox(width: 10), Expanded(child: _select('GST Slab', const ['5%', '12%', '18%'], selected?.gst ?? '5%', (_) {})),
     ]),
     const SizedBox(height: 12),
     _label('Dietary Classification', null),
