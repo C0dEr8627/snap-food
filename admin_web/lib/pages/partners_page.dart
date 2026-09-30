@@ -449,7 +449,7 @@ class _PartnerCommandHeader extends StatelessWidget {
         spacing: 8,
         runSpacing: 8,
         children: [
-          OutlinedButton.icon(
+          shad.OutlineButton(
             onPressed: onExport,
             icon: const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 17),
             label: const Text('Export roster'),
@@ -460,7 +460,7 @@ class _PartnerCommandHeader extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 13),
             ),
           ),
-          FilledButton.icon(
+          shad.PrimaryButton(
             onPressed: onManualOnboard,
             icon: const AdminIcon(HugeIcons.strokeRoundedUserAdd01, size: 17),
             label: const Text('Manual onboard'),
