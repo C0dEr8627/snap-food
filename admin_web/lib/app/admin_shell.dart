@@ -153,6 +153,7 @@ class AdminShell extends StatefulWidget {
 
 class _AdminShellState extends State<AdminShell> {
   AdminSection section = AdminSection.dashboard;
+  final GlobalKey<_CataloguePageState> _catalogueKey = GlobalKey<_CataloguePageState>();
 
   @override
   Widget build(BuildContext context) {
@@ -186,12 +187,21 @@ class _AdminShellState extends State<AdminShell> {
                     ]),
                   ),
                   if (section != AdminSection.partners && section != AdminSection.invoices)
-                    _PageHeading(section: section, desktop: desktop),
+                    _PageHeading(
+                      section: section,
+                      desktop: desktop,
+                      onAddProduct: section == AdminSection.catalogue
+                          ? () => _catalogueKey.currentState?._newProduct()
+                          : null,
+                      onManageCategories: section == AdminSection.catalogue
+                          ? () => _catalogueKey.currentState?._manageCategories()
+                          : null,
+                    ),
                   const SizedBox(height: 24),
                   switch (section) {
                     AdminSection.dashboard => const DashboardPage(),
                     AdminSection.orders => const OrdersPage(),
-                    AdminSection.catalogue => const CataloguePage(),
+                    AdminSection.catalogue => CataloguePage(key: _catalogueKey),
                     AdminSection.partners => const PartnersPage(),
                     AdminSection.invoices => const InvoicesPage(),
                   },
@@ -361,9 +371,16 @@ class _Header extends StatelessWidget {
 }
 
 class _PageHeading extends StatelessWidget {
-  const _PageHeading({required this.section, required this.desktop});
+  const _PageHeading({
+    required this.section,
+    required this.desktop,
+    this.onAddProduct,
+    this.onManageCategories,
+  });
   final AdminSection section;
   final bool desktop;
+  final VoidCallback? onAddProduct;
+  final VoidCallback? onManageCategories;
   @override
   Widget build(BuildContext context) => Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -371,11 +388,31 @@ class _PageHeading extends StatelessWidget {
       if (desktop) const SizedBox(height: 5),
       Text(section.subtitle, style: const TextStyle(fontSize: 12.5, color: AdminColors.muted)),
     ])),
-    if (desktop) FilledButton.icon(
-      onPressed: () => _notice(context, section == AdminSection.catalogue ? 'Product creation will connect to the Laravel API.' : 'This action will connect to the Laravel API.'),
-      icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 17),
-      label: Text(section == AdminSection.catalogue ? 'Add product' : 'Quick action'),
-      style: FilledButton.styleFrom(backgroundColor: AdminColors.ink, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+    if (desktop) ...[
+      FilledButton.icon(
+        onPressed: onAddProduct ?? () => _notice(
+          context,
+          section == AdminSection.catalogue
+              ? 'Product creation will connect to the Laravel API.'
+              : 'This action will connect to the Laravel API.',
+        ),
+        icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 17),
+        label: Text(section == AdminSection.catalogue ? 'Add product' : 'Quick action'),
+        style: FilledButton.styleFrom(
+          backgroundColor: AdminColors.ink,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+      if (section == AdminSection.catalogue && onManageCategories != null) ...[
+        const SizedBox(width: 10),
+        OutlinedButton.icon(
+          onPressed: onManageCategories,
+          icon: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
+          label: const Text('Manage Categories'),
+        ),
+      ],
     ),
   ]);
 }
