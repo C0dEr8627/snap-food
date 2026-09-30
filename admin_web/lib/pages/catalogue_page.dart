@@ -429,7 +429,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
         _field(order, 'Sort order', keyboard: TextInputType.number, validator: (v) { final value = int.tryParse(v ?? ''); return value == null || value < 0 ? 'Enter 0 or greater' : null; }),
       ]))),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
+        shad.OutlineButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
         shad.PrimaryButton(onPressed: () async {
           if (!form.currentState!.validate()) return;
           await _saveCategory(id: category?.id, name: name.text, slug: slug.text, sortOrder: int.tryParse(order.text) ?? 0, active: true);
@@ -478,8 +478,8 @@ class _CategoryManagerState extends State<_CategoryManager> {
                 title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w800)),
                 subtitle: Text((c.slug.isEmpty ? 'No slug' : c.slug) + ' • ' + c.count.toString() + ' product(s) • inactive'),
                 trailing: Wrap(spacing: 2, children: [
-                  IconButton(tooltip: 'Activate category', onPressed: busy ? null : () => _setCategoryActive(c, true), icon: busy ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const AdminIcon(HugeIcons.strokeRoundedView, size: 18)),
-                  IconButton(tooltip: c.count == 0 ? 'Delete permanently' : 'Move products before deleting', onPressed: busy || c.count > 0 ? null : () => _deleteCategory(c), icon: const AdminIcon(HugeIcons.strokeRoundedDelete02, size: 18, color: AdminColors.red)),
+                  shad.IconButton.ghost(tooltip: 'Activate category', onPressed: busy ? null : () => _setCategoryActive(c, true), icon: busy ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const AdminIcon(HugeIcons.strokeRoundedView, size: 18)),
+                  shad.IconButton.ghost(tooltip: c.count == 0 ? 'Delete permanently' : 'Move products before deleting', onPressed: busy || c.count > 0 ? null : () => _deleteCategory(c), icon: const AdminIcon(HugeIcons.strokeRoundedDelete02, size: 18, color: AdminColors.red)),
                 ]),
               );
             },
@@ -539,7 +539,7 @@ class _CatalogueList extends StatelessWidget {
           const SizedBox(width: 8),
           Tooltip(
             message: gridView ? 'Switch to list view' : 'Switch to tile view',
-            child: IconButton(
+            child: shad.IconButton.ghost(
               onPressed: onToggleView,
               icon: AdminIcon(gridView ? HugeIcons.strokeRoundedMenu01 : HugeIcons.strokeRoundedGridView, size: 20),
             ),
@@ -783,7 +783,7 @@ class _ProductEditor extends StatelessWidget {
                       ],
                     ),
                   ),
-                  IconButton(
+                  shad.IconButton.ghost(
                     onPressed: onClose,
                     icon: const AdminIcon(HugeIcons.strokeRoundedCancel01, size: 18),
                   ),
@@ -913,22 +913,7 @@ class _ProductEditor extends StatelessWidget {
                       .toList(),
                 ),
               const SizedBox(height: 8),
-              TextButton.icon(
-                onPressed: () {
-                  if (tag.text.trim().isEmpty || selected == null) return;
-                  selected!.tags = [
-                    ...selected!.tags,
-                    tag.text.trim(),
-                  ];
-                  tag.clear();
-                  (context as Element).markNeedsBuild();
-                },
-                icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 15),
-                label: const Text(
-                  'Add tag',
-                  style: TextStyle(fontSize: 11),
-                ),
-              ),
+              shad.OutlineButton(onPressed: () { if (tag.text.trim().isEmpty || selected == null) return; selected!.tags = [...selected!.tags, tag.text.trim()]; tag.clear(); (context as Element).markNeedsBuild(); }, leading: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 15), child: const Text('Add tag', style: TextStyle(fontSize: 11))),
               const SizedBox(height: 10),
               _label('Item Image', null),
               InkWell(
