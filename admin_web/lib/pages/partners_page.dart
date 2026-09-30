@@ -3,7 +3,8 @@ part of '../main.dart';
 /// Delivery partner operations view. This page intentionally uses the existing
 /// AdminShell section and the authenticated Laravel admin API.
 class PartnersPage extends StatefulWidget {
-  const PartnersPage({super.key});
+  const PartnersPage({super.key, this.searchQuery = ''});
+  final String searchQuery;
 
   @override
   State<PartnersPage> createState() => _PartnersPageState();
