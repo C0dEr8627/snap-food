@@ -844,7 +844,12 @@ class _HoverSurfaceState extends State<_HoverSurface> {
 }
 
 class _ProductRow extends StatelessWidget {
-  const _ProductRow({required this.product, required this.selected, required this.onTap});
+  const _ProductRow({
+    required this.product,
+    required this.selected,
+    required this.onTap,
+  });
+
   final _CatalogueProduct product;
   final bool selected;
   final VoidCallback onTap;
@@ -862,25 +867,90 @@ class _ProductRow extends StatelessWidget {
         curve: Curves.easeOut,
         transform: Matrix4.translationValues(selected ? 2 : 0, 0, 0),
         child: Container(
-      margin: const EdgeInsets.only(bottom: 5),
-      padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 6),
-      decoration: BoxDecoration(color: selected ? AdminColors.amberSoft : Colors.transparent, borderRadius: BorderRadius.circular(11)),
-      child: Row(children: [
-        Expanded(flex: 5, child: Row(children: [
-          _Thumb(image: product.image, name: product.name),
-          const SizedBox(width: 10),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(children: [
-              Flexible(child: Text(product.name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900), overflow: TextOverflow.ellipsis)),
-              if (product.badge.isNotEmpty) ...[const SizedBox(width: 6), _Badge(product.badge)],
-            ]),
-            const SizedBox(height: 3),
-            Text(product.description, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
-          ])),
-        ])),
-        Expanded(flex: 3, child: Text(product.categoryName, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700), overflow: TextOverflow.ellipsis)),
-        SizedBox(width: 85, child: Text(product.outOfStock ? 'Sold out' : product.stock.toString() + ' units', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: product.outOfStock ? AdminColors.red : product.lowStock ? AdminColors.warning : AdminColors.ink))),
-      ]),
+          margin: const EdgeInsets.only(bottom: 5),
+          padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 6),
+          decoration: BoxDecoration(
+            color: selected ? AdminColors.amberSoft : Colors.transparent,
+            borderRadius: BorderRadius.circular(11),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 5,
+                child: Row(
+                  children: [
+                    _Thumb(image: product.image, name: product.name),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  product.name,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (product.badge.isNotEmpty) ...[
+                                const SizedBox(width: 6),
+                                _Badge(product.badge),
+                              ],
+                            ],
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            product.description,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: AdminColors.muted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 3,
+                child: Text(
+                  product.categoryName,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              SizedBox(
+                width: 85,
+                child: Text(
+                  product.outOfStock
+                      ? 'Sold out'
+                      : '${product.stock} units',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: product.outOfStock
+                        ? AdminColors.red
+                        : product.lowStock
+                            ? AdminColors.warning
+                            : AdminColors.ink,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     ),
   );
 }
