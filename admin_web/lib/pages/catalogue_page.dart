@@ -646,7 +646,7 @@ class _Thumb extends StatelessWidget {
 
 class _Badge extends StatelessWidget {
   const _Badge(this.text); final String text;
-  @override Widget build(BuildContext context) { final danger = text == 'Sold Out' || text.contains('Left'); final seasonal = text == 'Seasonal'; return Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3), decoration: BoxDecoration(color: danger ? AdminColors.redSoft : seasonal ? AdminColors.amberSoft : const Color(0xFFFDE8EE), borderRadius: BorderRadius.circular(5)), child: Text(text, style: TextStyle(fontSize: 7.5, fontWeight: FontWeight.w900, color: danger ? AdminColors.red : AdminColors.ink))); }
+  @override Widget build(BuildContext context) { final danger = text == 'Sold Out' || text.contains('Left'); final seasonal = text == 'Seasonal'; return Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3), decoration: BoxDecoration(color: danger ? AdminColors.redSoft : seasonal ? AdminColors.amberSoft : const AdminColors.redSoft, borderRadius: BorderRadius.circular(5)), child: Text(text, style: TextStyle(fontSize: 7.5, fontWeight: FontWeight.w900, color: danger ? AdminColors.red : AdminColors.ink))); }
 }
 
 // Product editor intentionally uses a block-bodied build method to keep widget nesting balanced.
