@@ -377,25 +377,23 @@ class _PageHeading extends StatelessWidget {
     this.onAddProduct,
     this.onManageCategories,
   });
+
   final AdminSection section;
   final bool desktop;
   final VoidCallback? onAddProduct;
   final VoidCallback? onManageCategories;
+
   @override
-  Widget build(BuildContext context) => Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      if (desktop) Text(section.label, style: Theme.of(context).textTheme.headlineLarge),
-      if (desktop) const SizedBox(height: 5),
-      Text(section.subtitle, style: const TextStyle(fontSize: 12.5, color: AdminColors.muted)),
-    ])),
-    if (desktop) ...[
+  Widget build(BuildContext context) {
+    final actions = <Widget>[
       FilledButton.icon(
-        onPressed: onAddProduct ?? () => _notice(
-          context,
-          section == AdminSection.catalogue
-              ? 'Product creation will connect to the Laravel API.'
-              : 'This action will connect to the Laravel API.',
-        ),
+        onPressed: onAddProduct ??
+            () => _notice(
+                  context,
+                  section == AdminSection.catalogue
+                      ? 'Product creation will connect to the Laravel API.'
+                      : 'This action will connect to the Laravel API.',
+                ),
         icon: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 17),
         label: Text(section == AdminSection.catalogue ? 'Add product' : 'Quick action'),
         style: FilledButton.styleFrom(
@@ -405,16 +403,46 @@ class _PageHeading extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
-      if (section == AdminSection.catalogue && onManageCategories != null) ...[
+    ];
+
+    if (section == AdminSection.catalogue && onManageCategories != null) {
+      actions.addAll([
         const SizedBox(width: 10),
         OutlinedButton.icon(
           onPressed: onManageCategories,
           icon: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
           label: const Text('Manage Categories'),
         ),
+      ]);
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (desktop)
+                Text(
+                  section.label,
+                  style: Theme.of(context).textTheme.headlineLarge,
+                ),
+              if (desktop) const SizedBox(height: 5),
+              Text(
+                section.subtitle,
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  color: AdminColors.muted,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (desktop) ...actions,
       ],
-    ),
-  ]);
+    );
+  }
 }
 
 
