@@ -52,6 +52,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
 
     Route::prefix('admin')->name('api.v1.admin.')->middleware('role:ADMIN')->group(function (): void {
         Route::get('/invoices', [AdminInvoiceController::class, 'index'])->name('invoices.index');
+        Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
         Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
         Route::post('/orders/{order}/assignment', [AdminOrderAssignmentController::class, 'store'])->name('orders.assignment');
         Route::get('/orders/{order}/tracking', [DeliveryLocationController::class, 'show'])->name('orders.tracking');
