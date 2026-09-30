@@ -280,7 +280,7 @@ class _LoginBrand extends StatelessWidget {
       ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: SvgPicture.asset(
-          'assets/brand/snap_foodd_mark.svg',
+          'assets/brand/logo.svg',
           width: 56,
           height: 56,
           fit: BoxFit.cover,
