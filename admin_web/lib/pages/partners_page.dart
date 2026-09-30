@@ -129,7 +129,7 @@ class _PartnersPageState extends State<PartnersPage> {
       return;
     }
     final controller = TextEditingController();
-    final userId = await shad.showOverlay<int>(context, shad.DialogConfiguration<int>(builder: (dialogContext) => shad.AlertDialog(
+    final userId = await shad.showOverlay<int>(context, shad.DialogConfiguration(), builder: (dialogContext) => shad.AlertDialog(
         title: const Text('Manual partner onboarding'),
         content: SizedBox(
           width: 380,
@@ -143,7 +143,10 @@ class _PartnersPageState extends State<PartnersPage> {
                 style: TextStyle(fontSize: 12, color: AdminColors.muted, height: 1.5),
               ),
               const SizedBox(height: 14),
-              shad.TextField(controller: controller, keyboardType: TextInputType.number, autofocus: true, label: const Text('Existing user ID'), placeholder: const Text('Enter a user ID')),
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Padding(padding: EdgeInsets.only(bottom: 6), child: Text('Existing user ID', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800))),
+                shad.TextField(controller: controller, keyboardType: TextInputType.number, autofocus: true, placeholder: const Text('Enter a user ID')),
+              ]),
             ],
           ),
         ),
@@ -151,7 +154,7 @@ class _PartnersPageState extends State<PartnersPage> {
           shad.OutlineButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
           shad.PrimaryButton(onPressed: () { final value = int.tryParse(controller.text.trim()); if (value == null || value < 1) { _partnersNotice(dialogContext, 'Enter a valid positive user ID.', error: true); return; } Navigator.pop(dialogContext, value); }, child: const Text('Create partner')),
         ],
-      ))).future;
+      )).future;
     controller.dispose();
     if (userId == null || !mounted) return;
 
@@ -637,7 +640,7 @@ class _PartnerFilterBar extends StatelessWidget {
                 search,
                 const SizedBox(height: 10),
                 chips,
-                Align(alignment: Alignment.centerRight, child: shad.IconButton.ghost(onPressed: loading ? null : onRefresh, tooltip: 'Refresh roster', icon: const AdminIcon(HugeIcons.strokeRoundedRefresh))),
+                Align(alignment: Alignment.centerRight, child: shad.IconButton.ghost(onPressed: loading ? null : onRefresh, icon: const AdminIcon(HugeIcons.strokeRoundedRefresh))),
               ]);
             }
             return Row(children: [
@@ -645,7 +648,7 @@ class _PartnerFilterBar extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: chips)),
               const SizedBox(width: 4),
-              shad.IconButton.ghost(onPressed: loading ? null : onRefresh, tooltip: 'Refresh roster', icon: const AdminIcon(HugeIcons.strokeRoundedRefresh)),
+              shad.IconButton.ghost(onPressed: loading ? null : onRefresh, icon: const AdminIcon(HugeIcons.strokeRoundedRefresh)),
             ]);
           }),
         ),
@@ -786,7 +789,7 @@ class _PartnerActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Wrap(spacing: 2, children: [
         shad.IconButton.ghost(
-          onPressed: () => shad.showOverlay<void>(context, shad.DialogConfiguration<void>(builder: (dialogContext) => shad.AlertDialog(
+          onPressed: () => shad.showOverlay<void>(context, shad.DialogConfiguration(), builder: (dialogContext) => shad.AlertDialog(
               title: Text(partner.name),
               content: SizedBox(
                 width: 360,
