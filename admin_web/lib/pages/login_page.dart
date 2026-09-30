@@ -141,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: IgnorePointer(
                           ignoring: _loading,
                           child: google_web.renderButton(
-                            configuration: const GSIButtonConfiguration(
+                            configuration: GSIButtonConfiguration(
                               type: GSIButtonType.standard,
                               theme: GSIButtonTheme.outline,
                               size: GSIButtonSize.large,
