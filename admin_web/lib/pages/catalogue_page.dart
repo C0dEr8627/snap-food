@@ -1267,36 +1267,73 @@ class _ProductEditor extends StatelessWidget {
         const SizedBox(height: 12),
         _label('Ingredients & Tags', null),
         if (editorTags.isEmpty)
-          const Text('No tags yet', style: TextStyle(fontSize: 11, color: AdminColors.muted))
+          const Text(
+            'No tags yet',
+            style: TextStyle(fontSize: 11, color: AdminColors.muted),
+          )
         else
-          Wrap(
-            spacing: 5,
-            runSpacing: 5,
-            children: editorTags.map(
-              (e) => InputChip(
-                label: Text(e, style: const TextStyle(fontSize: 11)),
-                onDeleted: () {
-                  setEditorState(() {
-                    editorTags = List<String>.of(editorTags)..remove(e);
-                  });
-                  onTags(editorTags);
-                },
-              ),
-            ).toList(),
+          Material(
+            color: Colors.transparent,
+            child: Wrap(
+              spacing: 5,
+              runSpacing: 5,
+              children: editorTags.map(
+                (e) => InputChip(
+                  label: Text(
+                    e,
+                    style: const TextStyle(fontSize: 11),
+                  ),
+                  onDeleted: () {
+                    setEditorState(() {
+                      editorTags = List<String>.of(editorTags)..remove(e);
+                    });
+                    onTags(editorTags);
+                  },
+                ),
+              ).toList(),
+            ),
           ),
         const SizedBox(height: 8),
-        shad.OutlineButton(
-          onPressed: () {
-            final value = tag.text.trim();
-            if (value.isEmpty || editorTags.contains(value)) return;
-            setEditorState(() {
-              editorTags = [...editorTags, value];
-            });
-            tag.clear();
-            onTags(editorTags);
-          },
-          leading: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 15),
-          child: const Text('Add tag', style: TextStyle(fontSize: 11)),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: _field(
+                tag,
+                'e.g. spicy, bestseller',
+                label: 'Add a tag',
+              ),
+            ),
+            const SizedBox(width: 8),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 1),
+              child: shad.OutlineButton(
+                onPressed: () {
+                  final value = tag.text.trim();
+                  if (value.isEmpty) return;
+                  if (editorTags.any(
+                    (existing) => existing.toLowerCase() == value.toLowerCase(),
+                  )) {
+                    tag.clear();
+                    return;
+                  }
+                  setEditorState(() {
+                    editorTags = [...editorTags, value];
+                  });
+                  tag.clear();
+                  onTags(editorTags);
+                },
+                leading: const AdminIcon(
+                  HugeIcons.strokeRoundedAdd01,
+                  size: 15,
+                ),
+                child: const Text(
+                  'Add tag',
+                  style: TextStyle(fontSize: 11),
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 14),
         Row(
@@ -1493,19 +1530,22 @@ Widget _dropdownField(
             borderRadius: BorderRadius.circular(9),
             border: Border.all(color: AdminColors.line),
           ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<int?>(
-              value: items.any((item) => item.value == value)
-                  ? value
-                  : (items.isEmpty ? null : items.first.value),
-              isExpanded: true,
-              icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 19),
-              hint: const Text(
-                'Select category',
-                style: TextStyle(fontSize: 11, color: AdminColors.muted),
+          child: Material(
+            color: Colors.transparent,
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<int?>(
+                value: items.any((item) => item.value == value)
+                    ? value
+                    : (items.isEmpty ? null : items.first.value),
+                isExpanded: true,
+                icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 19),
+                hint: const Text(
+                  'Select category',
+                  style: TextStyle(fontSize: 11, color: AdminColors.muted),
+                ),
+                onChanged: items.isEmpty ? null : onChanged,
+                items: items,
               ),
-              onChanged: items.isEmpty ? null : onChanged,
-              items: items,
             ),
           ),
         ),
