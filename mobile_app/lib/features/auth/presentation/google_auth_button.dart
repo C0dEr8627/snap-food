@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -22,7 +23,8 @@ class _GoogleAuthButtonState extends State<GoogleAuthButton> {
     try {
       const clientId = String.fromEnvironment('GOOGLE_CLIENT_ID');
       final google = GoogleSignIn(
-        clientId: clientId.isEmpty ? null : clientId,
+        clientId: kIsWeb && clientId.isNotEmpty ? clientId : null,
+        serverClientId: !kIsWeb && clientId.isNotEmpty ? clientId : null,
         scopes: const ['email', 'profile'],
       );
       final account = await google.signIn();
