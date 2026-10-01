@@ -642,7 +642,7 @@ class _WelcomeActions extends StatelessWidget {
           SizedBox(
             height: 52,
             child: FilledButton(
-              onPressed: () => context.go('/home'),
+              onPressed: () => context.go('/register'),
               style: FilledButton.styleFrom(
                 backgroundColor: SnapFoodColors.secondary,
                 foregroundColor: SnapFoodColors.onSecondary,
@@ -655,7 +655,7 @@ class _WelcomeActions extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Explore food',
+                    'Create account',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
                   ),
                   SizedBox(width: 8),
@@ -666,7 +666,7 @@ class _WelcomeActions extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           TextButton(
-            onPressed: () => context.go('/home'),
+            onPressed: () => context.go('/login'),
             style: TextButton.styleFrom(
               foregroundColor: SnapFoodColors.onSurface,
               minimumSize: const Size(0, 42),
