@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('api.v1.health');
 
+Route::get('/products/{product}/image', [ProductController::class, 'image'])
+    ->name('api.v1.products.image');
+
 Route::post('/auth/google', [AuthController::class, 'google'])
     ->middleware('throttle:auth-google')
     ->name('api.v1.auth.google');
