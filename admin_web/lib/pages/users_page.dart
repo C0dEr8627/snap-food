@@ -97,6 +97,8 @@ class _UsersPageState extends State<UsersPage> {
           loading: _loading,
         ),
         const SizedBox(height: 14),
+        _UsersPageHeader(total: _total, visible: users.length, loading: _loading),
+        const SizedBox(height: 14),
         if (_error != null)
           _UsersError(message: _error!, onRetry: () => _load(page: _page))
         else if (_loading)
@@ -289,6 +291,36 @@ class _UserAddress {
         state: (json['state'] ?? '').toString(),
         postalCode: (json['postal_code'] ?? '').toString(),
         country: (json['country'] ?? '').toString(),
+      );
+}
+
+class _UsersPageHeader extends StatelessWidget {
+  const _UsersPageHeader({required this.total, required this.visible, required this.loading});
+  final int total;
+  final int visible;
+  final bool loading;
+
+  @override
+  Widget build(BuildContext context) => Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Users', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, letterSpacing: -.4)),
+                SizedBox(height: 4),
+                Text('Customer, delivery and admin accounts with their actual account information.', style: TextStyle(fontSize: 12, color: AdminColors.muted)),
+              ],
+            ),
+          ),
+          if (!loading)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(12)),
+              child: Text('$total total · $visible visible', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.muted)),
+            ),
+        ],
       );
 }
 
