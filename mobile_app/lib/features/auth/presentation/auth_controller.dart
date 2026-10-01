@@ -7,27 +7,20 @@ import '../data/auth_models.dart';
 import '../data/auth_repository.dart';
 import '../data/session_store.dart';
 
-final authSessionStoreProvider = Provider<SessionStore>((ref) {
-  return SecureSessionStore();
-});
+final authSessionStoreProvider = Provider<SessionStore>((ref) => SecureSessionStore());
 
-final authApiClientProvider = Provider<ApiClient>((ref) {
-  return ApiClient(
-    config: ApiConfig.fromEnvironment(),
-    transport: HttpApiTransport(),
-    tokenProvider: () => ref.read(authSessionStoreProvider).readToken(),
-  );
-});
+final authApiClientProvider = Provider<ApiClient>((ref) => ApiClient(
+  config: ApiConfig.fromEnvironment(),
+  transport: HttpApiTransport(),
+  tokenProvider: () => ref.read(authSessionStoreProvider).readToken(),
+));
 
-final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return RemoteAuthRepository(
-    ref.watch(authApiClientProvider),
-    ref.watch(authSessionStoreProvider),
-  );
-});
+final authRepositoryProvider = Provider<AuthRepository>((ref) => RemoteAuthRepository(
+  ref.watch(authApiClientProvider),
+  ref.watch(authSessionStoreProvider),
+));
 
-final authControllerProvider =
-    AsyncNotifierProvider<AuthController, AuthStatus>(AuthController.new);
+final authControllerProvider = AsyncNotifierProvider<AuthController, AuthStatus>(AuthController.new);
 
 class AuthStatus {
   const AuthStatus({this.user, required this.isAuthenticated});
@@ -41,10 +34,7 @@ class AuthController extends AsyncNotifier<AuthStatus> {
   @override
   Future<AuthStatus> build() async {
     final token = await _repository.readStoredToken();
-    if (token == null || token.isEmpty) {
-      return const AuthStatus(isAuthenticated: false);
-    }
-
+    if (token == null || token.isEmpty) return const AuthStatus(isAuthenticated: false);
     try {
       final user = await _repository.fetchCurrentUser();
       return AuthStatus(user: user, isAuthenticated: true);
@@ -62,14 +52,27 @@ class AuthController extends AsyncNotifier<AuthStatus> {
     state = await AsyncValue.guard(build);
   }
 
+  /// Exchanges a Google ID token for the backend-issued bearer token.
+  /// The Google credential itself is never persisted.
+  Future<void> signInWithGoogleCredential(String credential) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final session = await _repository.signInWithGoogleCredential(credential);
+      await _repository.storeToken(session.token);
+      try {
+        final user = await _repository.fetchCurrentUser();
+        return AuthStatus(user: user, isAuthenticated: true);
+      } catch (_) {
+        await _repository.clearStoredToken();
+        rethrow;
+      }
+    });
+  }
+
   Future<void> setAuthenticatedToken(String token) async {
     if (token.trim().isEmpty) {
-      throw const ApiException(
-        message: 'An application session token is required.',
-        code: 'INVALID_TOKEN',
-      );
+      throw const ApiException(message: 'An application session token is required.', code: 'INVALID_TOKEN');
     }
-
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       await _repository.storeToken(token);
