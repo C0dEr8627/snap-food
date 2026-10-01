@@ -48,17 +48,26 @@ class CustomerProfileScreen extends ConsumerWidget {
                                 children: [
                                   Expanded(child: _ProfileIdentity(name: displayName, email: email, phone: phone)),
                                   const SizedBox(width: 20),
-                                  Expanded(child: _ProfileSections(onLogout: () async {
-                      await ref.read(authControllerProvider.notifier).logout();
-                      if (context.mounted) context.go('/welcome');
-                    })),
+                                  Expanded(
+                                    child: _ProfileSections(
+                                      onLogout: () async {
+                                        await ref.read(authControllerProvider.notifier).logout();
+                                        if (context.mounted) context.go('/welcome');
+                                      },
+                                    ),
+                                  ),
                                 ],
                               )
-                            : const Column(
+                            : Column(
                                 children: [
                                   _ProfileIdentity(name: displayName, email: email, phone: phone),
-                                  SizedBox(height: 20),
-                                  _ProfileSections(),
+                                  const SizedBox(height: 20),
+                                  _ProfileSections(
+                                    onLogout: () async {
+                                      await ref.read(authControllerProvider.notifier).logout();
+                                      if (context.mounted) context.go('/welcome');
+                                    },
+                                  ),
                                 ],
                               ),
                       ),
