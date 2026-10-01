@@ -124,6 +124,8 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
                                   const SizedBox(height: 20),
                                   const WelcomeOffer(),
                                   const SizedBox(height: 20),
+                                  const DatabaseCatalogueSection(),
+                                  const SizedBox(height: 20),
                                   const QuickReorder(),
                                   const SizedBox(height: 24),
                                   Featured(
@@ -165,6 +167,83 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class DatabaseCatalogueSection extends ConsumerWidget {
+  const DatabaseCatalogueSection({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final catalogue = ref.watch(catalogueControllerProvider);
+    return catalogue.when(
+      loading: () => const SizedBox(
+        height: 110,
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (snapshot) {
+        final products = snapshot.products.items
+            .where((product) => product.isActive && product.isAvailable)
+            .toList(growable: false);
+        if (products.isEmpty) {
+          return Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: SnapFoodColors.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+            ),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Explore the menu', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                SizedBox(height: 4),
+                Text('New dishes will appear here when available.', style: TextStyle(fontSize: 12, color: SnapFoodColors.onSurfaceVariant)),
+              ],
+            ),
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('From our catalogue', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 112,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: products.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemBuilder: (context, index) {
+                  final product = products[index];
+                  return Container(
+                    width: 190,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: SnapFoodColors.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+                      border: Border.all(color: SnapFoodColors.outline.withAlpha(35)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.restaurant_menu, color: SnapFoodColors.secondary, size: 20),
+                        const SizedBox(height: 8),
+                        Text(product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
+                        const SizedBox(height: 4),
+                        Text('₹${product.price}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: SnapFoodColors.secondary)),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
