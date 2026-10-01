@@ -379,7 +379,7 @@ class _UsersTable extends StatelessWidget {
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: SizedBox(
-                  width: tableWidth,
+                  width: tableWidth < 1160 ? 1160 : tableWidth,
                   child: shad.Table(
                     rows: [
                       shad.TableHeader(cells: const [
@@ -400,7 +400,8 @@ class _UsersTable extends StatelessWidget {
                               child: Text(
                                 '#${user.id}',
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                overflow: TextOverflow.visible,
+                                softWrap: false,
                                 style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AdminColors.muted),
                               ),
                             ),
@@ -410,7 +411,7 @@ class _UsersTable extends StatelessWidget {
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: true,
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, height: 1.2),
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, height: 1.35),
                               ),
                             ),
                             shad.TableCell(
@@ -419,7 +420,7 @@ class _UsersTable extends StatelessWidget {
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: true,
-                                style: const TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.2),
+                                style: const TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.35),
                               ),
                             ),
                             shad.TableCell(
@@ -460,7 +461,7 @@ class _UsersTable extends StatelessWidget {
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: true,
-                                style: const TextStyle(fontSize: 10, color: AdminColors.muted, height: 1.2),
+                                style: const TextStyle(fontSize: 10, color: AdminColors.muted, height: 1.35),
                               ),
                             ),
                             shad.TableCell(
@@ -478,15 +479,15 @@ class _UsersTable extends StatelessWidget {
                       ),
                     ],
                     columnWidths: {
-                      0: shad.FixedTableSize(tableWidth * 0.06),
-                      1: shad.FixedTableSize(tableWidth * 0.15),
-                      2: shad.FixedTableSize(tableWidth * 0.21),
-                      3: shad.FixedTableSize(tableWidth * 0.11),
-                      4: shad.FixedTableSize(tableWidth * 0.10),
-                      5: shad.FixedTableSize(tableWidth * 0.07),
-                      6: shad.FixedTableSize(tableWidth * 0.09),
-                      7: shad.FixedTableSize(tableWidth * 0.13),
-                      8: shad.FixedTableSize(tableWidth * 0.08),
+                      0: shad.FixedTableSize(90),
+                      1: shad.FixedTableSize(160),
+                      2: shad.FixedTableSize(260),
+                      3: shad.FixedTableSize(125),
+                      4: shad.FixedTableSize(120),
+                      5: shad.FixedTableSize(90),
+                      6: shad.FixedTableSize(105),
+                      7: shad.FixedTableSize(170),
+                      8: shad.FixedTableSize(110),
                     },
                   ),
                 ),
