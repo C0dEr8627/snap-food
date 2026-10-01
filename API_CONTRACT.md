@@ -21,7 +21,14 @@ Error shape (API requests return JSON):
 Common HTTP/code mapping: 401 `UNAUTHORIZED` (invalid Google credential uses `INVALID_GOOGLE_CREDENTIAL`); 403 `FORBIDDEN` (or the explicit `ACCOUNT_INACTIVE` response); 404 `NOT_FOUND`; 409 `CONFLICT` or `ORDER_STATE_CONFLICT`; 422 `VALIDATION_FAILED`; 429 `RATE_LIMITED`. Do not depend on framework exception text for UI copy. Validation errors map field names to arrays of messages. Some business errors such as invalid Google credentials and inactive accounts have dedicated codes.
 
 ## Auth
-`POST /auth/google` · `POST /admin/auth/password` · `POST /admin/auth/google` · `GET /me` · `POST /auth/logout`
+Customer mobile authentication:
+- `POST /auth/register` accepts `{ "name": "...", "email": "...", "password": "...", "password_confirmation": "..." }`. Name must be 2–120 characters; password must be at least 8 characters and confirmed. Creates an active `CUSTOMER` account only, returns HTTP 201 with `data.token` and `data.user`.
+- `POST /auth/login` accepts `{ "email": "...", "password": "..." }`. Only active `CUSTOMER` accounts may use this endpoint. Successful responses return `data.token` and `data.user`; invalid credentials return 401 `INVALID_CREDENTIALS`.
+- `POST /auth/google` verifies a Google ID token and signs in or creates a customer account.
+- `GET /me` returns the authenticated user under `data.user`; `POST /auth/logout` revokes the current bearer token.
+- Registration and password login are rate-limited. Passwords are hashed server-side; clients must never store or log passwords. Store only the returned application bearer token in secure platform storage.
+
+Admin Flutter web authentication uses bearer tokens issued by the Laravel API. `POST /admin/auth/password` accepts `{ "email": "admin@example.com", "password": "..." }` and only authenticates active `ADMIN` users with a configured password. `POST /admin/auth/google` accepts `{ "credential": "<Google ID token>" }`, verifies the credential server-side, and only authenticates an active pre-provisioned `ADMIN` account. It does not auto-create customer accounts. Both admin login routes are rate-limited. The Flutter admin client stores only the returned application bearer token in browser storage and calls `GET /me` before rendering the dashboard.
 
 Admin Flutter web authentication uses bearer tokens issued by the Laravel API. `POST /admin/auth/password` accepts `{ "email": "admin@example.com", "password": "..." }` and only authenticates active `ADMIN` users with a configured password. `POST /admin/auth/google` accepts `{ "credential": "<Google ID token>" }`, verifies the credential server-side, and only authenticates an active pre-provisioned `ADMIN` account. It does not auto-create customer accounts. Both admin login routes are rate-limited. The Flutter admin client stores only the returned application bearer token in browser storage and calls `GET /me` before rendering the dashboard.
 
