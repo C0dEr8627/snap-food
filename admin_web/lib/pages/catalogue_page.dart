@@ -1262,28 +1262,45 @@ class _ProductEditor extends StatelessWidget {
       key: form,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          // Keep the editor attached to the dialog's available width. On narrow
-          // viewports, stack the image controls above the form instead of
-          // forcing a wide row that leaves unused space or overflows.
-          final compact = constraints.maxWidth < 650;
+          // Use the full dialog content width so the editor is visually
+          // balanced and does not leave a blank strip on the right.
+          final availableWidth = constraints.maxWidth;
+          final compact = availableWidth < 650;
           if (compact) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                imagePicker,
-                const SizedBox(height: 20),
-                details,
-              ],
+            return Center(
+              child: SizedBox(
+                width: availableWidth,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    imagePicker,
+                    const SizedBox(height: 20),
+                    details,
+                  ],
+                ),
+              ),
             );
           }
-          final imageWidth = (constraints.maxWidth * 0.30).clamp(210.0, 260.0).toDouble();
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(width: imageWidth, child: imagePicker),
-              const SizedBox(width: 22),
-              Expanded(child: details),
-            ],
+
+          final imageWidth = (availableWidth * 0.32).clamp(240.0, 300.0).toDouble();
+          return SizedBox(
+            width: availableWidth,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(width: imageWidth, child: imagePicker),
+                const SizedBox(width: 22),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: details,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),
