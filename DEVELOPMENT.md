@@ -70,3 +70,21 @@ A change is complete when:
 - limitations and follow-up work are reported honestly.
 
 Deployment readiness additionally requires verified hosting capabilities, cross-client end-to-end checks, production configuration review, backup/recovery considerations and explicit human release approval.
+
+### Customer authentication and Google sign-in
+
+The mobile app opens the sign-in screen directly after the splash screen. Customers can register with email/password or use Google on either the sign-in or registration screen; the backend creates a customer account for a verified Google identity when needed.
+
+Google sign-in requires an OAuth **Web application client ID** that is also accepted by the backend's Google credential verifier. Pass that ID when launching Flutter:
+
+```bash
+cd mobile_app
+flutter pub get
+flutter run -d chrome \
+  --dart-define=API_BASE_URL=http://localhost:8000/api/v1 \
+  --dart-define=GOOGLE_CLIENT_ID=YOUR_GOOGLE_WEB_CLIENT_ID
+```
+
+For Android, configure the Android OAuth client (package name and signing SHA fingerprints) in Google Cloud as well, and pass the Web client ID as `GOOGLE_CLIENT_ID` so the returned ID token can be verified by the backend. Ensure the backend's configured Google client ID matches the token audience. Do not commit OAuth secrets or credentials.
+
+After changing dependencies, stop the current Flutter process and start it again; hot reload does not reliably load newly added plugins. If Chrome DevTools reports a stale runtime context during hot reload, stop the run, close the affected debug Chrome tab, run `flutter pub get`, then relaunch. If the Dart compiler still exits, capture the first compiler error above the DevTools `WipError`; the context error alone does not identify a Dart source error.
