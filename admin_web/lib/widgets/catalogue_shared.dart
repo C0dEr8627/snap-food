@@ -27,7 +27,7 @@ class _CatalogueProduct {
       description: j['description']?.toString() ?? '', categoryId: _asInt(j['category_id']),
       categoryName: c is Map ? c['name']?.toString() ?? '' : '', price: _asDouble(j['price']),
       stock: _asInt(j['stock_quantity']) ?? 0, available: j['is_available'] != false,
-      active: j['is_active'] != false, image: j['image']?.toString(),
+      active: j['is_active'] != false, image: (j['image_url'] ?? j['image'])?.toString(),
     );
   }
   Map<String, dynamic> toApiJson() => {
@@ -125,6 +125,32 @@ class _CatalogueRepository {
     final data = root is Map && root['data'] is Map ? Map<String, dynamic>.from(root['data']) : <String, dynamic>{};
     return _CatalogueProduct.fromJson(data);
   }
+  Future<_CatalogueProduct> uploadImage(int productId, html.File file) async {
+    if (!liveEnabled) throw const _CatalogueApiException(0, 'The live API is not enabled.');
+    final reader = html.FileReader();
+    reader.readAsArrayBuffer(file);
+    await reader.onLoad.first;
+    final result = reader.result;
+    if (result is! ByteBuffer) {
+      throw const _CatalogueApiException(0, 'Could not read the selected image.');
+    }
+
+    final request = http.MultipartRequest('POST', _uri('/admin/products/' + productId.toString() + '/image'));
+    request.headers['Accept'] = 'application/json';
+    if (_token.isNotEmpty) request.headers['Authorization'] = 'Bearer ' + _token;
+    request.files.add(http.MultipartFile.fromBytes('image', result.asUint8List(), filename: file.name));
+
+    final response = await request.send();
+    final body = await response.stream.bytesToString();
+    final res = http.Response(body, response.statusCode, headers: response.headers);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw _CatalogueApiException(response.statusCode, _message(res));
+    }
+    final root = jsonDecode(res.body);
+    final data = root is Map && root['data'] is Map ? Map<String, dynamic>.from(root['data']) : <String, dynamic>{};
+    return _CatalogueProduct.fromJson(data);
+  }
+
   Future<void> deactivate(_CatalogueProduct product) async {
     if (!liveEnabled || product.id == null) return;
     final res = await http.delete(_uri('/admin/products/' + product.id.toString()), headers: _headers);
