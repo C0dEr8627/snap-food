@@ -23,6 +23,9 @@ class StoreProductRequest extends FormRequest
             'stock_quantity' => ['nullable', 'integer', 'min:0'],
             'is_available' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
+            'dietary' => ['nullable', 'string', 'max:40'],
+            'tags' => ['nullable', 'array', 'max:30'],
+            'tags.*' => ['string', 'max:60'],
         ];
     }
 }
