@@ -88,6 +88,13 @@ class RemoteCatalogueRepository implements CatalogueRepository {
   }
 
   CataloguePage _decodeProductPage(Object? response) {
+    if (response is List) {
+      final items = response
+          .whereType<Map>()
+          .map((item) => CatalogueProduct.fromJson(Map<String, dynamic>.from(item)))
+          .toList(growable: false);
+      return CataloguePage(items: items, currentPage: 1, lastPage: 1, perPage: items.length, total: items.length);
+    }
     if (response is! Map<String, dynamic>) {
       throw const ApiException(
         message: 'The server returned an unexpected products response.',
