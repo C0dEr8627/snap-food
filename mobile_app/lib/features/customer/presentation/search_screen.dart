@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -245,10 +246,11 @@ class _SearchResultCard extends StatelessWidget {
                     color: SnapFoodColors.primaryContainer,
                     borderRadius: BorderRadius.circular(SnapFoodRadii.md),
                   ),
-                  child: const Icon(
-                    Icons.restaurant_menu,
-                    color: SnapFoodColors.secondary,
-                    size: 30,
+                  child: _CatalogueProductImage(
+                    imageUrl: product.imageUrl,
+                    width: 78,
+                    height: 78,
+                    radius: SnapFoodRadii.md,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -328,3 +330,52 @@ class _EmptySearch extends StatelessWidget {
   );
 }
 
+
+class _CatalogueProductImage extends StatelessWidget {
+  const _CatalogueProductImage({
+    required this.imageUrl,
+    required this.width,
+    required this.height,
+    required this.radius,
+  });
+
+  final String? imageUrl;
+  final double width;
+  final double height;
+  final double radius;
+
+  bool get _hasRemoteImage {
+    final value = imageUrl?.trim() ?? '';
+    return value.startsWith('https://') || value.startsWith('http://');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fallback = ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: Container(
+        width: width,
+        height: height,
+        color: SnapFoodColors.primaryContainer,
+        padding: const EdgeInsets.all(10),
+        child: SvgPicture.asset(
+          'assets/images/customer/logo.svg',
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+
+    if (!_hasRemoteImage) return fallback;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: Image.network(
+        imageUrl!.trim(),
+        width: width,
+        height: height,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => fallback,
+      ),
+    );
+  }
+}
