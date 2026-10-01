@@ -52,6 +52,34 @@ class AuthController extends AsyncNotifier<AuthStatus> {
     state = await AsyncValue.guard(build);
   }
 
+  Future<void> loginWithPassword({required String email, required String password}) async {
+    await _authenticate(() => _repository.loginWithPassword(email: email, password: password));
+  }
+
+  Future<void> registerCustomer({required String name, required String email, required String password, required String passwordConfirmation}) async {
+    await _authenticate(() => _repository.registerCustomer(
+      name: name,
+      email: email,
+      password: password,
+      passwordConfirmation: passwordConfirmation,
+    ));
+  }
+
+  Future<void> _authenticate(Future<AuthSession> Function() authenticate) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final session = await authenticate();
+      await _repository.storeToken(session.token);
+      try {
+        final user = await _repository.fetchCurrentUser();
+        return AuthStatus(user: user, isAuthenticated: true);
+      } catch (_) {
+        await _repository.clearStoredToken();
+        rethrow;
+      }
+    });
+  }
+
   /// Exchanges a Google ID token for the backend-issued bearer token.
   /// The Google credential itself is never persisted.
   Future<void> signInWithGoogleCredential(String credential) async {
