@@ -95,20 +95,19 @@ class RemoteCatalogueRepository implements CatalogueRepository {
       );
     }
     final outerData = response['data'];
-    if (outerData is! Map) {
-      throw const ApiException(
-        message: 'The server returned an unexpected products response.',
-        code: 'INVALID_RESPONSE',
-      );
-    }
-    final page = Map<String, dynamic>.from(outerData);
-    final records = page['data'];
-    if (records is! List) {
+    // Accept either a Laravel paginator or a plain PHP collection response.
+    final Object? rawPage = outerData is Map ? outerData : response;
+    final page = rawPage is Map ? Map<String, dynamic>.from(rawPage) : <String, dynamic>{};
+    final Object? rawRecords = outerData is List
+        ? outerData
+        : (page['data'] is List ? page['data'] : page['products']);
+    if (rawRecords is! List) {
       throw const ApiException(
         message: 'The server returned an unexpected products page.',
         code: 'INVALID_RESPONSE',
       );
     }
+    final records = rawRecords;
     try {
       return CataloguePage(
         items: records
