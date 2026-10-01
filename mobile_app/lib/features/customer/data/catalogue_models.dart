@@ -82,5 +82,16 @@ String _requiredString(Object? value, String field) {
 
 bool _requiredBool(Object? value, String field) {
   if (value is bool) return value;
+  if (value is num) {
+    if (value == 1) return true;
+    if (value == 0) return false;
+  }
+  final normalized = value?.toString().trim().toLowerCase();
+  if (normalized == '1' || normalized == 'true' || normalized == 'yes') {
+    return true;
+  }
+  if (normalized == '0' || normalized == 'false' || normalized == 'no') {
+    return false;
+  }
   throw FormatException('Missing or invalid $field.');
 }
