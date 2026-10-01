@@ -97,23 +97,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Center(
-                      child: Container(
-                        width: 88,
-                        height: 88,
-                        padding: const EdgeInsets.all(13),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(26),
-                          boxShadow: [
-                            BoxShadow(
-                              color: SnapFoodColors.warmBlack.withAlpha(12),
-                              blurRadius: 24,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
+                      child: SizedBox(
+                        width: 112,
+                        height: 112,
                         child: SvgPicture.asset(
-                          'assets/images/customer/logo.svg',
+                          'assets/images/customer/logo-without-bg.svg',
                           fit: BoxFit.contain,
                           semanticsLabel: 'Snap Foodd',
                         ),
