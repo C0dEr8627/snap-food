@@ -26,6 +26,9 @@ class UpdateProductRequest extends FormRequest
             'stock_quantity' => ['sometimes', 'nullable', 'integer', 'min:0'],
             'is_available' => ['sometimes', 'boolean'],
             'is_active' => ['sometimes', 'boolean'],
+            'dietary' => ['sometimes', 'nullable', 'string', 'max:40'],
+            'tags' => ['sometimes', 'nullable', 'array', 'max:30'],
+            'tags.*' => ['string', 'max:60'],
         ];
     }
 }
