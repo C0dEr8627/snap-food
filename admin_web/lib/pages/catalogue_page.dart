@@ -138,7 +138,7 @@ class _CataloguePageState extends State<CataloguePage> {
             : 32.0;
     final verticalGutter = viewportHeight < 700 ? 24.0 : 40.0;
     final dialogWidth = (viewportWidth - (horizontalGutter * 2))
-        .clamp(320.0, 920.0)
+        .clamp(320.0, 820.0)
         .toDouble();
     final dialogHeight = (viewportHeight - (verticalGutter * 2))
         .clamp(260.0, 760.0)
@@ -147,7 +147,13 @@ class _CataloguePageState extends State<CataloguePage> {
       _notice(context, 'Create a category before adding an item.', error: true);
       return;
     }
-    await shad.showOverlay<void>(context, shad.DialogConfiguration(), builder: (dialogContext) => shad.AlertDialog(
+    await shad.showOverlay<void>(
+      context,
+      shad.DialogConfiguration(),
+      builder: (dialogContext) => Center(
+        child: SizedBox(
+          width: dialogWidth,
+          child: shad.AlertDialog(
         title: Row(
           children: [
             Expanded(
@@ -170,7 +176,7 @@ class _CataloguePageState extends State<CataloguePage> {
           ],
         ),
         content: SizedBox(
-          width: dialogWidth,
+          width: double.infinity,
           child: SizedBox(
             height: dialogHeight,
             child: SingleChildScrollView(
@@ -213,6 +219,8 @@ class _CataloguePageState extends State<CataloguePage> {
             },
               ),
             ),
+          ),
+        ),
           ),
         ),
       ),
