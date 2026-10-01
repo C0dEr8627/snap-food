@@ -150,10 +150,12 @@ class _CataloguePageState extends State<CataloguePage> {
             ),
           ],
         ),
-        content: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 680, maxHeight: 760),
-          child: SingleChildScrollView(
-            child: _ProductEditor(
+        content: SizedBox(
+          width: 610,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 650),
+            child: SingleChildScrollView(
+              child: _ProductEditor(
             form: _form,
             formCategoryId: _formCategoryId,
             formDietary: _formDietary,
@@ -189,7 +191,8 @@ class _CataloguePageState extends State<CataloguePage> {
               if (_selected != null) _selected!.dietary = v;
               setState(() {});
             },
-          ),
+              ),
+            ),
           ),
         ),
       ),
@@ -1254,8 +1257,8 @@ class _ProductEditor extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 210, child: imagePicker),
-          const SizedBox(width: 20),
+          SizedBox(width: 170, child: imagePicker),
+          const SizedBox(width: 14),
           Expanded(child: details),
         ],
       ),
