@@ -9,6 +9,7 @@ use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -59,6 +60,36 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, Product $product): JsonResponse
     {
         $product->update($request->validated());
+
+        return response()->json(['data' => $product->refresh()->load('category')]);
+    }
+
+    public function uploadImage(Request $request, Product $product): JsonResponse
+    {
+        Gate::authorize('update', $product);
+
+        $request->validate([
+            'image' => ['required', 'file', 'mimes:jpeg,jpg,png,webp', 'max:4096'],
+        ]);
+
+        $file = $request->file('image');
+        $directory = public_path('uploads/products');
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        $oldImage = $product->image;
+        $filename = Str::uuid()->toString() . '.' . $file->extension();
+        $file->move($directory, $filename);
+
+        if (is_string($oldImage) && str_starts_with($oldImage, '/uploads/products/')) {
+            $oldPath = public_path(ltrim($oldImage, '/'));
+            if (is_file($oldPath)) {
+                @unlink($oldPath);
+            }
+        }
+
+        $product->update(['image' => '/uploads/products/' . $filename]);
 
         return response()->json(['data' => $product->refresh()->load('category')]);
     }
