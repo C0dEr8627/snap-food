@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -125,6 +126,7 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
                             itemId: product.id.toString(),
                             vegetarian: vegetarian,
                             categoryName: product.category?.name,
+                            imageUrl: product.imageUrl,
                           ),
                         ),
                       ),
@@ -307,10 +309,12 @@ class _FoodHero extends StatelessWidget {
     required this.itemId,
     required this.vegetarian,
     this.categoryName,
+    this.imageUrl,
   });
   final String itemId;
   final bool vegetarian;
   final String? categoryName;
+  final String? imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -327,13 +331,10 @@ class _FoodHero extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            Center(
-              child: Icon(
-                vegetarian ? Icons.eco : Icons.restaurant,
-                size: 110,
-                color: vegetarian
-                    ? Colors.green.withAlpha(100)
-                    : SnapFoodColors.secondary.withAlpha(80),
+            Positioned.fill(
+              child: _FoodHeroImage(
+                imageUrl: imageUrl,
+                fallbackIcon: vegetarian ? Icons.eco : Icons.restaurant,
               ),
             ),
             Positioned(
@@ -420,4 +421,40 @@ class _QuantityControl extends StatelessWidget {
       ],
     ),
   );
+}
+
+class _FoodHeroImage extends StatelessWidget {
+  const _FoodHeroImage({
+    required this.imageUrl,
+    required this.fallbackIcon,
+  });
+
+  final String? imageUrl;
+  final IconData fallbackIcon;
+
+  bool get _hasRemoteImage {
+    final value = imageUrl?.trim() ?? '';
+    return value.startsWith('https://') || value.startsWith('http://');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fallback = Container(
+      color: SnapFoodColors.primaryContainer,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(42),
+      child: SvgPicture.asset(
+        'assets/images/customer/logo.svg',
+        fit: BoxFit.contain,
+      ),
+    );
+
+    if (!_hasRemoteImage) return fallback;
+
+    return Image.network(
+      imageUrl!.trim(),
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => fallback,
+    );
+  }
 }
