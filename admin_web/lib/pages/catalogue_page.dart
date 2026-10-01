@@ -1084,6 +1084,8 @@ class _ProductEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var pickerPreview = imagePreview;
+    var pickerUploading = uploading;
     final imagePicker = StatefulBuilder(
       builder: (context, setImagePickerState) {
         return Column(
@@ -1094,12 +1096,13 @@ class _ProductEditor extends StatelessWidget {
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           child: InkWell(
-            onTap: uploading
+            onTap: pickerUploading
                 ? null
                 : () async {
-                    setImagePickerState(() {});
+                    setImagePickerState(() => pickerUploading = true);
                     final preview = await onPickImage();
-                    if (preview != null) setImagePickerState(() {});
+                    if (preview != null) pickerPreview = preview;
+                    setImagePickerState(() => pickerUploading = false);
                   },
             borderRadius: BorderRadius.circular(12),
             child: Container(
@@ -1110,10 +1113,10 @@ class _ProductEditor extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AdminColors.line),
               ),
-              child: imagePreview.isNotEmpty
+              child: pickerPreview.isNotEmpty
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: _imagePreviewWidget(imagePreview),
+                      child: _imagePreviewWidget(pickerPreview),
                     )
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
