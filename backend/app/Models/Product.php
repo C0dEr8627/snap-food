@@ -38,7 +38,7 @@ class Product extends Model
         $image = $this->image;
         if (! is_string($image) || trim($image) === '') return null;
         if (preg_match('#^https?://#i', $image)) return $image;
-        return url('/' . ltrim($image, '/'));
+        return url('/api/v1/products/' . $this->getKey() . '/image');
     }
 
     public function category(): BelongsTo
