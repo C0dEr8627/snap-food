@@ -22,6 +22,7 @@ part 'pages/orders_page.dart';
 part 'pages/catalogue_page.dart';
 part 'pages/partners_page.dart';
 part 'pages/invoices_page.dart';
+part 'pages/users_page.dart';
 
 const apiBaseUrl = String.fromEnvironment('API_BASE_URL');
 const googleClientId = String.fromEnvironment('GOOGLE_CLIENT_ID');
