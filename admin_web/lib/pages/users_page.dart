@@ -395,51 +395,77 @@ class _UsersTable extends StatelessWidget {
                         shad.TableCell(
                           child: Text(
                             '#${user.id}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AdminColors.muted),
                           ),
                         ),
                         shad.TableCell(
                           child: Text(
                             user.name.isEmpty ? 'Unnamed user' : user.name,
-                            maxLines: 1,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                            softWrap: true,
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, height: 1.2),
                           ),
                         ),
                         shad.TableCell(
                           child: Text(
                             user.email.isEmpty ? 'No email recorded' : user.email,
-                            maxLines: 1,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 11, color: AdminColors.muted),
-                          ),
-                        ),
-                        shad.TableCell(child: _UserRolePill(user.role)),
-                        shad.TableCell(child: _UserStatusPill(user.active)),
-                        shad.TableCell(
-                          child: Text(
-                            user.ordersCount.toString(),
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                            softWrap: true,
+                            style: const TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.2),
                           ),
                         ),
                         shad.TableCell(
-                          child: Text(
-                            user.addresses.length.toString(),
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: _UserRolePill(user.role),
+                          ),
+                        ),
+                        shad.TableCell(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: _UserStatusPill(user.active),
+                          ),
+                        ),
+                        shad.TableCell(
+                          child: Center(
+                            child: Text(
+                              user.ordersCount.toString(),
+                              maxLines: 1,
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                            ),
+                          ),
+                        ),
+                        shad.TableCell(
+                          child: Center(
+                            child: Text(
+                              user.addresses.length.toString(),
+                              maxLines: 1,
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                            ),
                           ),
                         ),
                         shad.TableCell(
                           child: Text(
                             _formatUserTimestamp(user.createdAt),
-                            maxLines: 1,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 10.5, color: AdminColors.muted),
+                            softWrap: true,
+                            style: const TextStyle(fontSize: 10, color: AdminColors.muted, height: 1.2),
                           ),
                         ),
                         shad.TableCell(
-                          child: shad.OutlineButton(
-                            onPressed: () => onView(user),
-                            child: const Text('View'),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: shad.OutlineButton(
+                              onPressed: () => onView(user),
+                              child: const Text('View'),
+                            ),
                           ),
                         ),
                       ],
@@ -447,15 +473,15 @@ class _UsersTable extends StatelessWidget {
                   ),
                 ],
                 columnWidths: const {
-                  0: shad.FixedTableSize(68),
-                  1: shad.FixedTableSize(175),
-                  2: shad.FixedTableSize(230),
-                  3: shad.FixedTableSize(125),
-                  4: shad.FixedTableSize(100),
-                  5: shad.FixedTableSize(78),
-                  6: shad.FixedTableSize(95),
-                  7: shad.FixedTableSize(155),
-                  8: shad.FixedTableSize(90),
+                  0: shad.FixedTableSize(64),
+                  1: shad.FixedTableSize(160),
+                  2: shad.FixedTableSize(220),
+                  3: shad.FixedTableSize(110),
+                  4: shad.FixedTableSize(105),
+                  5: shad.FixedTableSize(70),
+                  6: shad.FixedTableSize(90),
+                  7: shad.FixedTableSize(150),
+                  8: shad.FixedTableSize(80),
                 },
               ),
             ),
@@ -470,9 +496,13 @@ class _UserRolePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
         decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(20)),
-        child: Text(role == 'DELIVERY_PARTNER' ? 'DELIVERY' : role, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w900, color: AdminColors.ink)),
+        child: Text(
+          role == 'DELIVERY_PARTNER' ? 'DELIVERY' : role,
+          maxLines: 1,
+          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: AdminColors.ink),
+        ),
       );
 }
 
@@ -482,12 +512,16 @@ class _UserStatusPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
         decoration: BoxDecoration(
           color: active ? AdminColors.greenSoft : AdminColors.redSoft,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Text(active ? 'ACTIVE' : 'INACTIVE', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w900, color: active ? AdminColors.green : AdminColors.red)),
+        child: Text(
+          active ? 'ACTIVE' : 'INACTIVE',
+          maxLines: 1,
+          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: active ? AdminColors.green : AdminColors.red),
+        ),
       );
 }
 
