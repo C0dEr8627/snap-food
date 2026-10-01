@@ -17,7 +17,7 @@ class RemoteOrderRepository implements OrderRepository {
 
   @override
   Future<Order> createOrder(CreateOrderRequest request) async {
-    final response = await _client.post('/orders', body: request.toJson());
+    final response = await _client.post('/consumer/orders', body: request.toJson());
     return _decodeOrder(response);
   }
 
@@ -27,7 +27,7 @@ class RemoteOrderRepository implements OrderRepository {
       if (page != null) 'page': '$page',
       if (perPage != null) 'per_page': '$perPage',
     };
-    final response = await _client.get('/orders', queryParameters: query);
+    final response = await _client.get('/consumer/orders', queryParameters: query);
     return _decodePage(response);
   }
 
@@ -40,7 +40,7 @@ class RemoteOrderRepository implements OrderRepository {
       );
     }
     final response = await _client.get(
-      '/orders/' + Uri.encodeComponent(orderId) + '/tracking',
+      '/consumer/orders/' + Uri.encodeComponent(orderId) + '/tracking',
     );
     if (response is Map<String, dynamic>) {
       final data = response['data'];
@@ -62,7 +62,7 @@ class RemoteOrderRepository implements OrderRepository {
         code: 'INVALID_ORDER_ID',
       );
     }
-    final path = '/orders/' + Uri.encodeComponent(orderId);
+    final path = '/consumer/orders/' + Uri.encodeComponent(orderId);
     final response = await _client.get(path);
     return _decodeOrder(response);
   }
