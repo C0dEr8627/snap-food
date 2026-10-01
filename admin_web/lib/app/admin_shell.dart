@@ -76,11 +76,13 @@ class _AdminShellState extends State<AdminShell> {
   AdminSection section = AdminSection.dashboard;
   final GlobalKey<_CataloguePageState> _catalogueKey = GlobalKey<_CataloguePageState>();
   final TextEditingController _globalSearch = TextEditingController();
+  final ScrollController _contentScrollController = ScrollController();
   String _searchQuery = '';
 
   @override
   void dispose() {
     _globalSearch.dispose();
+    _contentScrollController.dispose();
     super.dispose();
   }
 
@@ -107,7 +109,11 @@ class _AdminShellState extends State<AdminShell> {
             searchQuery: _searchQuery,
             onSearch: _applyGlobalSearch,
           ),
-          Expanded(child: LayoutBuilder(builder: (context, constraints) => Scrollbar(thumbVisibility: desktop, child: SingleChildScrollView(
+          Expanded(child: LayoutBuilder(builder: (context, constraints) => Scrollbar(
+          controller: _contentScrollController,
+          thumbVisibility: desktop,
+          child: SingleChildScrollView(
+            controller: _contentScrollController,
             padding: EdgeInsets.fromLTRB(desktop ? 24 : 16, 24, desktop ? 24 : 16, 32),
             child: Center(
               child: ConstrainedBox(
@@ -190,6 +196,7 @@ class _Sidebar extends StatelessWidget {
     color: Colors.white,
     child: SafeArea(
       child: SingleChildScrollView(
+      primary: true,
       padding: EdgeInsets.zero,
       child: Column(
         children: [
