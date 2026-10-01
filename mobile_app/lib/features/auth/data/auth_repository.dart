@@ -4,6 +4,7 @@ import 'auth_models.dart';
 import 'session_store.dart';
 
 abstract interface class AuthRepository {
+  Future<AuthSession> signInWithGoogleCredential(String credential);
   Future<AuthUser> fetchCurrentUser();
   Future<void> logout();
   Future<String?> readStoredToken();
@@ -18,22 +19,51 @@ class RemoteAuthRepository implements AuthRepository {
   final SessionStore _sessionStore;
 
   @override
+  Future<AuthSession> signInWithGoogleCredential(String credential) async {
+    final normalized = credential.trim();
+    if (normalized.isEmpty) {
+      throw const ApiException(
+        message: 'A Google sign-in credential is required.',
+        code: 'INVALID_GOOGLE_CREDENTIAL',
+      );
+    }
+    final response = await _client.post(
+      '/auth/google',
+      body: {'credential': normalized},
+    );
+    if (response is Map<String, dynamic>) {
+      final data = response['data'];
+      if (data is Map) {
+        final token = data['token'];
+        final user = data['user'];
+        if (token is String && token.isNotEmpty && user is Map) {
+          return AuthSession(
+            token: token,
+            user: AuthUser.fromJson(Map<String, dynamic>.from(user)),
+          );
+        }
+      }
+    }
+    throw const ApiException(
+      message: 'The server returned an unexpected sign-in response.',
+      code: 'INVALID_RESPONSE',
+    );
+  }
+
+  @override
   Future<AuthUser> fetchCurrentUser() async {
     final response = await _client.get('/me');
     if (response is Map<String, dynamic>) {
-      // The API contract wraps the current user as data.user.
       final data = response['data'];
       if (data is Map) {
         final user = data['user'];
         if (user is Map) {
           return AuthUser.fromJson(Map<String, dynamic>.from(user));
         }
-        // Accept data itself for compatibility with endpoints returning data: {id: ...}.
         if (data['id'] != null) {
           return AuthUser.fromJson(Map<String, dynamic>.from(data));
         }
       }
-      // Backward-compatible handling for a direct user object.
       if (response['id'] != null) return AuthUser.fromJson(response);
     }
     throw const ApiException(
