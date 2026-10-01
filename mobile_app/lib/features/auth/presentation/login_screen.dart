@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
+import '../../../core/network/api_exception.dart';
 import 'auth_controller.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -47,14 +48,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   String _friendlyError(Object? error) {
-    final raw = error.toString();
-    if (raw.contains('INVALID_CREDENTIALS') || raw.contains('401')) {
-      return 'The email or password is incorrect. Please try again.';
+    if (error is ApiException) {
+      if (error.code == 'INVALID_CREDENTIALS' || error.statusCode == 401) {
+        return 'The email or password is incorrect. Please try again.';
+      }
+      if (error.code == 'RATE_LIMITED' || error.statusCode == 429) {
+        return 'Too many attempts. Please wait a moment and try again.';
+      }
+      if (error.code == 'NETWORK_ERROR' || error.code == 'TIMEOUT') {
+        return 'Could not connect to Snap Foodd. Check your connection and try again.';
+      }
     }
-    if (raw.contains('SocketException') || raw.contains('ClientException')) {
-      return 'Could not connect to Snap Foodd. Check your connection and try again.';
-    }
-    return 'We could not sign you in. Please try again.';
+    return 'We could not sign you in. Please check your details and try again.';
   }
 
   @override
