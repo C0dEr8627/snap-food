@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../../../design_system/tokens/app_spacing.dart';
+import '../../auth/presentation/auth_controller.dart';
 
-class CustomerProfileScreen extends StatelessWidget {
+class CustomerProfileScreen extends ConsumerWidget {
   const CustomerProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final auth = ref.watch(authControllerProvider);
+    final user = auth.value?.user?.payload ?? const <String, dynamic>{};
+    final displayName = (user['name'] ?? 'Snap Foodd Customer').toString();
+    final email = (user['email'] ?? '').toString();
+    final phone = (user['phone'] ?? user['phone_number'] ?? '').toString();
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
       body: SafeArea(
@@ -39,14 +46,17 @@ class CustomerProfileScreen extends StatelessWidget {
                             ? Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Expanded(child: _ProfileIdentity()),
+                                  Expanded(child: _ProfileIdentity(name: displayName, email: email, phone: phone)),
                                   const SizedBox(width: 20),
-                                  Expanded(child: _ProfileSections()),
+                                  Expanded(child: _ProfileSections(onLogout: () async {
+                      await ref.read(authControllerProvider.notifier).logout();
+                      if (context.mounted) context.go('/welcome');
+                    })),
                                 ],
                               )
                             : const Column(
                                 children: [
-                                  _ProfileIdentity(),
+                                  _ProfileIdentity(name: displayName, email: email, phone: phone),
                                   SizedBox(height: 20),
                                   _ProfileSections(),
                                 ],
@@ -97,7 +107,10 @@ class _ProfileHeader extends StatelessWidget {
 }
 
 class _ProfileIdentity extends StatelessWidget {
-  const _ProfileIdentity();
+  const _ProfileIdentity({required this.name, required this.email, required this.phone});
+  final String name;
+  final String email;
+  final String phone;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -148,13 +161,13 @@ class _ProfileIdentity extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 14),
-            const Text(
-              'Alex Morgan',
+            Text(
+              name,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
-            const Text(
-              '+91 98765 43210',
+            Text(
+              phone.isNotEmpty ? phone : email,
               style: TextStyle(
                 fontSize: 12,
                 color: SnapFoodColors.onSurfaceVariant,
@@ -241,7 +254,8 @@ class _StatDivider extends StatelessWidget {
 }
 
 class _ProfileSections extends StatelessWidget {
-  const _ProfileSections();
+  const _ProfileSections({required this.onLogout});
+  final VoidCallback onLogout;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -313,7 +327,7 @@ class _ProfileSections extends StatelessWidget {
       SizedBox(
         width: double.infinity,
         child: OutlinedButton.icon(
-          onPressed: () => context.go('/welcome'),
+          onPressed: onLogout,
           icon: const Icon(Icons.logout, size: 18),
           label: const Text('Log out'),
           style: OutlinedButton.styleFrom(
