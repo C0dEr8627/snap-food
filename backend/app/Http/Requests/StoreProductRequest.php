@@ -16,7 +16,7 @@ class StoreProductRequest extends FormRequest
         return [
             'category_id' => ['required', 'integer', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:180'],
-            'slug' => ['required', 'string', 'max:200', 'alpha_dash'],
+            'slug' => ['required', 'string', 'max:200', 'alpha_dash', 'unique:products,slug'],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
             'image' => ['nullable', 'url', 'max:2048'],
