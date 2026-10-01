@@ -317,18 +317,18 @@ class _CataloguePageState extends State<CataloguePage> {
     finally { if (mounted) setState(() => _saving = false); }
   }
 
-  Future<void> _pickImage() async {
+  Future<String?> _pickImage() async {
     final input = html.FileUploadInputElement()..accept = 'image/png,image/jpeg,image/webp';
     input.click();
     await input.onChange.first;
     final file = input.files?.isNotEmpty == true ? input.files!.first : null;
-    if (file == null) return;
-    if (file.size > 4 * 1024 * 1024) { _notice(context, 'Image must be 4MB or smaller.', error: true); return; }
+    if (file == null) return null;
+    if (file.size > 4 * 1024 * 1024) { _notice(context, 'Image must be 4MB or smaller.', error: true); return null; }
     setState(() => _uploading = true);
     final reader = html.FileReader();
     reader.readAsDataUrl(file);
     await reader.onLoad.first;
-    if (!mounted) return;
+    if (!mounted) return null;
     final result = reader.result;
     if (result is String) {
       setState(() {
@@ -337,8 +337,10 @@ class _CataloguePageState extends State<CataloguePage> {
         _imageUrl.text = '';
         _uploading = false;
       });
+      return result;
     } else {
       setState(() => _uploading = false);
+      return null;
     }
   }
 
@@ -1074,7 +1076,7 @@ class _ProductEditor extends StatelessWidget {
   final TextEditingController imageUrl;
   final String imagePreview;
   final VoidCallback onClose;
-  final VoidCallback onPickImage;
+  final Future<String?> Function() onPickImage;
   final Future<void> Function() onSave;
   final Future<void> Function() onDeactivate;
   final ValueChanged<int?> onCategory;
@@ -1082,15 +1084,23 @@ class _ProductEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imagePicker = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _label('Item Image', null),
-        Material(
+    final imagePicker = StatefulBuilder(
+      builder: (context, setImagePickerState) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _label('Item Image', null),
+            Material(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           child: InkWell(
-            onTap: uploading ? null : onPickImage,
+            onTap: uploading
+                ? null
+                : () async {
+                    setImagePickerState(() {});
+                    final preview = await onPickImage();
+                    if (preview != null) setImagePickerState(() {});
+                  },
             borderRadius: BorderRadius.circular(12),
             child: Container(
               width: double.infinity,
@@ -1144,8 +1154,10 @@ class _ProductEditor extends StatelessWidget {
         const Text(
           'Choose a file for preview or provide an image URL.',
           style: TextStyle(fontSize: 10, color: AdminColors.muted),
-        ),
-      ],
+            ),
+          ],
+        );
+      },
     );
 
     final details = Column(
