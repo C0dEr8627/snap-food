@@ -1182,8 +1182,8 @@ class _ProductEditor extends StatelessWidget {
 
     final details = StatefulBuilder(
       builder: (context, setEditorState) => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
         const SizedBox(height: 2),
         _label('Dish Name *', 'Required'),
         _field(name, 'Smokey Chicken Tikka Roll', maxLength: 180),
@@ -1351,6 +1351,7 @@ class _ProductEditor extends StatelessWidget {
           ),
         ],
       ],
+      ),
     );
 
     return Form(
