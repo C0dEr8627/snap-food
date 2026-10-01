@@ -9,15 +9,32 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table): void {
-            $table->string('dietary', 40)->default('Non-Veg')->after('is_active');
-            $table->json('tags')->nullable()->after('dietary');
+            if (! Schema::hasColumn('products', 'dietary')) {
+                $table->string('dietary', 40)->default('Non-Veg')->after('is_active');
+            }
+
+            if (! Schema::hasColumn('products', 'tags')) {
+                $table->json('tags')->nullable()->after('dietary');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('products', function (Blueprint $table): void {
-            $table->dropColumn(['dietary', 'tags']);
+            $columns = [];
+
+            if (Schema::hasColumn('products', 'tags')) {
+                $columns[] = 'tags';
+            }
+
+            if (Schema::hasColumn('products', 'dietary')) {
+                $columns[] = 'dietary';
+            }
+
+            if ($columns !== []) {
+                $table->dropColumn($columns);
+            }
         });
     }
 };
