@@ -348,4 +348,112 @@ class AuthenticationTest extends TestCase
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
 
+
+    public function test_customer_can_register_with_email_and_password(): void
+    {
+        $response = $this->postJson('/api/v1/auth/register', [
+            'name' => 'New Customer',
+            'email' => 'new.customer@example.test',
+            'password' => 'CorrectHorseBatteryStaple!',
+            'password_confirmation' => 'CorrectHorseBatteryStaple!',
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('data.user.name', 'New Customer')
+            ->assertJsonPath('data.user.email', 'new.customer@example.test')
+            ->assertJsonPath('data.user.role', 'CUSTOMER')
+            ->assertJsonStructure(['data' => ['token', 'user' => ['id', 'name', 'email', 'role']]]);
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'new.customer@example.test',
+            'role' => 'CUSTOMER',
+            'is_active' => 1,
+        ]);
+        $this->assertDatabaseCount('personal_access_tokens', 1);
+        $this->assertNotSame(
+            'CorrectHorseBatteryStaple!',
+            User::where('email', 'new.customer@example.test')->value('password'),
+        );
+    }
+
+    public function test_customer_registration_validates_duplicate_email_and_password_confirmation(): void
+    {
+        User::create([
+            'name' => 'Existing Customer',
+            'email' => 'existing@example.test',
+            'password' => password_hash('CorrectHorseBatteryStaple!', PASSWORD_BCRYPT),
+            'role' => User::ROLE_CUSTOMER,
+            'is_active' => true,
+        ]);
+
+        $this->postJson('/api/v1/auth/register', [
+            'name' => 'Another Customer',
+            'email' => 'existing@example.test',
+            'password' => 'CorrectHorseBatteryStaple!',
+            'password_confirmation' => 'CorrectHorseBatteryStaple!',
+        ])->assertUnprocessable()
+            ->assertJsonPath('code', 'VALIDATION_FAILED')
+            ->assertJsonStructure(['errors' => ['email']]);
+
+        $this->postJson('/api/v1/auth/register', [
+            'name' => 'Another Customer',
+            'email' => 'another@example.test',
+            'password' => 'CorrectHorseBatteryStaple!',
+            'password_confirmation' => 'not-the-same-password',
+        ])->assertUnprocessable()
+            ->assertJsonStructure(['errors' => ['password']]);
+
+        $this->assertDatabaseCount('users', 1);
+    }
+
+    public function test_customer_can_login_with_password_but_admin_and_inactive_users_cannot(): void
+    {
+        $customer = User::create([
+            'name' => 'Password Customer',
+            'email' => 'password.customer@example.test',
+            'password' => password_hash('CorrectHorseBatteryStaple!', PASSWORD_BCRYPT),
+            'role' => User::ROLE_CUSTOMER,
+            'is_active' => true,
+        ]);
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => $customer->email,
+            'password' => 'CorrectHorseBatteryStaple!',
+        ])->assertOk()
+            ->assertJsonPath('data.user.id', $customer->id)
+            ->assertJsonPath('data.user.role', 'CUSTOMER')
+            ->assertJsonStructure(['data' => ['token', 'user']]);
+
+        $admin = User::create([
+            'name' => 'Admin',
+            'email' => 'password.admin@example.test',
+            'password' => password_hash('CorrectHorseBatteryStaple!', PASSWORD_BCRYPT),
+            'role' => User::ROLE_ADMIN,
+            'is_active' => true,
+        ]);
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => $admin->email,
+            'password' => 'CorrectHorseBatteryStaple!',
+        ])->assertUnauthorized()->assertJsonPath('code', 'INVALID_CREDENTIALS');
+
+        User::create([
+            'name' => 'Inactive Customer',
+            'email' => 'inactive.password@example.test',
+            'password' => password_hash('CorrectHorseBatteryStaple!', PASSWORD_BCRYPT),
+            'role' => User::ROLE_CUSTOMER,
+            'is_active' => false,
+        ]);
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => 'inactive.password@example.test',
+            'password' => 'CorrectHorseBatteryStaple!',
+        ])->assertUnauthorized()->assertJsonPath('code', 'INVALID_CREDENTIALS');
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => $customer->email,
+            'password' => 'incorrect-password',
+        ])->assertUnauthorized()->assertJsonPath('code', 'INVALID_CREDENTIALS');
+    }
+
 }
