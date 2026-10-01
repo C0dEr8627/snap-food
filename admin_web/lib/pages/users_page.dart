@@ -139,7 +139,7 @@ class _UsersPageState extends State<UsersPage> {
                     _UserDetailLine('Email', user.email.isEmpty ? 'Not provided' : user.email),
                     _UserDetailLine('Role', user.role),
                     _UserDetailLine('Status', user.active ? 'Active' : 'Inactive'),
-                    _UserDetailLine('Joined', _formatTimestamp(user.createdAt)),
+                    _UserDetailLine('Joined', _formatUserTimestamp(user.createdAt)),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -403,7 +403,7 @@ class _UsersTable extends StatelessWidget {
                       shad.TableCell(child: _UserStatusPill(user.active)),
                       shad.TableCell(child: Text(user.ordersCount.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800))),
                       shad.TableCell(child: Text(user.addresses.length.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800))),
-                      shad.TableCell(child: Text(_formatTimestamp(user.createdAt), style: const TextStyle(fontSize: 10.5, color: AdminColors.muted))),
+                      shad.TableCell(child: Text(_formatUserTimestamp(user.createdAt), style: const TextStyle(fontSize: 10.5, color: AdminColors.muted))),
                       shad.TableCell(child: shad.OutlineButton(onPressed: () => onView(user), child: const Text('View'))),
                     ])),
               ],
@@ -554,7 +554,7 @@ class _UsersError extends StatelessWidget {
 
 int _usersInt(dynamic value, [int fallback = 0]) => value is num ? value.toInt() : int.tryParse(value?.toString() ?? '') ?? fallback;
 
-String _formatTimestamp(String value) {
+String _formatUserTimestamp(String value) {
   if (value.isEmpty) return 'Not recorded';
   final parsed = DateTime.tryParse(value);
   if (parsed == null) return value;
