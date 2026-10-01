@@ -125,8 +125,8 @@ class _CataloguePageState extends State<CataloguePage> {
 
   Future<void> _openProductDialog() async {
     final viewport = MediaQuery.sizeOf(context);
-    final dialogWidth = (viewport.width - 48).clamp(320.0, 920.0);
-    final dialogHeight = (viewport.height - 48).clamp(280.0, 760.0);
+    final dialogWidth = (viewport.width - 48).clamp(320.0, 920.0).toDouble();
+    final dialogHeight = (viewport.height - 48).clamp(280.0, 760.0).toDouble();
     if (_categories.isEmpty) {
       _notice(context, 'Create a category before adding an item.', error: true);
       return;
@@ -1273,7 +1273,7 @@ class _ProductEditor extends StatelessWidget {
               ],
             );
           }
-          final imageWidth = (constraints.maxWidth * 0.30).clamp(210.0, 260.0);
+          final imageWidth = (constraints.maxWidth * 0.30).clamp(210.0, 260.0).toDouble();
           return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
