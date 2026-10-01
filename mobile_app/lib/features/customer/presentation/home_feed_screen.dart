@@ -284,7 +284,7 @@ class Greeting extends ConsumerWidget {
     final auth = ref.watch(authControllerProvider);
     final user = auth.value?.user?.payload ?? const <String, dynamic>{};
     final rawName = (user['name'] ?? '').toString().trim();
-    final firstName = rawName.isEmpty ? 'there' : rawName.split(RegExp(r'\\s+')).first;
+    final firstName = rawName.isEmpty ? 'there' : rawName.split(RegExp(r'\s+')).first;
     final hour = DateTime.now().hour;
     final greeting = hour < 12 ? 'Good morning' : (hour < 17 ? 'Good afternoon' : 'Good evening');
     return Row(children: [
