@@ -7,6 +7,7 @@ extension on AdminSection {
     AdminSection.dashboard => 'Dashboard',
     AdminSection.orders => 'Orders',
     AdminSection.catalogue => 'Catalogue',
+    AdminSection.users => 'Users',
     AdminSection.partners => 'Delivery partners',
     AdminSection.invoices => 'Invoices & Tax Billing Ledger',
   };
