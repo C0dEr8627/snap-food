@@ -9,6 +9,7 @@ use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
@@ -52,7 +53,17 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request): JsonResponse
     {
-        $product = Product::create($request->validated());
+        $data = $request->validated();
+
+        // Keep creation compatible with older databases while migrations are deployed.
+        if (! Schema::hasColumn('products', 'dietary')) {
+            unset($data['dietary']);
+        }
+        if (! Schema::hasColumn('products', 'tags')) {
+            unset($data['tags']);
+        }
+
+        $product = Product::create($data);
 
         return response()->json(['data' => $product->load('category')], 201);
     }
