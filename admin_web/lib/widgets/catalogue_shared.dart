@@ -28,6 +28,8 @@ class _CatalogueProduct {
       categoryName: c is Map ? c['name']?.toString() ?? '' : '', price: _asDouble(j['price']),
       stock: _asInt(j['stock_quantity']) ?? 0, available: j['is_available'] != false,
       active: j['is_active'] != false, image: (j['image_url'] ?? j['image'])?.toString(),
+      dietary: j['dietary']?.toString() ?? 'Non-Veg',
+      tags: j['tags'] is List ? (j['tags'] as List).map((e) => e.toString()).toList() : const [],
     );
   }
   Map<String, dynamic> toApiJson() => {
@@ -37,6 +39,8 @@ class _CatalogueProduct {
     if (image != null && image!.trim().isNotEmpty) 'image': image!.trim(),
     'stock_quantity': stock,
     'is_available': available, 'is_active': active,
+    'dietary': dietary,
+    'tags': tags,
   };
 }
 
