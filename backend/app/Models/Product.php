@@ -18,6 +18,8 @@ class Product extends Model
         'stock_quantity',
         'is_available',
         'is_active',
+        'dietary',
+        'tags',
     ];
 
     protected function casts(): array
@@ -27,6 +29,7 @@ class Product extends Model
             'stock_quantity' => 'integer',
             'is_available' => 'boolean',
             'is_active' => 'boolean',
+            'tags' => 'array',
         ];
     }
 
