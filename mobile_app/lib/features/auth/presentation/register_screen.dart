@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
+import '../../../core/network/api_exception.dart';
 import 'auth_controller.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -54,14 +55,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   String _friendlyError(Object? error) {
-    final raw = error.toString();
-    if (raw.contains('unique') || raw.contains('422') || raw.contains('email')) {
-      return 'That email may already be registered. Check the details and try again.';
+    if (error is ApiException) {
+      if (error.code == 'RATE_LIMITED' || error.statusCode == 429) {
+        return 'Too many attempts. Please wait a moment and try again.';
+      }
+      if (error.code == 'NETWORK_ERROR' || error.code == 'TIMEOUT') {
+        return 'Could not connect to Snap Foodd. Check your connection and try again.';
+      }
+      if (error.isValidationError && error.errors.isNotEmpty) {
+        return error.errors.values.first.first;
+      }
+      if (error.statusCode == 409) {
+        return 'That email may already be registered. Try signing in instead.';
+      }
     }
-    if (raw.contains('SocketException') || raw.contains('ClientException')) {
-      return 'Could not connect to Snap Foodd. Check your connection and try again.';
-    }
-    return 'We could not create your account. Please try again.';
+    return 'We could not create your account. Please check your details and try again.';
   }
 
   @override
