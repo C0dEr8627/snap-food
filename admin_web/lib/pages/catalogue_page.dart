@@ -79,8 +79,17 @@ class _CataloguePageState extends State<CataloguePage> {
         });
         if (_selected != null) {
           _CatalogueProduct? fresh;
-          for (final item in _products) { if (item.id == _selected!.id) { fresh = item; break; } }
-          if (fresh != null) _selectProduct(fresh);
+          for (final item in _products) {
+            if (item.id == _selected!.id) {
+              fresh = item;
+              break;
+            }
+          }
+          // Refresh the selected item's data without opening its editor.
+          // _selectProduct() is a user-action handler and opens the product
+          // overlay; calling it from a background refresh caused Manage
+          // Categories to unexpectedly stack a food-item dialog.
+          if (fresh != null) _syncSelectedProduct(fresh);
         }
       } else {
         setState(() { _live = false; _applyPreviewFilters(); });
@@ -109,14 +118,27 @@ class _CataloguePageState extends State<CataloguePage> {
     _page = 1;
   }
 
-  void _selectProduct(_CatalogueProduct product) {
-    setState(() { _selected = product; _creating = false; });
+  void _syncSelectedProduct(_CatalogueProduct product) {
+    setState(() {
+      _selected = product;
+      _creating = false;
+    });
     _formCategoryId = product.categoryId;
     _formDietary = product.dietary;
     _formTags = List<String>.of(product.tags);
-    _name.text = product.name; _slug.text = product.slug; _description.text = product.description;
-    _price.text = product.price.toStringAsFixed(2); _prep.text = product.prepTime.toString(); _stock.text = product.stock.toString();
-    _imageUrl.text = product.image ?? ''; _imagePreview = product.image ?? ''; _selectedImageFile = null;
+    _name.text = product.name;
+    _slug.text = product.slug;
+    _description.text = product.description;
+    _price.text = product.price.toStringAsFixed(2);
+    _prep.text = product.prepTime.toString();
+    _stock.text = product.stock.toString();
+    _imageUrl.text = product.image ?? '';
+    _imagePreview = product.image ?? '';
+    _selectedImageFile = null;
+  }
+
+  void _selectProduct(_CatalogueProduct product) {
+    _syncSelectedProduct(product);
     _openProductDialog();
   }
 
