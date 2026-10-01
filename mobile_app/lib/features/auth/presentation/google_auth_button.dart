@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
@@ -67,10 +68,14 @@ class _GoogleAuthButtonState extends State<GoogleAuthButton> {
           backgroundColor: Colors.white,
         ),
         child: _busy
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
+            ? SizedBox(
+                width: 24,
+                height: 24,
+                child: SvgPicture.asset(
+                  'assets/images/customer/logo-without-bg.svg',
+                  fit: BoxFit.contain,
+                  semanticsLabel: 'Snap Foodd loading',
+                ),
               )
             : const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
