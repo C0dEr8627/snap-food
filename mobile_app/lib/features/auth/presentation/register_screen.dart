@@ -123,23 +123,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Center(
-                      child: Container(
-                        width: 76,
-                        height: 76,
-                        padding: const EdgeInsets.all(11),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(23),
-                          boxShadow: [
-                            BoxShadow(
-                              color: SnapFoodColors.warmBlack.withAlpha(10),
-                              blurRadius: 22,
-                              offset: const Offset(0, 7),
-                            ),
-                          ],
-                        ),
+                      child: SizedBox(
+                        width: 100,
+                        height: 100,
                         child: SvgPicture.asset(
-                          'assets/images/customer/logo.svg',
+                          'assets/images/customer/logo-without-bg.svg',
                           fit: BoxFit.contain,
                           semanticsLabel: 'Snap Foodd',
                         ),
