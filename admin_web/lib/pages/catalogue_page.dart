@@ -138,7 +138,7 @@ class _CataloguePageState extends State<CataloguePage> {
             : 32.0;
     final verticalGutter = viewportHeight < 700 ? 24.0 : 40.0;
     final dialogWidth = (viewportWidth - (horizontalGutter * 2))
-        .clamp(320.0, 1120.0)
+        .clamp(320.0, 920.0)
         .toDouble();
     final dialogHeight = (viewportHeight - (verticalGutter * 2))
         .clamp(260.0, 760.0)
