@@ -358,19 +358,7 @@ class _PageHeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final actions = <Widget>[
-      shad.PrimaryButton(
-        onPressed: onAddProduct ??
-            () => _notice(
-                  context,
-                  section == AdminSection.catalogue
-                      ? 'Product creation will connect to the Laravel API.'
-                      : 'This action will connect to the Laravel API.',
-                ),
-        leading: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 17),
-        child: Text(section == AdminSection.catalogue ? 'Add product' : 'Quick action'),
-      ),
-    ];
+    final actions = <Widget>[];
 
     if (section == AdminSection.catalogue && onManageCategories != null) {
       actions.addAll([
