@@ -38,7 +38,7 @@ class _CataloguePageState extends State<CataloguePage> {
   bool _live = false;
   String _error = '';
   String _imagePreview = '';
-  bool _gridView = false;
+  bool _gridView = true;
 
   @override
   void initState() {
@@ -1040,230 +1040,223 @@ class _ProductEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: form,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 2),
-              _label('Dish Name *', 'Required'),
-              _field(
-                name,
-                'Smokey Chicken Tikka Roll',
-                maxLength: 180,
-                              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _dropdownField(
-                      'Category',
-                      categories
-                          .map(
-                            (c) => DropdownMenuItem<int?>(
-                              value: c.id,
-                              child: Text(c.name),
-                            ),
-                          )
-                          .toList(),
-                      formCategoryId ??
-                          (categories.isNotEmpty ? categories.first.id : null),
-                      onCategory,
-                    ),
-                  ),
-
-                ],
-              ),
-              const SizedBox(height: 12),
-              _label('Dietary Classification', null),
-              Wrap(
-                spacing: 6,
-                children: ['Pure Veg', 'Non-Veg', 'Contains Egg']
-                    .map(
-                      (e) => (formDietary == e
-                          ? shad.Button.secondary
-                          : shad.Button.ghost)(
-                        onPressed: () => onDietary(e),
-                        child: Text(e, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
-                      ),
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _field(
-                      price,
-                      '₹220',
-                      label: 'Base Price (₹)',
-                      keyboard: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                                          ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _field(
-                      prep,
-                      '15',
-                      label: 'Prep Time (Min)',
-                      keyboard: TextInputType.number,
-                                          ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              _field(
-                description,
-                'Charcoal roasted chicken tikka cubes, spiced onions, mint yogurt and flaky paratha bread.',
-                label: 'Short Description',
-                maxLines: 3,
-              ),
-              const SizedBox(height: 12),
-              _label('Ingredients & Tags', null),
-              if (selected == null || selected!.tags.isEmpty)
-                const Text(
-                  'No tags yet',
-                  style: TextStyle(fontSize: 11, color: AdminColors.muted),
-                )
-              else
-                Wrap(
-                  spacing: 5,
-                  runSpacing: 5,
-                  children: selected!.tags
-                      .map(
-                        (e) => InputChip(
-                          label: Text(
-                            e,
-                            style: const TextStyle(fontSize: 11),
-                          ),
-                          onDeleted: () {
-                            selected!.tags.remove(e);
-                            (context as Element).markNeedsBuild();
-                          },
-                        ),
-                      )
-                      .toList(),
-                ),
-              const SizedBox(height: 8),
-              shad.OutlineButton(onPressed: () { if (tag.text.trim().isEmpty || selected == null) return; selected!.tags = [...selected!.tags, tag.text.trim()]; tag.clear(); (context as Element).markNeedsBuild(); }, leading: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 15), child: const Text('Add tag', style: TextStyle(fontSize: 11))),
-              const SizedBox(height: 10),
-              _label('Item Image', null),
-              Material(
-                color: Colors.transparent,
+    final imagePicker = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _label('Item Image', null),
+        Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            onTap: uploading ? null : onPickImage,
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              width: double.infinity,
+              height: 220,
+              decoration: BoxDecoration(
+                color: AdminColors.peach,
                 borderRadius: BorderRadius.circular(12),
-                child: InkWell(
-                  onTap: uploading ? null : onPickImage,
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                  width: double.infinity,
-                  height: 135,
-                  decoration: BoxDecoration(
-                    color: AdminColors.peach,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AdminColors.line),
-                  ),
-                  child: imagePreview.isNotEmpty
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: _imagePreviewWidget(imagePreview),
-                        )
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AdminIcon(
-                              uploading
-                                  ? HugeIcons.strokeRoundedHourglass
-                                  : HugeIcons.strokeRoundedCloudUpload,
-                              size: 27,
-                              color: AdminColors.amber,
-                            ),
-                            const SizedBox(height: 7),
-                            Text(
-                              uploading
-                                  ? 'Reading image…'
-                                  : 'Drop item image or browse file',
-                              style: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              'PNG, JPG, WEBP up to 4MB',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: AdminColors.muted,
-                              ),
-                            ),
-                          ],
+                border: Border.all(color: AdminColors.line),
+              ),
+              child: imagePreview.isNotEmpty
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: _imagePreviewWidget(imagePreview),
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AdminIcon(
+                          uploading
+                              ? HugeIcons.strokeRoundedHourglass
+                              : HugeIcons.strokeRoundedCloudUpload,
+                          size: 30,
+                          color: AdminColors.amber,
+                        ),
+                        const SizedBox(height: 8),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            'Browse image file',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
                           ),
                         ),
-                      ),
-                    ),
-              const SizedBox(height: 8),
-              _field(
-                imageUrl,
-                'https://...',
-                label: 'Image URL',
-                              ),
-              const SizedBox(height: 14),
-              Row(
-                children: [
-                  Expanded(
-                    child: _field(
-                      stock,
-                      '0',
-                      label: 'Stock Quantity',
-                      keyboard: TextInputType.number,
-                                          ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        const Text('Live on app', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
-                        const SizedBox(width: 8),
-                        shad.Switch(
-                          value: selected?.available ?? true,
-                          onChanged: (v) { if (selected != null) selected!.available = v; },
+                        const SizedBox(height: 5),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            'PNG, JPG, WEBP up to 4MB',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 11, color: AdminColors.muted),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        _field(imageUrl, 'https://...', label: 'Image URL'),
+        const SizedBox(height: 5),
+        const Text(
+          'Choose a file for preview or provide an image URL.',
+          style: TextStyle(fontSize: 10, color: AdminColors.muted),
+        ),
+      ],
+    );
+
+    final details = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 2),
+        _label('Dish Name *', 'Required'),
+        _field(name, 'Smokey Chicken Tikka Roll', maxLength: 180),
+        const SizedBox(height: 12),
+        _dropdownField(
+          'Category',
+          categories.map((c) => DropdownMenuItem<int?>(
+            value: c.id,
+            child: Text(c.name),
+          )).toList(),
+          formCategoryId ?? (categories.isNotEmpty ? categories.first.id : null),
+          onCategory,
+        ),
+        const SizedBox(height: 12),
+        _label('Dietary Classification', null),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: ['Pure Veg', 'Non-Veg', 'Contains Egg'].map(
+            (e) => (formDietary == e
+                ? shad.Button.secondary
+                : shad.Button.ghost)(
+              onPressed: () => onDietary(e),
+              child: Text(e, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
+            ),
+          ).toList(),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _field(
+                price,
+                '₹220',
+                label: 'Base Price (₹)',
+                keyboard: const TextInputType.numberWithOptions(decimal: true),
               ),
-              const SizedBox(height: 14),
-              SizedBox(
-                width: double.infinity,
-                height: 46,
-                child: shad.PrimaryButton(
-                  onPressed: saving ? null : onSave,
-                  leading: AdminIcon(
-                    saving
-                        ? HugeIcons.strokeRoundedHourglass
-                        : HugeIcons.strokeRoundedFloppyDisk,
-                    size: 17,
-                  ),
-                  child: Text(saving ? 'Saving…' : 'Save Item'),
-                ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _field(
+                prep,
+                '15',
+                label: 'Prep Time (Min)',
+                keyboard: TextInputType.number,
               ),
-              if (!creating)
-                Align(
-                  alignment: Alignment.center,
-                  child: shad.OutlineButton(
-                    onPressed: saving ? null : onDeactivate,
-                    child: const Text(
-                      'Deactivate item',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AdminColors.red,
-                      ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _field(
+          description,
+          'Charcoal roasted chicken tikka cubes, spiced onions, mint yogurt and flaky paratha bread.',
+          label: 'Short Description',
+          maxLines: 3,
+        ),
+        const SizedBox(height: 12),
+        _label('Ingredients & Tags', null),
+        if (selected == null || selected!.tags.isEmpty)
+          const Text('No tags yet', style: TextStyle(fontSize: 11, color: AdminColors.muted))
+        else
+          Wrap(
+            spacing: 5,
+            runSpacing: 5,
+            children: selected!.tags.map(
+              (e) => InputChip(
+                label: Text(e, style: const TextStyle(fontSize: 11)),
+                onDeleted: () {
+                  selected!.tags.remove(e);
+                  (context as Element).markNeedsBuild();
+                },
+              ),
+            ).toList(),
+          ),
+        const SizedBox(height: 8),
+        shad.OutlineButton(
+          onPressed: () {
+            if (tag.text.trim().isEmpty || selected == null) return;
+            selected!.tags = [...selected!.tags, tag.text.trim()];
+            tag.clear();
+            (context as Element).markNeedsBuild();
+          },
+          leading: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 15),
+          child: const Text('Add tag', style: TextStyle(fontSize: 11)),
+        ),
+        const SizedBox(height: 14),
+        Row(
+          children: [
+            Expanded(
+              child: _field(stock, '0', label: 'Stock Quantity', keyboard: TextInputType.number),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 18),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const Flexible(
+                      child: Text('Live on app', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
                     ),
-                  ),
+                    const SizedBox(width: 6),
+                    shad.Switch(
+                      value: selected?.available ?? true,
+                      onChanged: (v) {
+                        if (selected != null) selected!.available = v;
+                      },
+                    ),
+                  ],
                 ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          height: 46,
+          child: shad.PrimaryButton(
+            onPressed: saving ? null : onSave,
+            leading: AdminIcon(
+              saving ? HugeIcons.strokeRoundedHourglass : HugeIcons.strokeRoundedFloppyDisk,
+              size: 17,
+            ),
+            child: Text(saving ? 'Saving…' : 'Save Item'),
+          ),
+        ),
+        if (!creating) ...[
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.center,
+            child: shad.OutlineButton(
+              onPressed: saving ? null : onDeactivate,
+              child: const Text('Deactivate item', style: TextStyle(fontSize: 11, color: AdminColors.red)),
+            ),
+          ),
+        ],
+      ],
+    );
+
+    return Form(
+      key: form,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(width: 210, child: imagePicker),
+          const SizedBox(width: 20),
+          Expanded(child: details),
         ],
       ),
     );
