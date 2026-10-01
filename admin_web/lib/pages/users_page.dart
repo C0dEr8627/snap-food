@@ -85,8 +85,6 @@ class _UsersPageState extends State<UsersPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _UsersPageHeader(total: _total, visible: users.length, loading: _loading),
-        const SizedBox(height: 14),
         _UsersToolbar(
           controller: _search,
           filter: _filter,
@@ -294,36 +292,6 @@ class _UserAddress {
       );
 }
 
-class _UsersPageHeader extends StatelessWidget {
-  const _UsersPageHeader({required this.total, required this.visible, required this.loading});
-  final int total;
-  final int visible;
-  final bool loading;
-
-  @override
-  Widget build(BuildContext context) => Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Users', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, letterSpacing: -.4)),
-                SizedBox(height: 4),
-                Text('Customer, delivery and admin accounts with their actual account information.', style: TextStyle(fontSize: 12, color: AdminColors.muted)),
-              ],
-            ),
-          ),
-          if (!loading)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(12)),
-              child: Text('$total total · $visible visible', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.muted)),
-            ),
-        ],
-      );
-}
-
 class _UsersToolbar extends StatelessWidget {
   const _UsersToolbar({
     required this.controller,
@@ -396,6 +364,7 @@ class _UsersTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
+        width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(color: AdminColors.line),
@@ -406,7 +375,7 @@ class _UsersTable extends StatelessWidget {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: 1230),
+              constraints: const BoxConstraints(minWidth: 1120),
               child: shad.Table(
                 rows: [
                   shad.TableHeader(cells: const [
@@ -420,38 +389,73 @@ class _UsersTable extends StatelessWidget {
                     shad.TableCell(child: Text('JOINED')),
                     shad.TableCell(child: Text('')),
                   ]),
-                  ...users.map((user) => shad.TableRow(cells: [
-                        shad.TableCell(child: Text('#${user.id}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.muted))),
+                  ...users.map(
+                    (user) => shad.TableRow(
+                      cells: [
                         shad.TableCell(
-                          child: SizedBox(
-                            width: 190,
-                            child: Text(user.name.isEmpty ? 'Unnamed user' : user.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
+                          child: Text(
+                            '#${user.id}',
+                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AdminColors.muted),
                           ),
                         ),
                         shad.TableCell(
-                          child: SizedBox(
-                            width: 235,
-                            child: Text(user.email.isEmpty ? 'No email recorded' : user.email, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
+                          child: Text(
+                            user.name.isEmpty ? 'Unnamed user' : user.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                        shad.TableCell(
+                          child: Text(
+                            user.email.isEmpty ? 'No email recorded' : user.email,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 11, color: AdminColors.muted),
                           ),
                         ),
                         shad.TableCell(child: _UserRolePill(user.role)),
                         shad.TableCell(child: _UserStatusPill(user.active)),
-                        shad.TableCell(child: Text(user.ordersCount.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800))),
-                        shad.TableCell(child: Text(user.addresses.length.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800))),
-                        shad.TableCell(child: Text(_formatUserTimestamp(user.createdAt), style: const TextStyle(fontSize: 10.5, color: AdminColors.muted))),
-                        shad.TableCell(child: shad.OutlineButton(onPressed: () => onView(user), child: const Text('View details'))),
-                      ])),
+                        shad.TableCell(
+                          child: Text(
+                            user.ordersCount.toString(),
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                        shad.TableCell(
+                          child: Text(
+                            user.addresses.length.toString(),
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                        shad.TableCell(
+                          child: Text(
+                            _formatUserTimestamp(user.createdAt),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 10.5, color: AdminColors.muted),
+                          ),
+                        ),
+                        shad.TableCell(
+                          child: shad.OutlineButton(
+                            onPressed: () => onView(user),
+                            child: const Text('View'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
                 columnWidths: const {
-                  0: shad.FixedTableSize(75),
-                  1: shad.FixedTableSize(200),
-                  2: shad.FixedTableSize(245),
-                  3: shad.FixedTableSize(140),
-                  4: shad.FixedTableSize(105),
-                  5: shad.FixedTableSize(85),
-                  6: shad.FixedTableSize(105),
-                  7: shad.FixedTableSize(165),
-                  8: shad.FixedTableSize(115),
+                  0: shad.FixedTableSize(68),
+                  1: shad.FixedTableSize(175),
+                  2: shad.FixedTableSize(230),
+                  3: shad.FixedTableSize(125),
+                  4: shad.FixedTableSize(100),
+                  5: shad.FixedTableSize(78),
+                  6: shad.FixedTableSize(95),
+                  7: shad.FixedTableSize(155),
+                  8: shad.FixedTableSize(90),
                 },
               ),
             ),
