@@ -21,7 +21,20 @@ class RemoteAuthRepository implements AuthRepository {
   Future<AuthUser> fetchCurrentUser() async {
     final response = await _client.get('/me');
     if (response is Map<String, dynamic>) {
-      return AuthUser.fromJson(response);
+      // The API contract wraps the current user as data.user.
+      final data = response['data'];
+      if (data is Map) {
+        final user = data['user'];
+        if (user is Map) {
+          return AuthUser.fromJson(Map<String, dynamic>.from(user));
+        }
+        // Accept data itself for compatibility with endpoints returning data: {id: ...}.
+        if (data['id'] != null) {
+          return AuthUser.fromJson(Map<String, dynamic>.from(data));
+        }
+      }
+      // Backward-compatible handling for a direct user object.
+      if (response['id'] != null) return AuthUser.fromJson(response);
     }
     throw const ApiException(
       message: 'The server returned an unexpected user response.',
