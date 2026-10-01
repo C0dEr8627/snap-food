@@ -51,29 +51,16 @@ class _SplashScreenState extends State<SplashScreen>
     final brand = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: 156,
-          height: 156,
-          padding: const EdgeInsets.all(22),
-          decoration: BoxDecoration(
-            color: SnapFoodColors.cream,
-            borderRadius: BorderRadius.circular(42),
-            border: Border.all(color: Colors.white.withAlpha(210), width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: SnapFoodColors.warmBlack.withAlpha(18),
-                blurRadius: 34,
-                offset: const Offset(0, 16),
-              ),
-            ],
-          ),
+        SizedBox(
+          width: 190,
+          height: 190,
           child: SvgPicture.asset(
-            'assets/images/customer/logo.svg',
+            'assets/images/customer/logo-without-bg.svg',
             fit: BoxFit.contain,
             semanticsLabel: 'Snap Foodd',
           ),
         ),
-        const SizedBox(height: 30),
+        const SizedBox(height: 24),
         const Text(
           'Snap Foodd',
           textAlign: TextAlign.center,
