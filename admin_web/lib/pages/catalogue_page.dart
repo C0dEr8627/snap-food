@@ -125,10 +125,24 @@ class _CataloguePageState extends State<CataloguePage> {
 
   Future<void> _openProductDialog() async {
     final viewport = MediaQuery.sizeOf(context);
-    // Leave room for the overlay/dialog's own insets so the card stays inside
-    // the viewport instead of letting its padded content push it wider.
-    final dialogWidth = (viewport.width - 80).clamp(280.0, 920.0).toDouble();
-    final dialogHeight = (viewport.height - 96).clamp(260.0, 720.0).toDouble();
+
+    // Size the dialog from the actual browser viewport rather than subtracting
+    // a fixed pixel amount. This keeps the card balanced across laptop,
+    // desktop and narrow browser widths while leaving a predictable gutter.
+    final viewportWidth = viewport.width;
+    final viewportHeight = viewport.height;
+    final horizontalGutter = viewportWidth < 600
+        ? 16.0
+        : viewportWidth < 1000
+            ? 24.0
+            : 32.0;
+    final verticalGutter = viewportHeight < 700 ? 24.0 : 40.0;
+    final dialogWidth = (viewportWidth - (horizontalGutter * 2))
+        .clamp(320.0, 1120.0)
+        .toDouble();
+    final dialogHeight = (viewportHeight - (verticalGutter * 2))
+        .clamp(260.0, 760.0)
+        .toDouble();
     if (_categories.isEmpty) {
       _notice(context, 'Create a category before adding an item.', error: true);
       return;
