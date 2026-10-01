@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../auth/presentation/auth_controller.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
@@ -256,17 +257,17 @@ class HomeHeader extends StatelessWidget {
                 ),
               ],
             ),
-            Container(
-              width: 36,
-              height: 36,
-              decoration: const BoxDecoration(
-                color: SnapFoodColors.primaryContainer,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.person,
-                size: 20,
-                color: SnapFoodColors.warmBlack,
+            InkWell(
+              onTap: () => context.go('/profile'),
+              borderRadius: BorderRadius.circular(24),
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: const BoxDecoration(
+                  color: SnapFoodColors.primaryContainer,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.person, size: 20, color: SnapFoodColors.warmBlack),
               ),
             ),
           ],
@@ -276,37 +277,25 @@ class HomeHeader extends StatelessWidget {
   );
 }
 
-class Greeting extends StatelessWidget {
+class Greeting extends ConsumerWidget {
   const Greeting();
   @override
-  Widget build(BuildContext context) => const Row(
-    children: [
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Good afternoon, Alex! 🍕',
-              style: TextStyle(
-                fontSize: 20,
-                height: 1.3,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            SizedBox(height: 3),
-            Text(
-              'What are you craving today?',
-              style: TextStyle(
-                fontSize: 14,
-                color: SnapFoodColors.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
-      FastBadge(),
-    ],
-  );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final auth = ref.watch(authControllerProvider);
+    final user = auth.value?.user?.payload ?? const <String, dynamic>{};
+    final rawName = (user['name'] ?? '').toString().trim();
+    final firstName = rawName.isEmpty ? 'there' : rawName.split(RegExp(r'\\s+')).first;
+    final hour = DateTime.now().hour;
+    final greeting = hour < 12 ? 'Good morning' : (hour < 17 ? 'Good afternoon' : 'Good evening');
+    return Row(children: [
+      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text('$greeting, $firstName! 🍕', style: const TextStyle(fontSize: 20, height: 1.3, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 3),
+        const Text('What are you craving today?', style: TextStyle(fontSize: 14, color: SnapFoodColors.onSurfaceVariant)),
+      ])),
+      const FastBadge(),
+    ]);
+  }
 }
 
 class FastBadge extends StatelessWidget {
