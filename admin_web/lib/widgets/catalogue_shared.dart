@@ -130,28 +130,65 @@ class _CatalogueRepository {
     return _CatalogueProduct.fromJson(data);
   }
   Future<_CatalogueProduct> uploadImage(int productId, html.File file) async {
-    if (!liveEnabled) throw const _CatalogueApiException(0, 'The live API is not enabled.');
+    if (!liveEnabled) {
+      throw const _CatalogueApiException(0, 'The live API is not enabled.');
+    }
+
+    // Use the same browser-safe FileReader mode as the preview picker.
+    // In Flutter Web, readAsArrayBuffer() can return a JS ArrayBuffer value
+    // that is not exposed as Dart ByteBuffer by every web runtime.
     final reader = html.FileReader();
-    reader.readAsArrayBuffer(file);
+    reader.readAsDataUrl(file);
     await reader.onLoad.first;
+
     final result = reader.result;
-    if (result is! ByteBuffer) {
+    if (result is! String || !result.startsWith('data:')) {
       throw const _CatalogueApiException(0, 'Could not read the selected image.');
     }
 
-    final request = http.MultipartRequest('POST', _uri('/admin/products/' + productId.toString() + '/image'));
+    final comma = result.indexOf(',');
+    if (comma < 0 || comma == result.length - 1) {
+      throw const _CatalogueApiException(0, 'Could not read the selected image.');
+    }
+
+    late final Uint8List bytes;
+    try {
+      bytes = base64Decode(result.substring(comma + 1));
+    } catch (_) {
+      throw const _CatalogueApiException(0, 'Could not read the selected image.');
+    }
+
+    final request = http.MultipartRequest(
+      'POST',
+      _uri('/admin/products/' + productId.toString() + '/image'),
+    );
     request.headers['Accept'] = 'application/json';
-    if (_token.isNotEmpty) request.headers['Authorization'] = 'Bearer ' + _token;
-    request.files.add(http.MultipartFile.fromBytes('image', result.asUint8List(), filename: file.name));
+    if (_token.isNotEmpty) {
+      request.headers['Authorization'] = 'Bearer ' + _token;
+    }
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'image',
+        bytes,
+        filename: file.name,
+      ),
+    );
 
     final response = await request.send();
     final body = await response.stream.bytesToString();
-    final res = http.Response(body, response.statusCode, headers: response.headers);
+    final res = http.Response(
+      body,
+      response.statusCode,
+      headers: response.headers,
+    );
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw _CatalogueApiException(response.statusCode, _message(res));
     }
+
     final root = jsonDecode(res.body);
-    final data = root is Map && root['data'] is Map ? Map<String, dynamic>.from(root['data']) : <String, dynamic>{};
+    final data = root is Map && root['data'] is Map
+        ? Map<String, dynamic>.from(root['data'])
+        : <String, dynamic>{};
     return _CatalogueProduct.fromJson(data);
   }
 
