@@ -15,10 +15,3 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
-
-# Product images are public assets and are loaded cross-origin by the
-# Flutter Web admin and mobile clients. They do not use credentials.
-<IfModule mod_headers.c>
-    SetEnvIf Request_URI "^/uploads/products/" product_image_cors
-    Header always set Access-Control-Allow-Origin "*" env=product_image_cors
-</IfModule>
