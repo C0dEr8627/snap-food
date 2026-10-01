@@ -42,14 +42,19 @@ class CatalogueController extends AsyncNotifier<CatalogueSnapshot> {
   Future<CatalogueSnapshot> build() => _load();
 
   Future<CatalogueSnapshot> _load() async {
-    final results = await Future.wait<Object>([
-      _repository.fetchCategories(),
-      _repository.fetchProducts(),
-    ]);
+    // Products are the primary customer payload. A category request must not
+    // prevent an otherwise valid product response from rendering.
+    final products = await _repository.fetchProducts();
+    List<CatalogueCategory> categories = const [];
+    try {
+      categories = await _repository.fetchCategories();
+    } catch (_) {
+      // Category metadata is optional for rendering/search.
+    }
 
     return CatalogueSnapshot(
-      categories: results[0] as List<CatalogueCategory>,
-      products: results[1] as CataloguePage,
+      categories: categories,
+      products: products,
     );
   }
 
