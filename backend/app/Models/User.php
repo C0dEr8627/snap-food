@@ -48,7 +48,7 @@ class User extends Authenticatable
         return in_array($this->role, $roles, true);
     }
 
-    public function addresses()
+    public function orders()\n    {\n        return $this->hasMany(Order::class, 'customer_id');\n    }\n\n    public function addresses()
     {
         return $this->hasMany(Address::class);
     }
