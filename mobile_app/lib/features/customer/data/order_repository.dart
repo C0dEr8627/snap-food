@@ -90,15 +90,13 @@ class RemoteOrderRepository implements OrderRepository {
     }
 
     final outerData = response['data'];
-    if (outerData is! Map) {
-      throw const ApiException(
-        message: 'The server returned an unexpected order list envelope.',
-        code: 'INVALID_RESPONSE',
-      );
-    }
-
-    final page = Map<String, dynamic>.from(outerData);
-    final rawItems = page['data'];
+    // Support both Laravel paginator envelopes ({data: {data: [...]}})
+    // and simple PHP API collection envelopes ({data: [...]} / {orders: [...]}).
+    final Object? rawPage = outerData is Map ? outerData : response;
+    final page = rawPage is Map ? Map<String, dynamic>.from(rawPage) : <String, dynamic>{};
+    final Object? rawItems = outerData is List
+        ? outerData
+        : (page['data'] is List ? page['data'] : page['orders']);
     if (rawItems is! List) {
       throw const ApiException(
         message: 'The server returned an unexpected order list payload.',
@@ -109,14 +107,15 @@ class RemoteOrderRepository implements OrderRepository {
     int integer(Object? value, [int fallback = 0]) =>
         value is num ? value.toInt() : int.tryParse('$value') ?? fallback;
 
+    final parsedOrders = rawItems
+        .whereType<Map>()
+        .map((item) => Order.fromJson(Map<String, dynamic>.from(item)))
+        .toList(growable: false);
     return OrderPage(
-      orders: rawItems
-          .whereType<Map>()
-          .map((item) => Order.fromJson(Map<String, dynamic>.from(item)))
-          .toList(growable: false),
+      orders: parsedOrders,
       currentPage: integer(page['current_page'], 1),
       lastPage: integer(page['last_page'], 1),
-      total: integer(page['total']),
+      total: integer(page['total'], parsedOrders.length),
     );
   }
 }
