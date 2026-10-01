@@ -16,11 +16,15 @@ class RemoteCatalogueRepository implements CatalogueRepository {
   Future<List<CatalogueCategory>> fetchCategories() async {
     final response = await _client.get('/consumer/categories');
     final records = _decodeCollection(response, resource: 'categories');
-    try {
-      return records.map(CatalogueCategory.fromJson).toList(growable: false);
-    } on FormatException catch (error) {
-      throw ApiException(message: error.message, code: 'INVALID_RESPONSE');
+    final categories = <CatalogueCategory>[];
+    for (final record in records) {
+      try {
+        categories.add(CatalogueCategory.fromJson(record));
+      } on FormatException {
+        // Ignore malformed optional category rows.
+      }
     }
+    return List.unmodifiable(categories);
   }
 
   @override
@@ -89,11 +93,14 @@ class RemoteCatalogueRepository implements CatalogueRepository {
 
   CataloguePage _decodeProductPage(Object? response) {
     if (response is List) {
-      final items = response
-          .whereType<Map>()
-          .map((item) => CatalogueProduct.fromJson(Map<String, dynamic>.from(item)))
-          .toList(growable: false);
-      return CataloguePage(items: items, currentPage: 1, lastPage: 1, perPage: items.length, total: items.length);
+      final items = _decodeProducts(response);
+      return CataloguePage(
+        items: items,
+        currentPage: 1,
+        lastPage: 1,
+        perPage: items.length,
+        total: items.length,
+      );
     }
     if (response is! Map<String, dynamic>) {
       throw const ApiException(
