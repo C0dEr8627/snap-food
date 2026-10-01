@@ -15,6 +15,56 @@ use RuntimeException;
 
 class AuthController extends Controller
 {
+    public function registerCustomer(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'min:2', 'max:120'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8', 'max:255', 'confirmed'],
+        ]);
+
+        $user = User::create([
+            'name' => trim($validated['name']),
+            'email' => strtolower(trim($validated['email'])),
+            'password' => Hash::make($validated['password']),
+            'role' => User::ROLE_CUSTOMER,
+            'is_active' => true,
+        ]);
+
+        return response()->json([
+            'data' => [
+                'token' => $user->createToken('flutter')->plainTextToken,
+                'user' => $user,
+            ],
+        ], 201);
+    }
+
+    public function customerPassword(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email', 'max:255'],
+            'password' => ['required', 'string', 'min:8', 'max:255'],
+        ]);
+
+        $user = User::where('email', strtolower(trim($validated['email'])))->first();
+
+        if (
+            $user === null
+            || ! $user->is_active
+            || ! $user->hasRole(User::ROLE_CUSTOMER)
+            || $user->password === null
+            || ! Hash::check($validated['password'], $user->password)
+        ) {
+            return response()->json([
+                'message' => 'The email or password is incorrect.',
+                'errors' => (object) [],
+                'code' => 'INVALID_CREDENTIALS',
+            ], 401);
+        }
+
+        return $this->issueToken($user);
+    }
+
     public function google(
         GoogleLoginRequest $request,
         GoogleCredentialVerifier $verifier,
