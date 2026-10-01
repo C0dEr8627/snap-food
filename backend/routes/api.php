@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Admin\DeliveryPartnerController;
+use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\Catalogue\CategoryController;
 use App\Http\Controllers\Api\V1\Catalogue\ProductController;
@@ -69,6 +70,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('/orders/{order}/tracking', [DeliveryLocationController::class, 'show'])->name('orders.tracking');
         Route::get('/orders/{order}/invoice', [InvoiceController::class, 'show'])->name('orders.invoice');
         Route::get('/delivery-partners', [DeliveryPartnerController::class, 'index'])->name('delivery-partners.index');
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::post('/delivery-partners', [DeliveryPartnerController::class, 'store'])->name('delivery-partners.store');
         Route::patch('/delivery-partners/{deliveryPartner}/approval', [DeliveryPartnerController::class, 'updateApproval'])->name('delivery-partners.approval');
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
