@@ -75,6 +75,24 @@ class ProductController extends Controller
         return response()->json(['data' => $product->refresh()->load('category')]);
     }
 
+    public function image(Product $product): \Symfony\Component\HttpFoundation\Response
+    {
+        abort_unless($product->is_active && $product->is_available, 404);
+
+        $image = $product->image;
+        if (! is_string($image) || ! str_starts_with($image, '/uploads/products/')) {
+            abort(404);
+        }
+
+        $path = public_path(ltrim($image, '/'));
+        abort_unless(is_file($path), 404);
+
+        return response()->file($path, [
+            'Access-Control-Allow-Origin' => '*',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
+
     public function uploadImage(Request $request, Product $product): JsonResponse
     {
         Gate::authorize('update', $product);
