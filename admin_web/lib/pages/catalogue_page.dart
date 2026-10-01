@@ -248,7 +248,10 @@ class _CataloguePageState extends State<CataloguePage> {
               .replaceAll(RegExp(r'^-+|-+$'), ''),
       description: _description.text.trim(),
       categoryId: _formCategoryId ?? (_selected?.categoryId ?? (_categories.isNotEmpty ? _categories.first.id : null)),
-      categoryName: _selected?.categoryName ?? (_categories.isNotEmpty ? _categories.first.name : ''),
+      categoryName: _categories.firstWhere(
+        (category) => category.id == (_formCategoryId ?? _selected?.categoryId),
+        orElse: () => _categories.isNotEmpty ? _categories.first : const _CatalogueCategory(name: ''),
+      ).name,
       price: double.tryParse(_price.text.trim()) ?? 0, stock: int.tryParse(_stock.text.trim()) ?? 0,
       available: true, active: true, image: _imageUrl.text.trim().isEmpty ? null : _imageUrl.text.trim(),
       dietary: _selected?.dietary ?? _formDietary, prepTime: int.tryParse(_prep.text.trim()) ?? 15,
