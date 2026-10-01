@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_transport.dart';
 import '../../../core/network/api_exception.dart';
+import '../../auth/data/session_store.dart';
 import '../data/catalogue_models.dart';
 import '../data/catalogue_repository.dart';
 
@@ -12,10 +13,16 @@ final catalogueApiTransportProvider = Provider<HttpApiTransport>((ref) {
   return transport;
 });
 
+final catalogueSessionStoreProvider = Provider<SessionStore>((ref) {
+  return SecureSessionStore();
+});
+
 final catalogueApiClientProvider = Provider<ApiClient>((ref) {
+  final sessionStore = ref.watch(catalogueSessionStoreProvider);
   return ApiClient(
     config: ApiConfig.fromEnvironment(),
     transport: ref.watch(catalogueApiTransportProvider),
+    tokenProvider: sessionStore.readToken,
   );
 });
 
@@ -25,8 +32,8 @@ final catalogueRepositoryProvider = Provider<CatalogueRepository>((ref) {
 
 final catalogueControllerProvider =
     AsyncNotifierProvider<CatalogueController, CatalogueSnapshot>(
-      CatalogueController.new,
-    );
+  CatalogueController.new,
+);
 
 class CatalogueController extends AsyncNotifier<CatalogueSnapshot> {
   CatalogueRepository get _repository => ref.read(catalogueRepositoryProvider);
