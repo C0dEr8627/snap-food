@@ -125,8 +125,10 @@ class _CataloguePageState extends State<CataloguePage> {
 
   Future<void> _openProductDialog() async {
     final viewport = MediaQuery.sizeOf(context);
-    final dialogWidth = (viewport.width - 48).clamp(320.0, 920.0).toDouble();
-    final dialogHeight = (viewport.height - 48).clamp(280.0, 760.0).toDouble();
+    // Leave room for the overlay/dialog's own insets so the card stays inside
+    // the viewport instead of letting its padded content push it wider.
+    final dialogWidth = (viewport.width - 80).clamp(280.0, 920.0).toDouble();
+    final dialogHeight = (viewport.height - 96).clamp(260.0, 720.0).toDouble();
     if (_categories.isEmpty) {
       _notice(context, 'Create a category before adding an item.', error: true);
       return;
@@ -155,9 +157,10 @@ class _CataloguePageState extends State<CataloguePage> {
         ),
         content: SizedBox(
           width: dialogWidth,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: dialogHeight),
+          child: SizedBox(
+            height: dialogHeight,
             child: SingleChildScrollView(
+              padding: EdgeInsets.zero,
               child: _ProductEditor(
             form: _form,
             formCategoryId: _formCategoryId,
