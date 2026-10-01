@@ -7,6 +7,7 @@ import '../../../design_system/tokens/app_radii.dart';
 import 'home_feed_screen.dart';
 import 'order_controller.dart';
 import '../data/order_models.dart';
+import '../../../core/network/api_exception.dart';
 
 class OrdersScreen extends ConsumerWidget {
   const OrdersScreen({super.key});
@@ -22,11 +23,29 @@ class OrdersScreen extends ConsumerWidget {
       ),
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => Center(
-          child: FilledButton(
-            onPressed: () =>
-                ref.read(orderHistoryControllerProvider.notifier).refresh(),
-            child: const Text('Retry'),
+        error: (error, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.cloud_off_outlined, size: 44, color: SnapFoodColors.outline),
+                const SizedBox(height: 12),
+                const Text('We couldn’t load your orders', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 6),
+                Text(
+                  error is ApiException ? error.message : 'Check your connection and try again.',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: SnapFoodColors.onSurfaceVariant, fontSize: 12),
+                ),
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  onPressed: () => ref.read(orderHistoryControllerProvider.notifier).refresh(),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
+                ),
+              ],
+            ),
           ),
         ),
         data: (orders) {
