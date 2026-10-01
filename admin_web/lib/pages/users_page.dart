@@ -519,7 +519,7 @@ class _UsersPagination extends StatelessWidget {
           Expanded(child: Text('Showing ${visible} on this page · ${total} total users', style: const TextStyle(fontSize: 11, color: AdminColors.muted))),
           shad.OutlineButton(onPressed: page > 1 ? () => onPage(page - 1) : null, child: const Text('Previous')),
           const SizedBox(width: 6),
-          Text('$page / $lastPage'.replaceFirst('$', ''), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900)),
+          Text('$page / $lastPage', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900)),
           const SizedBox(width: 6),
           shad.OutlineButton(onPressed: page < lastPage ? () => onPage(page + 1) : null, child: const Text('Next')),
         ],
