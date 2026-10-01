@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../design_system/theme/app_theme.dart';
 import '../features/auth/presentation/auth_controller.dart';
+import '../features/auth/presentation/login_screen.dart';
+import '../features/auth/presentation/register_screen.dart';
 import '../features/customer/presentation/cart_review_screen.dart';
 import '../features/customer/presentation/checkout_screen.dart';
 import '../features/customer/presentation/food_item_details_screen.dart';
@@ -39,7 +41,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/',
     redirect: (context, state) {
       final location = state.matchedLocation;
-      const publicRoutes = {'/', '/welcome', '/home', '/delivery/login'};
+      const publicRoutes = {'/', '/welcome', '/home', '/login', '/register', '/delivery/login'};
 
       if (authState.isLoading) {
         // Keep public browsing reachable while session restoration is in flight.
@@ -56,7 +58,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return '/welcome';
       }
 
-      if (isAuthenticated && (location == '/' || location == '/welcome')) {
+      if (isAuthenticated && (location == '/' || location == '/welcome' || location == '/login' || location == '/register')) {
         return '/home';
       }
 
@@ -72,6 +74,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/welcome',
         name: 'welcome',
         builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        name: 'customer-login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/register',
+        name: 'customer-register',
+        builder: (context, state) => const RegisterScreen(),
       ),
       GoRoute(
         path: '/home',
