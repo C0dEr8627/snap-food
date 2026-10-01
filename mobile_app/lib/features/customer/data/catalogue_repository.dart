@@ -117,13 +117,7 @@ class RemoteCatalogueRepository implements CatalogueRepository {
     final records = rawRecords;
     try {
       return CataloguePage(
-        items: records
-            .whereType<Map>()
-            .map(
-              (item) =>
-                  CatalogueProduct.fromJson(Map<String, dynamic>.from(item)),
-            )
-            .toList(growable: false),
+        items: _decodeProducts(records),
         currentPage: _pageInt(page['current_page'], 1),
         lastPage: _pageInt(page['last_page'], 1),
         perPage: _pageInt(page['per_page'], records.length),
@@ -132,6 +126,21 @@ class RemoteCatalogueRepository implements CatalogueRepository {
     } on FormatException catch (error) {
       throw ApiException(message: error.message, code: 'INVALID_RESPONSE');
     }
+  }
+
+  List<CatalogueProduct> _decodeProducts(List records) {
+    final products = <CatalogueProduct>[];
+    for (final item in records) {
+      if (item is! Map) continue;
+      try {
+        products.add(
+          CatalogueProduct.fromJson(Map<String, dynamic>.from(item)),
+        );
+      } on FormatException {
+        // One malformed row must not hide every valid product.
+      }
+    }
+    return List.unmodifiable(products);
   }
 
   Map<String, dynamic> _decodeSingle(
