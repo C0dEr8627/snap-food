@@ -98,7 +98,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       suffixIcon: suffix,
       filled: true,
       fillColor: Colors.white,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
         borderSide: const BorderSide(color: SnapFoodColors.softBorder),
@@ -111,10 +111,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
-      body: SafeArea(
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.white, SnapFoodColors.surface, SnapFoodColors.softYellow.withAlpha(65)]),
+        ),
+        child: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(24, 20, 24, 30),
+            padding: const EdgeInsets.fromLTRB(22, 16, 22, 28),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
               child: Form(
@@ -124,8 +128,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   children: [
                     Center(
                       child: SizedBox(
-                        width: 100,
-                        height: 100,
+                        width: 82,
+                        height: 82,
                         child: SvgPicture.asset(
                           'assets/images/customer/logo-without-bg.svg',
                           fit: BoxFit.contain,
@@ -133,7 +137,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 10),
+                    Text('YOUR NEXT FAVOURITE MEAL', textAlign: TextAlign.center, style: theme.textTheme.labelSmall?.copyWith(color: SnapFoodColors.secondary, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
+                    const SizedBox(height: 9),
                     Text('Create your account',
                       textAlign: TextAlign.center,
                       style: theme.textTheme.headlineMedium?.copyWith(
@@ -217,16 +223,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                     const SizedBox(height: 18),
                     SizedBox(
-                      height: 52,
+                      height: 56,
                       child: FilledButton(
                         onPressed: _submitting ? null : _submit,
                         style: FilledButton.styleFrom(
                           backgroundColor: SnapFoodColors.secondary,
                           foregroundColor: SnapFoodColors.onSecondary,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                          elevation: 2,
+                          shadowColor: SnapFoodColors.secondary.withAlpha(55),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                         ),
                         child: _submitting
-                            ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                            ? SizedBox(width: 24, height: 24, child: SvgPicture.asset('assets/images/customer/logo-without-bg.svg', fit: BoxFit.contain))
                             : const Text('Create account', style: TextStyle(fontWeight: FontWeight.w800)),
                       ),
                     ),
@@ -255,6 +263,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
             ),
           ),
+        ),
         ),
       ),
     );
