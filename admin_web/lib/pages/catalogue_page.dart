@@ -38,6 +38,7 @@ class _CataloguePageState extends State<CataloguePage> {
   bool _live = false;
   String _error = '';
   String _imagePreview = '';
+  html.File? _selectedImageFile;
   bool _gridView = true;
 
   @override
@@ -113,13 +114,13 @@ class _CataloguePageState extends State<CataloguePage> {
     _formDietary = product.dietary;
     _name.text = product.name; _slug.text = product.slug; _description.text = product.description;
     _price.text = product.price.toStringAsFixed(2); _prep.text = product.prepTime.toString(); _stock.text = product.stock.toString();
-    _imageUrl.text = product.image ?? ''; _imagePreview = product.image ?? '';
+    _imageUrl.text = product.image ?? ''; _imagePreview = product.image ?? ''; _selectedImageFile = null;
     _openProductDialog();
   }
 
   void _newProduct() {
     setState(() { _selected = null; _creating = true; _error = ''; _imagePreview = ''; _formDietary = 'Non-Veg'; _formCategoryId = _categories.isNotEmpty ? _categories.first.id : null; });
-    _name.clear(); _slug.clear(); _description.clear(); _price.clear(); _prep.text = '15'; _stock.text = '0'; _imageUrl.clear(); _tag.clear();
+    _name.clear(); _slug.clear(); _description.clear(); _price.clear(); _prep.text = '15'; _stock.text = '0'; _imageUrl.clear(); _tag.clear(); _selectedImageFile = null;
     _openProductDialog();
   }
 
@@ -259,7 +260,11 @@ class _CataloguePageState extends State<CataloguePage> {
     }
     setState(() => _saving = true);
     try {
-      final saved = await _repo.save(product);
+      var saved = await _repo.save(product);
+      if (_live && saved.id != null && _selectedImageFile != null) {
+        saved = await _repo.uploadImage(saved.id!, _selectedImageFile!);
+      }
+      _selectedImageFile = null;
       if (!_live) {
         if (_creating) { _previewCatalogueProducts.insert(0, saved); } else {
           final i = _previewCatalogueProducts.indexWhere((p) => p.id == saved.id);
@@ -326,9 +331,15 @@ class _CataloguePageState extends State<CataloguePage> {
     if (!mounted) return;
     final result = reader.result;
     if (result is String) {
-      setState(() { _imagePreview = result; _imageUrl.text = ''; _uploading = false; });
-      _notice(context, 'Image preview ready. The current Laravel API accepts an image URL, so no binary upload endpoint is available yet.');
-    } else { setState(() => _uploading = false); }
+      setState(() {
+        _selectedImageFile = file;
+        _imagePreview = result;
+        _imageUrl.text = '';
+        _uploading = false;
+      });
+    } else {
+      setState(() => _uploading = false);
+    }
   }
 
   Future<void> _manageCategories() async {
