@@ -196,76 +196,188 @@ class DatabaseCatalogueSection extends ConsumerWidget {
 
 class _ProductCard extends StatelessWidget {
   const _ProductCard({required this.product});
+
   final CatalogueProduct product;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: SnapFoodColors.surfaceContainerLowest,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: () => context.push('/food/${product.id}'),
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          width: 214,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: SnapFoodColors.outline.withAlpha(30)),
-            boxShadow: const [BoxShadow(blurRadius: 16, spreadRadius: -8, offset: Offset(0, 8))],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  _CatalogueProductImage(imageUrl: product.imageUrl, width: 214, height: 154, radius: 20),
-                  Positioned(
-                    top: 10, left: 10,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(color: SnapFoodColors.surface.withAlpha(235), borderRadius: BorderRadius.circular(99)),
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                        child: Row(mainAxisSize: MainAxisSize.min, children: [
-                          Icon(Icons.bolt_rounded, size: 13, color: SnapFoodColors.secondary),
-                          SizedBox(width: 3),
-                          Text('Fresh', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800)),
-                        ]),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: 10, bottom: 10,
-                    child: DecoratedBox(
-                      decoration: const BoxDecoration(color: SnapFoodColors.primary, shape: BoxShape.circle),
-                      child: const Padding(padding: EdgeInsets.all(8), child: Icon(Icons.add_rounded, color: SnapFoodColors.warmBlack, size: 19)),
-                    ),
-                  ),
-                ],
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(14, 11, 14, 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+    const cardRadius = 20.0;
+    const imageHeight = 154.0;
+
+    return SizedBox(
+      width: 214,
+      height: 278,
+      child: Material(
+        color: SnapFoodColors.surfaceContainerLowest,
+        elevation: 0,
+        borderRadius: BorderRadius.circular(cardRadius),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => context.push('/food/${product.id}'),
+          borderRadius: BorderRadius.circular(cardRadius),
+          splashColor: SnapFoodColors.primaryContainer.withAlpha(35),
+          highlightColor: SnapFoodColors.primaryContainer.withAlpha(18),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: SnapFoodColors.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(cardRadius),
+              border: Border.all(color: SnapFoodColors.softBorder),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x12000000),
+                  blurRadius: 18,
+                  spreadRadius: -6,
+                  offset: Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(
+                  height: imageHeight,
+                  child: Stack(
+                    fit: StackFit.expand,
                     children: [
-                      Text(product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14, height: 1.15, fontWeight: FontWeight.w900)),
-                      const Spacer(),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text('₹${product.price}', maxLines: 1, overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: SnapFoodColors.secondary)),
+                      _CatalogueProductImage(
+                        imageUrl: product.imageUrl,
+                        width: 214,
+                        height: imageHeight,
+                        radius: cardRadius,
+                      ),
+                      Positioned(
+                        top: 10,
+                        left: 10,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: SnapFoodColors.surfaceContainerLowest.withAlpha(235),
+                            borderRadius: BorderRadius.circular(99),
+                            border: Border.all(
+                              color: SnapFoodColors.softBorder.withAlpha(180),
+                            ),
                           ),
-                          const Icon(Icons.star_rounded, size: 15, color: SnapFoodColors.primary),
-                          const SizedBox(width: 2),
-                          const Text('4.8', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
-                        ],
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 9,
+                              vertical: 5,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.bolt_rounded,
+                                  size: 13,
+                                  color: SnapFoodColors.secondary,
+                                ),
+                                SizedBox(width: 3),
+                                Text(
+                                  'Fresh',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: 10,
+                        bottom: 10,
+                        child: Material(
+                          color: SnapFoodColors.primaryContainer,
+                          shape: const CircleBorder(),
+                          elevation: 4,
+                          shadowColor: SnapFoodColors.warmBlack.withAlpha(45),
+                          child: InkWell(
+                            onTap: () => context.push('/food/${product.id}'),
+                            customBorder: const CircleBorder(),
+                            child: const Padding(
+                              padding: EdgeInsets.all(9),
+                              child: Icon(
+                                Icons.add_rounded,
+                                color: SnapFoodColors.warmBlack,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 12, 12, 11),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            height: 1.25,
+                            fontWeight: FontWeight.w800,
+                            color: SnapFoodColors.onSurface,
+                          ),
+                        ),
+                        const Spacer(),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '₹${product.price}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  height: 1.1,
+                                  fontWeight: FontWeight.w900,
+                                  color: SnapFoodColors.secondary,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 7,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: SnapFoodColors.softYellow,
+                                borderRadius: BorderRadius.circular(99),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.star_rounded,
+                                    size: 13,
+                                    color: SnapFoodColors.primary,
+                                  ),
+                                  SizedBox(width: 2),
+                                  Text(
+                                    '4.8',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w800,
+                                      color: SnapFoodColors.warmBlack,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
