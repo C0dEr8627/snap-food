@@ -4,6 +4,8 @@ import 'auth_models.dart';
 import 'session_store.dart';
 
 abstract interface class AuthRepository {
+  Future<AuthSession> loginWithPassword({required String email, required String password});
+  Future<AuthSession> registerCustomer({required String name, required String email, required String password, required String passwordConfirmation});
   Future<AuthSession> signInWithGoogleCredential(String credential);
   Future<AuthUser> fetchCurrentUser();
   Future<void> logout();
@@ -17,6 +19,46 @@ class RemoteAuthRepository implements AuthRepository {
 
   final ApiClient _client;
   final SessionStore _sessionStore;
+
+  @override
+  Future<AuthSession> loginWithPassword({required String email, required String password}) async {
+    final response = await _client.post('/auth/login', body: {
+      'email': email.trim().toLowerCase(),
+      'password': password,
+    });
+    return _parseSession(response);
+  }
+
+  @override
+  Future<AuthSession> registerCustomer({required String name, required String email, required String password, required String passwordConfirmation}) async {
+    final response = await _client.post('/auth/register', body: {
+      'name': name.trim(),
+      'email': email.trim().toLowerCase(),
+      'password': password,
+      'password_confirmation': passwordConfirmation,
+    });
+    return _parseSession(response);
+  }
+
+  AuthSession _parseSession(dynamic response) {
+    if (response is Map<String, dynamic>) {
+      final data = response['data'];
+      if (data is Map) {
+        final token = data['token'];
+        final user = data['user'];
+        if (token is String && token.isNotEmpty && user is Map) {
+          return AuthSession(
+            token: token,
+            user: AuthUser.fromJson(Map<String, dynamic>.from(user)),
+          );
+        }
+      }
+    }
+    throw const ApiException(
+      message: 'The server returned an unexpected authentication response.',
+      code: 'INVALID_RESPONSE',
+    );
+  }
 
   @override
   Future<AuthSession> signInWithGoogleCredential(String credential) async {
