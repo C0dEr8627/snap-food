@@ -26,14 +26,13 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     );
-    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
-    _scale = Tween<double>(
-      begin: 0.88,
-      end: 1,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic);
+    _scale = Tween<double>(begin: 0.84, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+    );
     _controller.forward();
 
-    Timer(const Duration(milliseconds: 1350), () {
+    Timer(const Duration(milliseconds: 1800), () {
       if (mounted) context.go('/login');
     });
   }
@@ -49,31 +48,127 @@ class _SplashScreenState extends State<SplashScreen>
     final reduceMotion =
         MediaQuery.maybeOf(context)?.disableAnimations ?? false;
 
-    final logo = Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 220, maxHeight: 220),
-        child: SvgPicture.asset(
-          'assets/images/customer/logo.svg',
-          fit: BoxFit.contain,
-          semanticsLabel: 'Snap Foodd',
+    final brand = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 156,
+          height: 156,
+          padding: const EdgeInsets.all(22),
+          decoration: BoxDecoration(
+            color: SnapFoodColors.cream,
+            borderRadius: BorderRadius.circular(42),
+            border: Border.all(color: Colors.white.withAlpha(210), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: SnapFoodColors.warmBlack.withAlpha(18),
+                blurRadius: 34,
+                offset: const Offset(0, 16),
+              ),
+            ],
+          ),
+          child: SvgPicture.asset(
+            'assets/images/customer/logo.svg',
+            fit: BoxFit.contain,
+            semanticsLabel: 'Snap Foodd',
+          ),
         ),
-      ),
+        const SizedBox(height: 30),
+        const Text(
+          'Snap Foodd',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: SnapFoodColors.warmBlack,
+            fontSize: 34,
+            height: 1.05,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -1.2,
+          ),
+        ),
+        const SizedBox(height: 12),
+        const Text(
+          'Your cravings. Your favourites.\nDelivered with care.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: SnapFoodColors.onSurfaceVariant,
+            fontSize: 15,
+            height: 1.5,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 36),
+        SizedBox(
+          width: 30,
+          height: 30,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            color: SnapFoodColors.secondary,
+            backgroundColor: SnapFoodColors.secondary.withAlpha(30),
+          ),
+        ),
+      ],
     );
 
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: reduceMotion
-                ? logo
-                : FadeTransition(
-                    opacity: _fade,
-                    child: ScaleTransition(scale: _scale, child: logo),
-                  ),
+      body: Stack(
+        children: [
+          Positioned(
+            top: -95,
+            right: -85,
+            child: Container(
+              width: 250,
+              height: 250,
+              decoration: BoxDecoration(
+                color: SnapFoodColors.softYellow.withAlpha(150),
+                shape: BoxShape.circle,
+              ),
+            ),
           ),
-        ),
+          Positioned(
+            bottom: -115,
+            left: -75,
+            child: Container(
+              width: 270,
+              height: 270,
+              decoration: BoxDecoration(
+                color: SnapFoodColors.softRed.withAlpha(135),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: reduceMotion
+                    ? brand
+                    : FadeTransition(
+                        opacity: _fade,
+                        child: ScaleTransition(scale: _scale, child: brand),
+                      ),
+              ),
+            ),
+          ),
+          const Positioned(
+            left: 0,
+            right: 0,
+            bottom: 28,
+            child: SafeArea(
+              top: false,
+              child: Text(
+                'GOOD FOOD, JUST A SNAP AWAY',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: SnapFoodColors.outline,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 2.1,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
