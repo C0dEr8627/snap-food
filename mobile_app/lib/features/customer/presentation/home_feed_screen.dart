@@ -7,6 +7,7 @@ import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../../../design_system/tokens/app_spacing.dart';
 import '../../auth/presentation/auth_controller.dart';
+import '../data/catalogue_models.dart';
 import 'catalogue_controller.dart';
 import 'catalogue_state_message.dart';
 
