@@ -247,7 +247,7 @@ class _BrandHeader extends StatelessWidget {
     return Row(
       children: [
         SvgPicture.asset(
-          'assets/images/customer/logo.svg',
+          'assets/images/customer/logo-without-bg.svg',
           width: 46,
           height: 46,
           fit: BoxFit.contain,
@@ -398,7 +398,7 @@ class _FoodHero extends StatelessWidget {
                     ),
                     padding: EdgeInsets.all(size * 0.106),
                     child: SvgPicture.asset(
-                      'assets/images/customer/logo.svg',
+                      'assets/images/customer/logo-without-bg.svg',
                       fit: BoxFit.contain,
                     ),
                   ),
