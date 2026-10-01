@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../design_system/tokens/app_colors.dart';
 import '../../../core/network/api_exception.dart';
+import '../../../design_system/tokens/app_colors.dart';
 import 'auth_controller.dart';
+import 'google_auth_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -47,6 +49,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (state.value?.isAuthenticated == true) context.go('/home');
   }
 
+  Future<void> _googleCredential(String credential) async {
+    await ref.read(authControllerProvider.notifier)
+        .signInWithGoogleCredential(credential);
+    if (!mounted) return;
+    final state = ref.read(authControllerProvider);
+    if (state.hasError) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(_friendlyError(state.error)),
+        behavior: SnackBarBehavior.floating,
+      ));
+    } else if (state.value?.isAuthenticated == true) {
+      context.go('/home');
+    }
+  }
+
   String _friendlyError(Object? error) {
     if (error is ApiException) {
       if (error.code == 'INVALID_CREDENTIALS' || error.statusCode == 401) {
@@ -58,79 +75,158 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (error.code == 'NETWORK_ERROR' || error.code == 'TIMEOUT') {
         return 'Could not connect to Snap Foodd. Check your connection and try again.';
       }
+      if (error.message.isNotEmpty) return error.message;
     }
     return 'We could not sign you in. Please check your details and try again.';
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
-      appBar: AppBar(backgroundColor: SnapFoodColors.surface, elevation: 0),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+            padding: const EdgeInsets.fromLTRB(24, 28, 24, 32),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 440),
+              constraints: const BoxConstraints(maxWidth: 420),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Container(
-                      width: 68,
-                      height: 68,
-                      decoration: BoxDecoration(
-                        color: SnapFoodColors.softRed,
-                        borderRadius: BorderRadius.circular(22),
+                    Center(
+                      child: Container(
+                        width: 88,
+                        height: 88,
+                        padding: const EdgeInsets.all(13),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(26),
+                          boxShadow: [
+                            BoxShadow(
+                              color: SnapFoodColors.warmBlack.withAlpha(12),
+                              blurRadius: 24,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: SvgPicture.asset(
+                          'assets/images/customer/logo.svg',
+                          fit: BoxFit.contain,
+                          semanticsLabel: 'Snap Foodd',
+                        ),
                       ),
-                      child: const Icon(Icons.restaurant_rounded, size: 34, color: SnapFoodColors.foodRed),
+                    ),
+                    const SizedBox(height: 22),
+                    Text('Welcome back',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.8,
+                        color: SnapFoodColors.warmBlack,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Sign in to order from your local favourites.',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: SnapFoodColors.onSurfaceVariant,
+                      ),
                     ),
                     const SizedBox(height: 28),
-                    Text('Welcome back', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800, color: SnapFoodColors.warmBlack)),
-                    const SizedBox(height: 8),
-                    Text('Sign in to discover your next favourite meal.', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: SnapFoodColors.onSurfaceVariant)),
-                    const SizedBox(height: 30),
                     TextFormField(
                       controller: _email,
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.username, AutofillHints.email],
-                      decoration: const InputDecoration(labelText: 'Email address', hintText: 'you@example.com', prefixIcon: Icon(Icons.mail_outline_rounded), border: OutlineInputBorder()),
+                      decoration: InputDecoration(
+                        labelText: 'Email address',
+                        hintText: 'you@example.com',
+                        prefixIcon: const Icon(Icons.mail_outline_rounded),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(color: SnapFoodColors.softBorder),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(color: SnapFoodColors.softBorder),
+                        ),
+                      ),
                       validator: (value) {
                         final email = value?.trim() ?? '';
                         if (email.isEmpty) return 'Enter your email address.';
-                        if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)) return 'Enter a valid email address.';
+                        if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)) {
+                          return 'Enter a valid email address.';
+                        }
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
                     TextFormField(
                       controller: _password,
                       obscureText: _obscurePassword,
                       textInputAction: TextInputAction.done,
                       autofillHints: const [AutofillHints.password],
                       onFieldSubmitted: (_) => _submit(),
-                      decoration: InputDecoration(labelText: 'Password', prefixIcon: const Icon(Icons.lock_outline_rounded), border: const OutlineInputBorder(), suffixIcon: IconButton(tooltip: _obscurePassword ? 'Show password' : 'Hide password', onPressed: () => setState(() => _obscurePassword = !_obscurePassword), icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined))),
-                      validator: (value) => (value == null || value.isEmpty) ? 'Enter your password.' : null,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        prefixIcon: const Icon(Icons.lock_outline_rounded),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(color: SnapFoodColors.softBorder),
+                        ),
+                        suffixIcon: IconButton(
+                          tooltip: _obscurePassword ? 'Show password' : 'Hide password',
+                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                        ),
+                      ),
+                      validator: (value) => (value == null || value.isEmpty)
+                          ? 'Enter your password.' : null,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                     SizedBox(
                       height: 54,
                       child: FilledButton(
                         onPressed: _submitting ? null : _submit,
-                        style: FilledButton.styleFrom(backgroundColor: SnapFoodColors.secondary, foregroundColor: SnapFoodColors.onSecondary),
-                        child: _submitting ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Sign in', style: TextStyle(fontWeight: FontWeight.w800)),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: SnapFoodColors.secondary,
+                          foregroundColor: SnapFoodColors.onSecondary,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        child: _submitting
+                            ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                            : const Text('Sign in', style: TextStyle(fontWeight: FontWeight.w800)),
                       ),
                     ),
-                    const SizedBox(height: 18),
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      Text("Don't have an account? ", style: TextStyle(color: SnapFoodColors.onSurfaceVariant)),
-                      TextButton(onPressed: () => context.go('/register'), child: const Text('Create account')),
-                    ]),
+                    const SizedBox(height: 20),
+                    const _AuthDivider(),
+                    const SizedBox(height: 20),
+                    GoogleAuthButton(onCredential: _googleCredential),
+                    const SizedBox(height: 22),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("New to Snap Foodd? ",
+                          style: TextStyle(color: SnapFoodColors.onSurfaceVariant)),
+                        TextButton(
+                          onPressed: () => context.go('/register'),
+                          child: const Text('Create account', style: TextStyle(fontWeight: FontWeight.w800)),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 8),
-                    Text('Your account is protected with secure sign-in.', textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SnapFoodColors.outline)),
+                    Text('Fast, local food — delivered with care.',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodySmall?.copyWith(color: SnapFoodColors.outline)),
                   ],
                 ),
               ),
@@ -140,4 +236,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ),
     );
   }
+}
+
+class _AuthDivider extends StatelessWidget {
+  const _AuthDivider();
+
+  @override
+  Widget build(BuildContext context) => Row(children: [
+    const Expanded(child: Divider(color: SnapFoodColors.softBorder)),
+    Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      child: Text('OR', style: Theme.of(context).textTheme.labelSmall?.copyWith(
+        color: SnapFoodColors.outline, fontWeight: FontWeight.w800, letterSpacing: 1.2,
+      )),
+    ),
+    const Expanded(child: Divider(color: SnapFoodColors.softBorder)),
+  ]);
 }
