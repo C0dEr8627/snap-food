@@ -76,6 +76,33 @@ class AuthController extends Controller
 
         $user = User::where('email', $validated['email'])->first();
 
+        // One-time production bootstrap: when the production database has no
+        // admin yet, allow the configured bootstrap credentials to create the
+        // first admin account. The credentials must be removed from .env after
+        // the first successful login.
+        if ($user === null) {
+            $bootstrapEmail = config('services.google.admin_bootstrap_email');
+            $bootstrapPassword = env('ADMIN_BOOTSTRAP_PASSWORD');
+
+            if (
+                is_string($bootstrapEmail)
+                && $bootstrapEmail !== ''
+                && strcasecmp($validated['email'], $bootstrapEmail) === 0
+                && is_string($bootstrapPassword)
+                && $bootstrapPassword !== ''
+                && hash_equals($bootstrapPassword, $validated['password'])
+                && ! User::where('role', User::ROLE_ADMIN)->exists()
+            ) {
+                $user = User::create([
+                    'name' => 'Admin',
+                    'email' => $bootstrapEmail,
+                    'password' => Hash::make($bootstrapPassword),
+                    'role' => User::ROLE_ADMIN,
+                    'is_active' => true,
+                ]);
+            }
+        }
+
         if (
             $user === null
             || ! $user->is_active
