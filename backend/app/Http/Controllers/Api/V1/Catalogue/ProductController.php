@@ -77,8 +77,6 @@ class ProductController extends Controller
 
     public function image(Product $product): \Symfony\Component\HttpFoundation\Response
     {
-        abort_unless($product->is_active && $product->is_available, 404);
-
         $image = $product->image;
         if (! is_string($image) || ! str_starts_with($image, '/uploads/products/')) {
             abort(404);
