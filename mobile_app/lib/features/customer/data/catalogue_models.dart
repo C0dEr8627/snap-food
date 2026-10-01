@@ -44,9 +44,7 @@ class CatalogueProduct {
             json['is_available'] ?? json['isAvailable'] ?? json['available'],
           ) ??
           true,
-      category: categoryJson is Map
-          ? CatalogueCategory.fromJson(Map<String, dynamic>.from(categoryJson))
-          : null,
+      category: _decodeCategory(categoryJson),
       imageUrl: _optionalString(
         json['image_url'] ??
             json['imageUrl'] ??
@@ -119,4 +117,13 @@ bool? _optionalBool(Object? value) {
   if (normalized == '1' || normalized == 'true' || normalized == 'yes') return true;
   if (normalized == '0' || normalized == 'false' || normalized == 'no') return false;
   return null;
+}
+
+CatalogueCategory? _decodeCategory(Object? value) {
+  if (value is! Map) return null;
+  try {
+    return CatalogueCategory.fromJson(Map<String, dynamic>.from(value));
+  } on FormatException {
+    return null;
+  }
 }
