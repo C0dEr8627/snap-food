@@ -25,3 +25,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/customer/logo.svg
+    - assets/images/customer/logo-without-bg.svg
