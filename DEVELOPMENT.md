@@ -10,6 +10,40 @@ This document describes the high-level implementation sequence. It is not a seco
 
 Follow the branch and integration rules in `AIDLC_WORKFLOW.md`. Do not assume ownership of a file based only on the table above when the task explicitly assigns a different scope.
 
+## Local mobile API integration
+
+The mobile Flutter app reads its API base URL from `--dart-define=API_BASE_URL=...`. The value must include the API prefix `/api/v1`.
+
+Start the Laravel API from the `backend/` directory using the project's normal local setup. Keep the backend running while testing the app.
+
+### Flutter web / Chrome
+```bash
+cd mobile_app
+flutter pub get
+flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:8000/api/v1
+```
+
+### Android emulator
+The Android emulator cannot reach the host machine's `localhost` directly. Use the emulator host bridge `10.0.2.2`:
+```bash
+cd mobile_app
+flutter pub get
+flutter run -d android --dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1
+```
+
+The Android debug manifest permits cleartext HTTP for local development only. The main manifest includes the INTERNET permission. Do not enable cleartext traffic in release builds; use HTTPS for deployed environments.
+
+### iOS simulator
+```bash
+cd mobile_app
+flutter pub get
+flutter run -d ios --dart-define=API_BASE_URL=http://localhost:8000/api/v1
+```
+
+For a physical device, replace `localhost` with the development machine's LAN IP and ensure the device and machine can reach each other. The backend must listen on an address reachable from the device, and local firewall rules must allow the port.
+
+The configured base URL is not a substitute for testing the endpoint: verify Laravel is responding at `/api/v1`, and check backend logs for request validation/authorization errors. A browser client may also require correct Laravel CORS configuration.
+
 ## Implementation sequence
 
 Work in small, verifiable vertical slices. The intended dependency order is:
