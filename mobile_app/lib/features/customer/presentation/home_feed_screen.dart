@@ -20,6 +20,7 @@ class HomeFeedScreen extends ConsumerStatefulWidget {
 class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
   int filter = 0;
   int nav = 0;
+  int? selectedCategoryId;
 
   @override
   Widget build(BuildContext context) {
@@ -31,15 +32,10 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
           children: [
             Positioned.fill(
               child: SingleChildScrollView(
-                padding: EdgeInsets.only(
-                  top: 76,
-                  bottom: 88 + MediaQuery.paddingOf(context).bottom,
-                ),
+                padding: EdgeInsets.only(top: 76, bottom: 88 + MediaQuery.paddingOf(context).bottom),
                 child: Center(
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: SnapFoodSpacing.desktopMaxContentWidth,
-                    ),
+                    constraints: const BoxConstraints(maxWidth: SnapFoodSpacing.desktopMaxContentWidth),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
@@ -49,24 +45,22 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
                           const SizedBox(height: 20),
                           Consumer(
                             builder: (context, ref, _) {
-                              final catalogue =
-                                  ref.watch(catalogueControllerProvider);
+                              final catalogue = ref.watch(catalogueControllerProvider);
                               return CatalogueStateMessage(
                                 value: catalogue,
-                                onRetry: () => ref
-                                    .read(catalogueControllerProvider.notifier)
-                                    .retry(),
+                                onRetry: () => ref.read(catalogueControllerProvider.notifier).retry(),
                               );
                             },
                           ),
-                          const SizedBox(height: 20),
-                          SearchFilters(
-                            selected: filter,
-                            onSelected: (value) =>
-                                setState(() => filter = value),
+                          const SizedBox(height: 18),
+                          SearchFilters(selected: filter, onSelected: (value) => setState(() => filter = value)),
+                          const SizedBox(height: 18),
+                          CategoryPills(
+                            selectedCategoryId: selectedCategoryId,
+                            onSelected: (value) => setState(() => selectedCategoryId = value),
                           ),
-                          const SizedBox(height: 20),
-                          const DatabaseCatalogueSection(),
+                          const SizedBox(height: 22),
+                          DatabaseCatalogueSection(selectedCategoryId: selectedCategoryId),
                         ],
                       ),
                     ),
@@ -74,20 +68,10 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
                 ),
               ),
             ),
-            const Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: HomeHeader(),
-            ),
+            const Positioned(top: 0, left: 0, right: 0, child: HomeHeader()),
             Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: BottomNav(
-                selected: nav,
-                onSelected: (value) => setState(() => nav = value),
-              ),
+              left: 0, right: 0, bottom: 0,
+              child: BottomNav(selected: nav, onSelected: (value) => setState(() => nav = value)),
             ),
           ],
         ),
@@ -96,21 +80,70 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
   }
 }
 
+class CategoryPills extends ConsumerWidget {
+  const CategoryPills({required this.selectedCategoryId, required this.onSelected});
+
+  final int? selectedCategoryId;
+  final ValueChanged<int?> onSelected;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final catalogue = ref.watch(catalogueControllerProvider);
+    return catalogue.maybeWhen(
+      data: (snapshot) {
+        final categories = snapshot.categories;
+        if (categories.isEmpty) return const SizedBox.shrink();
+        return SizedBox(
+          height: 42,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            itemCount: categories.length + 1,
+            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            itemBuilder: (_, index) {
+              final isAll = index == 0;
+              final category = isAll ? null : categories[index - 1];
+              final selected = isAll ? selectedCategoryId == null : selectedCategoryId == category!.id;
+              return ChoiceChip(
+                selected: selected,
+                showCheckmark: false,
+                onSelected: (_) => onSelected(isAll ? null : category!.id),
+                label: Text(isAll ? 'All' : category!.name),
+                avatar: Icon(isAll ? Icons.grid_view_rounded : Icons.restaurant_rounded, size: 16),
+                labelStyle: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: selected ? SnapFoodColors.warmBlack : SnapFoodColors.onSurfaceVariant,
+                ),
+                backgroundColor: SnapFoodColors.surfaceContainerLowest,
+                selectedColor: SnapFoodColors.primaryContainer,
+                side: BorderSide(color: selected ? SnapFoodColors.primary.withAlpha(90) : SnapFoodColors.outline.withAlpha(28)),
+                shape: const StadiumBorder(),
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+              );
+            },
+          ),
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+}
+
 class DatabaseCatalogueSection extends ConsumerWidget {
-  const DatabaseCatalogueSection({super.key});
+  const DatabaseCatalogueSection({super.key, this.selectedCategoryId});
+  final int? selectedCategoryId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final catalogue = ref.watch(catalogueControllerProvider);
     return catalogue.when(
-      loading: () => const SizedBox(
-        height: 120,
-        child: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () => const SizedBox(height: 220, child: Center(child: CircularProgressIndicator())),
       error: (error, _) => const SizedBox.shrink(),
       data: (snapshot) {
         final products = snapshot.products.items
             .where((product) => product.isActive && product.isAvailable)
+            .where((product) => selectedCategoryId == null || product.categoryId == selectedCategoryId)
             .toList(growable: false);
 
         if (products.isEmpty) {
@@ -120,22 +153,14 @@ class DatabaseCatalogueSection extends ConsumerWidget {
             decoration: BoxDecoration(
               color: SnapFoodColors.surfaceContainerLowest,
               borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+              border: Border.all(color: SnapFoodColors.outline.withAlpha(25)),
             ),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Explore the menu',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
-                ),
+                Text('Nothing here yet', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
                 SizedBox(height: 5),
-                Text(
-                  'New dishes will appear here when they are available.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: SnapFoodColors.onSurfaceVariant,
-                  ),
-                ),
+                Text('Try another category to explore available dishes.', style: TextStyle(fontSize: 12, color: SnapFoodColors.onSurfaceVariant)),
               ],
             ),
           );
@@ -144,67 +169,105 @@ class DatabaseCatalogueSection extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'From our catalogue',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+            Row(
+              children: [
+                const Expanded(child: Text('Popular dishes', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900))),
+                Text('${products.length} items', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: SnapFoodColors.onSurfaceVariant)),
+              ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             SizedBox(
-              height: 118,
+              height: 278,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
                 itemCount: products.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 10),
-                itemBuilder: (context, index) {
-                  final product = products[index];
-                  return Container(
-                    width: 190,
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: SnapFoodColors.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-                      border: Border.all(
-                        color: SnapFoodColors.outline.withAlpha(35),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _CatalogueProductImage(
-                          imageUrl: product.imageUrl,
-                          width: 42,
-                          height: 42,
-                          radius: SnapFoodRadii.md,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          product.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '₹' + product.price,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: SnapFoodColors.secondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                separatorBuilder: (_, __) => const SizedBox(width: 14),
+                itemBuilder: (context, index) => _ProductCard(product: products[index]),
               ),
             ),
           ],
         );
       },
+    );
+  }
+}
+
+class _ProductCard extends StatelessWidget {
+  const _ProductCard({required this.product});
+  final CatalogueProduct product;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: SnapFoodColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: () => context.push('/food/${product.id}'),
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          width: 214,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: SnapFoodColors.outline.withAlpha(30)),
+            boxShadow: const [BoxShadow(blurRadius: 16, spreadRadius: -8, offset: Offset(0, 8))],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                children: [
+                  _CatalogueProductImage(imageUrl: product.imageUrl, width: 214, height: 154, radius: 20),
+                  Positioned(
+                    top: 10, left: 10,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(color: SnapFoodColors.surface.withAlpha(235), borderRadius: BorderRadius.circular(99)),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                        child: Row(mainAxisSize: MainAxisSize.min, children: [
+                          Icon(Icons.bolt_rounded, size: 13, color: SnapFoodColors.secondary),
+                          SizedBox(width: 3),
+                          Text('Fresh', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800)),
+                        ]),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: 10, bottom: 10,
+                    child: DecoratedBox(
+                      decoration: const BoxDecoration(color: SnapFoodColors.primary, shape: BoxShape.circle),
+                      child: const Padding(padding: EdgeInsets.all(8), child: Icon(Icons.add_rounded, color: SnapFoodColors.warmBlack, size: 19)),
+                    ),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 11, 14, 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14, height: 1.15, fontWeight: FontWeight.w900)),
+                      const Spacer(),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text('₹${product.price}', maxLines: 1, overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: SnapFoodColors.secondary)),
+                          ),
+                          const Icon(Icons.star_rounded, size: 15, color: SnapFoodColors.primary),
+                          const SizedBox(width: 2),
+                          const Text('4.8', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
