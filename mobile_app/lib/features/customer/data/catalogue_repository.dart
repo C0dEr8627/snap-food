@@ -14,7 +14,7 @@ class RemoteCatalogueRepository implements CatalogueRepository {
 
   @override
   Future<List<CatalogueCategory>> fetchCategories() async {
-    final response = await _client.get('/categories');
+    final response = await _client.get('/consumer/categories');
     final records = _decodeCollection(response, resource: 'categories');
     try {
       return records.map(CatalogueCategory.fromJson).toList(growable: false);
@@ -28,7 +28,7 @@ class RemoteCatalogueRepository implements CatalogueRepository {
     Map<String, String>? queryParameters,
   }) async {
     final response = await _client.get(
-      '/products',
+      '/consumer/products',
       queryParameters: queryParameters,
     );
     return _decodeProductPage(response);
@@ -45,7 +45,7 @@ class RemoteCatalogueRepository implements CatalogueRepository {
       );
     }
     final response = await _client.get(
-      '/products/${Uri.encodeComponent(normalized)}',
+      '/consumer/products/${Uri.encodeComponent(normalized)}',
     );
     final payload = _decodeSingle(response, resource: 'product');
     try {
