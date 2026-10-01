@@ -85,6 +85,8 @@ class _UsersPageState extends State<UsersPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _UsersPageHeader(total: _total, visible: users.length, loading: _loading),
+        const SizedBox(height: 14),
         _UsersToolbar(
           controller: _search,
           filter: _filter,
@@ -96,8 +98,6 @@ class _UsersPageState extends State<UsersPage> {
           onRefresh: () => _load(page: _page),
           loading: _loading,
         ),
-        const SizedBox(height: 14),
-        _UsersPageHeader(total: _total, visible: users.length, loading: _loading),
         const SizedBox(height: 14),
         if (_error != null)
           _UsersError(message: _error!, onRetry: () => _load(page: _page))
