@@ -124,6 +124,9 @@ class _CataloguePageState extends State<CataloguePage> {
   }
 
   Future<void> _openProductDialog() async {
+    final viewport = MediaQuery.sizeOf(context);
+    final dialogWidth = (viewport.width - 48).clamp(320.0, 920.0);
+    final dialogHeight = (viewport.height - 48).clamp(280.0, 760.0);
     if (_categories.isEmpty) {
       _notice(context, 'Create a category before adding an item.', error: true);
       return;
@@ -151,9 +154,9 @@ class _CataloguePageState extends State<CataloguePage> {
           ],
         ),
         content: SizedBox(
-          width: 980,
+          width: dialogWidth,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 680),
+            constraints: BoxConstraints(maxHeight: dialogHeight),
             child: SingleChildScrollView(
               child: _ProductEditor(
             form: _form,
@@ -1254,13 +1257,32 @@ class _ProductEditor extends StatelessWidget {
 
     return Form(
       key: form,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(width: 245, child: imagePicker),
-          const SizedBox(width: 22),
-          Expanded(child: details),
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Keep the editor attached to the dialog's available width. On narrow
+          // viewports, stack the image controls above the form instead of
+          // forcing a wide row that leaves unused space or overflows.
+          final compact = constraints.maxWidth < 650;
+          if (compact) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                imagePicker,
+                const SizedBox(height: 20),
+                details,
+              ],
+            );
+          }
+          final imageWidth = (constraints.maxWidth * 0.30).clamp(210.0, 260.0);
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(width: imageWidth, child: imagePicker),
+              const SizedBox(width: 22),
+              Expanded(child: details),
+            ],
+          );
+        },
       ),
     );
   }
