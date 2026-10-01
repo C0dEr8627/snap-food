@@ -82,6 +82,13 @@ class RemoteOrderRepository implements OrderRepository {
   }
 
   OrderPage _decodePage(Object? response) {
+    if (response is List) {
+      final orders = response
+          .whereType<Map>()
+          .map((item) => Order.fromJson(Map<String, dynamic>.from(item)))
+          .toList(growable: false);
+      return OrderPage(orders: orders, currentPage: 1, lastPage: 1, total: orders.length);
+    }
     if (response is! Map<String, dynamic>) {
       throw const ApiException(
         message: 'The server returned an unexpected order list response.',
