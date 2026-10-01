@@ -151,9 +151,9 @@ class _CataloguePageState extends State<CataloguePage> {
           ],
         ),
         content: SizedBox(
-          width: 610,
+          width: 980,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 650),
+            constraints: const BoxConstraints(maxHeight: 680),
             child: SingleChildScrollView(
               child: _ProductEditor(
             form: _form,
@@ -1055,7 +1055,7 @@ class _ProductEditor extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             child: Container(
               width: double.infinity,
-              height: 220,
+              height: 250,
               decoration: BoxDecoration(
                 color: AdminColors.peach,
                 borderRadius: BorderRadius.circular(12),
@@ -1257,8 +1257,8 @@ class _ProductEditor extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 170, child: imagePicker),
-          const SizedBox(width: 14),
+          SizedBox(width: 245, child: imagePicker),
+          const SizedBox(width: 22),
           Expanded(child: details),
         ],
       ),
