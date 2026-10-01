@@ -38,6 +38,7 @@ class _CataloguePageState extends State<CataloguePage> {
   bool _live = false;
   String _error = '';
   String _imagePreview = '';
+  List<String> _formTags = [];
   html.File? _selectedImageFile;
   bool _gridView = true;
 
@@ -112,6 +113,7 @@ class _CataloguePageState extends State<CataloguePage> {
     setState(() { _selected = product; _creating = false; });
     _formCategoryId = product.categoryId;
     _formDietary = product.dietary;
+    _formTags = List<String>.of(product.tags);
     _name.text = product.name; _slug.text = product.slug; _description.text = product.description;
     _price.text = product.price.toStringAsFixed(2); _prep.text = product.prepTime.toString(); _stock.text = product.stock.toString();
     _imageUrl.text = product.image ?? ''; _imagePreview = product.image ?? ''; _selectedImageFile = null;
@@ -119,7 +121,7 @@ class _CataloguePageState extends State<CataloguePage> {
   }
 
   void _newProduct() {
-    setState(() { _selected = null; _creating = true; _error = ''; _imagePreview = ''; _formDietary = 'Non-Veg'; _formCategoryId = _categories.isNotEmpty ? _categories.first.id : null; });
+    setState(() { _selected = null; _creating = true; _error = ''; _imagePreview = ''; _formDietary = 'Non-Veg'; _formTags = []; _formCategoryId = _categories.isNotEmpty ? _categories.first.id : null; });
     _name.clear(); _slug.clear(); _description.clear(); _price.clear(); _prep.text = '15'; _stock.text = '0'; _imageUrl.clear(); _tag.clear(); _selectedImageFile = null;
     _openProductDialog();
   }
@@ -215,7 +217,13 @@ class _CataloguePageState extends State<CataloguePage> {
               if (_selected != null) _selected!.categoryId = v;
             },
             onDietary: (v) {
+              _formDietary = v;
               if (_selected != null) _selected!.dietary = v;
+              setState(() {});
+            },
+            onTags: (tags) {
+              _formTags = List<String>.of(tags);
+              if (_selected != null) _selected!.tags = List<String>.of(tags);
               setState(() {});
             },
               ),
@@ -244,7 +252,7 @@ class _CataloguePageState extends State<CataloguePage> {
       price: double.tryParse(_price.text.trim()) ?? 0, stock: int.tryParse(_stock.text.trim()) ?? 0,
       available: true, active: true, image: _imageUrl.text.trim().isEmpty ? null : _imageUrl.text.trim(),
       dietary: _selected?.dietary ?? _formDietary, prepTime: int.tryParse(_prep.text.trim()) ?? 15,
-      tags: _selected?.tags ?? [],
+      tags: List<String>.of(_formTags),
     );
     if (product.categoryId == null) { _notice(context, 'Select a category before saving.', error: true); return false; }
     final imageValue = _imageUrl.text.trim();
@@ -1056,6 +1064,7 @@ class _ProductEditor extends StatelessWidget {
     required this.onDeactivate,
     required this.onCategory,
     required this.onDietary,
+    required this.onTags,
   });
 
   final GlobalKey<FormState> form;
@@ -1081,6 +1090,7 @@ class _ProductEditor extends StatelessWidget {
   final Future<void> Function() onDeactivate;
   final ValueChanged<int?> onCategory;
   final ValueChanged<String> onDietary;
+  final ValueChanged<List<String>> onTags;
 
   @override
   Widget build(BuildContext context) {
@@ -1163,7 +1173,12 @@ class _ProductEditor extends StatelessWidget {
       },
     );
 
-    final details = Column(
+    var editorCategoryId = formCategoryId;
+    var editorDietary = formDietary;
+    var editorTags = List<String>.of(selected?.tags ?? const <String>[]);
+
+    final details = StatefulBuilder(
+      builder: (context, setEditorState) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 2),
@@ -1176,22 +1191,46 @@ class _ProductEditor extends StatelessWidget {
             value: c.id,
             child: Text(c.name),
           )).toList(),
-          formCategoryId ?? (categories.isNotEmpty ? categories.first.id : null),
-          onCategory,
+          editorCategoryId ?? (categories.isNotEmpty ? categories.first.id : null),
+          (value) {
+            setEditorState(() => editorCategoryId = value);
+            onCategory(value);
+          },
         ),
         const SizedBox(height: 12),
         _label('Dietary Classification', null),
         Wrap(
-          spacing: 6,
-          runSpacing: 6,
-          children: ['Pure Veg', 'Non-Veg', 'Contains Egg'].map(
-            (e) => (formDietary == e
-                ? shad.Button.secondary
-                : shad.Button.ghost)(
-              onPressed: () => onDietary(e),
-              child: Text(e, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
-            ),
-          ).toList(),
+          spacing: 7,
+          runSpacing: 7,
+          children: ['Pure Veg', 'Non-Veg', 'Contains Egg'].map((e) {
+            final active = editorDietary == e;
+            return Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  setEditorState(() => editorDietary = e);
+                  onDietary(e);
+                },
+                borderRadius: BorderRadius.circular(9),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 120),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                  decoration: BoxDecoration(
+                    color: active ? AdminColors.yellow : Colors.white,
+                    borderRadius: BorderRadius.circular(9),
+                    border: Border.all(
+                      color: active ? AdminColors.amber : AdminColors.line,
+                      width: active ? 1.2 : 1,
+                    ),
+                  ),
+                  child: Text(
+                    e,
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
         ),
         const SizedBox(height: 12),
         Row(
@@ -1224,18 +1263,20 @@ class _ProductEditor extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _label('Ingredients & Tags', null),
-        if (selected == null || selected!.tags.isEmpty)
+        if (editorTags.isEmpty)
           const Text('No tags yet', style: TextStyle(fontSize: 11, color: AdminColors.muted))
         else
           Wrap(
             spacing: 5,
             runSpacing: 5,
-            children: selected!.tags.map(
+            children: editorTags.map(
               (e) => InputChip(
                 label: Text(e, style: const TextStyle(fontSize: 11)),
                 onDeleted: () {
-                  selected!.tags.remove(e);
-                  (context as Element).markNeedsBuild();
+                  setEditorState(() {
+                    editorTags = List<String>.of(editorTags)..remove(e);
+                  });
+                  onTags(editorTags);
                 },
               ),
             ).toList(),
@@ -1243,10 +1284,13 @@ class _ProductEditor extends StatelessWidget {
         const SizedBox(height: 8),
         shad.OutlineButton(
           onPressed: () {
-            if (tag.text.trim().isEmpty || selected == null) return;
-            selected!.tags = [...selected!.tags, tag.text.trim()];
+            final value = tag.text.trim();
+            if (value.isEmpty || editorTags.contains(value)) return;
+            setEditorState(() {
+              editorTags = [...editorTags, value];
+            });
             tag.clear();
-            (context as Element).markNeedsBuild();
+            onTags(editorTags);
           },
           leading: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 15),
           child: const Text('Add tag', style: TextStyle(fontSize: 11)),
@@ -1417,27 +1461,52 @@ Widget _field(TextEditingController c, String hint, {String? label, int? maxLeng
   ],
 );
 
-Widget _dropdownField(String label, List<DropdownMenuItem<int?>> items, int? value, ValueChanged<int?> onChanged) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-  Padding(padding: const EdgeInsets.only(bottom: 5), child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted))),
-  SizedBox(height: 43, child: shad.Select<int?>(
-    value: items.any((i) => i.value == value) ? value : (items.isEmpty ? null : items.first.value),
-    onChanged: onChanged,
-    placeholder: const Text('Select category'),
-    popup: (context) => shad.SelectPopup(
-      items: shad.SelectItemList(
-        children: items.map((entry) => shad.SelectItem(
-          value: entry.value,
-          builder: (_) => entry.child,
-        )).toList(),
-      ),
-    ),
-    itemBuilder: (context, item) {
-      final match = items.where((entry) => entry.value == item).toList();
-      return match.isEmpty ? const Text('Select category') : match.first.child;
-    },
-  )),
-]);
-
+Widget _dropdownField(
+  String label,
+  List<DropdownMenuItem<int?>> items,
+  int? value,
+  ValueChanged<int?> onChanged,
+) =>
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+              color: AdminColors.muted,
+            ),
+          ),
+        ),
+        Container(
+          height: 43,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(9),
+            border: Border.all(color: AdminColors.line),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<int?>(
+              value: items.any((item) => item.value == value)
+                  ? value
+                  : (items.isEmpty ? null : items.first.value),
+              isExpanded: true,
+              icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 19),
+              hint: const Text(
+                'Select category',
+                style: TextStyle(fontSize: 11, color: AdminColors.muted),
+              ),
+              onChanged: items.isEmpty ? null : onChanged,
+              items: items,
+            ),
+          ),
+        ),
+      ],
+    );
 
 
 class _ErrorBanner extends StatelessWidget {
