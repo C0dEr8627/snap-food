@@ -85,10 +85,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
-      body: SafeArea(
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.white, SnapFoodColors.surface, SnapFoodColors.softYellow.withAlpha(65)]),
+        ),
+        child: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(24, 28, 24, 32),
+            padding: const EdgeInsets.fromLTRB(22, 22, 22, 30),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
               child: Form(
@@ -98,8 +102,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   children: [
                     Center(
                       child: SizedBox(
-                        width: 112,
-                        height: 112,
+                        width: 94,
+                        height: 94,
                         child: SvgPicture.asset(
                           'assets/images/customer/logo-without-bg.svg',
                           fit: BoxFit.contain,
@@ -107,7 +111,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 22),
+                    const SizedBox(height: 14),
+                    Container(
+                      alignment: Alignment.center,
+                      child: Text('GOOD FOOD, JUST A SNAP AWAY', style: theme.textTheme.labelSmall?.copyWith(color: SnapFoodColors.secondary, fontWeight: FontWeight.w900, letterSpacing: 1.7)),
+                    ),
+                    const SizedBox(height: 10),
                     Text('Welcome back',
                       textAlign: TextAlign.center,
                       style: theme.textTheme.headlineMedium?.copyWith(
@@ -124,7 +133,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         color: SnapFoodColors.onSurfaceVariant,
                       ),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 26),
                     TextFormField(
                       controller: _email,
                       keyboardType: TextInputType.emailAddress,
@@ -137,7 +146,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(18),
                           borderSide: const BorderSide(color: SnapFoodColors.softBorder),
                         ),
                         enabledBorder: OutlineInputBorder(
@@ -182,16 +191,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: 20),
                     SizedBox(
-                      height: 54,
+                      height: 58,
                       child: FilledButton(
                         onPressed: _submitting ? null : _submit,
                         style: FilledButton.styleFrom(
                           backgroundColor: SnapFoodColors.secondary,
                           foregroundColor: SnapFoodColors.onSecondary,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          elevation: 2,
+                          shadowColor: SnapFoodColors.secondary.withAlpha(55),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                         ),
                         child: _submitting
-                            ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                            ? SizedBox(width: 24, height: 24, child: SvgPicture.asset('assets/images/customer/logo-without-bg.svg', fit: BoxFit.contain))
                             : const Text('Sign in', style: TextStyle(fontWeight: FontWeight.w800)),
                       ),
                     ),
@@ -220,6 +231,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
             ),
           ),
+        ),
         ),
       ),
     );
