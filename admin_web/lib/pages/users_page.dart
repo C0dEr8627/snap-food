@@ -401,53 +401,59 @@ class _UsersTable extends StatelessWidget {
           border: Border.all(color: AdminColors.line),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minWidth: 930),
-            child: shad.Table(
-              rows: [
-                shad.TableHeader(cells: const [
-                  shad.TableCell(child: Text('USER')),
-                  shad.TableCell(child: Text('ROLE')),
-                  shad.TableCell(child: Text('STATUS')),
-                  shad.TableCell(child: Text('ORDERS')),
-                  shad.TableCell(child: Text('ADDRESSES')),
-                  shad.TableCell(child: Text('JOINED')),
-                  shad.TableCell(child: Text('ACTIONS')),
-                ]),
-                ...users.map((user) => shad.TableRow(cells: [
-                      shad.TableCell(
-                        child: SizedBox(
-                          width: 190,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(user.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
-                              const SizedBox(height: 3),
-                              Text(user.email.isEmpty ? 'No email recorded' : user.email, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 10.5, color: AdminColors.muted)),
-                              Text('#${user.id}', style: const TextStyle(fontSize: 10, color: AdminColors.muted)),
-                            ],
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 1230),
+              child: shad.Table(
+                rows: [
+                  shad.TableHeader(cells: const [
+                    shad.TableCell(child: Text('ID')),
+                    shad.TableCell(child: Text('NAME')),
+                    shad.TableCell(child: Text('EMAIL')),
+                    shad.TableCell(child: Text('ROLE')),
+                    shad.TableCell(child: Text('STATUS')),
+                    shad.TableCell(child: Text('ORDERS')),
+                    shad.TableCell(child: Text('ADDRESSES')),
+                    shad.TableCell(child: Text('JOINED')),
+                    shad.TableCell(child: Text('')),
+                  ]),
+                  ...users.map((user) => shad.TableRow(cells: [
+                        shad.TableCell(child: Text('#${user.id}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.muted))),
+                        shad.TableCell(
+                          child: SizedBox(
+                            width: 190,
+                            child: Text(user.name.isEmpty ? 'Unnamed user' : user.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
                           ),
                         ),
-                      ),
-                      shad.TableCell(child: _UserRolePill(user.role)),
-                      shad.TableCell(child: _UserStatusPill(user.active)),
-                      shad.TableCell(child: Text(user.ordersCount.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800))),
-                      shad.TableCell(child: Text(user.addresses.length.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800))),
-                      shad.TableCell(child: Text(_formatUserTimestamp(user.createdAt), style: const TextStyle(fontSize: 10.5, color: AdminColors.muted))),
-                      shad.TableCell(child: shad.OutlineButton(onPressed: () => onView(user), child: const Text('View'))),
-                    ])),
-              ],
-              columnWidths: const {
-                0: shad.FlexTableSize(flex: 3),
-                1: shad.FixedTableSize(140),
-                2: shad.FixedTableSize(100),
-                3: shad.FixedTableSize(80),
-                4: shad.FixedTableSize(95),
-                5: shad.FixedTableSize(150),
-                6: shad.FixedTableSize(90),
-              },
+                        shad.TableCell(
+                          child: SizedBox(
+                            width: 235,
+                            child: Text(user.email.isEmpty ? 'No email recorded' : user.email, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
+                          ),
+                        ),
+                        shad.TableCell(child: _UserRolePill(user.role)),
+                        shad.TableCell(child: _UserStatusPill(user.active)),
+                        shad.TableCell(child: Text(user.ordersCount.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800))),
+                        shad.TableCell(child: Text(user.addresses.length.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800))),
+                        shad.TableCell(child: Text(_formatUserTimestamp(user.createdAt), style: const TextStyle(fontSize: 10.5, color: AdminColors.muted))),
+                        shad.TableCell(child: shad.OutlineButton(onPressed: () => onView(user), child: const Text('View details'))),
+                      ])),
+                ],
+                columnWidths: const {
+                  0: shad.FixedTableSize(75),
+                  1: shad.FixedTableSize(200),
+                  2: shad.FixedTableSize(245),
+                  3: shad.FixedTableSize(140),
+                  4: shad.FixedTableSize(105),
+                  5: shad.FixedTableSize(85),
+                  6: shad.FixedTableSize(105),
+                  7: shad.FixedTableSize(165),
+                  8: shad.FixedTableSize(115),
+                },
+              ),
             ),
           ),
         ),
