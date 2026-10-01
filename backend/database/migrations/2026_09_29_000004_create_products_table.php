@@ -19,6 +19,8 @@ return new class extends Migration
             $table->unsignedInteger('stock_quantity')->default(0);
             $table->boolean('is_available')->default(true)->index();
             $table->boolean('is_active')->default(true)->index();
+            $table->string('dietary', 40)->default('Non-Veg');
+            $table->json('tags')->nullable();
             $table->timestamps();
 
             $table->index(['category_id', 'is_active', 'is_available']);
