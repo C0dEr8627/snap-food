@@ -233,7 +233,7 @@ class _SearchResultCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
         child: InkWell(
           borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-          onTap: () => context.push('/product/' + product.id.toString()),
+          onTap: () => context.push('/food/' + product.id.toString()),
           child: Padding(
             padding: const EdgeInsets.all(14),
             child: Row(
