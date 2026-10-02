@@ -45,6 +45,7 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
             quantity: quantity,
             vegetarian:
                 product.category?.name.toLowerCase().contains('veg') == true,
+            imageUrl: product.imageUrl,
           ),
         );
     context.push('/cart');
