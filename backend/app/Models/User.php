@@ -21,6 +21,7 @@ class User extends Authenticatable
         'google_subject',
         'name',
         'email',
+        'phone',
         'password',
         'role',
         'is_active',
