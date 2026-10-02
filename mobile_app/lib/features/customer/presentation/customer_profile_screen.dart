@@ -85,7 +85,6 @@ class CustomerProfileScreen extends ConsumerWidget {
       ),
     );
   }
-}
 
   Future<void> _confirmLogout(BuildContext context, WidgetRef ref) async {
     final shouldLogout = await showDialog<bool>(
@@ -107,7 +106,8 @@ class CustomerProfileScreen extends ConsumerWidget {
     await ref.read(authControllerProvider.notifier).logout();
     if (context.mounted) context.go('/welcome');
   }
-
+  }
+}
 
 class _ProfileHeader extends StatelessWidget {
   const _ProfileHeader();
