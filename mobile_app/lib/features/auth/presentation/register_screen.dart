@@ -37,8 +37,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (_submitting || !_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
+    try {
     await ref.read(authControllerProvider.notifier).registerCustomer(
       name: _name.text,
       email: _email.text.trim(),
@@ -48,7 +49,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     );
     if (!mounted) return;
     final state = ref.read(authControllerProvider);
-    setState(() => _submitting = false);
     if (state.hasError) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(_friendlyError(state.error)),
@@ -57,6 +57,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
     if (state.value?.isAuthenticated == true) context.go('/home');
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
   }
 
   Future<void> _googleCredential(String credential) async {
@@ -310,14 +313,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             ),
                           ),
                           child: _submitting
-                              ? SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: SvgPicture.asset(
-                                    'assets/images/customer/logo-without-bg.svg',
-                                    fit: BoxFit.contain,
-                                  ),
-                                )
+                              ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5))
                               : const Text(
                                   'Create account',
                                   style: TextStyle(fontWeight: FontWeight.w800),
@@ -327,7 +323,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       const SizedBox(height: 18),
                       const _RegisterDivider(),
                       const SizedBox(height: 18),
-                      GoogleAuthButton(onCredential: _googleCredential),
+                      GoogleAuthButton(
+                        enabled: !_submitting,
+                        onCredential: _googleCredential,
+                      ),
                       const SizedBox(height: 18),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -339,7 +338,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             ),
                           ),
                           TextButton(
-                            onPressed: () => context.go('/login'),
+                            onPressed: _submitting ? null : () => context.go('/login'),
                             child: const Text(
                               'Sign in',
                               style: TextStyle(fontWeight: FontWeight.w800),
