@@ -25,14 +25,6 @@ import '../features/restaurant/presentation/restaurant_dashboard_screen.dart';
 import '../features/restaurant/presentation/restaurant_kds_screen.dart';
 import '../features/restaurant/presentation/restaurant_order_detail_screen.dart';
 import '../features/restaurant/presentation/restaurant_menu_stock_screen.dart';
-import '../features/delivery/presentation/delivery_login_onboarding_screen.dart';
-import '../features/delivery/presentation/delivery_requests_screen.dart';
-import '../features/delivery/presentation/delivery_duty_map_screen.dart';
-import '../features/delivery/presentation/delivery_navigate_restaurant_screen.dart';
-import '../features/delivery/presentation/delivery_pickup_verification_screen.dart';
-import '../features/delivery/presentation/delivery_navigate_customer_screen.dart';
-import '../features/delivery/presentation/delivery_verification_screen.dart';
-import '../features/delivery/presentation/delivery_earnings_history_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authControllerProvider);
@@ -41,7 +33,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/',
     redirect: (context, state) {
       final location = state.matchedLocation;
-      const publicRoutes = {'/', '/welcome', '/home', '/login', '/register', '/delivery/login'};
+      const publicRoutes = {'/', '/welcome', '/home', '/login', '/register'};
 
       if (authState.isLoading) {
         // Keep public browsing reachable while session restoration is in flight.
@@ -58,28 +50,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return '/welcome';
       }
 
-      if (isAuthenticated) {
-        final isDeliveryPartner = authState.value?.isDeliveryPartner ?? false;
-        final isDeliveryRoute = location.startsWith('/delivery');
-        final isCustomerRoute = !isDeliveryRoute &&
-            location != '/' &&
-            location != '/welcome' &&
-            location != '/login' &&
-            location != '/register';
-
-        if (isDeliveryPartner && !isDeliveryRoute) {
-          return '/delivery/requests';
-        }
-        if (!isDeliveryPartner && isDeliveryRoute && location != '/delivery/login') {
-          return '/home';
-        }
-        if (isDeliveryPartner && location == '/delivery/login') {
-          return '/delivery/requests';
-        }
-        if (!isDeliveryPartner && !isCustomerRoute &&
-            (location == '/' || location == '/welcome' || location == '/login' || location == '/register')) {
-          return '/home';
-        }
+      if (isAuthenticated &&
+          (location == '/' || location == '/welcome' || location == '/login' || location == '/register')) {
+        return '/home';
       }
 
       return null;
@@ -196,46 +169,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/restaurant/menu-stock',
         name: 'restaurant-menu-stock',
         builder: (context, state) => const RestaurantMenuStockScreen(),
-      ),
-      GoRoute(
-        path: '/delivery/login',
-        name: 'delivery-login',
-        builder: (context, state) => const DeliveryLoginOnboardingScreen(),
-      ),
-      GoRoute(
-        path: '/delivery/requests',
-        name: 'delivery-requests',
-        builder: (context, state) => const DeliveryRequestsScreen(),
-      ),
-      GoRoute(
-        path: '/delivery/duty-map',
-        name: 'delivery-duty-map',
-        builder: (context, state) => const DeliveryDutyMapScreen(),
-      ),
-      GoRoute(
-        path: '/delivery/navigate-restaurant',
-        name: 'delivery-navigate-restaurant',
-        builder: (context, state) => const DeliveryNavigateRestaurantScreen(),
-      ),
-      GoRoute(
-        path: '/delivery/pickup-verification',
-        name: 'delivery-pickup-verification',
-        builder: (context, state) => const DeliveryPickupVerificationScreen(),
-      ),
-      GoRoute(
-        path: '/delivery/navigate-customer',
-        name: 'delivery-navigate-customer',
-        builder: (context, state) => const DeliveryNavigateCustomerScreen(),
-      ),
-      GoRoute(
-        path: '/delivery/verification',
-        name: 'delivery-verification',
-        builder: (context, state) => const DeliveryVerificationScreen(),
-      ),
-      GoRoute(
-        path: '/delivery/earnings',
-        name: 'delivery-earnings',
-        builder: (context, state) => const DeliveryEarningsHistoryScreen(),
       ),
       GoRoute(
         path: '/food/:itemId',
