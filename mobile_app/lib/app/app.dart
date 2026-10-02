@@ -133,9 +133,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const CheckoutScreen(),
       ),
       GoRoute(
+        path: '/orders/:orderId/tracking',
+        name: 'customer-order-tracking',
+        builder: (context, state) => LiveOrderTrackingScreen(
+          orderId: state.pathParameters['orderId'] ?? '',
+        ),
+      ),
+      // Backward-compatible entry point for callers that do not yet provide an order id.
+      GoRoute(
         path: '/order-tracking',
         name: 'order-tracking',
-        builder: (context, state) => const LiveOrderTrackingScreen(),
+        builder: (context, state) => const LiveOrderTrackingScreen(orderId: ''),
       ),
       GoRoute(
         path: '/profile',
