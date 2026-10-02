@@ -478,7 +478,7 @@ class _DeliveryLocation extends ConsumerWidget {
       onTap: () => context.push('/addresses'),
       borderRadius: BorderRadius.circular(SnapFoodRadii.full),
       child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: SnapFoodColors.surfaceContainer,
         borderRadius: BorderRadius.circular(SnapFoodRadii.full),
