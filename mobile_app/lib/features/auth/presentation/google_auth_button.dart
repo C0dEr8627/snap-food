@@ -7,9 +7,10 @@ import '../../../design_system/tokens/app_colors.dart';
 
 /// Starts Google identity sign-in and passes only the ID token to the backend.
 class GoogleAuthButton extends StatefulWidget {
-  const GoogleAuthButton({super.key, required this.onCredential});
+  const GoogleAuthButton({super.key, required this.onCredential, this.enabled = true});
 
   final Future<void> Function(String credential) onCredential;
+  final bool enabled;
 
   @override
   State<GoogleAuthButton> createState() => _GoogleAuthButtonState();
@@ -19,7 +20,7 @@ class _GoogleAuthButtonState extends State<GoogleAuthButton> {
   bool _busy = false;
 
   Future<void> _signIn() async {
-    if (_busy) return;
+    if (_busy || !widget.enabled) return;
     setState(() => _busy = true);
     try {
       const clientId = String.fromEnvironment('GOOGLE_CLIENT_ID');
@@ -58,7 +59,7 @@ class _GoogleAuthButtonState extends State<GoogleAuthButton> {
     return SizedBox(
       height: 52,
       child: OutlinedButton(
-        onPressed: _busy ? null : _signIn,
+        onPressed: (_busy || !widget.enabled) ? null : _signIn,
         style: OutlinedButton.styleFrom(
           foregroundColor: SnapFoodColors.warmBlack,
           side: const BorderSide(color: SnapFoodColors.softBorder),
@@ -68,15 +69,7 @@ class _GoogleAuthButtonState extends State<GoogleAuthButton> {
           backgroundColor: Colors.white,
         ),
         child: _busy
-            ? SizedBox(
-                width: 24,
-                height: 24,
-                child: SvgPicture.asset(
-                  'assets/images/customer/logo-without-bg.svg',
-                  fit: BoxFit.contain,
-                  semanticsLabel: 'Snap Foodd loading',
-                ),
-              )
+            ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5))
             : const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
