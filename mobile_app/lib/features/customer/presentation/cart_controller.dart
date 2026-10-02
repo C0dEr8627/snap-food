@@ -5,8 +5,6 @@ import '../data/cart_models.dart';
 import '../data/cart_repository.dart';
 
 final cartRepositoryProvider = Provider<CartRepository>((ref) {
-  // The repository is recreated whenever the authenticated customer changes.
-  // A cart from customer A therefore cannot remain in customer B's state.
   final userId = ref.watch(authUserIdProvider);
   if (userId == null || userId.isEmpty) {
     return LocalCartRepository();
@@ -22,7 +20,11 @@ class CartController extends Notifier<CartSnapshot> {
   CartRepository get _repository => ref.read(cartRepositoryProvider);
 
   @override
-  CartSnapshot build() => _repository.load();
+  CartSnapshot build() {
+    // Rebuild the controller whenever the authenticated customer changes.
+    ref.watch(authUserIdProvider);
+    return _repository.load();
+  }
 
   void addItem(CartItem item) => state = _repository.addItem(item);
 
