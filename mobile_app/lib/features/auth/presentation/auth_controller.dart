@@ -26,6 +26,10 @@ class AuthStatus {
   const AuthStatus({this.user, required this.isAuthenticated});
   final AuthUser? user;
   final bool isAuthenticated;
+
+  String? get role => user?.payload['role']?.toString().toUpperCase();
+
+  bool get isDeliveryPartner => role == 'DELIVERY_PARTNER';
 }
 
 class AuthController extends AsyncNotifier<AuthStatus> {
@@ -54,6 +58,10 @@ class AuthController extends AsyncNotifier<AuthStatus> {
 
   Future<void> loginWithPassword({required String email, required String password}) async {
     await _authenticate(() => _repository.loginWithPassword(email: email, password: password));
+  }
+
+  Future<void> loginDeliveryPartner({required String email, required String password}) async {
+    await _authenticate(() => _repository.loginDeliveryPartner(email: email, password: password));
   }
 
   Future<void> registerCustomer({required String name, required String email, required String phone, required String password, required String passwordConfirmation}) async {
