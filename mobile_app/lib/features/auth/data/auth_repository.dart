@@ -24,7 +24,6 @@ class RemoteAuthRepository implements AuthRepository {
   Future<AuthSession> loginWithPassword({required String email, required String password}) async {
     final response = await _client.post('/auth/login', body: {
       'email': email.trim().toLowerCase(),
-      'phone': phone.trim(),
       'password': password,
     });
     return _parseSession(response);
@@ -35,6 +34,7 @@ class RemoteAuthRepository implements AuthRepository {
     final response = await _client.post('/auth/register', body: {
       'name': name.trim(),
       'email': email.trim().toLowerCase(),
+      'phone': phone.trim(),
       'password': password,
       'password_confirmation': passwordConfirmation,
     });
