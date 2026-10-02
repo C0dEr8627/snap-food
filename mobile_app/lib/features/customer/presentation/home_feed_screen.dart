@@ -12,6 +12,7 @@ import 'catalogue_controller.dart';
 import 'catalogue_state_message.dart';
 import 'cart_controller.dart';
 import 'address_book_controller.dart';
+import 'favorite_controller.dart';
 
 class HomeFeedScreen extends ConsumerStatefulWidget {
   const HomeFeedScreen({super.key});
@@ -196,7 +197,7 @@ class DatabaseCatalogueSection extends ConsumerWidget {
   }
 }
 
-class _ProductCard extends StatelessWidget {
+class _ProductCard extends ConsumerWidget {
   const _ProductCard({required this.product});
 
   final CatalogueProduct product;
@@ -246,6 +247,31 @@ class _ProductCard extends StatelessWidget {
                         width: 214,
                         height: imageHeight,
                         radius: cardRadius,
+                      ),
+                      Consumer(
+                        builder: (context, ref, _) {
+                          final isFavorite = ref.watch(favoriteControllerProvider).value?.contains(product.id) ?? false;
+                          return Positioned(
+                            top: 10,
+                            right: 10,
+                            child: Material(
+                              color: SnapFoodColors.surfaceContainerLowest.withAlpha(235),
+                              shape: const CircleBorder(),
+                              child: InkWell(
+                                customBorder: const CircleBorder(),
+                                onTap: () => ref.read(favoriteControllerProvider.notifier).toggle(product),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Icon(
+                                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                                    size: 18,
+                                    color: SnapFoodColors.secondary,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       Positioned(
                         top: 10,
