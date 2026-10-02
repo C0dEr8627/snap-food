@@ -14,8 +14,6 @@ final favoriteApiTransportProvider = Provider<HttpApiTransport>((ref) {
 });
 
 final favoriteApiClientProvider = Provider<ApiClient>((ref) {
-  // Depend on the authenticated user id so a new login creates a fresh
-  // client/controller state instead of retaining the previous user's data.
   ref.watch(authUserIdProvider);
   return ApiClient(
     config: ApiConfig.fromEnvironment(),
@@ -45,6 +43,8 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
 
   @override
   Future<FavoriteState> build() async {
+    // Force a fresh server read whenever the authenticated customer changes.
+    ref.watch(authUserIdProvider);
     try {
       return FavoriteState(products: await _repository.fetchFavorites());
     } catch (_) {
