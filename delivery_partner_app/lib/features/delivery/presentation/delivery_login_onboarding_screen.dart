@@ -13,7 +13,7 @@ class DeliveryLoginOnboardingScreen extends ConsumerStatefulWidget {
   const DeliveryLoginOnboardingScreen({super.key});
 
   @override
-  State<DeliveryLoginOnboardingScreen> createState() =>
+  ConsumerState<DeliveryLoginOnboardingScreen> createState() =>
       _DeliveryLoginOnboardingScreenState();
 }
 
