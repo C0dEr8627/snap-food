@@ -360,15 +360,29 @@ class _PageHeading extends StatelessWidget {
   Widget build(BuildContext context) {
     final actions = <Widget>[];
 
+    // Keep product creation available on the Catalogue page only. Other pages
+    // should not display a generic "Quick action" button.
+    if (section == AdminSection.catalogue && onAddProduct != null) {
+      actions.add(
+        shad.PrimaryButton(
+          onPressed: onAddProduct,
+          leading: const AdminIcon(HugeIcons.strokeRoundedAdd01, size: 17),
+          child: const Text('Add product'),
+        ),
+      );
+    }
+
     if (section == AdminSection.catalogue && onManageCategories != null) {
-      actions.addAll([
-        const SizedBox(width: 10),
+      if (actions.isNotEmpty) {
+        actions.add(const SizedBox(width: 10));
+      }
+      actions.add(
         shad.OutlineButton(
           onPressed: onManageCategories,
           leading: const AdminIcon(HugeIcons.strokeRoundedTag01, size: 17),
           child: const Text('Manage Categories'),
         ),
-      ]);
+      );
     }
 
     return Row(
