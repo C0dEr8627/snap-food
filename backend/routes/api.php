@@ -34,6 +34,10 @@ Route::post('/auth/login', [AuthController::class, 'customerPassword'])
     ->middleware('throttle:auth-google')
     ->name('api.v1.auth.login');
 
+Route::post('/auth/delivery/login', [AuthController::class, 'deliveryPassword'])
+    ->middleware('throttle:auth-google')
+    ->name('api.v1.auth.delivery.login');
+
 Route::post('/admin/auth/password', [AuthController::class, 'adminPassword'])
     ->middleware('throttle:admin-login')
     ->name('api.v1.admin.auth.password');
