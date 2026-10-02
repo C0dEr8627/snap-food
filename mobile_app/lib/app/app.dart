@@ -18,7 +18,6 @@ import '../features/customer/presentation/favorites_screen.dart';
 import '../features/customer/presentation/live_order_tracking_screen.dart';
 import '../features/customer/presentation/customer_profile_screen.dart';
 import '../features/customer/presentation/address_book_screen.dart';
-import '../features/customer/presentation/customer_settings_screen.dart';
 import '../features/customer/presentation/restaurant_menu_screen.dart';
 import '../features/customer/presentation/splash_welcome_screen.dart';
 import '../features/customer/presentation/welcome_screen.dart';
@@ -155,11 +154,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/profile',
         name: 'customer-profile',
         builder: (context, state) => const CustomerProfileScreen(),
-      ),
-      GoRoute(
-        path: '/settings',
-        name: 'customer-settings',
-        builder: (context, state) => const CustomerSettingsScreen(),
       ),
       GoRoute(
         path: '/restaurant/dashboard',
