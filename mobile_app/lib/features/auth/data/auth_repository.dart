@@ -5,7 +5,7 @@ import 'session_store.dart';
 
 abstract interface class AuthRepository {
   Future<AuthSession> loginWithPassword({required String email, required String password});
-  Future<AuthSession> registerCustomer({required String name, required String email, required String password, required String passwordConfirmation});
+  Future<AuthSession> registerCustomer({required String name, required String email, required String phone, required String password, required String passwordConfirmation});
   Future<AuthSession> signInWithGoogleCredential(String credential);
   Future<AuthUser> fetchCurrentUser();
   Future<void> logout();
@@ -24,13 +24,14 @@ class RemoteAuthRepository implements AuthRepository {
   Future<AuthSession> loginWithPassword({required String email, required String password}) async {
     final response = await _client.post('/auth/login', body: {
       'email': email.trim().toLowerCase(),
+      'phone': phone.trim(),
       'password': password,
     });
     return _parseSession(response);
   }
 
   @override
-  Future<AuthSession> registerCustomer({required String name, required String email, required String password, required String passwordConfirmation}) async {
+  Future<AuthSession> registerCustomer({required String name, required String email, required String phone, required String password, required String passwordConfirmation}) async {
     final response = await _client.post('/auth/register', body: {
       'name': name.trim(),
       'email': email.trim().toLowerCase(),
