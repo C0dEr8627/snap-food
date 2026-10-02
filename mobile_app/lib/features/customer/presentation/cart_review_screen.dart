@@ -105,16 +105,13 @@ class CartReviewScreen extends ConsumerWidget {
                               ),
                             ),
                             if (items.isEmpty) const _EmptyCart(),
-                            const SizedBox(height: 20),
-                            const Text(
-                              'Bill details',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
                             if (items.isNotEmpty) ...[
+                              const SizedBox(height: 20),
+                              const Text(
+                                'Bill details',
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                              ),
+                              const SizedBox(height: 10),
                               _BillCard(itemTotal: subtotal),
                               const SizedBox(height: 12),
                               const _CheckoutPricingNote(),
@@ -316,65 +313,6 @@ class _MiniQuantity extends StatelessWidget {
           icon: const Icon(Icons.add, color: Colors.white, size: 14),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 30, minHeight: 32),
-        ),
-      ],
-    ),
-  );
-}
-
-class _InstructionCard extends StatelessWidget {
-  const _InstructionCard();
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(13),
-    decoration: BoxDecoration(
-      color: SnapFoodColors.surfaceContainerLowest,
-      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-      border: Border.all(color: SnapFoodColors.softBorder),
-    ),
-    child: const Row(
-      children: [
-        Icon(Icons.edit_note, color: SnapFoodColors.secondary, size: 21),
-        SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            'Add cooking instructions',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
-          ),
-        ),
-        Icon(Icons.chevron_right, size: 19, color: SnapFoodColors.outline),
-      ],
-    ),
-  );
-}
-
-class _CouponCard extends StatelessWidget {
-  const _CouponCard();
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
-    decoration: BoxDecoration(
-      color: SnapFoodColors.softYellow,
-      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-    ),
-    child: Row(
-      children: [
-        const Icon(Icons.local_offer_outlined, color: SnapFoodColors.secondary),
-        const SizedBox(width: 9),
-        const Expanded(
-          child: Text(
-            'Apply a coupon',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
-          ),
-        ),
-        TextButton(
-          onPressed: () {},
-          child: const Text(
-            'View offers',
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800),
-          ),
         ),
       ],
     ),
