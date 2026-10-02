@@ -1,44 +1,106 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/network/api_client.dart';
+import '../../../core/network/api_transport.dart';
+import '../../auth/data/session_store.dart';
 import '../../auth/presentation/auth_controller.dart';
 import '../data/cart_models.dart';
 import '../data/cart_repository.dart';
 
-final cartRepositoryProvider = Provider<CartRepository>((ref) {
-  final userId = ref.watch(authUserIdProvider);
-  if (userId == null || userId.isEmpty) {
-    return LocalCartRepository();
-  }
-  return LocalCartRepository();
+final cartApiTransportProvider = Provider<HttpApiTransport>((ref) {
+  final transport = HttpApiTransport();
+  ref.onDispose(transport.close);
+  return transport;
 });
 
-final cartControllerProvider = NotifierProvider<CartController, CartSnapshot>(
-  CartController.new,
-);
+final cartApiClientProvider = Provider<ApiClient>((ref) {
+  ref.watch(authUserIdProvider);
+  return ApiClient(
+    config: ApiConfig.fromEnvironment(),
+    transport: ref.watch(cartApiTransportProvider),
+    tokenProvider: SecureSessionStore().readToken,
+  );
+});
+
+final cartRepositoryProvider = Provider<RemoteCartRepository>((ref) => RemoteCartRepository(ref.watch(cartApiClientProvider)));
+
+final cartControllerProvider = NotifierProvider<CartController, CartSnapshot>(CartController.new);
 
 class CartController extends Notifier<CartSnapshot> {
-  CartRepository get _repository => ref.read(cartRepositoryProvider);
+  RemoteCartRepository get _repository => ref.read(cartRepositoryProvider);
 
   @override
   CartSnapshot build() {
-    // Rebuild the controller whenever the authenticated customer changes.
     ref.watch(authUserIdProvider);
-    return _repository.load();
+    unawaited(_loadFromServer());
+    return const CartSnapshot([]);
   }
 
-  void addItem(CartItem item) => state = _repository.addItem(item);
+  Future<void> _loadFromServer() async {
+    try {
+      final snapshot = await _repository.fetchCart();
+      if (ref.mounted) state = snapshot;
+    } catch (_) {}
+  }
 
-  void clear() => state = _repository.clear();
+  void addItem(CartItem item) {
+    final previous = state;
+    final index = previous.items.indexWhere((existing) => existing.productId == item.productId);
+    final currentQuantity = index < 0 ? 0 : previous.items[index].quantity;
+    final nextQuantity = (currentQuantity + item.quantity).clamp(1, 99);
+
+    state = index < 0
+        ? CartSnapshot([...previous.items, item.copyWith(quantity: nextQuantity)])
+        : CartSnapshot([
+            for (final existing in previous.items)
+              existing.productId == item.productId ? existing.copyWith(quantity: nextQuantity) : existing,
+          ]);
+
+    unawaited(() async {
+      try {
+        state = await _repository.addItem(productId: item.productId, quantity: nextQuantity);
+      } catch (_) {
+        await _loadFromServer();
+      }
+    }());
+  }
 
   void changeQuantity(String productId, int delta) {
-    CartItem? item;
-    for (final candidate in state.items) {
-      if (candidate.productId == productId) {
-        item = candidate;
-        break;
+    final current = state;
+    final index = current.items.indexWhere((item) => item.productId == productId);
+    if (index < 0) return;
+
+    final nextQuantity = current.items[index].quantity + delta;
+    state = nextQuantity <= 0
+        ? CartSnapshot(current.items.where((item) => item.productId != productId).toList(growable: false))
+        : CartSnapshot([
+            for (final item in current.items)
+              item.productId == productId ? item.copyWith(quantity: nextQuantity) : item,
+          ]);
+
+    unawaited(() async {
+      try {
+        state = await _repository.setQuantity(productId, nextQuantity);
+      } catch (_) {
+        await _loadFromServer();
       }
-    }
-    if (item == null) return;
-    state = _repository.setQuantity(productId, item.quantity + delta);
+    }());
   }
+
+  void clear() {
+    state = const CartSnapshot([]);
+    unawaited(clearFromServer());
+  }
+
+  Future<void> clearFromServer() async {
+    try {
+      state = await _repository.clear();
+    } catch (_) {
+      await _loadFromServer();
+    }
+  }
+
+  Future<void> refresh() => _loadFromServer();
 }
