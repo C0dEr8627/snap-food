@@ -23,10 +23,10 @@ class CustomerProfileScreen extends ConsumerWidget {
     final orders = ref.watch(orderHistoryControllerProvider);
     final favorites = ref.watch(favoriteControllerProvider);
     final addresses = ref.watch(addressBookControllerProvider);
-    final orderCount = orders.valueOrNull?.total ?? orders.valueOrNull?.orders.length ?? 0;
-    final favoriteCount = favorites.valueOrNull?.products.length ?? 0;
-    final addressCount = addresses.valueOrNull?.addresses.length ?? 0;
-    final selectedAddress = addresses.valueOrNull?.selectedAddress;
+    final orderCount = orders.asData?.value?.total ?? orders.asData?.value?.orders.length ?? 0;
+    final favoriteCount = favorites.asData?.value?.products.length ?? 0;
+    final addressCount = addresses.asData?.value?.addresses.length ?? 0;
+    final selectedAddress = addresses.asData?.value?.selectedAddress;
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
       body: SafeArea(
@@ -107,6 +107,7 @@ class CustomerProfileScreen extends ConsumerWidget {
     await ref.read(authControllerProvider.notifier).logout();
     if (context.mounted) context.go('/welcome');
   }
+
 
 class _ProfileHeader extends StatelessWidget {
   const _ProfileHeader();
@@ -639,3 +640,25 @@ class _EmbeddedSettingsState extends State<_EmbeddedSettings> {
     ],
   );
 }
+
+  Future<void> _confirmLogout(BuildContext context, WidgetRef ref) async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Log out?'),
+        content: const Text('Are you sure you want to log out of Snap Foodd?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Cancel')),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: FilledButton.styleFrom(backgroundColor: SnapFoodColors.secondary, foregroundColor: Colors.white),
+            child: const Text('Log out'),
+          ),
+        ],
+      ),
+    );
+    if (shouldLogout != true) return;
+    await ref.read(authControllerProvider.notifier).logout();
+    if (context.mounted) context.go('/welcome');
+  }
+
