@@ -33,9 +33,10 @@ final authUserIdProvider = Provider<String?>((ref) {
 });
 
 class AuthStatus {
-  const AuthStatus({this.user, required this.isAuthenticated});
+  const AuthStatus({this.user, required this.isAuthenticated, this.errorMessage});
   final AuthUser? user;
   final bool isAuthenticated;
+  final String? errorMessage;
 
   String? get role => user?.payload['role']?.toString().toUpperCase();
 }
@@ -80,17 +81,46 @@ class AuthController extends AsyncNotifier<AuthStatus> {
 
   Future<void> _authenticate(Future<AuthSession> Function() authenticate) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+    try {
       final session = await authenticate();
       await _repository.storeToken(session.token);
       try {
         final user = await _repository.fetchCurrentUser();
-        return AuthStatus(user: user, isAuthenticated: true);
+        state = AsyncData(AuthStatus(user: user, isAuthenticated: true));
       } catch (_) {
         await _repository.clearStoredToken();
         rethrow;
       }
-    });
+    } on ApiException catch (error) {
+      // Authentication failures are expected user input errors, not global
+      // router/session failures. Keep the router on the login screen so the
+      // UI can explain the problem instead of redirecting the user.
+      state = AsyncData(AuthStatus(
+        isAuthenticated: false,
+        errorMessage: _friendlyAuthError(error),
+      ));
+    }
+  }
+
+  String _friendlyAuthError(ApiException error) {
+    if (error.statusCode == 401 || error.code == 'INVALID_CREDENTIALS') {
+      return 'That email and password combination is not valid for the consumer app. '
+          'If you are a delivery partner, please use the delivery partner sign-in.';
+    }
+    if (error.statusCode == 403 || error.code == 'FORBIDDEN') {
+      return error.message.isNotEmpty
+          ? error.message
+          : 'This account is not allowed to sign in to the consumer app.';
+    }
+    if (error.statusCode == 429 || error.code == 'RATE_LIMITED') {
+      return 'Too many sign-in attempts. Please wait a moment and try again.';
+    }
+    if (error.code == 'TIMEOUT' || error.code == 'NETWORK_ERROR') {
+      return error.message;
+    }
+    return error.message.isNotEmpty
+        ? error.message
+        : 'We could not sign you in. Please check your details and try again.';
   }
 
   /// Exchanges a Google ID token for the backend-issued bearer token.
