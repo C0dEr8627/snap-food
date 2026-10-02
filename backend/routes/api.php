@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\Admin\DeliveryPartnerController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AddressController;
+use App\Http\Controllers\Api\V1\CartController;
 use App\Http\Controllers\Api\V1\Catalogue\CategoryController;
 use App\Http\Controllers\Api\V1\Catalogue\ProductController;
 use App\Http\Controllers\Api\V1\Delivery\DeliveryLocationController;
@@ -53,6 +54,12 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::delete('/addresses/{address}', [AddressController::class, 'destroy'])->middleware('role:CUSTOMER')->name('api.v1.addresses.destroy');
     Route::post('/auth/logout', [AuthController::class, 'logout'])->name('api.v1.auth.logout');
     Route::get('/favorites', [FavoriteController::class, 'index'])->middleware('role:CUSTOMER')->name('api.v1.favorites.index');
+    Route::get('/consumer/cart', [CartController::class, 'index'])->middleware('role:CUSTOMER')->name('api.v1.consumer.cart.index');
+    Route::post('/consumer/cart/items', [CartController::class, 'store'])->middleware('role:CUSTOMER')->name('api.v1.consumer.cart.items.store');
+    Route::patch('/consumer/cart/items/{product}', [CartController::class, 'update'])->middleware('role:CUSTOMER')->name('api.v1.consumer.cart.items.update');
+    Route::delete('/consumer/cart/items/{product}', [CartController::class, 'destroy'])->middleware('role:CUSTOMER')->name('api.v1.consumer.cart.items.destroy');
+    Route::delete('/consumer/cart', [CartController::class, 'clear'])->middleware('role:CUSTOMER')->name('api.v1.consumer.cart.clear');
+
     Route::post('/favorites/{product}', [FavoriteController::class, 'store'])->middleware('role:CUSTOMER')->name('api.v1.favorites.store');
     Route::delete('/favorites/{product}', [FavoriteController::class, 'destroy'])->middleware('role:CUSTOMER')->name('api.v1.favorites.destroy');
 
