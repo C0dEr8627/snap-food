@@ -22,6 +22,16 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) => RemoteAuthRepos
 
 final authControllerProvider = AsyncNotifierProvider<AuthController, AuthStatus>(AuthController.new);
 
+/// Stable customer identity used by customer-scoped providers.
+///
+/// Customer data providers must depend on the authenticated user id rather
+/// than only on the session storage object. This forces Riverpod to dispose
+/// cached cart/order/favorite state when the signed-in account changes.
+final authUserIdProvider = Provider<String?>((ref) {
+  final auth = ref.watch(authControllerProvider);
+  return auth.value?.user?.payload['id']?.toString();
+});
+
 class AuthStatus {
   const AuthStatus({this.user, required this.isAuthenticated});
   final AuthUser? user;
