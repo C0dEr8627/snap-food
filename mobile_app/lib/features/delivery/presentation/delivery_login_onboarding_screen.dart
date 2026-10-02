@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../auth/data/auth_models.dart';
 import '../../auth/presentation/auth_controller.dart';
 import '../../../core/network/api_exception.dart';
 
@@ -152,7 +151,8 @@ class _DeliveryLoginOnboardingScreenState
 
 class _MobileLayout extends StatelessWidget {
   const _MobileLayout({
-    required this.phoneController,
+    required this.emailController,
+    required this.passwordController,
     required this.termsAccepted,
     required this.submitting,
     required this.onTermsChanged,
@@ -175,7 +175,8 @@ class _MobileLayout extends StatelessWidget {
         const _OnboardingIllustration(),
         const SizedBox(height: 28),
         _LoginForm(
-          phoneController: phoneController,
+          emailController: emailController,
+          passwordController: passwordController,
           termsAccepted: termsAccepted,
           submitting: submitting,
           onTermsChanged: onTermsChanged,
@@ -188,7 +189,8 @@ class _MobileLayout extends StatelessWidget {
 
 class _DesktopLayout extends StatelessWidget {
   const _DesktopLayout({
-    required this.phoneController,
+    required this.emailController,
+    required this.passwordController,
     required this.termsAccepted,
     required this.submitting,
     required this.onTermsChanged,
@@ -253,7 +255,8 @@ class _DesktopLayout extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(48),
               child: _LoginForm(
-                phoneController: phoneController,
+                emailController: emailController,
+                passwordController: passwordController,
                 termsAccepted: termsAccepted,
                 submitting: submitting,
                 onTermsChanged: onTermsChanged,
