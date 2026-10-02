@@ -136,8 +136,15 @@ class _DeliveryLoginOnboardingScreenState
                         ),
                       ),
                       const SizedBox(height: 14),
-                      Text(
-                        'GOOD FOOD, JUST A SNAP AWAY',
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: SnapFoodColors.secondary.withAlpha(20),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(color: SnapFoodColors.secondary.withAlpha(45)),
+                        ),
+                        child: Text(
+                          'DELIVERY PARTNER',
                         textAlign: TextAlign.center,
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: SnapFoodColors.secondary,
@@ -145,7 +152,7 @@ class _DeliveryLoginOnboardingScreenState
                           letterSpacing: 1.7,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 14),
                       Text(
                         'Welcome back',
                         textAlign: TextAlign.center,
@@ -163,7 +170,31 @@ class _DeliveryLoginOnboardingScreenState
                           color: SnapFoodColors.onSurfaceVariant,
                         ),
                       ),
-                      const SizedBox(height: 26),
+                      const SizedBox(height: 24),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: SnapFoodColors.softYellow.withAlpha(75),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: SnapFoodColors.softBorder),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.delivery_dining_rounded, color: SnapFoodColors.secondary, size: 22),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Your delivery dashboard starts here.',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: SnapFoodColors.onSurfaceVariant,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 18),
                       TextFormField(
                         controller: _email,
                         keyboardType: TextInputType.emailAddress,
