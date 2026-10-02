@@ -506,6 +506,7 @@ class _DeliveryLocation extends ConsumerWidget {
           ),
         ],
       ),
+      ),
     );
   }
 }
