@@ -348,14 +348,16 @@ class _OnboardingIllustration extends StatelessWidget {
 
 class _LoginForm extends StatelessWidget {
   const _LoginForm({
-    required this.phoneController,
+    required this.emailController,
+    required this.passwordController,
     required this.termsAccepted,
     required this.submitting,
     required this.onTermsChanged,
     required this.onContinue,
   });
 
-  final TextEditingController phoneController;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
   final bool termsAccepted;
   final bool submitting;
   final ValueChanged<bool> onTermsChanged;
