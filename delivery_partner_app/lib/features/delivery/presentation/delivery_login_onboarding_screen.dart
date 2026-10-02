@@ -169,6 +169,7 @@ class _MobileLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         const _BrandHeader(),
         const SizedBox(height: 34),
@@ -215,6 +216,7 @@ class _DesktopLayout extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             flex: 5,
@@ -222,10 +224,11 @@ class _DesktopLayout extends StatelessWidget {
               padding: const EdgeInsets.all(48),
               color: SnapFoodColors.softYellow,
               child: const Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _BrandHeader(),
-                  Spacer(),
+                  SizedBox(height: 64),
                   _OnboardingIllustration(),
                   SizedBox(height: 28),
                   Text(
@@ -245,7 +248,7 @@ class _DesktopLayout extends StatelessWidget {
                       color: SnapFoodColors.onSurfaceVariant,
                     ),
                   ),
-                  Spacer(),
+                  SizedBox(height: 48),
                 ],
               ),
             ),
@@ -366,6 +369,7 @@ class _LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
@@ -422,7 +426,6 @@ class _LoginForm extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 14),
         const SizedBox(height: 14),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
