@@ -22,9 +22,34 @@ class HomeFeedScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
-  int filter = 0;
   int nav = 0;
   int? selectedCategoryId;
+  String searchQuery = '';
+  bool onlyAvailable = true;
+  bool sortLowToHigh = false;
+
+  Future<void> _openFilters(BuildContext context) async {
+    final catalogue = ref.read(catalogueControllerProvider).valueOrNull;
+    if (catalogue == null) return;
+
+    final result = await showModalBottomSheet<_HomeFilterResult>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => _HomeFilterSheet(
+        categories: catalogue.categories,
+        selectedCategoryId: selectedCategoryId,
+        onlyAvailable: onlyAvailable,
+        sortLowToHigh: sortLowToHigh,
+      ),
+    );
+
+    if (!mounted || result == null) return;
+    setState(() {
+      selectedCategoryId = result.categoryId;
+      onlyAvailable = result.onlyAvailable;
+      sortLowToHigh = result.sortLowToHigh;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,14 +82,24 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
                             },
                           ),
                           const SizedBox(height: 18),
-                          SearchFilters(selected: filter, onSelected: (value) => setState(() => filter = value)),
+                          SearchFilters(
+                            searchQuery: searchQuery,
+                            onSearchChanged: (value) => setState(() => searchQuery = value),
+                            onOpenFilters: () => _openFilters(context),
+                            hasActiveFilters: selectedCategoryId != null || !onlyAvailable || sortLowToHigh,
+                          ),
                           const SizedBox(height: 18),
                           CategoryPills(
                             selectedCategoryId: selectedCategoryId,
                             onSelected: (value) => setState(() => selectedCategoryId = value),
                           ),
                           const SizedBox(height: 22),
-                          DatabaseCatalogueSection(selectedCategoryId: selectedCategoryId),
+                          DatabaseCatalogueSection(
+                            selectedCategoryId: selectedCategoryId,
+                            searchQuery: searchQuery,
+                            onlyAvailable: onlyAvailable,
+                            sortLowToHigh: sortLowToHigh,
+                          ),
                         ],
                       ),
                     ),
@@ -113,7 +148,10 @@ class CategoryPills extends ConsumerWidget {
                 showCheckmark: false,
                 onSelected: (_) => onSelected(isAll ? null : category!.id),
                 label: Text(isAll ? 'All' : category!.name),
-                avatar: Icon(isAll ? Icons.grid_view_rounded : Icons.restaurant_rounded, size: 16),
+                avatar: Icon(
+                  isAll ? Icons.grid_view_rounded : Icons.restaurant_rounded,
+                  size: 16,
+                ),
                 labelStyle: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
@@ -135,8 +173,18 @@ class CategoryPills extends ConsumerWidget {
 }
 
 class DatabaseCatalogueSection extends ConsumerWidget {
-  const DatabaseCatalogueSection({super.key, this.selectedCategoryId});
+  const DatabaseCatalogueSection({
+    super.key,
+    this.selectedCategoryId,
+    this.searchQuery = '',
+    this.onlyAvailable = true,
+    this.sortLowToHigh = false,
+  });
+
   final int? selectedCategoryId;
+  final String searchQuery;
+  final bool onlyAvailable;
+  final bool sortLowToHigh;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -145,10 +193,22 @@ class DatabaseCatalogueSection extends ConsumerWidget {
       loading: () => const SizedBox(height: 220, child: Center(child: CircularProgressIndicator())),
       error: (error, _) => const SizedBox.shrink(),
       data: (snapshot) {
+        final normalizedQuery = searchQuery.trim().toLowerCase();
         final products = snapshot.products.items
-            .where((product) => product.isActive && product.isAvailable)
+            .where((product) => product.isActive)
+            .where((product) => !onlyAvailable || product.isAvailable)
             .where((product) => selectedCategoryId == null || product.categoryId == selectedCategoryId)
-            .toList(growable: false);
+            .where((product) =>
+                normalizedQuery.isEmpty ||
+                product.name.toLowerCase().contains(normalizedQuery) ||
+                (product.category?.name.toLowerCase().contains(normalizedQuery) ?? false))
+            .toList()
+          ..sort((a, b) {
+            if (!sortLowToHigh) return 0;
+            final aPrice = double.tryParse(a.price.replaceAll(',', '')) ?? double.infinity;
+            final bPrice = double.tryParse(b.price.replaceAll(',', '')) ?? double.infinity;
+            return aPrice.compareTo(bPrice);
+          });
 
         if (products.isEmpty) {
           return Container(
@@ -577,122 +637,178 @@ class Greeting extends ConsumerWidget {
             ],
           ),
         ),
-        const FastBadge(),
       ],
     );
   }
 }
 
-class FastBadge extends StatelessWidget {
-  const FastBadge();
+class SearchFilters extends StatelessWidget {
+  const SearchFilters({
+    required this.searchQuery,
+    required this.onSearchChanged,
+    required this.onOpenFilters,
+    required this.hasActiveFilters,
+  });
+
+  final String searchQuery;
+  final ValueChanged<String> onSearchChanged;
+  final VoidCallback onOpenFilters;
+  final bool hasActiveFilters;
 
   @override
-  Widget build(BuildContext context) => Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: SnapFoodColors.primaryContainer.withAlpha(80),
-          shape: BoxShape.circle,
-        ),
-        child: const Icon(
-          Icons.two_wheeler,
-          color: SnapFoodColors.secondary,
-          size: 26,
-        ),
+  Widget build(BuildContext context) => Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: TextEditingController(text: searchQuery)
+                ..selection = TextSelection.collapsed(offset: searchQuery.length),
+              onChanged: onSearchChanged,
+              decoration: const InputDecoration(
+                hintText: 'Search dishes, restaurants...',
+                prefixIcon: Icon(Icons.search),
+                suffixIcon: Icon(Icons.mic_none),
+                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 48,
+            height: 48,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Positioned.fill(
+                  child: FilledButton(
+                    onPressed: onOpenFilters,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: hasActiveFilters
+                          ? SnapFoodColors.secondary
+                          : SnapFoodColors.primaryContainer,
+                      foregroundColor: hasActiveFilters
+                          ? Colors.white
+                          : SnapFoodColors.warmBlack,
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+                      ),
+                    ),
+                    child: const Icon(Icons.tune),
+                  ),
+                ),
+                if (hasActiveFilters)
+                  Positioned(
+                    right: -2,
+                    top: -2,
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: const BoxDecoration(
+                        color: SnapFoodColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
       );
 }
 
-class SearchFilters extends StatelessWidget {
-  const SearchFilters({
-    required this.selected,
-    required this.onSelected,
+class _HomeFilterResult {
+  const _HomeFilterResult({
+    required this.categoryId,
+    required this.onlyAvailable,
+    required this.sortLowToHigh,
   });
 
-  final int selected;
-  final ValueChanged<int> onSelected;
+  final int? categoryId;
+  final bool onlyAvailable;
+  final bool sortLowToHigh;
+}
 
-  static const filters = [
-    'Filters',
-    'Under 25 mins',
-    'Rating 4.5+',
-    'Great Offers',
-    'Pure Veg',
-  ];
+class _HomeFilterSheet extends StatefulWidget {
+  const _HomeFilterSheet({
+    required this.categories,
+    required this.selectedCategoryId,
+    required this.onlyAvailable,
+    required this.sortLowToHigh,
+  });
+
+  final List<CatalogueCategory> categories;
+  final int? selectedCategoryId;
+  final bool onlyAvailable;
+  final bool sortLowToHigh;
 
   @override
-  Widget build(BuildContext context) => Column(
-        children: [
-          Row(
+  State<_HomeFilterSheet> createState() => _HomeFilterSheetState();
+}
+
+class _HomeFilterSheetState extends State<_HomeFilterSheet> {
+  late int? categoryId = widget.selectedCategoryId;
+  late bool onlyAvailable = widget.onlyAvailable;
+  late bool sortLowToHigh = widget.sortLowToHigh;
+
+  @override
+  Widget build(BuildContext context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search dishes, restaurants...',
-                    prefixIcon: Icon(Icons.search),
-                    suffixIcon: Icon(Icons.mic_none),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 12,
-                    ),
+              const Text('Filter dishes', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+              const SizedBox(height: 16),
+              const Text('Category', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  ChoiceChip(
+                    label: const Text('All'),
+                    selected: categoryId == null,
+                    onSelected: (_) => setState(() => categoryId = null),
                   ),
-                ),
+                  for (final category in widget.categories)
+                    ChoiceChip(
+                      label: Text(category.name),
+                      selected: categoryId == category.id,
+                      onSelected: (_) => setState(() => categoryId = category.id),
+                    ),
+                ],
               ),
-              const SizedBox(width: 8),
+              const SizedBox(height: 14),
+              SwitchListTile.adaptive(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Available now', style: TextStyle(fontWeight: FontWeight.w700)),
+                value: onlyAvailable,
+                onChanged: (value) => setState(() => onlyAvailable = value),
+              ),
+              SwitchListTile.adaptive(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Price: low to high', style: TextStyle(fontWeight: FontWeight.w700)),
+                value: sortLowToHigh,
+                onChanged: (value) => setState(() => sortLowToHigh = value),
+              ),
+              const SizedBox(height: 8),
               SizedBox(
-                width: 48,
-                height: 48,
+                width: double.infinity,
                 child: FilledButton(
-                  onPressed: () {},
-                  style: FilledButton.styleFrom(
-                    backgroundColor: SnapFoodColors.primaryContainer,
-                    foregroundColor: SnapFoodColors.warmBlack,
-                    padding: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+                  onPressed: () => Navigator.of(context).pop(
+                    _HomeFilterResult(
+                      categoryId: categoryId,
+                      onlyAvailable: onlyAvailable,
+                      sortLowToHigh: sortLowToHigh,
                     ),
                   ),
-                  child: const Icon(Icons.tune),
+                  child: const Text('Apply filters'),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 34,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: filters.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
-              itemBuilder: (_, index) => FilterChip(
-                selected: selected == index,
-                showCheckmark: false,
-                onSelected: (_) => onSelected(index),
-                backgroundColor: SnapFoodColors.surfaceContainerLowest,
-                selectedColor: SnapFoodColors.surfaceContainerHigh,
-                side: BorderSide.none,
-                shape: const StadiumBorder(),
-                avatar: Icon(
-                  [
-                    Icons.tune,
-                    Icons.bolt,
-                    Icons.star,
-                    Icons.local_offer,
-                    Icons.eco,
-                  ][index],
-                  size: 15,
-                  color: index == 2
-                      ? SnapFoodColors.primary
-                      : SnapFoodColors.secondary,
-                ),
-                label: Text(filters[index]),
-                labelStyle: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       );
 }
 
