@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\Admin\DeliveryPartnerController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\AddressController;
 use App\Http\Controllers\Api\V1\Catalogue\CategoryController;
 use App\Http\Controllers\Api\V1\Catalogue\ProductController;
 use App\Http\Controllers\Api\V1\Delivery\DeliveryLocationController;
@@ -42,6 +43,9 @@ Route::post('/admin/auth/google', [AuthController::class, 'adminGoogle'])
 
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/me', [AuthController::class, 'me'])->name('api.v1.me');
+    Route::get('/addresses', [AddressController::class, 'index'])->name('api.v1.addresses.index');
+    Route::post('/addresses', [AddressController::class, 'store'])->name('api.v1.addresses.store');
+    Route::delete('/addresses/{address}', [AddressController::class, 'destroy'])->name('api.v1.addresses.destroy');
     Route::post('/auth/logout', [AuthController::class, 'logout'])->name('api.v1.auth.logout');
 
     Route::prefix('consumer')->name('api.v1.consumer.')->middleware('role:CUSTOMER')->group(function (): void {
