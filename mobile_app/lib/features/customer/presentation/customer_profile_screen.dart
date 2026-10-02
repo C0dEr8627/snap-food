@@ -6,6 +6,9 @@ import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../../../design_system/tokens/app_spacing.dart';
 import '../../auth/presentation/auth_controller.dart';
+import 'address_book_controller.dart';
+import 'favorite_controller.dart';
+import 'order_controller.dart';
 
 class CustomerProfileScreen extends ConsumerWidget {
   const CustomerProfileScreen({super.key});
@@ -17,6 +20,13 @@ class CustomerProfileScreen extends ConsumerWidget {
     final displayName = (user['name'] ?? 'Snap Foodd Customer').toString();
     final email = (user['email'] ?? '').toString();
     final phone = (user['phone'] ?? user['phone_number'] ?? '').toString();
+    final orders = ref.watch(orderHistoryControllerProvider);
+    final favorites = ref.watch(favoriteControllerProvider);
+    final addresses = ref.watch(addressBookControllerProvider);
+    final orderCount = orders.valueOrNull?.total ?? orders.valueOrNull?.orders.length ?? 0;
+    final favoriteCount = favorites.valueOrNull?.products.length ?? 0;
+    final addressCount = addresses.valueOrNull?.addresses.length ?? 0;
+    final selectedAddress = addresses.valueOrNull?.selectedAddress;
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
       body: SafeArea(
@@ -46,27 +56,21 @@ class CustomerProfileScreen extends ConsumerWidget {
                             ? Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(child: _ProfileIdentity(name: displayName, email: email, phone: phone)),
+                                  Expanded(child: _ProfileIdentity(name: displayName, email: email, phone: phone, orderCount: orderCount, favoriteCount: favoriteCount, addressCount: addressCount, selectedAddress: selectedAddress)),
                                   const SizedBox(width: 20),
                                   Expanded(
                                     child: _ProfileSections(
-                                      onLogout: () async {
-                                        await ref.read(authControllerProvider.notifier).logout();
-                                        if (context.mounted) context.go('/welcome');
-                                      },
+                                      onLogout: () => _confirmLogout(context, ref),
                                     ),
                                   ),
                                 ],
                               )
                             : Column(
                                 children: [
-                                  _ProfileIdentity(name: displayName, email: email, phone: phone),
+                                  _ProfileIdentity(name: displayName, email: email, phone: phone, orderCount: orderCount, favoriteCount: favoriteCount, addressCount: addressCount, selectedAddress: selectedAddress),
                                   const SizedBox(height: 20),
                                   _ProfileSections(
-                                    onLogout: () async {
-                                      await ref.read(authControllerProvider.notifier).logout();
-                                      if (context.mounted) context.go('/welcome');
-                                    },
+                                    onLogout: () => _confirmLogout(context, ref),
                                   ),
                                 ],
                               ),
@@ -82,6 +86,27 @@ class CustomerProfileScreen extends ConsumerWidget {
     );
   }
 }
+
+  Future<void> _confirmLogout(BuildContext context, WidgetRef ref) async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Log out?'),
+        content: const Text('Are you sure you want to log out of Snap Foodd?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Cancel')),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: FilledButton.styleFrom(backgroundColor: SnapFoodColors.secondary, foregroundColor: Colors.white),
+            child: const Text('Log out'),
+          ),
+        ],
+      ),
+    );
+    if (shouldLogout != true) return;
+    await ref.read(authControllerProvider.notifier).logout();
+    if (context.mounted) context.go('/welcome');
+  }
 
 class _ProfileHeader extends StatelessWidget {
   const _ProfileHeader();
@@ -115,10 +140,14 @@ class _ProfileHeader extends StatelessWidget {
 }
 
 class _ProfileIdentity extends StatelessWidget {
-  const _ProfileIdentity({required this.name, required this.email, required this.phone});
+  const _ProfileIdentity({required this.name, required this.email, required this.phone, required this.orderCount, required this.favoriteCount, required this.addressCount, required this.selectedAddress});
   final String name;
   final String email;
   final String phone;
+  final int orderCount;
+  final int favoriteCount;
+  final int addressCount;
+  final SavedAddress? selectedAddress;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -200,11 +229,11 @@ class _ProfileIdentity extends StatelessWidget {
             const SizedBox(height: 18),
             const Row(
               children: [
-                Expanded(child: _Stat('18', 'Orders')),
+                Expanded(child: _StatValue(orderCount, 'Orders')),
                 _StatDivider(),
-                Expanded(child: _Stat('₹4.8k', 'Saved')),
+                Expanded(child: _StatValue(favoriteCount, 'Favorites')),
                 _StatDivider(),
-                Expanded(child: _Stat('4.9', 'Rating')),
+                Expanded(child: _StatValue(addressCount, 'Addresses')),
               ],
             ),
           ],
@@ -228,17 +257,17 @@ class _ProfileIdentity extends StatelessWidget {
   );
 }
 
-class _Stat extends StatelessWidget {
-  const _Stat(this.value, this.label);
+class _StatValue extends StatelessWidget {
+  const _StatValue(this.value, this.label);
 
-  final String value;
+  final int value;
   final String label;
 
   @override
   Widget build(BuildContext context) => Column(
     children: [
       Text(
-        value,
+        value.toString(),
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
       ),
       const SizedBox(height: 3),
@@ -274,7 +303,8 @@ class _ProfileSections extends StatelessWidget {
           _AccountRow(
             icon: Icons.location_on_outlined,
             title: 'Saved addresses',
-            subtitle: 'Home • Flat 402, Andheri West',
+            subtitle: selectedAddress == null ? 'Add or manage your delivery addresses' : '${selectedAddress.label} · ${selectedAddress.displayLine}',
+            onTap: () => context.go('/addresses'),
           ),
           _AccountRow(
             icon: Icons.credit_card_outlined,
@@ -389,16 +419,18 @@ class _AccountRow extends StatelessWidget {
     required this.title,
     required this.subtitle,
     this.trailing,
+    this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
   final Widget? trailing;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) => InkWell(
-    onTap: () {},
+    onTap: onTap,
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
       child: Row(
