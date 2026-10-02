@@ -306,7 +306,9 @@ class _ProfileSections extends StatelessWidget {
           _AccountRow(
             icon: Icons.location_on_outlined,
             title: 'Saved addresses',
-            subtitle: selectedAddress == null ? 'Add or manage your delivery addresses' : '${selectedAddress.label} · ${selectedAddress.displayLine}',
+            subtitle: selectedAddress == null
+                ? 'Add or manage your delivery addresses'
+                : '${selectedAddress?.label} · ${selectedAddress?.displayLine}',
             onTap: () => context.go('/addresses'),
           ),
           _AccountRow(
