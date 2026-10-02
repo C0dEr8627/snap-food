@@ -35,7 +35,7 @@ class CustomerProfileScreen extends ConsumerWidget {
                       horizontal,
                       20,
                       horizontal,
-                      112 + MediaQuery.paddingOf(context).bottom,
+                      24 + MediaQuery.paddingOf(context).bottom,
                     ),
                     child: Center(
                       child: ConstrainedBox(
@@ -79,7 +79,6 @@ class CustomerProfileScreen extends ConsumerWidget {
           },
         ),
       ),
-      bottomNavigationBar: const _ProfileBottomNav(),
     );
   }
 }
@@ -97,6 +96,11 @@ class _ProfileHeader extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Row(
           children: [
+            IconButton(
+              tooltip: 'Back to home',
+              onPressed: () => context.go('/home'),
+              icon: const Icon(Icons.arrow_back_rounded),
+            ),
             const Expanded(
               child: Text(
                 'My Profile',
@@ -516,77 +520,3 @@ class _ProfileAction extends StatelessWidget {
   );
 }
 
-class _ProfileBottomNav extends StatelessWidget {
-  const _ProfileBottomNav();
-
-  static const items = [
-    (Icons.storefront, 'Home'),
-    (Icons.search, 'Search'),
-    (Icons.receipt_long, 'Orders'),
-    (Icons.favorite, 'Favorites'),
-    (Icons.person, 'Profile'),
-  ];
-
-  @override
-  Widget build(BuildContext context) => Material(
-    color: SnapFoodColors.surface.withAlpha(247),
-    elevation: 12,
-    child: Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
-      child: SizedBox(
-        height: 64,
-        child: Row(
-          children: [
-            for (var i = 0; i < items.length; i++)
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    switch (i) {
-                      case 0:
-                        context.go('/home');
-                        break;
-                      case 1:
-                        context.go('/search');
-                        break;
-                      case 2:
-                        context.go('/orders');
-                        break;
-                      case 3:
-                        context.go('/favorites');
-                        break;
-                      case 4:
-                        context.go('/profile');
-                        break;
-                    }
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        items[i].$1,
-                        size: 22,
-                        color: i == 4
-                            ? SnapFoodColors.secondary
-                            : SnapFoodColors.onSurfaceVariant,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        items[i].$2,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: i == 4
-                              ? SnapFoodColors.secondary
-                              : SnapFoodColors.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
