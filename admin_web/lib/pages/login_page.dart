@@ -126,7 +126,25 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: _loading ? null : _submitPassword,
                         child: Center(
                           child: _loading
-                              ? const SizedBox(width: 17, height: 17, child: CircularProgressIndicator(strokeWidth: 2))
+                              ? const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 17,
+                                      height: 17,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(AdminColors.ink),
+                                      ),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      'Signing in…',
+                                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
+                                    ),
+                                  ],
+                                )
                               : const Text('Sign in', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
                         ),
                       ).sized(width: double.infinity, height: 46),
@@ -274,10 +292,7 @@ class _AdminAuthGateState extends State<AdminAuthGate> {
   @override
   Widget build(BuildContext context) {
     if (_checking) {
-      return const Scaffold(
-        backgroundColor: AdminColors.canvas,
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const _AdminLoadingScreen();
     }
 
     if (_user == null) {
@@ -328,5 +343,91 @@ class _OrDivider extends StatelessWidget {
       ),
       const Expanded(child: Divider(color: AdminColors.line)),
     ],
+  );
+}
+
+
+/// Branded startup/session-restoration screen. Keeps the app from showing a
+/// blank canvas while the saved admin session is being verified.
+class _AdminLoadingScreen extends StatelessWidget {
+  const _AdminLoadingScreen();
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: AdminColors.canvas,
+    body: Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 76,
+              height: 76,
+              decoration: BoxDecoration(
+                color: AdminColors.yellow,
+                borderRadius: BorderRadius.circular(22),
+                boxShadow: [
+                  BoxShadow(
+                    color: AdminColors.amber.withOpacity(.22),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              alignment: Alignment.center,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: SvgPicture.asset(
+                  'assets/brand/logo.svg',
+                  width: 58,
+                  height: 58,
+                  fit: BoxFit.cover,
+                  semanticsLabel: 'Snap Foodd',
+                ),
+              ),
+            ),
+            const SizedBox(height: 22),
+            const Text(
+              'SNAP FOODD',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.4,
+                color: AdminColors.ink,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'ADMIN PORTAL',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 2,
+                color: AdminColors.muted,
+              ),
+            ),
+            const SizedBox(height: 28),
+            const SizedBox(
+              width: 30,
+              height: 30,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                valueColor: AlwaysStoppedAnimation<Color>(AdminColors.red),
+              ),
+            ),
+            const SizedBox(height: 14),
+            const Text(
+              'Preparing your workspace…',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AdminColors.muted,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
   );
 }
