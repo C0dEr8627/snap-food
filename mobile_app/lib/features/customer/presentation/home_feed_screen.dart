@@ -197,7 +197,7 @@ class DatabaseCatalogueSection extends ConsumerWidget {
   }
 }
 
-class _ProductCard extends ConsumerWidget {
+class _ProductCard extends StatelessWidget {
   const _ProductCard({required this.product});
 
   final CatalogueProduct product;
