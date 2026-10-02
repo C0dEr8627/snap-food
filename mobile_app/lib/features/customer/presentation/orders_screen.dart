@@ -16,12 +16,14 @@ class OrdersScreen extends ConsumerWidget {
     final state = ref.watch(orderHistoryControllerProvider);
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
-      appBar: AppBar(
-        title: const Text('Your orders'),
-        backgroundColor: SnapFoodColors.surface,
-        surfaceTintColor: Colors.transparent,
-      ),
-      body: state.when(
+      body: SafeArea(
+        bottom: false,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 76),
+                child: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(
           child: Padding(
@@ -117,9 +119,19 @@ class OrdersScreen extends ConsumerWidget {
               },
             ),
           );
-        },
+                },
+              ),
+            ),
+            const Positioned(top: 0, left: 0, right: 0, child: HomeHeader()),
+            const Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: BottomNav(selected: 2, onSelected: _noop),
+            ),
+          ],
+        ),
       ),
-      bottomNavigationBar: const BottomNav(selected: 2, onSelected: _noop),
     );
   }
 
