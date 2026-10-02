@@ -642,7 +642,7 @@ class Greeting extends ConsumerWidget {
   }
 }
 
-class SearchFilters extends StatelessWidget {
+class SearchFilters extends StatefulWidget {
   const SearchFilters({
     required this.searchQuery,
     required this.onSearchChanged,
@@ -656,13 +656,37 @@ class SearchFilters extends StatelessWidget {
   final bool hasActiveFilters;
 
   @override
+  State<SearchFilters> createState() => _SearchFiltersState();
+}
+
+class _SearchFiltersState extends State<SearchFilters> {
+  late final TextEditingController _controller =
+      TextEditingController(text: widget.searchQuery);
+
+  @override
+  void didUpdateWidget(covariant SearchFilters oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.searchQuery != _controller.text) {
+      _controller.value = TextEditingValue(
+        text: widget.searchQuery,
+        selection: TextSelection.collapsed(offset: widget.searchQuery.length),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => Row(
         children: [
           Expanded(
             child: TextField(
-              controller: TextEditingController(text: searchQuery)
-                ..selection = TextSelection.collapsed(offset: searchQuery.length),
-              onChanged: onSearchChanged,
+              controller: _controller,
+              onChanged: widget.onSearchChanged,
               decoration: const InputDecoration(
                 hintText: 'Search dishes, restaurants...',
                 prefixIcon: Icon(Icons.search),
@@ -680,12 +704,12 @@ class SearchFilters extends StatelessWidget {
               children: [
                 Positioned.fill(
                   child: FilledButton(
-                    onPressed: onOpenFilters,
+                    onPressed: widget.onOpenFilters,
                     style: FilledButton.styleFrom(
-                      backgroundColor: hasActiveFilters
+                      backgroundColor: widget.hasActiveFilters
                           ? SnapFoodColors.secondary
                           : SnapFoodColors.primaryContainer,
-                      foregroundColor: hasActiveFilters
+                      foregroundColor: widget.hasActiveFilters
                           ? Colors.white
                           : SnapFoodColors.warmBlack,
                       padding: EdgeInsets.zero,
@@ -696,7 +720,7 @@ class SearchFilters extends StatelessWidget {
                     child: const Icon(Icons.tune),
                   ),
                 ),
-                if (hasActiveFilters)
+                if (widget.hasActiveFilters)
                   Positioned(
                     right: -2,
                     top: -2,
