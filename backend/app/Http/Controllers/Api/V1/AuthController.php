@@ -119,6 +119,49 @@ class AuthController extends Controller
         return $this->issueTokenOrReject($user);
     }
 
+    public function deliveryPassword(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email', 'max:255'],
+            'password' => ['required', 'string', 'min:8', 'max:255'],
+        ]);
+
+        $user = User::where('email', strtolower(trim($validated['email'])))->first();
+
+        if (
+            $user === null
+            || ! $user->is_active
+            || ! $user->hasRole(User::ROLE_DELIVERY_PARTNER)
+            || $user->password === null
+            || ! Hash::check($validated['password'], $user->password)
+        ) {
+            return response()->json([
+                'message' => 'The delivery partner email or password is incorrect.',
+                'errors' => (object) [],
+                'code' => 'INVALID_CREDENTIALS',
+            ], 401);
+        }
+
+        $partner = $user->deliveryPartner;
+        if ($partner === null || ! $partner->is_active) {
+            return response()->json([
+                'message' => 'This delivery partner account is not active.',
+                'errors' => (object) [],
+                'code' => 'DELIVERY_PARTNER_INACTIVE',
+            ], 403);
+        }
+
+        if (! $partner->is_approved) {
+            return response()->json([
+                'message' => 'Your delivery partner account is awaiting approval.',
+                'errors' => (object) [],
+                'code' => 'DELIVERY_PARTNER_NOT_APPROVED',
+            ], 403);
+        }
+
+        return $this->issueToken($user);
+    }
+
     public function adminPassword(Request $request): JsonResponse
     {
         $validated = $request->validate([
