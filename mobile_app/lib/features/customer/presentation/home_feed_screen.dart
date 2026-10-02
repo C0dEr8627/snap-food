@@ -29,7 +29,8 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
   bool sortLowToHigh = false;
 
   Future<void> _openFilters(BuildContext context) async {
-    final catalogue = ref.read(catalogueControllerProvider).valueOrNull;
+    final catalogueState = ref.read(catalogueControllerProvider);
+    final catalogue = catalogueState.asData?.value;
     if (catalogue == null) return;
 
     final result = await showModalBottomSheet<_HomeFilterResult>(
