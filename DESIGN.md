@@ -350,3 +350,18 @@ Review:
 - Accessibility
 
 A mismatch caused by a token/component error is fixed centrally, not with a screen-specific patch.
+
+
+## 19. Admin web brand palette override
+
+For the **admin web portal** (`admin_web/`), use this exact approved brand palette and do not substitute alternate brand colors:
+
+| Token | Hex | Intended use |
+|---|---|---|
+| Brand yellow | `#F2D022` | Primary highlights, selected states, warm emphasis |
+| Brand amber | `#F2AE2E` | Secondary emphasis, progress, supporting accents |
+| Deep red | `#A61C1C` | Strong red emphasis and warning states |
+| Food red | `#D92929` | Primary destructive/error accents and key actions |
+| Ink | `#0D0D0D` | Main text, dark surfaces, high-contrast elements |
+
+Use the centralized `AdminColors` tokens in `admin_web/lib/widgets/admin_shared.dart`; do not scatter raw hex values through widgets. Neutral white surfaces, the existing warm canvas, and accessible muted text/border neutrals may support layout and readability. Status colors must remain within the approved palette. This admin palette takes precedence over the earlier Stitch color values for admin-web screens; do not change the customer/mobile design system as part of an admin-only change.
