@@ -379,7 +379,10 @@ class _UsersTable extends StatelessWidget {
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: SizedBox(
-                  width: tableWidth < 1160 ? 1160 : tableWidth,
+                  // The fixed column widths below total 1320px. Keep the table
+                  // at least that wide and let the enclosing horizontal scroller
+                  // handle smaller viewports instead of squeezing or clipping cells.
+                  width: tableWidth < 1320 ? 1320 : tableWidth,
                   child: shad.Table(
                     rows: [
                       shad.TableHeader(cells: const [
@@ -400,7 +403,7 @@ class _UsersTable extends StatelessWidget {
                               child: Text(
                                 '#${user.id}',
                                 maxLines: 1,
-                                overflow: TextOverflow.visible,
+                                overflow: TextOverflow.ellipsis,
                                 softWrap: false,
                                 style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AdminColors.muted),
                               ),
@@ -417,10 +420,10 @@ class _UsersTable extends StatelessWidget {
                             shad.TableCell(
                               child: Text(
                                 user.email.isEmpty ? 'No email recorded' : user.email,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                                maxLines: 3,
+                                overflow: TextOverflow.visible,
                                 softWrap: true,
-                                style: const TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.35),
+                                style: const TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.4),
                               ),
                             ),
                             shad.TableCell(
@@ -459,9 +462,9 @@ class _UsersTable extends StatelessWidget {
                               child: Text(
                                 _formatUserTimestamp(user.createdAt),
                                 maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                                overflow: TextOverflow.visible,
                                 softWrap: true,
-                                style: const TextStyle(fontSize: 10, color: AdminColors.muted, height: 1.35),
+                                style: const TextStyle(fontSize: 10, color: AdminColors.muted, height: 1.4),
                               ),
                             ),
                             shad.TableCell(
@@ -479,15 +482,17 @@ class _UsersTable extends StatelessWidget {
                       ),
                     ],
                     columnWidths: {
-                      0: shad.FixedTableSize(90),
-                      1: shad.FixedTableSize(160),
-                      2: shad.FixedTableSize(260),
-                      3: shad.FixedTableSize(125),
-                      4: shad.FixedTableSize(120),
+                      // Explicit widths add up to 1320px and provide breathing
+                      // room for email addresses, role/status badges and dates.
+                      0: shad.FixedTableSize(84),
+                      1: shad.FixedTableSize(175),
+                      2: shad.FixedTableSize(285),
+                      3: shad.FixedTableSize(135),
+                      4: shad.FixedTableSize(125),
                       5: shad.FixedTableSize(90),
-                      6: shad.FixedTableSize(105),
-                      7: shad.FixedTableSize(170),
-                      8: shad.FixedTableSize(110),
+                      6: shad.FixedTableSize(110),
+                      7: shad.FixedTableSize(200),
+                      8: shad.FixedTableSize(116),
                     },
                   ),
                 ),
