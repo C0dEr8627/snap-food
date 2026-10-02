@@ -3,6 +3,7 @@
 namespace App\Services\Orders;
 
 use App\Http\Requests\StoreOrderRequest;
+use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
@@ -79,6 +80,9 @@ class OrderCheckoutService
                 'to_status' => Order::STATUS_PLACED,
                 'actor_id' => $request->user()->id,
             ]);
+
+            // The customer's server-side cart is consumed atomically with checkout.
+            Cart::query()->where('user_id', $request->user()->id)->delete();
 
             return $order->load('items', 'statusHistory');
         });
