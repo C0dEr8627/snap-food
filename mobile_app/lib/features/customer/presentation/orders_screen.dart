@@ -127,7 +127,7 @@ class OrdersScreen extends ConsumerWidget {
             ),
           );
                 },
-                    ),
+                    )),
                   ],
                 ),
               ),
