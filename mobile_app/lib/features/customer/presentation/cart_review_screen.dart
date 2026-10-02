@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,9 +17,6 @@ class CartReviewScreen extends ConsumerWidget {
     final cart = ref.watch(cartControllerProvider);
     final items = cart.items;
     final subtotal = cart.previewSubtotal;
-    final deliveryFee = subtotal >= 299 ? 0 : 35;
-    final taxes = ((subtotal + deliveryFee) * 0.05).round();
-    final total = subtotal + deliveryFee + taxes;
     final itemCount = cart.itemCount;
 
     return Scaffold(
@@ -62,8 +60,6 @@ class CartReviewScreen extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const _RestaurantSummary(),
-                            const SizedBox(height: 18),
                             Row(
                               children: [
                                 Expanded(
@@ -109,10 +105,6 @@ class CartReviewScreen extends ConsumerWidget {
                               ),
                             ),
                             if (items.isEmpty) const _EmptyCart(),
-                            const SizedBox(height: 8),
-                            const _InstructionCard(),
-                            const SizedBox(height: 14),
-                            const _CouponCard(),
                             const SizedBox(height: 20),
                             const Text(
                               'Bill details',
@@ -122,14 +114,11 @@ class CartReviewScreen extends ConsumerWidget {
                               ),
                             ),
                             const SizedBox(height: 10),
-                            _BillCard(
-                              itemTotal: subtotal,
-                              deliveryFee: deliveryFee,
-                              taxes: taxes,
-                              total: total,
-                            ),
-                            const SizedBox(height: 14),
-                            const _DeliveryNote(),
+                            if (items.isNotEmpty) ...[
+                              _BillCard(itemTotal: subtotal),
+                              const SizedBox(height: 12),
+                              const _CheckoutPricingNote(),
+                            ],
                           ],
                         ),
                       ),
@@ -159,7 +148,7 @@ class CartReviewScreen extends ConsumerWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'Review Order  •  ₹' + total.toString(),
+                    'Continue to checkout',
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
@@ -174,64 +163,6 @@ class CartReviewScreen extends ConsumerWidget {
       ),
     );
   }
-}
-
-class _RestaurantSummary extends StatelessWidget {
-  const _RestaurantSummary();
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(
-      color: SnapFoodColors.surfaceContainerLowest,
-      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-      boxShadow: const [
-        BoxShadow(
-          color: Color(0x0C000000),
-          blurRadius: 5,
-          offset: Offset(0, 2),
-        ),
-      ],
-    ),
-    child: Row(
-      children: [
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: SnapFoodColors.primaryContainer,
-            borderRadius: BorderRadius.circular(SnapFoodRadii.md),
-          ),
-          child: const Icon(
-            Icons.restaurant,
-            color: SnapFoodColors.secondary,
-            size: 25,
-          ),
-        ),
-        const SizedBox(width: 10),
-        const Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Mumbai Spice Kitchen',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
-              ),
-              SizedBox(height: 3),
-              Text(
-                'Andheri West  •  20–25 min',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: SnapFoodColors.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const Icon(Icons.verified, size: 17, color: SnapFoodColors.secondary),
-      ],
-    ),
-  );
 }
 
 class _CartItemCard extends StatelessWidget {
@@ -424,16 +355,8 @@ class _CouponCard extends StatelessWidget {
 }
 
 class _BillCard extends StatelessWidget {
-  const _BillCard({
-    required this.itemTotal,
-    required this.deliveryFee,
-    required this.taxes,
-    required this.total,
-  });
+  const _BillCard({required this.itemTotal});
   final int itemTotal;
-  final int deliveryFee;
-  final int taxes;
-  final int total;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -446,65 +369,45 @@ class _BillCard extends StatelessWidget {
     child: Column(
       children: [
         _BillRow('Item total', '₹' + itemTotal.toString()),
-        const SizedBox(height: 8),
-        _BillRow(
-          'Delivery fee',
-          deliveryFee == 0 ? 'FREE' : '₹' + deliveryFee.toString(),
-          accent: deliveryFee == 0,
-        ),
-        const SizedBox(height: 8),
-        _BillRow('Taxes & charges', '₹' + taxes.toString()),
         const Padding(
           padding: EdgeInsets.symmetric(vertical: 11),
           child: Divider(color: SnapFoodColors.softBorder, height: 1),
         ),
-        _BillRow('To pay', '₹' + total.toString(), strong: true),
+        const Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Delivery fee & final charges',
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: SnapFoodColors.onSurfaceVariant),
+              ),
+            ),
+            Text(
+              'Calculated at checkout',
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800),
+            ),
+          ],
+        ),
       ],
     ),
   );
 }
 
 class _BillRow extends StatelessWidget {
-  const _BillRow(
-    this.label,
-    this.value, {
-    this.accent = false,
-    this.strong = false,
-  });
+  const _BillRow(this.label, this.value);
   final String label;
   final String value;
-  final bool accent;
-  final bool strong;
 
   @override
   Widget build(BuildContext context) => Row(
     children: [
-      Expanded(
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: strong ? 13 : 11,
-            fontWeight: strong ? FontWeight.w800 : FontWeight.w600,
-            color: strong
-                ? SnapFoodColors.onSurface
-                : SnapFoodColors.onSurfaceVariant,
-          ),
-        ),
-      ),
-      Text(
-        value,
-        style: TextStyle(
-          fontSize: strong ? 15 : 11,
-          fontWeight: FontWeight.w800,
-          color: accent ? Colors.green : SnapFoodColors.onSurface,
-        ),
-      ),
+      Expanded(child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: SnapFoodColors.onSurfaceVariant))),
+      Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
     ],
   );
 }
 
-class _DeliveryNote extends StatelessWidget {
-  const _DeliveryNote();
+class _CheckoutPricingNote extends StatelessWidget {
+  const _CheckoutPricingNote();
 
   @override
   Widget build(BuildContext context) => Container(
@@ -515,16 +418,12 @@ class _DeliveryNote extends StatelessWidget {
     ),
     child: const Row(
       children: [
-        Icon(
-          Icons.location_on_outlined,
-          color: SnapFoodColors.secondary,
-          size: 19,
-        ),
+        Icon(Icons.receipt_long_outlined, color: SnapFoodColors.secondary, size: 19),
         SizedBox(width: 8),
         Expanded(
           child: Text(
-            'Delivering to Andheri West, Mumbai • Flat 402',
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
+            'The server recalculates the final order amount from the current catalogue at checkout.',
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
           ),
         ),
       ],
