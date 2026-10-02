@@ -107,11 +107,6 @@ class _ProfileHeader extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
               ),
             ),
-            IconButton(
-              tooltip: 'Settings',
-              onPressed: () => context.go('/settings'),
-              icon: const Icon(Icons.settings_outlined),
-            ),
           ],
         ),
       ),
@@ -337,6 +332,8 @@ class _ProfileSections extends StatelessWidget {
         ],
       ),
       const SizedBox(height: 14),
+      const _EmbeddedSettings(),
+      const SizedBox(height: 14),
       SizedBox(
         width: double.infinity,
         child: OutlinedButton.icon(
@@ -520,3 +517,93 @@ class _ProfileAction extends StatelessWidget {
   );
 }
 
+
+
+class _EmbeddedSettings extends StatefulWidget {
+  const _EmbeddedSettings();
+
+  @override
+  State<_EmbeddedSettings> createState() => _EmbeddedSettingsState();
+}
+
+class _EmbeddedSettingsState extends State<_EmbeddedSettings> {
+  bool orderUpdates = true;
+  bool offers = true;
+  bool sounds = true;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      _SectionCard(
+        title: 'Settings · Notifications',
+        children: [
+          _AccountRow(
+            icon: Icons.receipt_long_outlined,
+            title: 'Order updates',
+            subtitle: 'Get notified about your delivery status',
+            trailing: Switch.adaptive(
+              value: orderUpdates,
+              onChanged: (value) => setState(() => orderUpdates = value),
+              activeTrackColor: SnapFoodColors.primaryContainer,
+              activeThumbColor: SnapFoodColors.secondary,
+            ),
+          ),
+          _AccountRow(
+            icon: Icons.local_offer_outlined,
+            title: 'Offers & recommendations',
+            subtitle: 'Receive deals from local food spots',
+            trailing: Switch.adaptive(
+              value: offers,
+              onChanged: (value) => setState(() => offers = value),
+              activeTrackColor: SnapFoodColors.primaryContainer,
+              activeThumbColor: SnapFoodColors.secondary,
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 14),
+      _SectionCard(
+        title: 'App experience',
+        children: [
+          _AccountRow(
+            icon: Icons.volume_up_outlined,
+            title: 'Sounds',
+            subtitle: 'Play sounds for important order updates',
+            trailing: Switch.adaptive(
+              value: sounds,
+              onChanged: (value) => setState(() => sounds = value),
+              activeTrackColor: SnapFoodColors.primaryContainer,
+              activeThumbColor: SnapFoodColors.secondary,
+            ),
+          ),
+          const _AccountRow(
+            icon: Icons.language_outlined,
+            title: 'Language',
+            subtitle: 'English',
+          ),
+        ],
+      ),
+      const SizedBox(height: 14),
+      _SectionCard(
+        title: 'Privacy & account',
+        children: const [
+          _AccountRow(
+            icon: Icons.lock_outline,
+            title: 'Privacy',
+            subtitle: 'Manage how your account information is used',
+          ),
+          _AccountRow(
+            icon: Icons.security_outlined,
+            title: 'Security',
+            subtitle: 'Account and sign-in preferences',
+          ),
+          _AccountRow(
+            icon: Icons.info_outline,
+            title: 'About Snap Fooddd',
+            subtitle: 'Version 1.0.0',
+          ),
+        ],
+      ),
+    ],
+  );
+}
