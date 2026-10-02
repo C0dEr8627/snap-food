@@ -88,8 +88,9 @@ class AddressBookController extends AsyncNotifier<AddressBookState> {
         ? raw.whereType<Map>().map((item) => SavedAddress.fromJson(Map<String, dynamic>.from(item))).toList(growable: false)
         : const <SavedAddress>[];
     final selectedId = state.value?.selectedAddress?.id;
-    final selected = addresses.where((address) => address.id == selectedId).firstOrNull
-        ?? (addresses.isNotEmpty ? addresses.first : null);
+    SavedAddress? selected;
+    for (final address in addresses) { if (address.id == selectedId) { selected = address; break; } }
+    selected ??= addresses.isNotEmpty ? addresses.first : null;
     return AddressBookState(addresses: addresses, selectedAddress: selected);
   }
 
@@ -118,7 +119,7 @@ class AddressBookController extends AsyncNotifier<AddressBookState> {
   }
 
   Future<void> deleteAddress(SavedAddress address) async {
-    await ref.read(orderApiClientProvider).delete('/addresses/${address.id}');
+    await ref.read(orderApiClientProvider).request('DELETE', '/addresses/${address.id}');
     final current = state.value ?? const AddressBookState();
     final remaining = current.addresses.where((item) => item.id != address.id).toList(growable: false);
     state = AsyncData(AddressBookState(
