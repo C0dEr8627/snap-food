@@ -74,6 +74,14 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       .read(orderTrackingControllerProvider.notifier)
                       .load(widget.orderId),
                 ),
+                const SizedBox(height: 10),
+                OutlinedButton.icon(
+                  onPressed: () => context.push(
+                    '/orders/' + Uri.encodeComponent(widget.orderId) + '/tracking',
+                  ),
+                  icon: const Icon(Icons.location_searching_outlined),
+                  label: const Text('Open live tracking'),
+                ),
               ],
               const SizedBox(height: 14),
               _Section(
