@@ -21,6 +21,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _password = TextEditingController();
   bool _obscurePassword = true;
   bool _submitting = false;
+  String? _loginError;
 
   @override
   void dispose() {
@@ -31,7 +32,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _submit() async {
     if (_submitting || !_formKey.currentState!.validate()) return;
-    setState(() => _submitting = true);
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _submitting = true;
+      _loginError = null;
+    });
     try {
       await ref.read(authControllerProvider.notifier).loginWithPassword(
         email: _email.text,
@@ -39,14 +44,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       );
       if (!mounted) return;
       final state = ref.read(authControllerProvider);
-    if (state.hasError) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(_friendlyError(state.error)),
-        behavior: SnackBarBehavior.floating,
-      ));
-      return;
-    }
-    if (state.value?.isAuthenticated == true) context.go('/home');
+      if (state.value?.isAuthenticated == true) {
+        context.go('/home');
+        return;
+      }
+      final message = state.value?.errorMessage ?? _friendlyError(state.error);
+      setState(() => _loginError = message);
+      await _showLoginErrorDialog(message);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -57,14 +61,36 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         .signInWithGoogleCredential(credential);
     if (!mounted) return;
     final state = ref.read(authControllerProvider);
-    if (state.hasError) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(_friendlyError(state.error)),
-        behavior: SnackBarBehavior.floating,
-      ));
-    } else if (state.value?.isAuthenticated == true) {
+    if (state.value?.isAuthenticated == true) {
       context.go('/home');
+    } else {
+      final message = state.value?.errorMessage ?? _friendlyError(state.error);
+      setState(() => _loginError = message);
+      await _showLoginErrorDialog(message);
     }
+  }
+
+  Future<void> _showLoginErrorDialog(String message) async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.error_outline_rounded),
+            SizedBox(width: 10),
+            Expanded(child: Text('Sign-in unsuccessful')),
+          ],
+        ),
+        content: Text(message),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Try again'),
+          ),
+        ],
+      ),
+    );
   }
 
   String _friendlyError(Object? error) {
@@ -192,7 +218,40 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       validator: (value) => (value == null || value.isEmpty)
                           ? 'Enter your password.' : null,
                     ),
-                    const SizedBox(height: 20),
+                    if (_loginError != null) ...[
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.errorContainer,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.error.withAlpha(70),
+                          ),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.info_outline_rounded,
+                              color: Theme.of(context).colorScheme.onErrorContainer,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                _loginError!,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onErrorContainer,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.35,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 4),
                     SizedBox(
                       height: 58,
                       child: FilledButton(
