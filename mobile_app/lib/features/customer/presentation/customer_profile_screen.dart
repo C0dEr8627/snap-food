@@ -60,6 +60,7 @@ class CustomerProfileScreen extends ConsumerWidget {
                                   const SizedBox(width: 20),
                                   Expanded(
                                     child: _ProfileSections(
+                                      selectedAddress: selectedAddress,
                                       onLogout: () => _confirmLogout(context, ref),
                                     ),
                                   ),
@@ -70,6 +71,7 @@ class CustomerProfileScreen extends ConsumerWidget {
                                   _ProfileIdentity(name: displayName, email: email, phone: phone, orderCount: orderCount, favoriteCount: favoriteCount, addressCount: addressCount, selectedAddress: selectedAddress),
                                   const SizedBox(height: 20),
                                   _ProfileSections(
+                                    selectedAddress: selectedAddress,
                                     onLogout: () => _confirmLogout(context, ref),
                                   ),
                                 ],
@@ -227,12 +229,12 @@ class _ProfileIdentity extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
-            const Row(
+            Row(
               children: [
                 Expanded(child: _StatValue(orderCount, 'Orders')),
-                _StatDivider(),
+                const _StatDivider(),
                 Expanded(child: _StatValue(favoriteCount, 'Favorites')),
-                _StatDivider(),
+                const _StatDivider(),
                 Expanded(child: _StatValue(addressCount, 'Addresses')),
               ],
             ),
@@ -291,7 +293,8 @@ class _StatDivider extends StatelessWidget {
 }
 
 class _ProfileSections extends StatelessWidget {
-  const _ProfileSections({required this.onLogout});
+  const _ProfileSections({required this.selectedAddress, required this.onLogout});
+  final SavedAddress? selectedAddress;
   final VoidCallback onLogout;
 
   @override
@@ -639,25 +642,4 @@ class _EmbeddedSettingsState extends State<_EmbeddedSettings> {
     ],
   );
 }
-
-  Future<void> _confirmLogout(BuildContext context, WidgetRef ref) async {
-    final shouldLogout = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Log out?'),
-        content: const Text('Are you sure you want to log out of Snap Foodd?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            style: FilledButton.styleFrom(backgroundColor: SnapFoodColors.secondary, foregroundColor: Colors.white),
-            child: const Text('Log out'),
-          ),
-        ],
-      ),
-    );
-    if (shouldLogout != true) return;
-    await ref.read(authControllerProvider.notifier).logout();
-    if (context.mounted) context.go('/welcome');
-  }
 
