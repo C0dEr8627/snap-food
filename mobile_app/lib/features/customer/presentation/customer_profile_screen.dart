@@ -106,7 +106,6 @@ class CustomerProfileScreen extends ConsumerWidget {
     await ref.read(authControllerProvider.notifier).logout();
     if (context.mounted) context.go('/welcome');
   }
-  }
 }
 
 class _ProfileHeader extends StatelessWidget {
