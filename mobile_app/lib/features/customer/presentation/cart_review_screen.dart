@@ -186,21 +186,7 @@ class _CartItemCard extends StatelessWidget {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 62,
-          height: 62,
-          decoration: BoxDecoration(
-            color: item.vegetarian
-                ? SnapFoodColors.softYellow
-                : SnapFoodColors.softRed,
-            borderRadius: BorderRadius.circular(SnapFoodRadii.md),
-          ),
-          child: Icon(
-            item.vegetarian ? Icons.eco : Icons.local_fire_department,
-            color: item.vegetarian ? Colors.green : SnapFoodColors.secondary,
-            size: 28,
-          ),
-        ),
+        _CartProductImage(item: item),
         const SizedBox(width: 10),
         Expanded(
           child: Column(
@@ -248,6 +234,47 @@ class _CartItemCard extends StatelessWidget {
       ],
     ),
   );
+}
+
+class _CartProductImage extends StatelessWidget {
+  const _CartProductImage({required this.item});
+  final CartItem item;
+
+  bool get _hasRemoteImage {
+    final value = item.imageUrl?.trim() ?? '';
+    return value.startsWith('https://') || value.startsWith('http://');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const size = 62.0;
+    final fallback = ClipRRect(
+      borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+      child: Container(
+        width: size,
+        height: size,
+        color: SnapFoodColors.primaryContainer,
+        padding: const EdgeInsets.all(10),
+        child: SvgPicture.asset(
+          'assets/images/customer/logo.svg',
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+
+    if (!_hasRemoteImage) return fallback;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+      child: Image.network(
+        item.imageUrl!.trim(),
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => fallback,
+      ),
+    );
+  }
 }
 
 class _MiniQuantity extends StatelessWidget {
