@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_transport.dart';
 import '../../auth/data/session_store.dart';
+import '../../auth/presentation/auth_controller.dart';
 import '../data/catalogue_models.dart';
 import '../data/favorite_repository.dart';
 
@@ -13,6 +14,9 @@ final favoriteApiTransportProvider = Provider<HttpApiTransport>((ref) {
 });
 
 final favoriteApiClientProvider = Provider<ApiClient>((ref) {
+  // Depend on the authenticated user id so a new login creates a fresh
+  // client/controller state instead of retaining the previous user's data.
+  ref.watch(authUserIdProvider);
   return ApiClient(
     config: ApiConfig.fromEnvironment(),
     transport: ref.watch(favoriteApiTransportProvider),
