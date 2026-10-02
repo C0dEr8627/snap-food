@@ -23,7 +23,14 @@ class OrdersScreen extends ConsumerWidget {
             Positioned.fill(
               child: Padding(
                 padding: const EdgeInsets.only(top: 76),
-                child: state.when(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(16, 4, 16, 12),
+                      child: Text('Your Orders', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+                    ),
+                    Expanded(child: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(
           child: Padding(
@@ -120,8 +127,10 @@ class OrdersScreen extends ConsumerWidget {
             ),
           );
                 },
+                    ),
+                  ],
+                ),
               ),
-            ),
             ),
             const Positioned(top: 0, left: 0, right: 0, child: HomeHeader()),
             const Positioned(
