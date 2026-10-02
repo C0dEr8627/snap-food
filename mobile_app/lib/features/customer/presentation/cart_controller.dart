@@ -1,9 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../auth/presentation/auth_controller.dart';
 import '../data/cart_models.dart';
 import '../data/cart_repository.dart';
 
 final cartRepositoryProvider = Provider<CartRepository>((ref) {
+  // The repository is recreated whenever the authenticated customer changes.
+  // A cart from customer A therefore cannot remain in customer B's state.
+  final userId = ref.watch(authUserIdProvider);
+  if (userId == null || userId.isEmpty) {
+    return LocalCartRepository();
+  }
   return LocalCartRepository();
 });
 
