@@ -20,9 +20,6 @@ final orderSessionStoreProvider = Provider<SessionStore>((ref) {
 });
 
 final orderApiClientProvider = Provider<ApiClient>((ref) {
-  // Make the API client lifecycle account-scoped. The token provider is
-  // dynamic, but the user-id dependency also clears cached controller state
-  // when a different customer signs in.
   ref.watch(authUserIdProvider);
   final sessionStore = ref.watch(orderSessionStoreProvider);
   return ApiClient(
@@ -52,7 +49,10 @@ class OrderCheckoutController extends AsyncNotifier<OrderCheckoutState> {
   OrderRepository get _repository => ref.read(orderRepositoryProvider);
 
   @override
-  Future<OrderCheckoutState> build() async => const OrderCheckoutState();
+  Future<OrderCheckoutState> build() async {
+    ref.watch(authUserIdProvider);
+    return const OrderCheckoutState();
+  }
 
   Future<Order?> submit(CreateOrderRequest request) async {
     if (state.value?.isSubmitting == true) return null;
@@ -98,6 +98,7 @@ class OrderHistoryController extends AsyncNotifier<OrderHistoryState> {
 
   @override
   Future<OrderHistoryState> build() async {
+    ref.watch(authUserIdProvider);
     final page = await _repository.fetchOrders();
     return _fromPage(page);
   }
@@ -159,7 +160,10 @@ class OrderTrackingController extends AsyncNotifier<OrderTracking?> {
   OrderRepository get _repository => ref.read(orderRepositoryProvider);
 
   @override
-  Future<OrderTracking?> build() async => null;
+  Future<OrderTracking?> build() async {
+    ref.watch(authUserIdProvider);
+    return null;
+  }
 
   Future<void> load(String orderId) async {
     state = const AsyncLoading();
