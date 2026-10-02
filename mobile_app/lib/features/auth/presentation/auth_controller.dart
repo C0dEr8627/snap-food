@@ -56,10 +56,11 @@ class AuthController extends AsyncNotifier<AuthStatus> {
     await _authenticate(() => _repository.loginWithPassword(email: email, password: password));
   }
 
-  Future<void> registerCustomer({required String name, required String email, required String password, required String passwordConfirmation}) async {
+  Future<void> registerCustomer({required String name, required String email, required String phone, required String password, required String passwordConfirmation}) async {
     await _authenticate(() => _repository.registerCustomer(
       name: name,
       email: email,
+      phone: phone,
       password: password,
       passwordConfirmation: passwordConfirmation,
     ));
