@@ -11,6 +11,7 @@ import '../data/catalogue_models.dart';
 import 'catalogue_controller.dart';
 import 'catalogue_state_message.dart';
 import 'cart_controller.dart';
+import 'address_book_controller.dart';
 
 class HomeFeedScreen extends ConsumerStatefulWidget {
   const HomeFeedScreen({super.key});
@@ -465,18 +466,24 @@ class HomeHeader extends ConsumerWidget {
   }
 }
 
-class _DeliveryLocation extends StatelessWidget {
+class _DeliveryLocation extends ConsumerWidget {
   const _DeliveryLocation();
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedAddress = ref.watch(addressBookControllerProvider).value?.selectedAddress;
+    final label = selectedAddress?.label ?? 'Choose a delivery address';
+    final detail = selectedAddress?.displayLine;
+    return InkWell(
+      onTap: () => context.push('/addresses'),
+      borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+      child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: SnapFoodColors.surfaceContainer,
         borderRadius: BorderRadius.circular(SnapFoodRadii.full),
       ),
-      child: const Row(
+      child: Row(
         children: [
           Icon(
             Icons.location_on,
@@ -486,7 +493,7 @@ class _DeliveryLocation extends StatelessWidget {
           SizedBox(width: 6),
           Expanded(
             child: Text(
-              'Choose a delivery address',
+              detail == null || detail.isEmpty ? label : '$label · $detail',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
@@ -676,7 +683,6 @@ class BottomNav extends StatelessWidget {
     (Icons.search, 'Search'),
     (Icons.receipt_long, 'Orders'),
     (Icons.favorite, 'Favorites'),
-    (Icons.person, 'Profile'),
   ];
 
   @override
@@ -707,9 +713,6 @@ class BottomNav extends StatelessWidget {
                             break;
                           case 3:
                             context.go('/favorites');
-                            break;
-                          case 4:
-                            context.go('/profile');
                             break;
                         }
                         onSelected(i);
