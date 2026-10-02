@@ -145,11 +145,12 @@ class _DeliveryLoginOnboardingScreenState
                         ),
                         child: Text(
                           'DELIVERY PARTNER',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: SnapFoodColors.secondary,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.7,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: SnapFoodColors.secondary,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.7,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 14),
