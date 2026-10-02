@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    @keyframes snapFooddLaunchIn {
+      0% { opacity: 0; transform: scale(.88) translateY(8px); }
+      55% { opacity: 1; transform: scale(1.02) translateY(0); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    #snap-foodd-launch img {
+      animation: snapFooddLaunchIn 900ms cubic-bezier(.22, 1, .36, 1) both;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #snap-foodd-launch img { animation: none; }
+    }
+  </style>
+  <base href="/">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Snap Foodd — cross-platform food delivery application.">
+  <meta name="theme-color" content="#FFF8F5">
+  <link rel="preload" as="image" href="assets/images/customer/logo.svg">
+  <link rel="icon" type="image/svg+xml" href="assets/images/customer/logo.svg">
+  <title>Snap Foodd</title>
+</head>
+<body style="margin:0;background:#FFF8F5;">
+  <div id="snap-foodd-launch" aria-label="Snap Foodd" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#FFF8F5;">
+    <img src="assets/images/customer/logo.svg" alt="Snap Foodd" style="width:min(220px,42vw);height:auto;">
+  </div>
+  <script src="flutter_bootstrap.js" async></script>
+  <script>window.addEventListener("flutter-first-frame",function(){var e=document.getElementById("snap-foodd-launch");if(e)e.remove();});</script>
+</body>
+</html>
