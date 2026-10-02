@@ -24,3 +24,9 @@ Use focused commits such as `docs: update API contract`, `feat(auth): add Google
 
 ## Uncertainty
 Inspect existing evidence first. Take the smallest reversible change when safe; otherwise ask for the missing decision. Never silently guess a business rule or hosting capability.
+
+
+## Admin web visual consistency
+- For all `admin_web/` UI work, follow the **Admin web brand palette override** in `DESIGN.md`: `#F2D022`, `#F2AE2E`, `#A61C1C`, `#D92929`, and `#0D0D0D`.
+- Reuse `AdminColors` from `admin_web/lib/widgets/admin_shared.dart`; do not introduce new brand colors or replace the palette with a component library's default accent.
+- Loading, empty, error, and authentication states must be intentional and branded; never leave a blank screen while the admin app is initializing or processing sign-in.
