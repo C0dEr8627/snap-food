@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../auth/data/auth_models.dart';
+import '../../auth/presentation/auth_controller.dart';
+import '../../../core/network/api_exception.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../../../design_system/tokens/app_spacing.dart';
 
-class DeliveryLoginOnboardingScreen extends StatefulWidget {
+class DeliveryLoginOnboardingScreen extends ConsumerStatefulWidget {
   const DeliveryLoginOnboardingScreen({super.key});
 
   @override
@@ -14,41 +19,88 @@ class DeliveryLoginOnboardingScreen extends StatefulWidget {
 }
 
 class _DeliveryLoginOnboardingScreenState
-    extends State<DeliveryLoginOnboardingScreen> {
-  final _phoneController = TextEditingController();
+    extends ConsumerState<DeliveryLoginOnboardingScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _termsAccepted = false;
   bool _submitting = false;
 
   @override
   void dispose() {
-    _phoneController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  void _continue() {
-    if (_phoneController.text.trim().length < 10) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a valid 10-digit mobile number.')),
-      );
+  Future<void> _continue() async {
+    if (_emailController.text.trim().isEmpty || _passwordController.text.isEmpty) {
+      await _showError('Enter your delivery partner email and password.');
       return;
     }
     if (!_termsAccepted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Accept the partner terms to continue.')),
-      );
+      await _showError('Accept the partner terms to continue.');
       return;
     }
 
     setState(() => _submitting = true);
-    Future<void>.delayed(const Duration(milliseconds: 450), () {
-      if (!mounted) return;
-      setState(() => _submitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('OTP flow is ready for backend integration.'),
-        ),
+    try {
+      await ref.read(authControllerProvider.notifier).loginDeliveryPartner(
+        email: _emailController.text,
+        password: _passwordController.text,
       );
-    });
+      if (!mounted) return;
+      final state = ref.read(authControllerProvider);
+      if (state.hasError) {
+        await _showError(_friendlyError(state.error));
+        return;
+      }
+      if (state.value?.isAuthenticated == true && state.value?.isDeliveryPartner == true) {
+        context.go('/delivery/requests');
+      } else {
+        await _showError('We could not open the delivery partner dashboard. Please try again.');
+      }
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
+
+  Future<void> _showError(String message) async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delivery partner sign-in'),
+        content: Text(message),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _friendlyError(Object? error) {
+    if (error is ApiException) {
+      switch (error.code) {
+        case 'INVALID_CREDENTIALS':
+          return 'The email or password is incorrect. Please check your credentials and try again.';
+        case 'DELIVERY_PARTNER_NOT_APPROVED':
+          return 'Your delivery partner account is awaiting approval. Please contact the Snap Foodd team.';
+        case 'DELIVERY_PARTNER_INACTIVE':
+        case 'ACCOUNT_INACTIVE':
+          return 'This delivery partner account is inactive. Please contact the Snap Foodd team.';
+        case 'NETWORK_ERROR':
+        case 'TIMEOUT':
+          return 'Could not connect to Snap Foodd. Check your connection and try again.';
+      }
+      if (error.statusCode != null && error.statusCode! >= 500) {
+        return 'Snap Foodd could not complete the sign-in right now. Please try again in a moment.';
+      }
+      if (error.message.isNotEmpty) return error.message;
+    }
+    return 'We could not sign you in. Please try again.';
   }
 
   @override
@@ -71,7 +123,8 @@ class _DeliveryLoginOnboardingScreenState
                   ),
                   child: expanded
                       ? _DesktopLayout(
-                          phoneController: _phoneController,
+                          emailController: _emailController,
+                          passwordController: _passwordController,
                           termsAccepted: _termsAccepted,
                           submitting: _submitting,
                           onTermsChanged: (v) =>
@@ -79,7 +132,8 @@ class _DeliveryLoginOnboardingScreenState
                           onContinue: _continue,
                         )
                       : _MobileLayout(
-                          phoneController: _phoneController,
+                          emailController: _emailController,
+                          passwordController: _passwordController,
                           termsAccepted: _termsAccepted,
                           submitting: _submitting,
                           onTermsChanged: (v) =>
@@ -105,7 +159,8 @@ class _MobileLayout extends StatelessWidget {
     required this.onContinue,
   });
 
-  final TextEditingController phoneController;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
   final bool termsAccepted;
   final bool submitting;
   final ValueChanged<bool> onTermsChanged;
@@ -140,7 +195,8 @@ class _DesktopLayout extends StatelessWidget {
     required this.onContinue,
   });
 
-  final TextEditingController phoneController;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
   final bool termsAccepted;
   final bool submitting;
   final ValueChanged<bool> onTermsChanged;
@@ -321,38 +377,47 @@ class _LoginForm extends StatelessWidget {
         ),
         const SizedBox(height: 30),
         const Text(
-          'Mobile number',
+          'Email address',
           style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 8),
         TextField(
-          controller: phoneController,
-          keyboardType: TextInputType.phone,
-          maxLength: 10,
+          controller: emailController,
+          keyboardType: TextInputType.emailAddress,
+          textInputAction: TextInputAction.next,
           decoration: InputDecoration(
-            counterText: '',
-            prefixText: '+91  ',
-            hintText: '98765 43210',
-            prefixIcon: const Icon(Icons.phone_outlined, size: 20),
+            hintText: 'partner@example.com',
+            prefixIcon: const Icon(Icons.mail_outline_rounded, size: 20),
             filled: true,
             fillColor: SnapFoodColors.surfaceContainerLowest,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(SnapFoodRadii.md),
               borderSide: const BorderSide(color: SnapFoodColors.softBorder),
             ),
-            enabledBorder: OutlineInputBorder(
+          ),
+        ),
+        const SizedBox(height: 14),
+        const Text(
+          'Password',
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: passwordController,
+          obscureText: true,
+          textInputAction: TextInputAction.done,
+          decoration: InputDecoration(
+            hintText: 'Enter your password',
+            prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
+            filled: true,
+            fillColor: SnapFoodColors.surfaceContainerLowest,
+            border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(SnapFoodRadii.md),
               borderSide: const BorderSide(color: SnapFoodColors.softBorder),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(SnapFoodRadii.md),
-              borderSide: const BorderSide(
-                color: SnapFoodColors.primary,
-                width: 1.5,
-              ),
-            ),
           ),
         ),
+        const SizedBox(height: 14),
         const SizedBox(height: 14),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
