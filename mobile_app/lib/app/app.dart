@@ -17,6 +17,7 @@ import '../features/customer/presentation/invoice_screen.dart';
 import '../features/customer/presentation/favorites_screen.dart';
 import '../features/customer/presentation/live_order_tracking_screen.dart';
 import '../features/customer/presentation/customer_profile_screen.dart';
+import '../features/customer/presentation/address_book_screen.dart';
 import '../features/customer/presentation/customer_settings_screen.dart';
 import '../features/customer/presentation/restaurant_menu_screen.dart';
 import '../features/customer/presentation/splash_welcome_screen.dart';
@@ -144,6 +145,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/order-tracking',
         name: 'order-tracking',
         builder: (context, state) => const LiveOrderTrackingScreen(orderId: ''),
+      ),
+      GoRoute(
+        path: '/addresses',
+        name: 'customer-addresses',
+        builder: (context, state) => const AddressBookScreen(),
       ),
       GoRoute(
         path: '/profile',
