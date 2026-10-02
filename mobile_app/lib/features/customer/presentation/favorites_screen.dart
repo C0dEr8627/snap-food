@@ -35,13 +35,15 @@ class FavoritesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: SnapFoodColors.surface,
-    appBar: AppBar(
-      title: const Text('Favorites'),
-      backgroundColor: SnapFoodColors.surface,
-      surfaceTintColor: Colors.transparent,
-    ),
-    body: ListView(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 92),
+    body: SafeArea(
+      bottom: false,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 76),
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 92),
       children: [
         const Text(
           'Your saved places',
@@ -147,9 +149,20 @@ class FavoritesScreen extends StatelessWidget {
             ),
           ),
         ),
-      ],
+                ],
+              ),
+            ),
+          ),
+          const Positioned(top: 0, left: 0, right: 0, child: HomeHeader()),
+          const Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: BottomNav(selected: 3, onSelected: _noop),
+          ),
+        ],
+      ),
     ),
-    bottomNavigationBar: const BottomNav(selected: 3, onSelected: _noop),
   );
 
   static void _noop(int _) {}
