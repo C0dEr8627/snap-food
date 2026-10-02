@@ -9,6 +9,7 @@ import '../../../design_system/tokens/app_spacing.dart';
 import '../data/order_models.dart';
 import 'cart_controller.dart';
 import 'order_controller.dart';
+import 'address_book_controller.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
@@ -48,6 +49,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   Widget build(BuildContext context) {
     final cart = ref.watch(cartControllerProvider);
     final checkoutState = ref.watch(orderCheckoutControllerProvider);
+    final savedAddress = ref.watch(addressBookControllerProvider).value?.selectedAddress;
     final isSubmitting = checkoutState.value?.isSubmitting == true;
     final apiError = checkoutState.hasError ? checkoutState.error : null;
 
@@ -88,24 +90,38 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 10),
-                  _field(_label, 'Label'),
-                  _field(_recipient, 'Recipient name'),
-                  _field(_line1, 'Address line 1'),
-                  _field(_line2, 'Address line 2', requiredField: false),
-                  Row(
-                    children: [
-                      Expanded(child: _field(_city, 'City')),
-                      const SizedBox(width: 8),
-                      Expanded(child: _field(_state, 'State')),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(child: _field(_postal, 'Postal code')),
-                      const SizedBox(width: 8),
-                      Expanded(child: _field(_country, 'Country')),
-                    ],
-                  ),
+                  if (savedAddress != null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+                        border: Border.all(color: SnapFoodColors.outline.withAlpha(40)),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.location_on_outlined, color: SnapFoodColors.secondary),
+                          const SizedBox(width: 10),
+                          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text(savedAddress.label, style: const TextStyle(fontWeight: FontWeight.w800)),
+                            const SizedBox(height: 4),
+                            Text('${savedAddress.recipientName}\n${savedAddress.displayLine}'),
+                          ])),
+                          TextButton(onPressed: () => context.push('/addresses'), child: const Text('Change')),
+                        ],
+                      ),
+                    ),
+                  ] else ...[
+                    const Text('No saved address selected. Add one here or choose an existing address.', style: TextStyle(fontSize: 12, color: SnapFoodColors.onSurfaceVariant)),
+                    const SizedBox(height: 10),
+                    _field(_label, 'Label'),
+                    _field(_recipient, 'Recipient name'),
+                    _field(_line1, 'Address line 1'),
+                    _field(_line2, 'Address line 2', requiredField: false),
+                    Row(children: [Expanded(child: _field(_city, 'City')), const SizedBox(width: 8), Expanded(child: _field(_state, 'State'))]),
+                    Row(children: [Expanded(child: _field(_postal, 'Postal code')), const SizedBox(width: 8), Expanded(child: _field(_country, 'Country'))]),
+                  ],
                   const SizedBox(height: 16),
                   const Text(
                     'Payment method',
@@ -199,7 +215,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   );
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    final savedAddress = ref.read(addressBookControllerProvider).value?.selectedAddress;
+    if (savedAddress == null && !_formKey.currentState!.validate()) return;
     final cart = ref.read(cartControllerProvider);
     final lines = <OrderLineRequest>[];
     for (final item in cart.items) {
@@ -219,25 +236,35 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       );
     }
 
+    DeliveryAddress deliveryAddress;
+    if (savedAddress != null) {
+      deliveryAddress = savedAddress.toDeliveryAddress();
+    } else {
+      try {
+        final created = await ref.read(addressBookControllerProvider.notifier).addAddress({
+          'label': _label.text.trim(),
+          'recipient_name': _recipient.text.trim(),
+          'address_line1': _line1.text.trim(),
+          'address_line2': _line2.text.trim().isEmpty ? null : _line2.text.trim(),
+          'city': _city.text.trim(),
+          'state': _state.text.trim(),
+          'postal_code': _postal.text.trim(),
+          'country': _country.text.trim().isEmpty ? 'India' : _country.text.trim(),
+        });
+        if (created == null) {
+          _showMessage('Could not save the delivery address.');
+          return;
+        }
+        deliveryAddress = created.toDeliveryAddress();
+      } catch (error) {
+        _showMessage(error is ApiException ? error.message : 'Could not save the delivery address.');
+        return;
+      }
+    }
+
     final order = await ref
         .read(orderCheckoutControllerProvider.notifier)
-        .submit(
-          CreateOrderRequest(
-            items: lines,
-            deliveryAddress: DeliveryAddress(
-              label: _label.text.trim(),
-              recipientName: _recipient.text.trim(),
-              addressLine1: _line1.text.trim(),
-              addressLine2: _line2.text.trim().isEmpty
-                  ? null
-                  : _line2.text.trim(),
-              city: _city.text.trim(),
-              state: _state.text.trim(),
-              postalCode: _postal.text.trim(),
-              country: _country.text.trim(),
-            ),
-          ),
-        );
+        .submit(CreateOrderRequest(items: lines, deliveryAddress: deliveryAddress));
     if (!mounted || order == null) return;
     ref.read(cartControllerProvider.notifier).clear();
     context.go('/orders/${Uri.encodeComponent(order.id)}');
