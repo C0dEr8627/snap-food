@@ -10,6 +10,7 @@ import '../../auth/presentation/auth_controller.dart';
 import '../data/catalogue_models.dart';
 import 'catalogue_controller.dart';
 import 'catalogue_state_message.dart';
+import 'cart_controller.dart';
 
 class HomeFeedScreen extends ConsumerStatefulWidget {
   const HomeFeedScreen({super.key});
@@ -385,11 +386,12 @@ class _ProductCard extends StatelessWidget {
   }
 }
 
-class HomeHeader extends StatelessWidget {
+class HomeHeader extends ConsumerWidget {
   const HomeHeader();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cart = ref.watch(cartControllerProvider);
     return Material(
       color: SnapFoodColors.surface.withAlpha(242),
       elevation: 1,
@@ -405,7 +407,35 @@ class HomeHeader extends StatelessWidget {
                   child: _DeliveryLocation(),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 4),
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  IconButton(
+                    onPressed: () => context.push('/cart'),
+                    icon: const Icon(Icons.shopping_bag_outlined),
+                    tooltip: 'Cart',
+                  ),
+                  if (cart.itemCount > 0)
+                    Positioned(
+                      right: 3,
+                      top: 3,
+                      child: Container(
+                        constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        decoration: const BoxDecoration(
+                          color: SnapFoodColors.secondary,
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          cart.itemCount > 99 ? '99+' : cart.itemCount.toString(),
+                          style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.w900),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
               IconButton(
                 onPressed: () {},
                 icon: const Icon(Icons.notifications_none),
