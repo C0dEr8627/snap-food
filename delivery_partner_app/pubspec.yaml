@@ -1,5 +1,5 @@
-name: snap_foodd
-description: "Snap Foodd — cross-platform food delivery application."
+name: snap_foodd_delivery_partner
+description: "Snap Foodd delivery partner mobile application."
 publish_to: "none"
 version: 0.1.0+1
 
