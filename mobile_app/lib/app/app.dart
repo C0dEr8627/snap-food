@@ -58,8 +58,28 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return '/welcome';
       }
 
-      if (isAuthenticated && (location == '/' || location == '/welcome' || location == '/login' || location == '/register')) {
-        return '/home';
+      if (isAuthenticated) {
+        final isDeliveryPartner = authState.value?.isDeliveryPartner ?? false;
+        final isDeliveryRoute = location.startsWith('/delivery');
+        final isCustomerRoute = !isDeliveryRoute &&
+            location != '/' &&
+            location != '/welcome' &&
+            location != '/login' &&
+            location != '/register';
+
+        if (isDeliveryPartner && !isDeliveryRoute) {
+          return '/delivery/requests';
+        }
+        if (!isDeliveryPartner && isDeliveryRoute && location != '/delivery/login') {
+          return '/home';
+        }
+        if (isDeliveryPartner && location == '/delivery/login') {
+          return '/delivery/requests';
+        }
+        if (!isDeliveryPartner && !isCustomerRoute &&
+            (location == '/' || location == '/welcome' || location == '/login' || location == '/register')) {
+          return '/home';
+        }
       }
 
       return null;
