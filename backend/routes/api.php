@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\Catalogue\ProductController;
 use App\Http\Controllers\Api\V1\Delivery\DeliveryLocationController;
 use App\Http\Controllers\Api\V1\Delivery\DeliveryPartnerOrderController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\FavoriteController;
 use App\Http\Controllers\Api\V1\Orders\AdminOrderAssignmentController;
 use App\Http\Controllers\Api\V1\Orders\AdminInvoiceController;
 use App\Http\Controllers\Api\V1\Orders\AdminOrderController;
@@ -47,6 +48,9 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/addresses', [AddressController::class, 'store'])->middleware('role:CUSTOMER')->name('api.v1.addresses.store');
     Route::delete('/addresses/{address}', [AddressController::class, 'destroy'])->middleware('role:CUSTOMER')->name('api.v1.addresses.destroy');
     Route::post('/auth/logout', [AuthController::class, 'logout'])->name('api.v1.auth.logout');
+    Route::get('/favorites', [FavoriteController::class, 'index'])->middleware('role:CUSTOMER')->name('api.v1.favorites.index');
+    Route::post('/favorites/{product}', [FavoriteController::class, 'store'])->middleware('role:CUSTOMER')->name('api.v1.favorites.store');
+    Route::delete('/favorites/{product}', [FavoriteController::class, 'destroy'])->middleware('role:CUSTOMER')->name('api.v1.favorites.destroy');
 
     Route::prefix('consumer')->name('api.v1.consumer.')->middleware('role:CUSTOMER')->group(function (): void {
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
