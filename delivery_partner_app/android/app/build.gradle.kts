@@ -14,7 +14,7 @@ extensions.configure<ApplicationExtension> {
     ndkVersion = flutter.ndkVersion
 
     defaultConfig {
-        applicationId = "com.snapfood.app"
+        applicationId = "com.snapfood.deliverypartner"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
