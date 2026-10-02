@@ -122,6 +122,7 @@ class OrdersScreen extends ConsumerWidget {
                 },
               ),
             ),
+            ),
             const Positioned(top: 0, left: 0, right: 0, child: HomeHeader()),
             const Positioned(
               left: 0,
