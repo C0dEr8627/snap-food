@@ -4,6 +4,7 @@ import '../../../core/network/api_client.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/network/api_transport.dart';
 import '../../auth/data/session_store.dart';
+import '../../auth/presentation/auth_controller.dart';
 import '../data/order_models.dart';
 import '../data/order_repository.dart';
 import '../data/order_tracking_models.dart';
@@ -19,6 +20,10 @@ final orderSessionStoreProvider = Provider<SessionStore>((ref) {
 });
 
 final orderApiClientProvider = Provider<ApiClient>((ref) {
+  // Make the API client lifecycle account-scoped. The token provider is
+  // dynamic, but the user-id dependency also clears cached controller state
+  // when a different customer signs in.
+  ref.watch(authUserIdProvider);
   final sessionStore = ref.watch(orderSessionStoreProvider);
   return ApiClient(
     config: ApiConfig.fromEnvironment(),
