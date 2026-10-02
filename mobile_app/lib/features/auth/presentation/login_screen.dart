@@ -30,15 +30,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (_submitting || !_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
-    await ref.read(authControllerProvider.notifier).loginWithPassword(
-      email: _email.text,
-      password: _password.text,
-    );
-    if (!mounted) return;
-    final state = ref.read(authControllerProvider);
-    setState(() => _submitting = false);
+    try {
+      await ref.read(authControllerProvider.notifier).loginWithPassword(
+        email: _email.text,
+        password: _password.text,
+      );
+      if (!mounted) return;
+      final state = ref.read(authControllerProvider);
     if (state.hasError) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(_friendlyError(state.error)),
@@ -47,6 +47,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
     if (state.value?.isAuthenticated == true) context.go('/home');
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
   }
 
   Future<void> _googleCredential(String credential) async {
@@ -202,14 +205,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                         ),
                         child: _submitting
-                            ? SizedBox(width: 24, height: 24, child: SvgPicture.asset('assets/images/customer/logo-without-bg.svg', fit: BoxFit.contain))
+                            ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5))
                             : const Text('Sign in', style: TextStyle(fontWeight: FontWeight.w800)),
                       ),
                     ),
                     const SizedBox(height: 20),
                     const _AuthDivider(),
                     const SizedBox(height: 20),
-                    GoogleAuthButton(onCredential: _googleCredential),
+                    GoogleAuthButton(
+                      enabled: !_submitting,
+                      onCredential: _googleCredential,
+                    ),
                     const SizedBox(height: 22),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -217,7 +223,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         Text("New to Snap Foodd? ",
                           style: TextStyle(color: SnapFoodColors.onSurfaceVariant)),
                         TextButton(
-                          onPressed: () => context.go('/register'),
+                          onPressed: _submitting ? null : () => context.go('/register'),
                           child: const Text('Create account', style: TextStyle(fontWeight: FontWeight.w800)),
                         ),
                       ],
