@@ -347,4 +347,4 @@ class _CheckoutPricingNote extends StatelessWidget {
         Expanded(
           child: Text(
             'The server recalculates the final order amount from the current catalogue at checkout.',
-            style: TextStyle(fontSize: 10, fontWeight
+            style: TextStyle(fontSize: 10, fontWeight\n          ),\n        ),\n      ],\n    ),\n  );\n}\n
