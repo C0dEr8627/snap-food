@@ -32,7 +32,17 @@ return new class extends Migration
             ->orderBy('id')
             ->chunkById(500, function ($partners): void {
                 foreach ($partners as $partner) {
-                    $updated = DB::table('delivery_partner_users')
+                    $exists = DB::table('delivery_partner_users')
+                        ->where('id', $partner->user_id)
+                        ->exists();
+
+                    if (! $exists) {
+                        throw new RuntimeException(
+                            "Cannot normalize delivery partner {$partner->id}: delivery_partner_users row {$partner->user_id} was not found."
+                        );
+                    }
+
+                    DB::table('delivery_partner_users')
                         ->where('id', $partner->user_id)
                         ->update([
                             'is_approved' => $partner->is_approved,
@@ -41,12 +51,6 @@ return new class extends Migration
                             'approved_at' => $partner->approved_at,
                             'approved_by' => $partner->approved_by,
                         ]);
-
-                    if ($updated === 0) {
-                        throw new RuntimeException(
-                            "Cannot normalize delivery partner {$partner->id}: delivery_partner_users row {$partner->user_id} was not found."
-                        );
-                    }
                 }
             });
 
