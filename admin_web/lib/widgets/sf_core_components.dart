@@ -219,6 +219,87 @@ class SfSearchField extends StatelessWidget {
   );
 }
 
+class SfFormSection extends StatelessWidget {
+  const SfFormSection({
+    super.key,
+    required this.title,
+    this.description,
+    required this.child,
+  });
+
+  final String title;
+  final String? description;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(title, style: AdminTypography.cardTitle),
+      if (description != null) ...[
+        const SizedBox(height: AdminSpacing.xxs),
+        Text(description!, style: AdminTypography.small.copyWith(color: AdminDesignColors.secondaryText)),
+      ],
+      const SizedBox(height: AdminSpacing.md),
+      child,
+    ],
+  );
+}
+
+class SfFormField extends StatelessWidget {
+  const SfFormField({
+    super.key,
+    required this.controller,
+    this.label,
+    this.hintText,
+    this.helperText,
+    this.validator,
+    this.keyboardType,
+    this.maxLines = 1,
+    this.maxLength,
+    this.enabled = true,
+    this.obscureText = false,
+  });
+
+  final TextEditingController controller;
+  final String? label;
+  final String? hintText;
+  final String? helperText;
+  final String? Function(String?)? validator;
+  final TextInputType? keyboardType;
+  final int maxLines;
+  final int? maxLength;
+  final bool enabled;
+  final bool obscureText;
+
+  @override
+  Widget build(BuildContext context) => TextFormField(
+    controller: controller,
+    enabled: enabled,
+    obscureText: obscureText,
+    keyboardType: keyboardType,
+    maxLines: maxLines,
+    maxLength: maxLength,
+    validator: validator,
+    style: AdminTypography.body,
+    decoration: InputDecoration(
+      label: label == null ? null : RichText(
+        text: TextSpan(
+          style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText),
+          children: [
+            TextSpan(text: label!),
+            const TextSpan(text: ' *', style: TextStyle(color: AdminDesignColors.error)),
+          ],
+        ),
+      ),
+      hintText: hintText,
+      helperText: helperText,
+      isDense: false,
+      contentPadding: const EdgeInsets.symmetric(horizontal: AdminSpacing.md, vertical: 13),
+    ),
+  );
+}
+
 class SfBadge extends StatelessWidget {
   const SfBadge({super.key, required this.label, this.backgroundColor, this.foregroundColor});
 
