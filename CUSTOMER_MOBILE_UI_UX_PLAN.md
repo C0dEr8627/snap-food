@@ -471,13 +471,15 @@ Requirements:
 ## Phase 4 — Orders, Profile & Retention
 
 ### Task 15 — Redesign Orders
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- Clear active vs past orders.
-- Strong order status hierarchy.
-- Order cards optimized for scanning.
-- Reorder affordance where supported.
-- Empty state with brand personality.
+- Reworked the customer Orders surface into clearly separated Active orders and Past orders sections using the existing order history provider.
+- Added a reusable `SnapOrderStatus` component with explicit status labels, icons and accessible semantics so order meaning does not depend on color alone.
+- Optimized order cards for fast scanning: order identifier, status, item count, total and payment status, with the entire card remaining a safe navigation target to order details.
+- Preserved pagination and refresh behavior through the existing `OrderHistoryController`.
+- Did not fabricate reorder actions because the current customer order contract/controller does not expose a reorder operation.
+- Reused branded loading, error and empty states plus existing Snap Foodd buttons, price and tokenized typography/spacing.
+
 
 ### Task 16 — Redesign Order Details
 **Status:** ⬜ Not Started
@@ -604,6 +606,7 @@ Before marking any task complete, verify:
 | 2026-10-03 | Task 12 — Redesign Cart | ✅ Complete | Reworked the customer Cart with stronger item/price hierarchy, token-based spacing/typography, tactile quantity controls, branded empty state, clearer bill details, and a safe-area-aware sticky checkout CTA using reusable Snap components. The existing CartController, remote repository synchronization, optimistic quantity changes, checkout route, image fallback, and server-authoritative final pricing behavior were preserved. Validation: changed Dart source was structurally reviewed; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector; no connector-exposed CI result was available for the implementation commit. |
 | 2026-10-03 | Task 13 — Redesign Checkout | ✅ Complete | Reworked Checkout into a high-trust, product/catalogue-first commerce flow with clear delivery address, order summary, COD payment selection, preview price breakdown, explicit server-authoritative final-total messaging, and a safe-area-aware sticky primary CTA. Reused Snap Foodd components and preserved saved-address selection, inline address creation, `CreateOrderRequest`, order submission, cart clearing, and order-detail navigation. Validation: changed Dart source has balanced delimiter counts; the implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 14 — Redesign address selection/book | ✅ Complete | Reworked the customer address book with a reusable SnapAddressTile, explicit selected semantics, clearer saved-address hierarchy, branded add-address form, inline validation/error feedback, delete confirmation, and preserved checkout selection behavior. The existing address contract currently exposes GET/POST/DELETE but no documented update/edit endpoint, so an edit action was intentionally not fabricated; the reusable tile supports a future edit callback when the API supports it. Validation: changed Dart source files have balanced braces/parentheses/brackets; the implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
+| 2026-10-03 | Task 15 — Redesign Orders | ✅ Complete | Reworked Orders into clear Active orders and Past orders sections with scan-friendly cards, reusable SnapOrderStatus semantics, prominent totals and item counts, branded loading/error/empty states, refresh and pagination preservation, and existing order-detail navigation. Reorder was not fabricated because the current customer order contract/controller exposes no reorder operation. Validation: changed Dart source files have balanced braces/parentheses/brackets; implementation commits exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 
 ---
 
@@ -629,6 +632,7 @@ Before marking any task complete, verify:
 - Completed Task 12: redesigned Cart with stronger commerce hierarchy, branded empty state, reusable quantity/CTA controls, clearer bill details, and preserved server-authoritative cart behavior.
 - Completed Task 13: redesigned Checkout around address, order summary, COD payment, transparent price preview/final-total messaging, and a safe-area-aware place-order CTA while preserving existing checkout/order behavior.
 - Completed Task 14: redesigned the address book with reusable selected-address tiles, branded add-address flow, safe deletion confirmation, and preserved checkout selection behavior; documented the current API limitation around address editing.
+- Completed Task 15: redesigned Orders with active/past grouping, scan-first order cards, reusable status semantics, branded states, and preserved pagination/detail navigation; documented that reorder is not supported by the current order contract.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
