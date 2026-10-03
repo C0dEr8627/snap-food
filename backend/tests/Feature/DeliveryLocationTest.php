@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Models\AdminUser;
+use App\Models\CustomerUser;
 use App\Models\DeliveryLocation;
 use App\Models\DeliveryPartner;
+use App\Models\DeliveryPartnerUser;
 use App\Models\Order;
 use App\Models\OrderAssignment;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,18 +16,39 @@ class DeliveryLocationTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function user(string $suffix, string $role): User
+    private function customer(string $suffix): CustomerUser
     {
-        return User::create([
+        return CustomerUser::create([
             'google_subject' => 'delivery-location-'.$suffix,
             'name' => ucfirst($suffix),
             'email' => $suffix.'@example.test',
-            'role' => $role,
             'is_active' => true,
         ]);
     }
 
-    private function partner(User $user): DeliveryPartner
+    private function partnerUser(string $suffix): DeliveryPartnerUser
+    {
+        return DeliveryPartnerUser::create([
+            'google_subject' => 'delivery-location-'.$suffix,
+            'name' => ucfirst($suffix),
+            'email' => $suffix.'@example.test',
+            'is_active' => true,
+        ]);
+    }
+
+    private ?AdminUser $adminUser = null;
+
+    private function admin(): AdminUser
+    {
+        return $this->adminUser ??= AdminUser::create([
+            'google_subject' => 'delivery-location-admin',
+            'name' => 'Admin',
+            'email' => 'delivery-location-admin@example.test',
+            'is_active' => true,
+        ]);
+    }
+
+    private function partner(DeliveryPartnerUser $user): DeliveryPartner
     {
         return DeliveryPartner::create([
             'user_id' => $user->id,
@@ -37,14 +60,7 @@ class DeliveryLocationTest extends TestCase
         ]);
     }
 
-    private ?User $adminUser = null;
-
-    private function admin(): User
-    {
-        return $this->adminUser ??= $this->user('admin', User::ROLE_ADMIN);
-    }
-
-    private function assignment(User $customer, User $partnerUser, string $status = Order::STATUS_OUT_FOR_DELIVERY): OrderAssignment
+    private function assignment(CustomerUser $customer, DeliveryPartnerUser $partnerUser, string $status = Order::STATUS_OUT_FOR_DELIVERY): OrderAssignment
     {
         $partner = $this->partner($partnerUser);
         $order = Order::create([
@@ -68,8 +84,8 @@ class DeliveryLocationTest extends TestCase
 
     public function test_partner_can_post_valid_location_for_owned_active_trip(): void
     {
-        $customer = $this->user('customer', User::ROLE_CUSTOMER);
-        $partner = $this->user('partner', User::ROLE_DELIVERY_PARTNER);
+        $customer = $this->customer('customer');
+        $partner = $this->partnerUser('partner');
         $assignment = $this->assignment($customer, $partner);
 
         $this->actingAs($partner, 'sanctum')
@@ -91,8 +107,8 @@ class DeliveryLocationTest extends TestCase
 
     public function test_location_payload_validates_coordinates_and_timestamp(): void
     {
-        $customer = $this->user('customer-validation', User::ROLE_CUSTOMER);
-        $partner = $this->user('partner-validation', User::ROLE_DELIVERY_PARTNER);
+        $customer = $this->customer('customer-validation');
+        $partner = $this->partnerUser('partner-validation');
         $assignment = $this->assignment($customer, $partner);
 
         $this->actingAs($partner, 'sanctum')
@@ -107,9 +123,9 @@ class DeliveryLocationTest extends TestCase
 
     public function test_partner_cannot_post_location_for_another_partner(): void
     {
-        $customer = $this->user('customer-owner', User::ROLE_CUSTOMER);
-        $owner = $this->user('partner-owner', User::ROLE_DELIVERY_PARTNER);
-        $intruder = $this->user('partner-intruder', User::ROLE_DELIVERY_PARTNER);
+        $customer = $this->customer('customer-owner');
+        $owner = $this->partnerUser('partner-owner');
+        $intruder = $this->partnerUser('partner-intruder');
         $assignment = $this->assignment($customer, $owner);
         $this->partner($intruder);
 
@@ -124,8 +140,8 @@ class DeliveryLocationTest extends TestCase
 
     public function test_partner_cannot_post_location_before_pickup(): void
     {
-        $customer = $this->user('customer-before-pickup', User::ROLE_CUSTOMER);
-        $partner = $this->user('partner-before-pickup', User::ROLE_DELIVERY_PARTNER);
+        $customer = $this->customer('customer-before-pickup');
+        $partner = $this->partnerUser('partner-before-pickup');
         $assignment = $this->assignment($customer, $partner, Order::STATUS_ASSIGNED);
 
         $this->actingAs($partner, 'sanctum')
@@ -139,8 +155,8 @@ class DeliveryLocationTest extends TestCase
 
     public function test_customer_can_read_latest_location_and_stale_state(): void
     {
-        $customer = $this->user('customer-track', User::ROLE_CUSTOMER);
-        $partner = $this->user('partner-track', User::ROLE_DELIVERY_PARTNER);
+        $customer = $this->customer('customer-track');
+        $partner = $this->partnerUser('partner-track');
         $assignment = $this->assignment($customer, $partner);
         DeliveryLocation::create([
             'assignment_id' => $assignment->id,
@@ -159,9 +175,9 @@ class DeliveryLocationTest extends TestCase
 
     public function test_other_customer_cannot_read_tracking(): void
     {
-        $customer = $this->user('customer-track-owner', User::ROLE_CUSTOMER);
-        $other = $this->user('customer-track-other', User::ROLE_CUSTOMER);
-        $partner = $this->user('partner-track-owner', User::ROLE_DELIVERY_PARTNER);
+        $customer = $this->customer('customer-track-owner');
+        $other = $this->customer('customer-track-other');
+        $partner = $this->partnerUser('partner-track-owner');
         $assignment = $this->assignment($customer, $partner);
 
         $this->actingAs($other, 'sanctum')
@@ -171,8 +187,8 @@ class DeliveryLocationTest extends TestCase
 
     public function test_admin_can_read_tracking(): void
     {
-        $customer = $this->user('customer-track-admin', User::ROLE_CUSTOMER);
-        $partner = $this->user('partner-track-admin', User::ROLE_DELIVERY_PARTNER);
+        $customer = $this->customer('customer-track-admin');
+        $partner = $this->partnerUser('partner-track-admin');
         $assignment = $this->assignment($customer, $partner);
         DeliveryLocation::create([
             'assignment_id' => $assignment->id,
