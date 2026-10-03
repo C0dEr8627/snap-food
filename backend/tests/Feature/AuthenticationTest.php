@@ -49,9 +49,9 @@ class AuthenticationTest extends TestCase
         $this->assertDatabaseCount('personal_access_tokens', 1);
     }
 
-    public function test_google_login_updates_identity_fields_but_does_not_escalate_existing_role(): void
+    public function test_google_login_updates_existing_customer_identity(): void
     {
-        $user = AdminUser::create([
+        $user = CustomerUser::create([
             'google_subject' => 'google-sub-456',
             'name' => 'Old Name',
             'email' => 'old@example.test',
@@ -76,7 +76,7 @@ class AuthenticationTest extends TestCase
 
         $this->assertSame('Updated Name', $user->name);
         $this->assertSame('new@example.test', $user->email);
-        $this->assertSame('ADMIN', $user->role);
+        $this->assertSame('CUSTOMER', $user->role);
     }
 
     public function test_invalid_google_credential_is_rejected_without_creating_a_user(): void
@@ -365,7 +365,7 @@ class AuthenticationTest extends TestCase
         $this->assertDatabaseCount('personal_access_tokens', 1);
         $this->assertNotSame(
             'CorrectHorseBatteryStaple!',
-            User::where('email', 'new.customer@example.test')->value('password'),
+            CustomerUser::where('email', 'new.customer@example.test')->value('password'),
         );
     }
 
