@@ -43,6 +43,7 @@ class Order extends Model
         'payment_method',
         'payment_status',
         'status',
+        'cancellation_reason',
     ];
 
     protected function casts(): array
