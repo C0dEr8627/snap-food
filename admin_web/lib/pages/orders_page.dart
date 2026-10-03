@@ -644,6 +644,19 @@ class _OrderProgress extends StatelessWidget{
   }
 }
 
+class _OrderStatusBadge extends StatelessWidget{
+  const _OrderStatusBadge(this.status);
+  final String status;
+  @override Widget build(BuildContext context){
+    final style=_statusStyle(status);
+    return Container(
+      padding:const EdgeInsets.symmetric(horizontal:8,vertical:5),
+      decoration:BoxDecoration(color:style.$1,borderRadius:BorderRadius.circular(AdminRadii.pill)),
+      child:Text(_prettyStatus(status),style:TextStyle(fontSize:11,fontWeight:FontWeight.w800,color:style.$2)),
+    );
+  }
+}
+
 class _Progression extends StatelessWidget {
   const _Progression(this.status);
 
