@@ -14,7 +14,7 @@ class AdminDashboardTest extends TestCase
 
     public function test_admin_dashboard_shows_current_order_counts(): void
     {
-        $admin = AdminCustomerUser::factory()->create();
+        $admin = AdminUser::factory()->create();
 
         Order::factory()->create(['status' => Order::STATUS_PLACED]);
         Order::factory()->create(['status' => Order::STATUS_ACCEPTED]);
@@ -58,7 +58,7 @@ class AdminDashboardTest extends TestCase
 
     public function test_customer_cannot_access_dashboard_counts(): void
     {
-        $customer = CustomerCustomerUser::factory()->create();
+        $customer = CustomerUser::factory()->create();
 
         $this->actingAs($customer, 'web')
             ->get('/admin')
