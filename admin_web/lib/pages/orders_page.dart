@@ -82,7 +82,7 @@ class _AdminOrderApi{
 
   Future<List<_DeliveryPartnerOption>> availablePartners() async {
     if(!configured) throw StateError('No authenticated admin session.');
-    final r=await http.get(Uri.parse(base+'/admin/delivery-partners?page=1'),headers:headers);
+    final r=await http.get(Uri.parse(base+'/admin/delivery-partners?page=1&per_page=100'),headers:headers);
     if(r.statusCode<200||r.statusCode>=300) throw StateError('Delivery partner request failed ('+r.statusCode.toString()+').');
     final body=jsonDecode(r.body);
     final page=body is Map&&body['data'] is Map?body['data'] as Map:null;
