@@ -2,7 +2,7 @@ part of '../main.dart';
 
 /// Delivery partner operations view. This page intentionally uses the existing
 /// AdminShell section and the authenticated Laravel admin API.
-class PartnersPage extends StatefulWidget {
+class PartnersPage extends flutter.StatefulWidget {
   const PartnersPage({super.key, this.searchQuery = ''});
   final String searchQuery;
 
@@ -211,7 +211,7 @@ class _PartnersPageState extends State<PartnersPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  flutter.Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -415,7 +415,7 @@ class _DeliveryPartnerRecord {
 int _partnersAsInt(dynamic value, int fallback) =>
     value is int ? value : int.tryParse(value?.toString() ?? '') ?? fallback;
 
-class _PartnerCommandHeader extends StatelessWidget {
+class _PartnerCommandHeader extends flutter.StatelessWidget {
   const _PartnerCommandHeader({
     required this.apiConfigured,
     required this.onExport,
@@ -427,7 +427,7 @@ class _PartnerCommandHeader extends StatelessWidget {
   final VoidCallback onManualOnboard;
 
   @override
-  Widget build(BuildContext context) => Row(
+  flutter.Widget build(BuildContext context) => Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Expanded(
@@ -477,7 +477,7 @@ class _PartnerCommandHeader extends StatelessWidget {
       );
 }
 
-class _FleetSummary extends StatelessWidget {
+class _FleetSummary extends flutter.StatelessWidget {
   const _FleetSummary({
     required this.partners,
     required this.total,
@@ -491,7 +491,7 @@ class _FleetSummary extends StatelessWidget {
   final bool apiConfigured;
 
   @override
-  Widget build(BuildContext context) {
+  flutter.Widget build(BuildContext context) {
     final online = partners.where((p) => p.available).length;
     final active = partners.where((p) => p.active).length;
     final pending = partners.where((p) => !p.approved).length;
@@ -528,7 +528,7 @@ class _FleetSummary extends StatelessWidget {
   }
 }
 
-class _PartnerFilterBar extends StatelessWidget {
+class _PartnerFilterBar extends flutter.StatelessWidget {
   const _PartnerFilterBar({
     required this.controller,
     required this.filter,
@@ -553,7 +553,7 @@ class _PartnerFilterBar extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) => SfFilterBar(
+  flutter.Widget build(BuildContext context) => SfFilterBar(
         leading: SizedBox(
           width: 320,
           child: SfSearchField(
@@ -579,7 +579,7 @@ class _PartnerFilterBar extends StatelessWidget {
       );
 }
 
-class _PartnerRoster extends StatelessWidget {
+class _PartnerRoster extends flutter.StatelessWidget {
   const _PartnerRoster({
     required this.partners,
     required this.busy,
@@ -593,7 +593,7 @@ class _PartnerRoster extends StatelessWidget {
   final ValueChanged<_DeliveryPartnerRecord> onView;
 
   @override
-  Widget build(BuildContext context) => SfDataTable(
+  flutter.Widget build(BuildContext context) => SfDataTable(
         minWidth: 920,
         columns: const [
           SfDataTableColumn(label: 'Partner', width: 260),
@@ -649,7 +649,7 @@ class _PartnerRoster extends StatelessWidget {
       );
 }
 
-class _PartnerPagination extends StatelessWidget {
+class _PartnerPagination extends flutter.StatelessWidget {
   const _PartnerPagination({
     required this.currentPage,
     required this.lastPage,
@@ -663,7 +663,7 @@ class _PartnerPagination extends StatelessWidget {
   final ValueChanged<int> onPage;
 
   @override
-  Widget build(BuildContext context) => SfTablePagination(
+  flutter.Widget build(BuildContext context) => SfTablePagination(
         page: currentPage,
         lastPage: lastPage,
         total: total,
@@ -672,11 +672,11 @@ class _PartnerPagination extends StatelessWidget {
       );
 }
 
-class _PartnerLoadingState extends StatelessWidget {
+class _PartnerLoadingState extends flutter.StatelessWidget {
   const _PartnerLoadingState();
 
   @override
-  Widget build(BuildContext context) => SfCard(
+  flutter.Widget build(BuildContext context) => SfCard(
         padding: const EdgeInsets.all(AdminSpacing.xl),
         child: Column(
           children: [
@@ -697,26 +697,26 @@ class _PartnerLoadingState extends StatelessWidget {
       );
 }
 
-class _PartnerErrorBanner extends StatelessWidget {
+class _PartnerErrorBanner extends flutter.StatelessWidget {
   const _PartnerErrorBanner({required this.message, required this.onRetry});
   final String message;
   final VoidCallback onRetry;
 
   @override
-  Widget build(BuildContext context) => SfErrorState(
+  flutter.Widget build(BuildContext context) => SfErrorState(
         title: 'Could not load delivery partners',
         message: message,
         onRetry: onRetry,
       );
 }
 
-class _PartnerEmptyState extends StatelessWidget {
+class _PartnerEmptyState extends flutter.StatelessWidget {
   const _PartnerEmptyState({required this.hasQuery, required this.onClear});
   final bool hasQuery;
   final VoidCallback onClear;
 
   @override
-  Widget build(BuildContext context) => SfEmptyState(
+  flutter.Widget build(BuildContext context) => SfEmptyState(
         icon: HugeIcons.strokeRoundedDeliveryTruck01,
         title: hasQuery ? 'No partners match these filters' : 'No delivery partners found',
         message: hasQuery
@@ -732,7 +732,7 @@ class _PartnerEmptyState extends StatelessWidget {
       );
 }
 
-class _PartnerDetailDrawer extends StatelessWidget {
+class _PartnerDetailDrawer extends flutter.StatelessWidget {
   const _PartnerDetailDrawer({
     required this.partner,
     required this.busy,
@@ -744,7 +744,7 @@ class _PartnerDetailDrawer extends StatelessWidget {
   final Future<void> Function(_DeliveryPartnerRecord, bool) onApproval;
 
   @override
-  Widget build(BuildContext context) => Column(
+  flutter.Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -802,13 +802,13 @@ class _PartnerDetailDrawer extends StatelessWidget {
       );
 }
 
-class _PartnerDetailSection extends StatelessWidget {
+class _PartnerDetailSection extends flutter.StatelessWidget {
   const _PartnerDetailSection({required this.title, required this.children});
   final String title;
   final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) => Column(
+  flutter.Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title, style: AdminTypography.cardTitle),
@@ -821,13 +821,13 @@ class _PartnerDetailSection extends StatelessWidget {
       );
 }
 
-class _PartnerDetailLine extends StatelessWidget {
+class _PartnerDetailLine extends flutter.StatelessWidget {
   const _PartnerDetailLine(this.label, this.value);
   final String label;
   final String value;
 
   @override
-  Widget build(BuildContext context) => Padding(
+  flutter.Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(vertical: AdminSpacing.sm),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
