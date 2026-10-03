@@ -6,7 +6,9 @@ use App\Models\DeliveryPartner;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\OrderAssignment;
-use App\Models\User;
+use App\Models\AdminUser;
+use App\Models\CustomerUser;
+use App\Models\DeliveryPartnerUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
