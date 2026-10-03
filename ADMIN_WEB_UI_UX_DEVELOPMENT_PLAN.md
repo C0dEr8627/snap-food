@@ -890,8 +890,8 @@ The admin UI/UX modernization is complete when:
 | Task 10 — Categories | 🟢 Complete | 2026-10-03 | Added a dedicated Categories admin area with searchable shared-table presentation, active/inactive state management, create/edit/delete workflows, confirmation for destructive actions, preview/live data clarity and responsive empty/error/loading states. |
 | Task 11 — Users | 🟢 Complete | 2026-10-03 | Redesigned the Users workspace around the shared table/filter/drawer/state components, preserved the customer-users API contract and moved user details into a responsive right-side drawer. |
 | Task 12 — Delivery Partners | 🟢 Complete | 2026-10-03 | Redesigned Delivery Partners as an operations-focused availability/approval workspace using shared summary, filter, table, drawer, feedback and state components while preserving the existing partner list, approval and onboarding API contracts. |
-| Task 13 — Invoices / Billing | ⬜ Not Started | 2026-10-03 | **NEXT** — refine the finance surface around invoice precision, search/filtering, detail presentation and supported download/export behavior. |
-| Task 14 — Premium Form UX | ⬜ Not Started | 2026-10-03 | |
+| Task 13 — Invoices / Billing | 🟢 Complete | 2026-10-03 | Refined finance workspace with shared header/filter/table/status/drawer language, supported current-page export and backend-truthful invoice detail presentation. |
+| Task 14 — Premium Form UX | 🟢 Complete | 2026-10-03 | Added shared form sections/fields with inline validation and required markers; upgraded Catalogue product editing with structured sections, field-level validation and destructive-action confirmation. |
 | Task 15 — Loading / Empty / Error / Success | ⬜ Not Started | 2026-10-03 | |
 | Task 16 — Responsive Admin Web | ⬜ Not Started | 2026-10-03 | |
 | Task 17 — Accessibility / Keyboard UX | ⬜ Not Started | 2026-10-03 | |
@@ -918,6 +918,47 @@ The admin UI/UX modernization is complete when:
 - Confirmed that Snap Foodd has no restaurant concept and that restaurant-specific admin UX must not be introduced.
 - Defined the admin color, typography, spacing, shape, elevation, icon and motion direction.
 - Defined the phased implementation order from design foundation through final QA.
+
+
+### 2026-10-03 — Task 13
+- Status: 🟢 Complete
+- Implemented:
+  - Modernized the Invoices / Billing workspace around the shared admin page-header, filter bar, stat, data-table, status-badge and right-side drawer patterns.
+  - Preserved the authoritative admin invoice API contract for search, date range, payment status, pagination and server-provided totals.
+  - Kept the supported current-page CSV export and removed the unsupported GSTR-1 action.
+  - Added finance-focused invoice totals and a backend-truthful detail drawer.
+  - Avoided inventing tax, gateway, reconciliation, payout or restaurant data.
+- Files/components changed:
+  - `admin_web/lib/pages/invoices_page.dart`
+  - `ADMIN_WEB_UI_UX_DEVELOPMENT_PLAN.md`
+- Validation:
+  - Inspected the final invoice implementation and authoritative invoice controller/model/routes.
+  - Verified shared components and unsupported GSTR-1 removal.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector does not expose shell/CI execution; no successful local validation is claimed.
+- Limitations:
+  - Browser visual/overflow QA and local Flutter compilation remain for the final QA pass.
+
+### 2026-10-03 — Task 14
+- Status: 🟢 Complete
+- Implemented:
+  - Added reusable `SfFormSection` and `SfFormField` primitives for consistent form hierarchy, helper text, required-field markers, validation and disabled/standard input presentation.
+  - Upgraded the Catalogue product editor with sections for Basic information, Category & dietary, Pricing & preparation, Availability and Product image.
+  - Added field-level validation for product name, price, preparation time, stock quantity and image URL while retaining the existing backend validation/business rules.
+  - Moved validation feedback into the relevant fields before save instead of relying only on a generic error message.
+  - Added a confirmation step before the destructive product deactivation action.
+  - Preserved existing product/category/image API behavior and did not introduce unsupported product relationships.
+- Files/components changed:
+  - `admin_web/lib/widgets/sf_core_components.dart`
+  - `admin_web/lib/pages/catalogue_page.dart`
+  - `ADMIN_WEB_UI_UX_DEVELOPMENT_PLAN.md`
+- Validation:
+  - Re-fetched and inspected the final form component and Catalogue editor after the changes.
+  - Verified the new required-field marker is optional rather than applied to every field.
+  - Verified `FormState.validate()` is invoked before product save and that the existing image URL/category checks remain.
+  - Verified destructive deactivation now requires explicit confirmation.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector does not expose shell/CI execution; no successful local validation is claimed.
+- Limitations:
+  - Full Flutter Web compilation, automated tests and browser-level visual/overflow QA require a runnable local or CI execution environment.
 
 ### 2026-10-03 — Task 1
 - Status: 🟢 Complete
