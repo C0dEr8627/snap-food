@@ -5,14 +5,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_exception.dart';
 import '../../../design_system/components/snap_food_feedback.dart';
+import '../../../design_system/components/snap_order_status.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
+import '../../../design_system/tokens/app_spacing.dart';
+import '../../../design_system/tokens/app_typography.dart';
 import 'order_controller.dart';
 import '../data/order_models.dart';
 import '../data/order_tracking_models.dart';
 
 class LiveOrderTrackingScreen extends ConsumerStatefulWidget {
   const LiveOrderTrackingScreen({super.key, required this.orderId});
+
   final String orderId;
 
   @override
@@ -49,45 +53,82 @@ class _LiveOrderTrackingScreenState
   @override
   Widget build(BuildContext context) {
     final tracking = ref.watch(orderTrackingControllerProvider);
+
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
-      appBar: AppBar(
-        title: Text(
-          widget.orderId.isEmpty
-              ? 'Track Order'
-              : 'Track #' + widget.orderId,
-        ),
-        backgroundColor: SnapFoodColors.surface,
-        surfaceTintColor: Colors.transparent,
-      ),
-      body: widget.orderId.trim().isEmpty
-          ? const _Unavailable(
-              message: 'Open tracking from a specific order to see live status.',
-            )
-          : tracking.when(
-              loading: () => const SnapLoadingState(message: 'Loading live delivery status…'),
-              error: (error, _) => _ErrorView(error: error, onRetry: _load),
-              data: (value) => value == null
-                  ? const _Unavailable(
-                      message: 'Delivery tracking is not available yet.',
-                    )
-                  : _TrackingBody(
-                      orderId: widget.orderId,
-                      tracking: value,
-                    ),
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              backgroundColor: SnapFoodColors.surface,
+              surfaceTintColor: Colors.transparent,
+              leading: Semantics(
+                button: true,
+                label: 'Back',
+                child: IconButton(
+                  tooltip: 'Back',
+                  onPressed: () => Navigator.of(context).maybePop(),
+                  icon: const Icon(Icons.arrow_back_rounded),
+                ),
+              ),
+              title: Text(
+                widget.orderId.trim().isEmpty
+                    ? 'Live tracking'
+                    : 'Track #${widget.orderId}',
+                style: SnapFoodTypography.titleMedium,
+              ),
             ),
+            if (widget.orderId.trim().isEmpty)
+              const SliverFillRemaining(
+                hasScrollBody: false,
+                child: _Unavailable(
+                  message:
+                      'Open tracking from a specific order to see live status.',
+                ),
+              )
+            else
+              tracking.when(
+                loading: () => const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: SnapLoadingState(
+                    message: 'Loading live delivery status…',
+                  ),
+                ),
+                error: (error, _) => SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _ErrorView(error: error, onRetry: _load),
+                ),
+                data: (value) => value == null
+                    ? const SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: _Unavailable(
+                          message: 'Delivery tracking is not available yet.',
+                        ),
+                      )
+                    : SliverToBoxAdapter(
+                        child: _TrackingBody(
+                          orderId: widget.orderId,
+                          tracking: value,
+                        ),
+                      ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
 
 class _TrackingBody extends ConsumerWidget {
   const _TrackingBody({required this.orderId, required this.tracking});
+
   final String orderId;
   final OrderTracking tracking;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final current = _stepFor(tracking.status);
+    final status = OrderStatus.fromWire(tracking.status);
     final location = tracking.latestLocation;
 
     return RefreshIndicator(
@@ -95,135 +136,200 @@ class _TrackingBody extends ConsumerWidget {
           .read(orderTrackingControllerProvider.notifier)
           .load(orderId),
       child: ListView(
+        shrinkWrap: true,
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        padding: const EdgeInsets.fromLTRB(
+          SnapFoodSpacing.mobileMargin,
+          SnapFoodSpacing.sm,
+          SnapFoodSpacing.mobileMargin,
+          SnapFoodSpacing.xxl,
+        ),
         children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: SnapFoodColors.primaryContainer,
-              borderRadius: BorderRadius.circular(SnapFoodRadii.xl),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.delivery_dining,
-                    color: SnapFoodColors.warmBlack, size: 30),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _labelFor(tracking.status),
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        tracking.isStale
-                            ? 'Last location update is stale.'
-                            : location == null
-                            ? 'Waiting for delivery partner location.'
-                            : 'Location is updating automatically.',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: SnapFoodColors.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (!tracking.isStale) const _LiveBadge(),
-              ],
-            ),
-          ),
-          const SizedBox(height: 14),
-          _Timeline(current: current),
-          const SizedBox(height: 14),
-          _LocationCard(location: location, stale: tracking.isStale),
-          const SizedBox(height: 14),
-          const Text(
-            'Tracking refreshes automatically while this screen is open.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 10, color: SnapFoodColors.outline),
-          ),
+          _StatusHero(status: status, tracking: tracking),
+          const SizedBox(height: SnapFoodSpacing.md),
+          _ProgressSection(status: status),
+          const SizedBox(height: SnapFoodSpacing.md),
+          _LocationSection(location: location, stale: tracking.isStale),
+          const SizedBox(height: SnapFoodSpacing.md),
+          _RefreshNote(stale: tracking.isStale),
         ],
       ),
     );
   }
 }
 
-class _Timeline extends StatelessWidget {
-  const _Timeline({required this.current});
-  final int current;
+class _StatusHero extends StatelessWidget {
+  const _StatusHero({required this.status, required this.tracking});
 
-  static const steps = [
-    'Order placed',
-    'Restaurant accepted',
-    'Preparing your food',
-    'Ready for pickup',
-    'Delivery partner assigned',
-    'Picked up',
-    'On the way',
-    'Delivered',
-  ];
+  final OrderStatus status;
+  final OrderTracking tracking;
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(16),
+  Widget build(BuildContext context) {
+    final isTerminal =
+        status == OrderStatus.delivered || status == OrderStatus.cancelled;
+
+    return Semantics(
+      container: true,
+      liveRegion: true,
+      label: 'Current order status: ${_statusMessage(status, tracking)}',
+      child: Container(
+        padding: const EdgeInsets.all(SnapFoodSpacing.lg),
         decoration: BoxDecoration(
-          color: SnapFoodColors.surfaceContainerLowest,
+          color: SnapFoodColors.primaryContainer,
           borderRadius: BorderRadius.circular(SnapFoodRadii.xl),
-          border: Border.all(color: SnapFoodColors.softBorder),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Order progress',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: SnapFoodColors.surfaceContainerLowest,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(SnapFoodSpacing.sm),
+                    child: Icon(
+                      Icons.delivery_dining_rounded,
+                      color: SnapFoodColors.secondary,
+                      size: 26,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: SnapFoodSpacing.sm),
+                Expanded(
+                  child: Text(
+                    _statusHeadline(status),
+                    style: SnapFoodTypography.headlineSmall,
+                  ),
+                ),
+                SnapOrderStatus(status: status, compact: true),
+              ],
             ),
-            const SizedBox(height: 14),
-            for (var i = 0; i < steps.length; i++)
-              _StepRow(
-                label: steps[i],
-                active: current >= i,
-                current: current == i,
-                last: i == steps.length - 1,
+            const SizedBox(height: SnapFoodSpacing.md),
+            Text(
+              _statusMessage(status, tracking),
+              style: SnapFoodTypography.bodyMedium.copyWith(
+                color: SnapFoodColors.onSurfaceVariant,
               ),
+            ),
+            if (!isTerminal) ...[
+              const SizedBox(height: SnapFoodSpacing.sm),
+              Row(
+                children: [
+                  Icon(
+                    tracking.isStale
+                        ? Icons.sync_problem_rounded
+                        : Icons.sync_rounded,
+                    size: 16,
+                    color: tracking.isStale
+                        ? SnapFoodColors.onSurfaceVariant
+                        : SnapFoodColors.secondary,
+                  ),
+                  const SizedBox(width: SnapFoodSpacing.xs),
+                  Expanded(
+                    child: Text(
+                      tracking.isStale
+                          ? 'Location updates may be delayed.'
+                          : 'Live status refreshes while this screen is open.',
+                      style: SnapFoodTypography.labelSmall.copyWith(
+                        color: SnapFoodColors.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
-      );
+      ),
+    );
+  }
 }
 
-class _StepRow extends StatelessWidget {
-  const _StepRow({
+class _ProgressSection extends StatelessWidget {
+  const _ProgressSection({required this.status});
+
+  final OrderStatus status;
+
+  static const _steps = [
+    _TrackingStep(OrderStatus.placed, 'Order placed'),
+    _TrackingStep(OrderStatus.accepted, 'Order accepted'),
+    _TrackingStep(OrderStatus.preparing, 'Food is being prepared'),
+    _TrackingStep(OrderStatus.readyForPickup, 'Ready for pickup'),
+    _TrackingStep(OrderStatus.assigned, 'Delivery partner assigned'),
+    _TrackingStep(OrderStatus.pickedUp, 'Picked up'),
+    _TrackingStep(OrderStatus.outForDelivery, 'On the way'),
+    _TrackingStep(OrderStatus.delivered, 'Delivered'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final currentIndex = _steps.indexWhere((step) => step.status == status);
+    final resolvedIndex = currentIndex < 0
+        ? status == OrderStatus.cancelled
+            ? _steps.length - 1
+            : 0
+        : currentIndex;
+
+    return _SectionSurface(
+      title: 'Order progress',
+      child: Column(
+        children: [
+          for (var index = 0; index < _steps.length; index++)
+            _ProgressRow(
+              label: _steps[index].label,
+              completed:
+                  index < resolvedIndex || status == OrderStatus.delivered,
+              current: index == resolvedIndex &&
+                  status != OrderStatus.delivered &&
+                  status != OrderStatus.cancelled,
+              last: index == _steps.length - 1,
+            ),
+          if (status == OrderStatus.cancelled) const _CancelledNotice(),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProgressRow extends StatelessWidget {
+  const _ProgressRow({
     required this.label,
-    required this.active,
+    required this.completed,
     required this.current,
     required this.last,
   });
+
   final String label;
-  final bool active;
+  final bool completed;
   final bool current;
   final bool last;
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-        height: last ? 38 : 48,
+  Widget build(BuildContext context) {
+    final active = completed || current;
+
+    return Semantics(
+      container: true,
+      label:
+          '${label}${current ? ', current step' : completed ? ', complete' : ''}',
+      child: SizedBox(
+        height: last ? 42 : 52,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              width: 24,
+              width: 28,
               child: Column(
                 children: [
                   Container(
-                    width: current ? 15 : 12,
-                    height: current ? 15 : 12,
-                    margin: const EdgeInsets.only(top: 2),
+                    width: current ? 18 : 14,
+                    height: current ? 18 : 14,
+                    margin: const EdgeInsets.only(top: 1),
                     decoration: BoxDecoration(
                       color: active
                           ? SnapFoodColors.secondary
@@ -231,15 +337,24 @@ class _StepRow extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: current
                           ? Border.all(
-                              color: SnapFoodColors.softRed, width: 4)
+                              color: SnapFoodColors.softYellow,
+                              width: 4,
+                            )
                           : null,
                     ),
+                    child: completed && !current
+                        ? const Icon(
+                            Icons.check_rounded,
+                            size: 10,
+                            color: SnapFoodColors.surface,
+                          )
+                        : null,
                   ),
                   if (!last)
                     Expanded(
                       child: Container(
                         width: 2,
-                        color: active
+                        color: completed
                             ? SnapFoodColors.secondary
                             : SnapFoodColors.softBorder,
                       ),
@@ -247,110 +362,218 @@ class _StepRow extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(width: SnapFoodSpacing.sm),
             Expanded(
               child: Text(
                 label,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: current ? FontWeight.w900 : FontWeight.w700,
+                style: SnapFoodTypography.bodySmall.copyWith(
+                  fontWeight: current ? FontWeight.w800 : FontWeight.w600,
+                  color: current
+                      ? SnapFoodColors.warmBlack
+                      : SnapFoodColors.onSurfaceVariant,
                 ),
               ),
             ),
-            if (active)
-              const Icon(Icons.check_circle,
-                  color: SnapFoodColors.secondary, size: 16),
+            if (current)
+              const Text(
+                'Now',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  color: SnapFoodColors.secondary,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LocationSection extends StatelessWidget {
+  const _LocationSection({required this.location, required this.stale});
+
+  final OrderTrackingLocation? location;
+  final bool stale;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SectionSurface(
+      title: 'Delivery location',
+      child: location == null
+          ? const Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.location_searching_rounded,
+                  color: SnapFoodColors.onSurfaceVariant,
+                ),
+                SizedBox(width: SnapFoodSpacing.sm),
+                Expanded(
+                  child: Text(
+                    'The delivery partner has not shared a location yet.',
+                  ),
+                ),
+              ],
+            )
+          : Semantics(
+              container: true,
+              label: 'Latest delivery location available',
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.my_location_rounded,
+                    color: SnapFoodColors.secondary,
+                  ),
+                  const SizedBox(width: SnapFoodSpacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${location!.latitude.toStringAsFixed(5)}°, '
+                          '${location!.longitude.toStringAsFixed(5)}°',
+                          style: SnapFoodTypography.titleSmall,
+                        ),
+                        const SizedBox(height: SnapFoodSpacing.xs),
+                        Text(
+                          stale
+                              ? 'This location may be outdated.'
+                              : location!.recordedAt == null
+                                  ? 'Latest location received.'
+                                  : 'Updated ${_formatDateTime(location!.recordedAt!)}',
+                          style: SnapFoodTypography.bodySmall.copyWith(
+                            color: SnapFoodColors.onSurfaceVariant,
+                          ),
+                        ),
+                        if (location!.accuracy != null) ...[
+                          const SizedBox(height: SnapFoodSpacing.xs),
+                          Text(
+                            'Accuracy ±${location!.accuracy!.toStringAsFixed(0)} m',
+                            style: SnapFoodTypography.labelSmall.copyWith(
+                              color: SnapFoodColors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+}
+
+class _RefreshNote extends StatelessWidget {
+  const _RefreshNote({required this.stale});
+
+  final bool stale;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: SnapFoodSpacing.md,
+          vertical: SnapFoodSpacing.sm,
+        ),
+        decoration: BoxDecoration(
+          color: stale
+              ? SnapFoodColors.softYellow
+              : SnapFoodColors.surfaceContainer,
+          borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              stale ? Icons.info_outline_rounded : Icons.refresh_rounded,
+              size: 15,
+              color: SnapFoodColors.onSurfaceVariant,
+            ),
+            const SizedBox(width: SnapFoodSpacing.xs),
+            Flexible(
+              child: Text(
+                stale
+                    ? 'The latest tracking update is stale. Pull to refresh.'
+                    : 'Pull down anytime to refresh tracking.',
+                textAlign: TextAlign.center,
+                style: SnapFoodTypography.labelSmall.copyWith(
+                  color: SnapFoodColors.onSurfaceVariant,
+                ),
+              ),
+            ),
           ],
         ),
       );
 }
 
-class _LocationCard extends StatelessWidget {
-  const _LocationCard({required this.location, required this.stale});
-  final OrderTrackingLocation? location;
-  final bool stale;
+class _SectionSurface extends StatelessWidget {
+  const _SectionSurface({required this.title, required this.child});
+
+  final String title;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(SnapFoodSpacing.md),
         decoration: BoxDecoration(
           color: SnapFoodColors.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(SnapFoodRadii.xl),
+          borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
           border: Border.all(color: SnapFoodColors.softBorder),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Delivery location',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
-            ),
-            const SizedBox(height: 8),
-            if (location == null)
-              const Text(
-                'The delivery partner has not shared a location yet.',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: SnapFoodColors.onSurfaceVariant,
-                ),
-              )
-            else ...[
-              Text(
-                'Lat ' +
-                    location!.latitude.toStringAsFixed(5) +
-                    '  •  Lng ' +
-                    location!.longitude.toStringAsFixed(5),
-                style: const TextStyle(
-                    fontSize: 12, fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                stale
-                    ? 'This location may be outdated.'
-                    : location!.recordedAt == null
-                    ? 'Latest location received.'
-                    : 'Updated ' + location!.recordedAt!.toLocal().toString(),
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: SnapFoodColors.onSurfaceVariant,
-                ),
-              ),
-            ],
+            Text(title, style: SnapFoodTypography.titleSmall),
+            const SizedBox(height: SnapFoodSpacing.md),
+            child,
           ],
         ),
       );
 }
 
-class _LiveBadge extends StatelessWidget {
-  const _LiveBadge();
+class _CancelledNotice extends StatelessWidget {
+  const _CancelledNotice();
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        margin: const EdgeInsets.only(top: SnapFoodSpacing.sm),
+        padding: const EdgeInsets.all(SnapFoodSpacing.sm),
         decoration: BoxDecoration(
-          color: SnapFoodColors.softYellow,
-          borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+          color: SnapFoodColors.softRed,
+          borderRadius: BorderRadius.circular(SnapFoodRadii.md),
         ),
-        child: const Text(
-          'LIVE',
-          style: TextStyle(fontSize: 8, fontWeight: FontWeight.w900),
+        child: const Row(
+          children: [
+            Icon(Icons.cancel_outlined, size: 17),
+            SizedBox(width: SnapFoodSpacing.sm),
+            Expanded(
+              child: Text(
+                'This order was cancelled, so delivery tracking has stopped.',
+              ),
+            ),
+          ],
         ),
       );
 }
 
 class _Unavailable extends StatelessWidget {
   const _Unavailable({required this.message});
+
   final String message;
 
   @override
   Widget build(BuildContext context) => SnapEmptyState(
-    icon: Icons.location_searching_outlined,
-    title: 'Tracking unavailable',
-    message: message,
-  );
+        icon: Icons.location_searching_outlined,
+        title: 'Tracking unavailable',
+        message: message,
+      );
 }
 
 class _ErrorView extends StatelessWidget {
   const _ErrorView({required this.error, required this.onRetry});
+
   final Object error;
   final VoidCallback onRetry;
 
@@ -359,6 +582,7 @@ class _ErrorView extends StatelessWidget {
     final message = error is ApiException
         ? (error as ApiException).message
         : 'We could not load live tracking.';
+
     return SnapErrorState(
       title: 'Tracking unavailable',
       message: message,
@@ -367,30 +591,45 @@ class _ErrorView extends StatelessWidget {
   }
 }
 
-int _stepFor(String status) {
-  const steps = [
-    'PLACED',
-    'ACCEPTED',
-    'PREPARING',
-    'READY_FOR_PICKUP',
-    'ASSIGNED',
-    'PICKED_UP',
-    'OUT_FOR_DELIVERY',
-    'DELIVERED',
-  ];
-  final index = steps.indexOf(status.toUpperCase());
-  return index < 0 ? 0 : index;
+String _statusHeadline(OrderStatus status) => switch (status) {
+      OrderStatus.placed => 'We have your order',
+      OrderStatus.accepted => 'Your order is accepted',
+      OrderStatus.preparing => 'Your food is being prepared',
+      OrderStatus.readyForPickup => 'Your order is ready',
+      OrderStatus.assigned => 'A delivery partner is assigned',
+      OrderStatus.pickedUp => 'Your order has been picked up',
+      OrderStatus.outForDelivery => 'Your order is on the way',
+      OrderStatus.delivered => 'Order delivered',
+      OrderStatus.cancelled => 'Order cancelled',
+      OrderStatus.unknown => 'Tracking status unavailable',
+    };
+
+String _statusMessage(OrderStatus status, OrderTracking tracking) {
+  if (status == OrderStatus.cancelled) {
+    return 'This order is no longer moving through the delivery flow.';
+  }
+  if (status == OrderStatus.delivered) {
+    return 'Your order has reached its delivery status.';
+  }
+  if (tracking.isStale) {
+    return 'The latest delivery update is older than expected. The status above remains the latest server response.';
+  }
+  if (tracking.latestLocation == null) {
+    return 'We are waiting for the latest delivery location from the tracking service.';
+  }
+  return 'The latest delivery location is available from the tracking service.';
 }
 
-String _labelFor(String status) => switch (OrderStatus.fromWire(status)) {
-  OrderStatus.placed => 'Order placed',
-  OrderStatus.accepted => 'Restaurant accepted',
-  OrderStatus.preparing => 'Preparing your food',
-  OrderStatus.readyForPickup => 'Ready for pickup',
-  OrderStatus.assigned => 'Delivery partner assigned',
-  OrderStatus.pickedUp => 'Picked up',
-  OrderStatus.outForDelivery => 'On the way',
-  OrderStatus.delivered => 'Delivered',
-  OrderStatus.cancelled => 'Order cancelled',
-  OrderStatus.unknown => status.isEmpty ? 'Status unavailable' : status,
-};
+String _formatDateTime(DateTime value) {
+  final local = value.toLocal();
+  final hour = local.hour.toString().padLeft(2, '0');
+  final minute = local.minute.toString().padLeft(2, '0');
+  return '${local.day}/${local.month}/${local.year} $hour:$minute';
+}
+
+class _TrackingStep {
+  const _TrackingStep(this.status, this.label);
+
+  final OrderStatus status;
+  final String label;
+}
