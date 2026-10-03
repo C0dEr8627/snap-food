@@ -35,16 +35,19 @@ class _LiveOrderTrackingScreenState
   void initState() {
     super.initState();
     if (widget.orderId.trim().isNotEmpty) {
-      Future.microtask(_load);
-      _poller = Timer.periodic(const Duration(seconds: 10), (_) => _load());
+      Future.microtask(() => _load(showLoading: true));
+      _poller = Timer.periodic(
+        const Duration(seconds: 10),
+        (_) => _load(showLoading: false),
+      );
     }
   }
 
-  Future<void> _load() async {
+  Future<void> _load({bool showLoading = false}) async {
     if (!mounted || widget.orderId.trim().isEmpty) return;
     await ref
         .read(orderTrackingControllerProvider.notifier)
-        .load(widget.orderId);
+        .load(widget.orderId, showLoading: showLoading);
   }
 
   @override
@@ -60,8 +63,11 @@ class _LiveOrderTrackingScreenState
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
+        child: RefreshIndicator(
+          onRefresh: () => _load(showLoading: false),
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
             SliverAppBar(
               pinned: true,
               backgroundColor: SnapFoodColors.surface,
@@ -119,42 +125,36 @@ class _LiveOrderTrackingScreenState
                       )
                     : SliverToBoxAdapter(
                         child: _TrackingBody(
-                          orderId: widget.orderId,
                           tracking: value,
                         ),
                       ),
               ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _TrackingBody extends ConsumerWidget {
-  const _TrackingBody({required this.orderId, required this.tracking});
+class _TrackingBody extends StatelessWidget {
+  const _TrackingBody({required this.tracking});
 
-  final String orderId;
   final OrderTracking tracking;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final status = OrderStatus.fromWire(tracking.status);
     final location = tracking.latestLocation;
 
-    return RefreshIndicator(
-      onRefresh: () => ref
-          .read(orderTrackingControllerProvider.notifier)
-          .load(orderId),
-      child: ListView(
-        shrinkWrap: true,
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(
-          SnapFoodSpacing.mobileMargin,
-          SnapFoodSpacing.sm,
-          SnapFoodSpacing.mobileMargin,
-          SnapFoodSpacing.xxl,
-        ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        SnapFoodSpacing.mobileMargin,
+        SnapFoodSpacing.sm,
+        SnapFoodSpacing.mobileMargin,
+        SnapFoodSpacing.xxl,
+      ),
+      child: Column(
         children: [
           _StatusHero(status: status, tracking: tracking),
           const SizedBox(height: SnapFoodSpacing.md),
