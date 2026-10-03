@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../design_system/components/snap_food_commerce.dart';
+import '../../../design_system/components/snap_food_feedback.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../../../design_system/tokens/app_spacing.dart';
@@ -105,7 +106,11 @@ class CartReviewScreen extends ConsumerWidget {
                                 ),
                               ),
                             ),
-                            if (items.isEmpty) const _EmptyCart(),
+                            if (items.isEmpty) const SnapEmptyState(
+                              icon: Icons.shopping_bag_outlined,
+                              title: 'Your cart is empty',
+                              message: 'Add a dish to start building your order.',
+                            ),
                             if (items.isNotEmpty) ...[
                               const SizedBox(height: 20),
                               const Text(
@@ -342,34 +347,4 @@ class _CheckoutPricingNote extends StatelessWidget {
         Expanded(
           child: Text(
             'The server recalculates the final order amount from the current catalogue at checkout.',
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-class _EmptyCart extends StatelessWidget {
-  const _EmptyCart();
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: double.infinity,
-    padding: const EdgeInsets.symmetric(vertical: 34, horizontal: 20),
-    child: const Column(
-      children: [
-        Icon(
-          Icons.shopping_bag_outlined,
-          size: 42,
-          color: SnapFoodColors.outline,
-        ),
-        SizedBox(height: 8),
-        Text(
-          'Your cart is empty',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
-        ),
-      ],
-    ),
-  );
-}
+            style: TextStyle(fontSize: 10, fontWeight
