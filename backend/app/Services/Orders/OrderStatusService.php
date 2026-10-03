@@ -26,6 +26,7 @@ class OrderStatusService
                 'from_status' => $fromStatus,
                 'to_status' => $targetStatus,
                 'actor_id' => $actor->id,
+                'actor_type' => $actor::class,
             ]);
 
             return $locked->load('items', 'statusHistory');
