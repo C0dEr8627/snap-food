@@ -20,7 +20,7 @@ class AdminOperationsWebTest extends TestCase
     {
         $admin = AdminUser::factory()->create();
         $customer = User::factory()->create(['name' => 'Mira Customer', 'email' => 'mira@example.test']);
-        $partnerUser = User::factory()->deliveryPartner()->create(['name' => 'Ravi Rider']);
+        $partnerUser = DeliveryPartnerUser::factory()->create(['name' => 'Ravi Rider']);
         $partner = DeliveryPartner::create([
             'user_id' => $partnerUser->id,
             'is_approved' => true,
@@ -46,7 +46,7 @@ class AdminOperationsWebTest extends TestCase
     {
         $admin = AdminUser::factory()->create();
         $customer = User::factory()->create(['name' => 'Invoice Customer']);
-        $partnerUser = User::factory()->deliveryPartner()->create(['name' => 'Assigned Rider']);
+        $partnerUser = DeliveryPartnerUser::factory()->create(['name' => 'Assigned Rider']);
         $partner = DeliveryPartner::create([
             'user_id' => $partnerUser->id,
             'is_approved' => true,
@@ -93,7 +93,7 @@ class AdminOperationsWebTest extends TestCase
     public function test_admin_can_approve_revoke_and_change_delivery_partner_state(): void
     {
         $admin = AdminUser::factory()->create();
-        $partnerUser = User::factory()->deliveryPartner()->create();
+        $partnerUser = DeliveryPartnerUser::factory()->create();
         $partner = DeliveryPartner::create([
             'user_id' => $partnerUser->id,
             'is_approved' => false,
@@ -138,7 +138,7 @@ class AdminOperationsWebTest extends TestCase
     public function test_unapproved_partner_cannot_be_marked_available(): void
     {
         $admin = AdminUser::factory()->create();
-        $partnerUser = User::factory()->deliveryPartner()->create();
+        $partnerUser = DeliveryPartnerUser::factory()->create();
         $partner = DeliveryPartner::create([
             'user_id' => $partnerUser->id,
             'is_approved' => false,
