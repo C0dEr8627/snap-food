@@ -7,7 +7,7 @@ class OrdersPage extends StatefulWidget{
 }
 
 class _AdminOrder {
-  const _AdminOrder({required this.id,required this.customer,required this.phone,required this.address,required this.total,required this.items,required this.payment,required this.time,required this.status,required this.lines,this.partner,this.vehicle});
+  const _AdminOrder({required this.id,required this.customer,required this.phone,required this.address,required this.total,required this.items,required this.payment,required this.time,required this.status,required this.lines,this.partner,this.vehicle,this.cancellationReason});
   factory _AdminOrder.fromJson(Map<String,dynamic> j){
     final customer=j['customer'] is Map?Map<String,dynamic>.from(j['customer'] as Map):<String,dynamic>{};
     final address=j['delivery_address_snapshot'] is Map?Map<String,dynamic>.from(j['delivery_address_snapshot'] as Map):<String,dynamic>{};
@@ -21,14 +21,14 @@ class _AdminOrder {
       phone:customer['phone']?.toString()??'',address:[address['line1'],address['line2'],address['city'],address['state']].whereType<String>().where((v)=>v.isNotEmpty).join(', '),
       total:_toDouble(j['total']),items:lines.fold(0,(n,x)=>n+x.qty),payment:j['payment_method']?.toString()??'UNKNOWN',
       time:j['created_at']?.toString()??'',status:j['status']?.toString()??'PLACED',lines:lines,
-      partner:dpUser['name']?.toString());
+      partner:dpUser['name']?.toString(),cancellationReason:j['cancellation_reason']?.toString());
   }
   final String id,customer,phone,address,payment,time,status;
   final double total;
   final int items;
   final List<_OrderLine> lines;
-  final String? partner,vehicle;
-  _AdminOrder withStatus(String value)=>_AdminOrder(id:id,customer:customer,phone:phone,address:address,total:total,items:items,payment:payment,time:time,status:value,lines:lines,partner:partner,vehicle:vehicle);
+  final String? partner,vehicle,cancellationReason;
+  _AdminOrder withStatus(String value)=>_AdminOrder(id:id,customer:customer,phone:phone,address:address,total:total,items:items,payment:payment,time:time,status:value,lines:lines,partner:partner,vehicle:vehicle,cancellationReason:cancellationReason);
 }
 
 
