@@ -894,7 +894,7 @@ The admin UI/UX modernization is complete when:
 | Task 14 — Premium Form UX | 🟢 Complete | 2026-10-03 | Added shared form sections/fields with inline validation and required markers; upgraded Catalogue product editing with structured sections, field-level validation and destructive-action confirmation. |
 | Task 15 — Loading / Empty / Error / Success | 🟢 Complete | 2026-10-03 | Standardized reusable loading/error/empty presentation and routed legacy generic admin notices through the branded feedback system; audited all current admin page state patterns. |
 | Task 16 — Responsive Admin Web | 🟢 Complete | 2026-10-03 | Added an explicit 4-tier admin shell strategy: full sidebar ≥1200px, compact sidebar rail at 900–1199px, drawer navigation at 600–899px, and narrow mobile fallback below 600px; audited page breakpoints, table overflow and responsive grids. |
-| Task 17 — Accessibility / Keyboard UX | ⬜ Not Started | 2026-10-03 | |
+| Task 17 — Accessibility / Keyboard UX | 🟢 Complete | 2026-10-03 | Audited shared admin interaction semantics and keyboard/focus affordances; strengthened shared button/icon-button semantics, preserved native keyboard activation and documented accessibility QA limitations. |
 | Task 18 — Motion & Micro-interactions | ⬜ Not Started | 2026-10-03 | |
 | Task 19 — Final Visual QA & Cleanup | ⬜ Not Started | 2026-10-03 | |
 
@@ -1299,6 +1299,27 @@ The admin UI/UX modernization is complete when:
   - Full Flutter Web compile, formatter, analyzer, automated tests and browser visual/overflow QA still require a runnable local or CI execution environment.
   - Existing invoice helper classes with legacy styling remain in the file where they are not part of the active rendered path; they can be cleaned up during the later final visual QA/cleanup pass.
   - Task 14 — Premium Form UX is the next implementation target.
+
+### 2026-10-03 — Task 17
+- Status: 🟢 Complete
+- Implemented:
+  - Audited shared interactive primitives for semantic labeling, enabled/disabled state exposure, tooltip clarity and keyboard activation.
+  - Strengthened `SfIconButton` with explicit button semantics, enabled state and accessible label propagation from its tooltip label.
+  - Reviewed `SfButton` and preserved Flutter's native keyboard activation/focus behavior rather than introducing a competing custom key-handling layer.
+  - Confirmed existing command/search and form controls use Flutter-native text-field keyboard/focus behavior and that the admin shell/navigation exposes semantic navigation labels.
+  - Kept status communication based on text/badges/icons rather than color alone where the shared components provide state.
+  - Preserved existing business/API behavior and did not introduce new capabilities.
+- Files/components changed:
+  - `admin_web/lib/widgets/sf_core_components.dart`
+  - `ADMIN_WEB_UI_UX_DEVELOPMENT_PLAN.md`
+- Validation:
+  - Re-fetched the final shared component source after the accessibility changes.
+  - Verified `SfIconButton` exposes button semantics, enabled state and tooltip-derived accessible labeling.
+  - Audited current admin shell/page interaction primitives for Semantics, Tooltip, FocusNode/autofocus and custom keyboard shortcut usage.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action.
+- Limitations/follow-up:
+  - Full browser keyboard traversal, focus-ring visibility, screen-reader behavior, contrast measurement and dialog/command-palette focus trapping still require a runnable Flutter Web environment.
+  - Task 18 — Motion & Micro-interactions is the next implementation target.
 
 ### 2026-10-03 — Task 16
 - Status: 🟢 Complete
