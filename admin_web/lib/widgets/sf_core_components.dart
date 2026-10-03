@@ -670,11 +670,13 @@ class _SfSkeletonState extends flutter.State<SfSkeleton> with flutter.SingleTick
 }
 
 class SfAvatar extends flutter.StatelessWidget {
-  const SfAvatar({super.key, this.name, this.imageUrl, this.size = 40});
+  const SfAvatar({super.key, this.name, this.imageUrl, this.size = 40, this.backgroundColor, this.foregroundColor});
 
   final String? name;
   final String? imageUrl;
   final double size;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
 
   @override
   flutter.Widget build(BuildContext context) {
