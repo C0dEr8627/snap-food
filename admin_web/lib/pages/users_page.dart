@@ -69,16 +69,6 @@ class _UsersPageState extends State<UsersPage> {
     }
   }
 
-  List<_PlatformUser> get _filtered {
-    final query = _search.text.trim().toLowerCase();
-    if (query.isEmpty) return _users;
-    return _users.where((user) {
-      return user.name.toLowerCase().contains(query) ||
-          user.email.toLowerCase().contains(query) ||
-          user.id.toString().contains(query);
-    }).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     final users = _filtered;
@@ -119,55 +109,12 @@ class _UsersPageState extends State<UsersPage> {
     );
   }
 
-  Future<void> _showDetails(_PlatformUser user) async {
-    await shad.showOverlay<void>(
+  Future<void> _showDetails(_PlatformUser user) {
+    return SfSideDrawer.show<void>(
       context,
-      shad.DialogConfiguration(),
-      builder: (dialogContext) => shad.AlertDialog(
-        title: Text(user.name),
-        content: SizedBox(
-          width: 620,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _UserDetailSection(
-                  title: 'Account',
-                  children: [
-                    _UserDetailLine('User ID', '#${user.id}'),
-                    _UserDetailLine('Name', user.name),
-                    _UserDetailLine('Email', user.email.isEmpty ? 'Not provided' : user.email),
-                    _UserDetailLine('Role', user.role),
-                    _UserDetailLine('Status', user.active ? 'Active' : 'Inactive'),
-                    _UserDetailLine('Joined', _formatUserTimestamp(user.createdAt)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                _UserDetailSection(
-                  title: 'Activity',
-                  children: [
-                    _UserDetailLine('Orders', user.ordersCount.toString()),
-                    _UserDetailLine('Saved addresses', user.addresses.length.toString()),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                _UserDetailSection(
-                  title: 'Addresses',
-                  children: user.addresses.isEmpty
-                      ? [const Text('No address has been saved for this account.', style: TextStyle(fontSize: 12, color: AdminColors.muted))]
-                      : user.addresses.map((address) => _AddressCard(address: address)).toList(),
-                ),
-              ],
-            ),
-          ),
-        ),
-        actions: [
-          shad.OutlineButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
+      title: user.name.isEmpty ? 'User details' : user.name,
+      width: 460,
+      child: _UserDetails(user: user),
     );
   }
 }
@@ -187,7 +134,7 @@ class _UsersApi {
         if (token.isNotEmpty) 'Authorization': 'Bearer $token',
       };
 
-  Future<_UsersPage> list({required int page, required String search, required String role}) async {
+  Future<_UsersPage> list({required int page, required String search}) async {
     if (token.isEmpty) {
       throw StateError('Admin session is not available. Please sign in again.');
     }
@@ -195,7 +142,6 @@ class _UsersApi {
       'page': page.toString(),
       'per_page': '20',
       if (search.isNotEmpty) 'search': search,
-      if (role != 'ALL') 'role': role,
     };
     final uri = Uri.parse('$base/admin/users').replace(queryParameters: params);
     final response = await http.get(uri, headers: headers);
@@ -292,71 +238,6 @@ class _UserAddress {
       );
 }
 
-class _UsersToolbar extends StatelessWidget {
-  const _UsersToolbar({
-    required this.controller,
-    required this.filter,
-    required this.onFilter,
-    required this.onSearch,
-    required this.onRefresh,
-    required this.loading,
-  });
-
-  final TextEditingController controller;
-  final String filter;
-  final ValueChanged<String> onFilter;
-  final VoidCallback onSearch;
-  final VoidCallback onRefresh;
-  final bool loading;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: AdminColors.line),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            SizedBox(
-              width: 330,
-              child: shad.TextField(
-                controller: controller,
-                onSubmitted: (_) => onSearch(),
-                hintText: 'Search name, email or user ID...',
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              ),
-            ),
-            _UsersFilter('ALL', filter == 'ALL', () => onFilter('ALL')),
-            _UsersFilter('CUSTOMER', filter == 'CUSTOMER', () => onFilter('CUSTOMER')),
-            _UsersFilter('DELIVERY_PARTNER', filter == 'DELIVERY_PARTNER', () => onFilter('DELIVERY_PARTNER')),
-            _UsersFilter('ADMIN', filter == 'ADMIN', () => onFilter('ADMIN')),
-            shad.IconButton.ghost(
-              onPressed: loading ? null : onRefresh,
-              icon: const AdminIcon(HugeIcons.strokeRoundedRefresh, size: 18),
-            ),
-          ],
-        ),
-      );
-}
-
-class _UsersFilter extends StatelessWidget {
-  const _UsersFilter(this.label, this.active, this.onTap);
-  final String label;
-  final bool active;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => (active ? shad.Button.secondary : shad.Button.ghost)(
-        onPressed: onTap,
-        child: Text(label == 'DELIVERY_PARTNER' ? 'DELIVERY' : label),
-      );
-}
-
 class _UsersTable extends StatelessWidget {
   const _UsersTable({required this.users, required this.onView});
   final List<_PlatformUser> users;
@@ -400,42 +281,171 @@ class _UsersPagination extends StatelessWidget {
   final ValueChanged<int> onPage;
 
   @override
-  Widget build(BuildContext context) => Row(
-        children: [
-          Expanded(child: Text('Showing ${visible} on this page · ${total} total users', style: const TextStyle(fontSize: 11, color: AdminColors.muted))),
-          shad.OutlineButton(onPressed: page > 1 ? () => onPage(page - 1) : null, child: const Text('Previous')),
-          const SizedBox(width: 6),
-          Text('$page / $lastPage', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900)),
-          const SizedBox(width: 6),
-          shad.OutlineButton(onPressed: page < lastPage ? () => onPage(page + 1) : null, child: const Text('Next')),
-        ],
+  Widget build(BuildContext context) => SfTablePagination(
+        page: page,
+        lastPage: lastPage,
+        total: total,
+        onPrevious: page > 1 ? () => onPage(page - 1) : null,
+        onNext: page < lastPage ? () => onPage(page + 1) : null,
       );
 }
 
 class _UsersLoading extends StatelessWidget {
   const _UsersLoading();
+
   @override
-  Widget build(BuildContext context) => const Center(child: Padding(padding: EdgeInsets.all(40), child: shad.CircularProgressIndicator()));
+  Widget build(BuildContext context) => SfCard(
+        padding: const EdgeInsets.all(AdminSpacing.xl),
+        child: Column(
+          children: [
+            for (var i = 0; i < 5; i++) ...[
+              Row(
+                children: [
+                  const SfSkeleton(width: 52, height: 14),
+                  const SizedBox(width: AdminSpacing.md),
+                  const SfSkeleton(width: 180, height: 14),
+                  const Spacer(),
+                  const SfSkeleton(width: 120, height: 14),
+                ],
+              ),
+              if (i < 4) const SizedBox(height: AdminSpacing.lg),
+            ],
+          ],
+        ),
+      );
 }
 
-class _UsersEmpty extends StatelessWidget {
-  const _UsersEmpty();
+class _UserDetails extends StatelessWidget {
+  const _UserDetails({required this.user});
+  final _PlatformUser user;
+
   @override
-  Widget build(BuildContext context) => Container(width: double.infinity, padding: const EdgeInsets.all(40), decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(16)), child: const Center(child: Text('No users found.', style: TextStyle(fontSize: 12, color: AdminColors.muted))));
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SfAvatar(name: user.name, size: 52),
+              const SizedBox(width: AdminSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(user.name.isEmpty ? 'Unnamed user' : user.name, style: AdminTypography.sectionTitle),
+                    const SizedBox(height: AdminSpacing.xxs),
+                    Text(user.email.isEmpty ? 'Not provided' : user.email, style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText)),
+                    const SizedBox(height: AdminSpacing.sm),
+                    Wrap(
+                      spacing: AdminSpacing.xs,
+                      runSpacing: AdminSpacing.xs,
+                      children: [
+                        SfStatusBadge(label: user.role),
+                        SfStatusBadge(label: user.active ? 'Active' : 'Inactive', status: user.active ? 'active' : 'inactive'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AdminSpacing.xl),
+          _UserDetailSection(title: 'Account', children: [
+            _UserDetailLine('User ID', '#${user.id}'),
+            _UserDetailLine('Joined', _formatUserTimestamp(user.createdAt)),
+          ]),
+          const SizedBox(height: AdminSpacing.lg),
+          _UserDetailSection(title: 'Activity', children: [
+            _UserDetailLine('Orders', user.ordersCount.toString()),
+            _UserDetailLine('Saved addresses', user.addresses.length.toString()),
+          ]),
+          const SizedBox(height: AdminSpacing.lg),
+          _UserDetailSection(
+            title: 'Addresses',
+            children: user.addresses.isEmpty
+                ? [Text('No address has been saved for this account.', style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText))]
+                : user.addresses.map((address) => _AddressCard(address: address)).toList(),
+          ),
+        ],
+      );
 }
 
-class _UsersError extends StatelessWidget {
-  const _UsersError({required this.message, required this.onRetry});
-  final String message;
-  final VoidCallback onRetry;
+class _UserDetailSection extends StatelessWidget {
+  const _UserDetailSection({required this.title, required this.children});
+  final String title;
+  final List<Widget> children;
+
   @override
-  Widget build(BuildContext context) => Container(width: double.infinity, padding: const EdgeInsets.all(24), decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(14), border: Border.all(color: AdminColors.line)), child: Column(children: [
-    const Text('Could not load users', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
-    const SizedBox(height: 6),
-    Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11.5, color: AdminColors.muted)),
-    const SizedBox(height: 12),
-    shad.OutlineButton(onPressed: onRetry, child: const Text('Retry')),
-  ]));
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: AdminTypography.cardTitle),
+          const SizedBox(height: AdminSpacing.sm),
+          SfCard(padding: const EdgeInsets.all(AdminSpacing.md), child: Column(children: children)),
+        ],
+      );
+}
+
+class _UserDetailLine extends StatelessWidget {
+  const _UserDetailLine(this.label, this.value);
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: AdminSpacing.sm),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(width: 118, child: Text(label, style: AdminTypography.small.copyWith(color: AdminDesignColors.secondaryText))),
+            Expanded(child: Text(value.isEmpty ? 'Not provided' : value, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w600))),
+          ],
+        ),
+      );
+}
+
+class _AddressCard extends StatelessWidget {
+  const _AddressCard({required this.address});
+  final _UserAddress address;
+
+  @override
+  Widget build(BuildContext context) {
+    final lines = [
+      if (address.recipientName.isNotEmpty) address.recipientName,
+      if (address.line1.isNotEmpty) address.line1,
+      if (address.line2.isNotEmpty) address.line2,
+      [
+        if (address.city.isNotEmpty) address.city,
+        if (address.state.isNotEmpty) address.state,
+        if (address.postalCode.isNotEmpty) address.postalCode,
+      ].where((part) => part.isNotEmpty).join(', '),
+      if (address.country.isNotEmpty) address.country,
+    ].where((line) => line.isNotEmpty).toList();
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: AdminSpacing.sm),
+      padding: const EdgeInsets.all(AdminSpacing.md),
+      decoration: BoxDecoration(
+        color: AdminDesignColors.subtleSurface,
+        borderRadius: BorderRadius.circular(AdminRadii.control),
+        border: Border.all(color: AdminDesignColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(child: Text(address.label, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w700))),
+              const AdminIcon(HugeIcons.strokeRoundedLocation01, size: 16, color: AdminDesignColors.secondaryText),
+            ],
+          ),
+          const SizedBox(height: AdminSpacing.xs),
+          Text(lines.isEmpty ? 'Address details are not available.' : lines.join('\n'), style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText, height: 1.45)),
+        ],
+      ),
+    );
+  }
 }
 
 int _usersInt(dynamic value, [int fallback = 0]) => value is num ? value.toInt() : int.tryParse(value?.toString() ?? '') ?? fallback;
