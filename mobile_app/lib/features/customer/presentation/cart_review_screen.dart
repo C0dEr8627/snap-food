@@ -342,9 +342,19 @@ class _CheckoutPricingNote extends StatelessWidget {
     ),
     child: const Row(
       children: [
-        Icon(Icons.receipt_long_outlined, color: SnapFoodColors.secondary, size: 19),
+        Icon(
+          Icons.receipt_long_outlined,
+          color: SnapFoodColors.secondary,
+          size: 19,
+        ),
         SizedBox(width: 8),
         Expanded(
           child: Text(
             'The server recalculates the final order amount from the current catalogue at checkout.',
-            style: TextStyle(fontSize: 10, fontWeight\n          ),\n        ),\n      ],\n    ),\n  );\n}\n
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+          ),
+        ),
+      ],
+    ),
+  );
+}
