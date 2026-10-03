@@ -2,7 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
+use App\Models\AdminUser;
+use App\Models\CustomerUser;
 use App\Services\Auth\GoogleCredentialVerifier;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
@@ -22,11 +23,11 @@ class AdminWebAuthenticationTest extends TestCase
 
     public function test_admin_can_sign_in_with_a_valid_google_identity_and_get_a_web_session(): void
     {
-        $admin = User::create([
+        $admin = AdminUser::create([
             'google_subject' => 'google-admin',
             'name' => 'Admin User',
             'email' => 'admin@example.test',
-            'role' => User::ROLE_ADMIN,
+            'role' => 'ADMIN',
             'is_active' => true,
         ]);
 
@@ -48,11 +49,11 @@ class AdminWebAuthenticationTest extends TestCase
 
     public function test_customer_cannot_create_an_admin_web_session(): void
     {
-        User::create([
+        AdminUser::create([
             'google_subject' => 'google-customer',
             'name' => 'Customer User',
             'email' => 'customer@example.test',
-            'role' => User::ROLE_CUSTOMER,
+            'role' => 'CUSTOMER',
             'is_active' => true,
         ]);
 
@@ -73,11 +74,11 @@ class AdminWebAuthenticationTest extends TestCase
 
     public function test_inactive_admin_cannot_create_an_admin_web_session(): void
     {
-        User::create([
+        CustomerUser::create([
             'google_subject' => 'google-inactive-admin',
             'name' => 'Inactive Admin',
             'email' => 'inactive-admin@example.test',
-            'role' => User::ROLE_ADMIN,
+            'role' => 'ADMIN',
             'is_active' => false,
         ]);
 
@@ -98,11 +99,11 @@ class AdminWebAuthenticationTest extends TestCase
 
     public function test_authenticated_non_admin_is_denied_from_dashboard(): void
     {
-        $customer = User::create([
+        $customer = AdminUser::create([
             'google_subject' => 'google-customer',
             'name' => 'Customer User',
             'email' => 'customer@example.test',
-            'role' => User::ROLE_CUSTOMER,
+            'role' => 'CUSTOMER',
             'is_active' => true,
         ]);
 
@@ -113,11 +114,11 @@ class AdminWebAuthenticationTest extends TestCase
 
     public function test_admin_can_access_dashboard_and_logout_invalidates_session(): void
     {
-        $admin = User::create([
+        $admin = __ACCOUNT_CREATE__([
             'google_subject' => 'google-admin',
             'name' => 'Admin User',
             'email' => 'admin@example.test',
-            'role' => User::ROLE_ADMIN,
+            'role' => 'ADMIN',
             'is_active' => true,
         ]);
 
