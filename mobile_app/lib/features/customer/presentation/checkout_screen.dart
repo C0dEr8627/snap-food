@@ -31,11 +31,18 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   final _state = TextEditingController(text: 'Maharashtra');
   final _postal = TextEditingController();
   final _country = TextEditingController(text: 'India');
+  late final DirectCheckoutItemsController _directCheckoutItemsController;
+
+  @override
+  void initState() {
+    super.initState();
+    _directCheckoutItemsController = ref.read(directCheckoutItemsProvider.notifier);
+  }
 
   @override
   void dispose() {
     // A direct-order draft must not leak into a later cart checkout.
-    ref.read(directCheckoutItemsProvider.notifier).setItems(null);
+    _directCheckoutItemsController.setItems(null);
     for (final controller in [
       _label,
       _recipient,
