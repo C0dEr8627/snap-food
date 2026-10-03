@@ -1,15 +1,14 @@
 <?php
 
-namespace App\\Http\\Controllers\\Api\\V1\\Admin;
+namespace App\Http\Controllers\Api\V1\Admin;
 
-use App\\Models\\AdminUser;
-use App\\Models\\CustomerUser;
-use App\\Models\\DeliveryPartnerUser;
-use Illuminate\\Database\\Eloquent\\Builder;
-use Illuminate\\Http\\JsonResponse;
-use Illuminate\\Http\\Request;
-use Illuminate\\Pagination\\LengthAwarePaginator;
-use Illuminate\\Support\\Collection;
+use App\Models\AdminUser;
+use App\Models\CustomerUser;
+use App\Models\DeliveryPartnerUser;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class UserController
 {
