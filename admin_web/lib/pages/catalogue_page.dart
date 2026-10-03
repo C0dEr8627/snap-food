@@ -1181,14 +1181,7 @@ class _ProductEditor extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AdminSpacing.md),
-        _field(imageUrl, 'https://...', label: 'Product image URL', validator: (value) {
-          final raw = (value ?? '').trim();
-          if (raw.isEmpty) return null;
-          final uri = Uri.tryParse(raw);
-          return uri == null || !uri.hasScheme || !['http', 'https'].contains(uri.scheme.toLowerCase()) || uri.host.isEmpty
-              ? 'Enter a valid https:// image URL.'
-              : null;
-        }),
+        _field(imageUrl, 'https://...', label: 'Image URL'),
         const SizedBox(height: 5),
         const Text(
           'Choose a file for preview or provide an image URL.',
@@ -1208,24 +1201,11 @@ class _ProductEditor extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
         const SizedBox(height: 2),
-        SfFormSection(
-          title: 'Basic information',
-          description: 'Keep the product identity clear and concise.',
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-        _field(name, 'Smokey Chicken Tikka Roll', label: 'Product name', maxLength: 180, validator: (value) => (value ?? '').trim().isEmpty ? 'Product name is required.' : null),
+        _label('Dish Name *', 'Required'),
+        _formSectionHeading('Basic information', 'Identity and customer-facing description.'),
+        _field(name, 'Smokey Chicken Tikka Roll', label: 'Product name', maxLength: 180, requiredField: true, validator: (value) => (value ?? '').trim().isEmpty ? 'Product name is required.' : null),
         const SizedBox(height: AdminSpacing.md),
-        _field(description, 'Short description for admins and customers', label: 'Description', maxLines: 3),
-        ),
-      ),
-      const SizedBox(height: AdminSpacing.xl),
-      SfFormSection(
-        title: 'Category & dietary',
-        description: 'Classify the product using the categories already available in Snap Foodd.',
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        _formSectionHeading('Category & dietary', 'Use the existing catalogue classification.'),
         _dropdownField(
           'Category',
           categories.map((c) => DropdownMenuItem<int?>(
@@ -1273,13 +1253,9 @@ class _ProductEditor extends StatelessWidget {
             );
           }).toList(),
         ),
-        ),
-      ),
-      const SizedBox(height: AdminSpacing.xl),
-      SfFormSection(
-        title: 'Pricing & preparation',
-        description: 'Use the values that control pricing and operational preparation time.',
-        child: Row(
+        const SizedBox(height: AdminSpacing.lg),
+        _formSectionHeading('Pricing & preparation', 'Operational values used by the catalogue.'),
+        Row(
           children: [
             Expanded(
               child: _field(
@@ -1287,6 +1263,7 @@ class _ProductEditor extends StatelessWidget {
                 '₹220',
                 label: 'Base Price (₹)',
                 keyboard: const TextInputType.numberWithOptions(decimal: true),
+                requiredField: true,
                 validator: (value) { final n = double.tryParse((value ?? '').trim()); return n == null || n < 0 ? 'Enter a valid price.' : null; },
               ),
             ),
@@ -1297,21 +1274,15 @@ class _ProductEditor extends StatelessWidget {
                 '15',
                 label: 'Prep Time (Min)',
                 keyboard: TextInputType.number,
+                requiredField: true,
                 validator: (value) { final n = int.tryParse((value ?? '').trim()); return n == null || n < 1 || n > 300 ? 'Use 1–300 minutes.' : null; },
               ),
             ),
           ],
         ),
-        ),
-      ),
-      const SizedBox(height: AdminSpacing.xl),
-      SfFormSection(
-        title: 'Availability',
-        description: 'Control stock visibility and whether the product is currently live.',
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-        _field(stock, '0', label: 'Stock Quantity', keyboard: TextInputType.number, validator: (value) { final n = int.tryParse((value ?? '').trim()); return n == null || n < 0 ? 'Enter a valid quantity.' : null; }),
+        const SizedBox(height: AdminSpacing.md),
+        _field(
+          description,
           'Charcoal roasted chicken tikka cubes, spiced onions, mint yogurt and flaky paratha bread.',
           label: 'Short Description',
           maxLines: 3,
@@ -1387,11 +1358,12 @@ class _ProductEditor extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: AdminSpacing.lg),
+        _formSectionHeading('Availability', 'Control stock and whether the item is visible on the app.'),
         Row(
           children: [
             Expanded(
-              child: _field(stock, '0', label: 'Stock Quantity', keyboard: TextInputType.number, validator: (value) { final n = int.tryParse((value ?? '').trim()); return n == null || n < 0 ? 'Enter a valid quantity.' : null; }),
+              child: _field(stock, '0', label: 'Stock Quantity', keyboard: TextInputType.number, requiredField: true, validator: (value) { final n = int.tryParse((value ?? '').trim()); return n == null || n < 0 ? 'Enter a valid quantity.' : null; }),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -1416,16 +1388,8 @@ class _ProductEditor extends StatelessWidget {
             ),
           ],
         ),
-        ),
-      ),
-      const SizedBox(height: AdminSpacing.xl),
-      SfFormSection(
-        title: 'Product image',
-        description: 'Upload a product image or provide an https URL.',
-        child: imagePicker,
-      ),
-      const SizedBox(height: AdminSpacing.lg),
-      SizedBox(
+        const SizedBox(height: AdminSpacing.lg),
+        SizedBox(
           width: double.infinity,
           height: 46,
           child: shad.PrimaryButton(
@@ -1442,17 +1406,8 @@ class _ProductEditor extends StatelessWidget {
           Align(
             alignment: Alignment.center,
             child: shad.OutlineButton(
-              onPressed: saving ? null : () async {
-                final confirmed = await SfConfirmDialog.show(
-                  context,
-                  title: 'Deactivate product?',
-                  message: 'This will hide the product from active catalogue results. You can review the change after saving.',
-                  confirmLabel: 'Deactivate',
-                  destructive: true,
-                );
-                if (confirmed) await onDeactivate();
-              },
-              child: const Text('Deactivate item'),
+              onPressed: saving ? null : onDeactivate,
+              child: const Text('Deactivate item', style: TextStyle(fontSize: 11, color: AdminDesignColors.error)),
             ),
           ),
         ],
@@ -1558,16 +1513,39 @@ Widget _label(String text, String? trailing) => Padding(
     ],
   ),
 );
-Widget _field(TextEditingController c, String hint, {String? label, int? maxLength, int maxLines = 1, TextInputType? keyboard, String? Function(String?)? validator}) =>
-  SfFormField(
-    controller: c,
-    label: label,
-    hintText: hint,
-    maxLength: maxLength,
-    maxLines: maxLines,
-    keyboardType: keyboard,
-    validator: validator,
-  );
+Widget _field(
+  TextEditingController c,
+  String hint, {
+  String? label,
+  String? helperText,
+  bool requiredField = false,
+  int? maxLength,
+  int maxLines = 1,
+  TextInputType? keyboard,
+  String? Function(String?)? validator,
+}) => SfFormField(
+  controller: c,
+  label: label,
+  hintText: hint,
+  helperText: helperText,
+  requiredField: requiredField,
+  maxLength: maxLength,
+  maxLines: maxLines,
+  keyboardType: keyboard,
+  validator: validator,
+);
+
+Widget _formSectionHeading(String title, String description) => Padding(
+  padding: const EdgeInsets.only(bottom: AdminSpacing.sm),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(title, style: AdminTypography.cardTitle),
+      const SizedBox(height: AdminSpacing.xxs),
+      Text(description, style: AdminTypography.small.copyWith(color: AdminDesignColors.secondaryText)),
+    ],
+  ),
+);
 
 Widget _dropdownField(
   String label,
