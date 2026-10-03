@@ -26,7 +26,7 @@ class OrderAssignment extends Model
 
     public function deliveryPartner(): BelongsTo
     {
-        return $this->belongsTo(DeliveryPartner::class);
+        return $this->belongsTo(DeliveryPartnerUser::class, 'delivery_partner_id');
     }
 
     public function assigner(): BelongsTo
