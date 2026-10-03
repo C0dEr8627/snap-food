@@ -518,7 +518,6 @@ class _FleetSummary extends flutter.StatelessWidget {
                   value: loading ? '—' : item.$2,
                   helper: apiConfigured ? item.$3 : 'API unavailable',
                   icon: item.$4,
-                  tone: item.$5,
                 ),
               ),
           ],
