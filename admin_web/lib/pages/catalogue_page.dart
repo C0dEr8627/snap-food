@@ -97,7 +97,7 @@ class _CataloguePageState extends State<CataloguePage> {
     } catch (e) {
       if (!mounted) return;
       setState(() { _error = e.toString(); _loading = false; });
-      _notice(context, _error, error: true);
+      SfFeedback.showError(context, _error);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -259,7 +259,7 @@ class _CataloguePageState extends State<CataloguePage> {
   }
   Future<bool> _save() async {
     final validationError = _validateProductForm();
-    if (validationError != null) { _notice(context, validationError, error: true); return false; }
+    if (validationError != null) { SfFeedback.showError(context, validationError); return false; }
     final product = _CatalogueProduct(
       id: _creating ? null : _selected?.id,
       name: _name.text.trim(),
@@ -279,7 +279,7 @@ class _CataloguePageState extends State<CataloguePage> {
       dietary: _selected?.dietary ?? _formDietary, prepTime: int.tryParse(_prep.text.trim()) ?? 15,
       tags: List<String>.of(_formTags),
     );
-    if (product.categoryId == null) { _notice(context, 'Select a category before saving.', error: true); return false; }
+    if (product.categoryId == null) { SfFeedback.showError(context, 'Select a category before saving.'); return false; }
     final imageValue = _imageUrl.text.trim();
     if (imageValue.isNotEmpty) {
       final imageUri = Uri.tryParse(imageValue);
@@ -287,7 +287,7 @@ class _CataloguePageState extends State<CataloguePage> {
           !imageUri.hasScheme ||
           !['http', 'https'].contains(imageUri.scheme.toLowerCase()) ||
           imageUri.host.isEmpty) {
-        _notice(context, 'Enter a valid image URL starting with https://, or leave it blank.', error: true);
+        SfFeedback.showError(context, 'Enter a valid image URL starting with https://, or leave it blank.');
         return false;
       }
     }
@@ -308,12 +308,12 @@ class _CataloguePageState extends State<CataloguePage> {
         await _load(keepSelection: false);
       }
       if (!mounted) return false;
-      _notice(context, _creating ? 'Item created successfully.' : 'Item updated successfully.');
+      SfFeedback.showSuccess(context, _creating ? 'Item created successfully.' : 'Item updated successfully.');
       _creating = false;
       _selected = saved;
       return true;
     } catch (e) {
-      if (mounted) _notice(context, e.toString(), error: true);
+      if (mounted) SfFeedback.showError(context, e.toString());
       return false;
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -345,7 +345,7 @@ class _CataloguePageState extends State<CataloguePage> {
       await _repo.deactivate(p);
       p.active = false; p.available = false;
       if (_live) await _load(keepSelection: false); else _applyPreviewFilters();
-      if (mounted) { _newProduct(); _notice(context, 'Item deactivated.'); }
+      if (mounted) { _newProduct(); SfFeedback.showSuccess(context, 'Item deactivated.'); }
     } catch (e) { if (mounted) _notice(context, e.toString(), error: true); }
     finally { if (mounted) setState(() => _saving = false); }
   }
@@ -356,7 +356,7 @@ class _CataloguePageState extends State<CataloguePage> {
     await input.onChange.first;
     final file = input.files?.isNotEmpty == true ? input.files!.first : null;
     if (file == null) return null;
-    if (file.size > 4 * 1024 * 1024) { _notice(context, 'Image must be 4MB or smaller.', error: true); return null; }
+    if (file.size > 4 * 1024 * 1024) { SfFeedback.showError(context, 'Image must be 4MB or smaller.'); return null; }
     setState(() => _uploading = true);
     final reader = html.FileReader();
     reader.readAsDataUrl(file);
@@ -403,7 +403,7 @@ class _CataloguePageState extends State<CataloguePage> {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const SizedBox(height: 8),
+      const SizedBox(height: AdminSpacing.sm),
       _CategoryTabs(
         categories: _categories,
         selected: _categoryFilter,
@@ -412,10 +412,10 @@ class _CataloguePageState extends State<CataloguePage> {
           _load(keepSelection: false);
         },
       ),
-      const SizedBox(height: 16),
+      const SizedBox(height: AdminSpacing.lg),
       if (_error.isNotEmpty) _ErrorBanner(message: _error, onRetry: _load),
       if (_loading) const shad.LinearProgressIndicator(minHeight: 2),
-      const SizedBox(height: 8),
+      const SizedBox(height: AdminSpacing.sm),
       _buildProductPanel(),
     ]);
   }
@@ -539,9 +539,9 @@ class _CategoryManagerState extends State<_CategoryManager> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _field(name, 'Category name', maxLength: 120),
-                const SizedBox(height: 10),
+                const SizedBox(height: AdminSpacing.sm),
                 _field(slug, 'Slug (alpha-dash)', maxLength: 140),
-                const SizedBox(height: 10),
+                const SizedBox(height: AdminSpacing.sm),
                 _field(order, 'Sort order', keyboard: TextInputType.number),
               ],
             ),
@@ -613,7 +613,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
                   Text(
                     (c.slug.isEmpty ? 'No slug' : c.slug) +
                         (inactive ? ' • ${c.count} product(s) • inactive' : ''),
-                    style: const TextStyle(fontSize: 11, color: AdminColors.muted),
+                    style: const AdminTypography.small,
                   ),
                 ],
               ),
@@ -641,7 +641,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
               icon: const AdminIcon(
                 HugeIcons.strokeRoundedDelete02,
                 size: 18,
-                color: AdminColors.red,
+                color: AdminDesignColors.error,
               ),
             ),
           ],
@@ -660,7 +660,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
             child: const Text('Add Category'),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AdminSpacing.md),
         if (visible.isEmpty)
           const Padding(
             padding: EdgeInsets.all(18),
@@ -677,7 +677,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
             ),
           ),
         if (inactive.isNotEmpty) ...[
-          const SizedBox(height: 18),
+          const SizedBox(height: AdminSpacing.lg),
           const Align(
             alignment: Alignment.centerLeft,
             child: Text(
@@ -686,11 +686,11 @@ class _CategoryManagerState extends State<_CategoryManager> {
                 fontSize: 12,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1,
-                color: AdminColors.muted,
+                color: AdminDesignColors.secondaryText,
               ),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AdminSpacing.xs),
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 220),
             child: ListView.separated(
@@ -719,24 +719,24 @@ class _CategoryTabs extends StatelessWidget {
       child: InkWell(
         onTap: () => onSelect(id),
         borderRadius: BorderRadius.circular(11),
-        hoverColor: AdminColors.amberSoft,
+        hoverColor: AdminDesignColors.warningSoft,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
           curve: Curves.easeOut,
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
           decoration: BoxDecoration(
-            color: active ? AdminColors.yellow : Colors.white,
+            color: active ? AdminDesignColors.brandYellow : Colors.white,
             borderRadius: BorderRadius.circular(11),
             border: Border.all(
-              color: active ? AdminColors.yellow : AdminColors.line,
+              color: active ? AdminDesignColors.brandYellow : AdminDesignColors.border,
             ),
           ),
           child: Row(
             children: [
               Text(label, style: TextStyle(fontSize: 11, fontWeight: active ? FontWeight.w900 : FontWeight.w700)),
               if (count > 0) ...[
-                const SizedBox(width: 7),
-                Text(count.toString(), style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
+                const SizedBox(width: AdminSpacing.xs),
+                Text(count.toString(), style: const AdminTypography.small),
               ],
             ],
           ),
@@ -767,7 +767,7 @@ class _CatalogueList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(17), border: Border.all(color: AdminColors.line), boxShadow: const [BoxShadow(color: Color(0x07000000), blurRadius: 16, offset: Offset(0, 5))]),
+    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(17), border: Border.all(color: AdminDesignColors.border), boxShadow: const [BoxShadow(color: Color(0x07000000), blurRadius: 16, offset: Offset(0, 5))]),
     child: Padding(
       padding: const EdgeInsets.all(17),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -775,7 +775,7 @@ class _CatalogueList extends StatelessWidget {
           const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('Items', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
             SizedBox(height: 3),
-            Text('Select an item to edit. Use tile or list view.', style: TextStyle(fontSize: 13, color: AdminColors.muted)),
+            Text('Select an item to edit. Use tile or list view.', style: TextStyle(fontSize: 13, color: AdminDesignColors.secondaryText)),
           ])),
           const SizedBox(width: 8),
           Tooltip(
@@ -786,14 +786,14 @@ class _CatalogueList extends StatelessWidget {
             ),
           ),
         ]),
-        const SizedBox(height: 12),
+        const SizedBox(height: AdminSpacing.md),
         SizedBox(
           height: 44,
           child: shad.TextField(controller: search, onSubmitted: (_) => onSearch(), placeholder: const Text('Search items...'), features: const [shad.InputLeadingFeature(AdminIcon(HugeIcons.strokeRoundedSearch01, size: 17))]),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AdminSpacing.lg),
         if (products.isEmpty && !loading)
-          const Padding(padding: EdgeInsets.all(30), child: Center(child: Text('No items match your search.', style: TextStyle(color: AdminColors.muted))))
+          const Padding(padding: EdgeInsets.all(30), child: Center(child: Text('No items match your search.', style: TextStyle(color: AdminDesignColors.secondaryText))))
         else if (gridView)
           LayoutBuilder(builder: (context, constraints) {
             final columns = constraints.maxWidth >= 1000 ? 4 : constraints.maxWidth >= 720 ? 3 : constraints.maxWidth >= 460 ? 2 : 1;
@@ -811,16 +811,16 @@ class _CatalogueList extends StatelessWidget {
           })
         else ...[
           const Row(children: [
-            Expanded(flex: 5, child: Text('ITEM', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
-            Expanded(flex: 3, child: Text('CATEGORY', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
-            SizedBox(width: 85, child: Text('STOCK', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminColors.muted))),
+            Expanded(flex: 5, child: Text('ITEM', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminDesignColors.secondaryText))),
+            Expanded(flex: 3, child: Text('CATEGORY', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminDesignColors.secondaryText))),
+            SizedBox(width: 85, child: Text('STOCK', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .9, color: AdminDesignColors.secondaryText))),
           ]),
           const Divider(height: 18),
           ...products.map((p) => _ProductRow(product: p, selected: selected?.id == p.id && selected == p, onTap: () => onSelect(p))),
         ],
-        const SizedBox(height: 10),
+        const SizedBox(height: AdminSpacing.sm),
         Row(children: [
-          Expanded(child: Text('Showing ' + (total == 0 ? '0' : '1') + '–' + products.length.toString() + ' of ' + total.toString(), style: const TextStyle(fontSize: 11, color: AdminColors.muted))),
+          Expanded(child: Text('Showing ' + (total == 0 ? '0' : '1') + '–' + products.length.toString() + ' of ' + total.toString(), style: const AdminTypography.small)),
           shad.IconButton.ghost(onPressed: page > 1 ? () => onPage(page - 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowLeft01, size: 18)),
           Text(page.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
           shad.IconButton.ghost(onPressed: page < lastPage ? () => onPage(page + 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 18)),
@@ -843,36 +843,36 @@ class _ProductTile extends StatelessWidget {
     selected: selected,
     child: Container(
       decoration: BoxDecoration(
-        color: selected ? AdminColors.amberSoft : Colors.white,
+        color: selected ? AdminDesignColors.warningSoft : Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: selected ? AdminColors.amber : AdminColors.line, width: selected ? 1.4 : 1),
+        border: Border.all(color: selected ? AdminDesignColors.brandAmber : AdminDesignColors.border, width: selected ? 1.4 : 1),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         AspectRatio(
           aspectRatio: 1.35,
           child: Container(
-            color: AdminColors.canvas,
+            color: AdminDesignColors.canvas,
             child: product.image != null && product.image!.isNotEmpty
-                ? Image.network(product.image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminColors.amber)))
-                : const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminColors.amber)),
+                ? Image.network(product.image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminDesignColors.brandAmber)))
+                : const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminDesignColors.brandAmber)),
           ),
         ),
         Expanded(child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              Expanded(child: Text(product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900))),
+              Expanded(child: Text(product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const AdminTypography.body.copyWith(fontWeight: FontWeight.w700))),
               if (product.badge.isNotEmpty) _Badge(product.badge),
             ]),
-            const SizedBox(height: 6),
-            Text(product.categoryName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AdminColors.muted)),
-            const SizedBox(height: 6),
-            Expanded(child: Text(product.description, maxLines: 3, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted))),
-            const SizedBox(height: 8),
+            const SizedBox(height: AdminSpacing.xs),
+            Text(product.categoryName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AdminDesignColors.secondaryText)),
+            const SizedBox(height: AdminSpacing.xs),
+            Expanded(child: Text(product.description, maxLines: 3, overflow: TextOverflow.ellipsis, style: const AdminTypography.small)),
+            const SizedBox(height: AdminSpacing.sm),
             Row(children: [
-              Expanded(child: Text('₹' + product.price.toStringAsFixed(0), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900))),
-              Text(product.outOfStock ? 'Sold out' : product.stock.toString() + ' units', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: product.outOfStock ? AdminColors.red : product.lowStock ? AdminColors.warning : AdminColors.ink)),
+              Expanded(child: Text('₹' + product.price.toStringAsFixed(0), style: const AdminTypography.body.copyWith(fontWeight: FontWeight.w700))),
+              Text(product.outOfStock ? 'Sold out' : product.stock.toString() + ' units', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: product.outOfStock ? AdminDesignColors.error : product.lowStock ? AdminColors.warning : AdminDesignColors.primaryText)),
             ]),
           ]),
         )),
@@ -957,8 +957,8 @@ class _ProductRow extends StatelessWidget {
     child: InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(11),
-      hoverColor: AdminColors.amberSoft,
-      splashColor: AdminColors.amberSoft,
+      hoverColor: AdminDesignColors.warningSoft,
+      splashColor: AdminDesignColors.warningSoft,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 160),
         curve: Curves.easeOut,
@@ -967,7 +967,7 @@ class _ProductRow extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 5),
           padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 6),
           decoration: BoxDecoration(
-            color: selected ? AdminColors.amberSoft : Colors.transparent,
+            color: selected ? AdminDesignColors.warningSoft : Colors.transparent,
             borderRadius: BorderRadius.circular(11),
           ),
           child: Row(
@@ -995,7 +995,7 @@ class _ProductRow extends StatelessWidget {
                                 ),
                               ),
                               if (product.badge.isNotEmpty) ...[
-                                const SizedBox(width: 6),
+                                const SizedBox(width: AdminSpacing.xs),
                                 _Badge(product.badge),
                               ],
                             ],
@@ -1007,7 +1007,7 @@ class _ProductRow extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontSize: 11,
-                              color: AdminColors.muted,
+                              color: AdminDesignColors.secondaryText,
                             ),
                           ),
                         ],
@@ -1037,10 +1037,10 @@ class _ProductRow extends StatelessWidget {
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: product.outOfStock
-                        ? AdminColors.red
+                        ? AdminDesignColors.error
                         : product.lowStock
                             ? AdminColors.warning
-                            : AdminColors.ink,
+                            : AdminDesignColors.primaryText,
                   ),
                 ),
               ),
@@ -1054,13 +1054,13 @@ class _ProductRow extends StatelessWidget {
 
 class _Thumb extends StatelessWidget {
   const _Thumb({this.image, required this.name}); final String? image; final String name;
-  @override Widget build(BuildContext context) => ClipRRect(borderRadius: BorderRadius.circular(10), child: Container(width: 50, height: 50, color: AdminColors.canvas, child: image != null && image!.isNotEmpty ? Image.network(image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _placeholder()) : _placeholder()));
-  Widget _placeholder() => const AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 22, color: AdminColors.amber);
+  @override Widget build(BuildContext context) => ClipRRect(borderRadius: BorderRadius.circular(10), child: Container(width: 50, height: 50, color: AdminDesignColors.canvas, child: image != null && image!.isNotEmpty ? Image.network(image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _placeholder()) : _placeholder()));
+  Widget _placeholder() => const AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 22, color: AdminDesignColors.brandAmber);
 }
 
 class _Badge extends StatelessWidget {
   const _Badge(this.text); final String text;
-  @override Widget build(BuildContext context) { final danger = text == 'Sold Out' || text.contains('Left'); final seasonal = text == 'Seasonal'; return Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3), decoration: BoxDecoration(color: danger ? AdminColors.redSoft : seasonal ? AdminColors.amberSoft : AdminColors.redSoft, borderRadius: BorderRadius.circular(5)), child: Text(text, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: danger ? AdminColors.red : AdminColors.ink))); }
+  @override Widget build(BuildContext context) { final danger = text == 'Sold Out' || text.contains('Left'); final seasonal = text == 'Seasonal'; return Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3), decoration: BoxDecoration(color: danger ? AdminDesignColors.errorSoft : seasonal ? AdminDesignColors.warningSoft : AdminDesignColors.errorSoft, borderRadius: BorderRadius.circular(5)), child: Text(text, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: danger ? AdminDesignColors.error : AdminDesignColors.primaryText))); }
 }
 
 // Product editor intentionally uses a block-bodied build method to keep widget nesting balanced.
@@ -1146,7 +1146,7 @@ class _ProductEditor extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AdminColors.peach,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AdminColors.line),
+                border: Border.all(color: AdminDesignColors.border),
               ),
               child: pickerPreview.isNotEmpty
                   ? ClipRRect(
@@ -1161,9 +1161,9 @@ class _ProductEditor extends StatelessWidget {
                               ? HugeIcons.strokeRoundedHourglass
                               : HugeIcons.strokeRoundedCloudUpload,
                           size: 30,
-                          color: AdminColors.amber,
+                          color: AdminDesignColors.brandAmber,
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: AdminSpacing.sm),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10),
                           child: Text(
@@ -1178,7 +1178,7 @@ class _ProductEditor extends StatelessWidget {
                           child: Text(
                             'PNG, JPG, WEBP up to 4MB',
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 11, color: AdminColors.muted),
+                            style: AdminTypography.small,
                           ),
                         ),
                       ],
@@ -1186,12 +1186,12 @@ class _ProductEditor extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AdminSpacing.md),
         _field(imageUrl, 'https://...', label: 'Image URL'),
         const SizedBox(height: 5),
         const Text(
           'Choose a file for preview or provide an image URL.',
-          style: TextStyle(fontSize: 10, color: AdminColors.muted),
+          style: TextStyle(fontSize: 10, color: AdminDesignColors.secondaryText),
             ),
           ],
         );
@@ -1209,7 +1209,7 @@ class _ProductEditor extends StatelessWidget {
         const SizedBox(height: 2),
         _label('Dish Name *', 'Required'),
         _field(name, 'Smokey Chicken Tikka Roll', maxLength: 180),
-        const SizedBox(height: 12),
+        const SizedBox(height: AdminSpacing.md),
         _dropdownField(
           'Category',
           categories.map((c) => DropdownMenuItem<int?>(
@@ -1222,7 +1222,7 @@ class _ProductEditor extends StatelessWidget {
             onCategory(value);
           },
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AdminSpacing.md),
         _label('Dietary Classification', null),
         Wrap(
           spacing: 7,
@@ -1241,10 +1241,10 @@ class _ProductEditor extends StatelessWidget {
                   duration: const Duration(milliseconds: 120),
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
                   decoration: BoxDecoration(
-                    color: active ? AdminColors.yellow : Colors.white,
+                    color: active ? AdminDesignColors.brandYellow : Colors.white,
                     borderRadius: BorderRadius.circular(9),
                     border: Border.all(
-                      color: active ? AdminColors.amber : AdminColors.line,
+                      color: active ? AdminDesignColors.brandAmber : AdminDesignColors.border,
                       width: active ? 1.2 : 1,
                     ),
                   ),
@@ -1257,7 +1257,7 @@ class _ProductEditor extends StatelessWidget {
             );
           }).toList(),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AdminSpacing.md),
         Row(
           children: [
             Expanded(
@@ -1279,19 +1279,19 @@ class _ProductEditor extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AdminSpacing.md),
         _field(
           description,
           'Charcoal roasted chicken tikka cubes, spiced onions, mint yogurt and flaky paratha bread.',
           label: 'Short Description',
           maxLines: 3,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AdminSpacing.md),
         _label('Ingredients & Tags', null),
         if (editorTags.isEmpty)
           const Text(
             'No tags yet',
-            style: TextStyle(fontSize: 11, color: AdminColors.muted),
+            style: AdminTypography.small,
           )
         else
           Material(
@@ -1315,7 +1315,7 @@ class _ProductEditor extends StatelessWidget {
               ).toList(),
             ),
           ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AdminSpacing.sm),
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
@@ -1373,7 +1373,7 @@ class _ProductEditor extends StatelessWidget {
                     const Flexible(
                       child: Text('Live on app', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: AdminSpacing.xs),
                     shad.Switch(
                       value: selected?.available ?? true,
                       onChanged: (v) {
@@ -1386,7 +1386,7 @@ class _ProductEditor extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AdminSpacing.lg),
         SizedBox(
           width: double.infinity,
           height: 46,
@@ -1400,12 +1400,12 @@ class _ProductEditor extends StatelessWidget {
           ),
         ),
         if (!creating) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: AdminSpacing.sm),
           Align(
             alignment: Alignment.center,
             child: shad.OutlineButton(
               onPressed: saving ? null : onDeactivate,
-              child: const Text('Deactivate item', style: TextStyle(fontSize: 11, color: AdminColors.red)),
+              child: const Text('Deactivate item', style: TextStyle(fontSize: 11, color: AdminDesignColors.error)),
             ),
           ),
         ],
@@ -1498,14 +1498,14 @@ Widget _label(String text, String? trailing) => Padding(
         style: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w900,
-          color: AdminColors.muted,
+          color: AdminDesignColors.secondaryText,
         ),
       ),
       if (trailing != null) ...[
-        const SizedBox(width: 6),
+        const SizedBox(width: AdminSpacing.xs),
         Text(
           trailing!,
-          style: const TextStyle(fontSize: 11, color: AdminColors.muted),
+          style: const AdminTypography.small,
         ),
       ],
     ],
@@ -1514,12 +1514,12 @@ Widget _label(String text, String? trailing) => Padding(
 Widget _field(TextEditingController c, String hint, {String? label, int? maxLength, int maxLines = 1, TextInputType? keyboard, String? Function(String?)? validator}) => Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    if (label != null) Padding(padding: const EdgeInsets.only(bottom: 5), child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.muted))),
+    if (label != null) Padding(padding: const EdgeInsets.only(bottom: 5), child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminDesignColors.secondaryText))),
     shad.TextField(
       controller: c,
       maxLines: maxLines,
       keyboardType: keyboard,
-      placeholder: Text(hint, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
+      placeholder: Text(hint, style: const AdminTypography.small),
     ),
   ],
 );
@@ -1540,7 +1540,7 @@ Widget _dropdownField(
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w900,
-              color: AdminColors.muted,
+              color: AdminDesignColors.secondaryText,
             ),
           ),
         ),
@@ -1550,7 +1550,7 @@ Widget _dropdownField(
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(9),
-            border: Border.all(color: AdminColors.line),
+            border: Border.all(color: AdminDesignColors.border),
           ),
           child: Material(
             color: Colors.transparent,
@@ -1563,7 +1563,7 @@ Widget _dropdownField(
                 icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 19),
                 hint: const Text(
                   'Select category',
-                  style: TextStyle(fontSize: 11, color: AdminColors.muted),
+                  style: AdminTypography.small,
                 ),
                 onChanged: items.isEmpty ? null : onChanged,
                 items: items,
@@ -1577,5 +1577,5 @@ Widget _dropdownField(
 
 class _ErrorBanner extends StatelessWidget {
   const _ErrorBanner({required this.message, required this.onRetry}); final String message; final VoidCallback onRetry;
-  @override Widget build(BuildContext context) => Container(width: double.infinity, margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.all(11), decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(10)), child: Row(children: [const AdminIcon(HugeIcons.strokeRoundedAlertCircle, size: 17, color: AdminColors.red), const SizedBox(width: 8), Expanded(child: Text(message, style: const TextStyle(fontSize: 11))), shad.OutlineButton(onPressed: onRetry, child: const Text('Retry', style: TextStyle(fontSize: 11)))]));
+  @override Widget build(BuildContext context) => Container(width: double.infinity, margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.all(11), decoration: BoxDecoration(color: AdminDesignColors.errorSoft, borderRadius: BorderRadius.circular(10)), child: Row(children: [const AdminIcon(HugeIcons.strokeRoundedAlertCircle, size: 17, color: AdminDesignColors.error), const SizedBox(width: 8), Expanded(child: Text(message, style: const TextStyle(fontSize: 11))), shad.OutlineButton(onPressed: onRetry, child: const Text('Retry', style: TextStyle(fontSize: 11)))]));
 }
