@@ -53,13 +53,13 @@ class SnapBottomSheet extends StatelessWidget {
               if (title != null) ...[
                 Text(
                   title!,
-                  style: SnapFoodTypography.sectionTitle,
+                  style: SnapFoodTypography.titleLarge,
                 ),
                 if (subtitle != null) ...[
                   const SizedBox(height: SnapFoodSpacing.xs),
                   Text(
                     subtitle!,
-                    style: SnapFoodTypography.supporting,
+                    style: SnapFoodTypography.bodyMediumSmall,
                   ),
                 ],
                 const SizedBox(height: SnapFoodSpacing.md),
@@ -333,7 +333,7 @@ class SnapAlertDialog extends StatelessWidget {
         onPressed: onConfirm ?? () => Navigator.of(context).pop(true),
         style: FilledButton.styleFrom(
           backgroundColor: SnapFoodColors.secondary,
-          foregroundColor: SnapFoodColors.white,
+          foregroundColor: SnapFoodColors.onSecondary,
         ),
         child: Text(confirmLabel),
       ),
