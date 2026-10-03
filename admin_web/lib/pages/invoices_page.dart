@@ -1,6 +1,99 @@
 part of '../main.dart';
 
-class Invoices      LayoutBuilder(
+class InvoicesPage extends flutter.StatefulWidget {
+  const InvoicesPage({super.key, this.searchQuery = ''});
+  final String searchQuery;
+  @override flutter.State<InvoicesPage> createState() => _InvoicesPageState();
+}
+
+class _InvoicesPageState extends flutter.State<InvoicesPage> {
+  final _api = const _InvoiceLedgerApi();
+  final _search = TextEditingController();
+  List<_LedgerInvoice> _items = [];
+  int _total = 0, _page = 1, _lastPage = 1, _paidCount = 0;
+  double _billed = 0, _paidTotal = 0;
+  String _status = 'ALL';
+  String? _error;
+  DateTime? _from, _to;
+  bool _loading = true, _exporting = false;
+
+  @override void initState() { super.initState(); _search.text = widget.searchQuery; _load(); }
+
+  @override
+  void didUpdateWidget(covariant InvoicesPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.searchQuery != widget.searchQuery && _search.text != widget.searchQuery) {
+      _search.text = widget.searchQuery;
+      _load(page: 1);
+    }
+  }
+  @override void dispose() { _search.dispose(); super.dispose(); }
+
+  Future<void> _load({int page = 1}) async {
+    setState(() { _loading = true; _error = null; });
+    try {
+      final result = await _api.list(page: page, search: _search.text.trim(), status: _status, from: _from, to: _to);
+      if (!mounted) return;
+      setState(() { _items = result.items; _total = result.total; _page = result.page; _lastPage = result.lastPage; _billed = result.totalAmount; _paidCount = result.paidCount; _paidTotal = result.paidAmount; _loading = false; });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() { _loading = false; _error = e.toString().replaceFirst('Bad state: ', ''); });
+    }
+  }
+
+  Future<void> _pickDate(bool start) async {
+    final now = DateTime.now();
+    final selected = await showDatePicker(context: context, initialDate: (start ? _from : _to) ?? now, firstDate: DateTime(2020), lastDate: DateTime(now.year + 2));
+    if (selected == null || !mounted) return;
+    setState(() { if (start) { _from = selected; } else { _to = selected; } });
+  }
+
+  void _reset() {
+    _search.clear();
+    setState(() { _status = 'ALL'; _from = null; _to = null; });
+    _load(page: 1);
+  }
+
+  Future<void> _exportPage() async {
+    if (_items.isEmpty) { _notice(context, 'No invoice records on this page.', error: true); return; }
+    setState(() => _exporting = true);
+    try {
+      String cell(String s) => '"' + s.replaceAll('"', '""') + '"';
+      final rows = <List<String>>[
+        ['Invoice', 'Order ID', 'Issued at', 'Customer', 'Email', 'Subtotal', 'Delivery fee', 'Total', 'Payment method', 'Payment status', 'File reference'],
+        ..._items.map((i) => [i.number, i.orderId.toString(), i.issuedAt ?? '', i.customer, i.email, i.subtotal.toStringAsFixed(2), i.deliveryFee.toStringAsFixed(2), i.total.toStringAsFixed(2), i.paymentMethod, i.paymentStatus, i.fileReference ?? '']),
+      ];
+      final csv = rows.map((r) => r.map(cell).join(',')).join('\r\n');
+      final blob = html.Blob([utf8.encode(csv)], 'text/csv;charset=utf-8');
+      final url = html.Url.createObjectUrlFromBlob(blob);
+      html.AnchorElement(href: url)..setAttribute('download', 'snap-foodd-invoices-page-' + _page.toString() + '.csv')..click();
+      html.Url.revokeObjectUrl(url);
+      if (mounted) _notice(context, 'Exported ' + _items.length.toString() + ' invoices from the current page.');
+    } catch (e) { if (mounted) _notice(context, 'Export failed: ' + e.toString(), error: true); }
+    finally { if (mounted) setState(() => _exporting = false); }
+  }
+
+  @override flutter.Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final mobile = width < 760;
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const _InvoiceBreadcrumb(),
+      const SizedBox(height: AdminSpacing.sm),
+      SfPageHeader(
+        title: 'Invoices & Billing',
+        description: 'Review stored invoice snapshots, billing totals and payment status with financial precision.',
+        actions: [
+          SfButton(
+            variant: SfButtonVariant.outline,
+            icon: HugeIcons.strokeRoundedDownload01,
+            loading: _exporting,
+            onPressed: _exporting ? null : _exportPage,
+            child: const Text('Export current page'),
+          ),
+        ],
+      ),
+      const SizedBox(height: AdminSpacing.xl),
+      LayoutBuilder(
         builder: (context, constraints) {
           final columns = constraints.maxWidth >= 1000 ? 4 : constraints.maxWidth >= 640 ? 2 : 1;
           final unpaid = _billed - _paidTotal;
