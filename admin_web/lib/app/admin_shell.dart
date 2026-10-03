@@ -87,6 +87,11 @@ class _AdminShellState extends State<AdminShell> {
       sections: AdminSection.values,
       selectedSection: section,
       onSelectSection: _select,
+      onSearchInSection: (value, query) {
+        _globalSearch.text = query;
+        _searchQuery = query;
+        _select(value);
+      },
       onAddProduct: section == AdminSection.catalogue
           ? () => _catalogueKey.currentState?._newProduct()
           : null,
