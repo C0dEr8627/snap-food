@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/network/api_exception.dart';
 import '../../../design_system/components/snap_food_feedback.dart';
@@ -68,7 +69,15 @@ class _LiveOrderTrackingScreenState
                 label: 'Back',
                 child: IconButton(
                   tooltip: 'Back',
-                  onPressed: () => Navigator.of(context).maybePop(),
+                  onPressed: () {
+                    if (context.canPop()) {
+                      context.pop();
+                    } else if (widget.orderId.trim().isNotEmpty) {
+                      context.go('/orders/' + Uri.encodeComponent(widget.orderId));
+                    } else {
+                      context.go('/orders');
+                    }
+                  },
                   icon: const Icon(Icons.arrow_back_rounded),
                 ),
               ),
