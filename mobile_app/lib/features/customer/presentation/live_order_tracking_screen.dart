@@ -15,6 +15,7 @@ import '../../../design_system/tokens/app_typography.dart';
 import 'order_controller.dart';
 import '../data/order_models.dart';
 import '../data/order_tracking_models.dart';
+import 'live_delivery_map.dart';
 
 class LiveOrderTrackingScreen extends ConsumerStatefulWidget {
   const LiveOrderTrackingScreen({super.key, required this.orderId});
@@ -163,6 +164,14 @@ class _TrackingBody extends ConsumerWidget {
             _DeliveryPartnerSection(partner: tracking.deliveryPartner!),
           ],
           const SizedBox(height: SnapFoodSpacing.md),
+          if (tracking.destination != null) ...[
+            _MapSection(
+              destination: tracking.destination!,
+              driverLocation: location,
+              stale: tracking.isStale,
+            ),
+            const SizedBox(height: SnapFoodSpacing.md),
+          ],
           _LocationSection(
             location: location,
             stale: tracking.isStale,
@@ -461,6 +470,28 @@ class _DeliveryPartnerSection extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      );
+}
+
+class _MapSection extends StatelessWidget {
+  const _MapSection({
+    required this.destination,
+    required this.driverLocation,
+    required this.stale,
+  });
+
+  final OrderTrackingDestination destination;
+  final OrderTrackingLocation? driverLocation;
+  final bool stale;
+
+  @override
+  Widget build(BuildContext context) => _SectionSurface(
+        title: 'Live map',
+        child: LiveDeliveryMap(
+          destination: destination,
+          driverLocation: driverLocation,
+          stale: stale,
         ),
       );
 }
