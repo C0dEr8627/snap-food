@@ -138,51 +138,129 @@ class _PartnersPageState extends flutter.State<PartnersPage> {
 
   Future<void> _manualOnboard() async {
     if (!_api.configured) {
-      _partnersNotice(context, 'Configure API_TOKEN to onboard a delivery partner.', error: true);
+      _partnersNotice(context, 'Configure API_TOKEN to add a delivery partner.', error: true);
       return;
     }
-    final controller = TextEditingController();
-    final userId = await shad.showOverlay<int>(context, shad.DialogConfiguration(), builder: (dialogContext) => shad.AlertDialog(
-        title: const Text('Manual partner onboarding'),
-        content: SizedBox(
-          width: 380,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'The existing backend provisions an existing active user by ID. '
-                'It does not create a user account; it links an existing active user to a delivery-partner record.',
-                style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText, height: 1.5),
-              ),
-              const SizedBox(height: 14),
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Padding(padding: EdgeInsets.only(bottom: 6), child: Text('Existing user ID', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800))),
-                shad.TextField(controller: controller, keyboardType: TextInputType.number, autofocus: true, placeholder: const Text('Enter a user ID')),
-              ]),
-            ],
+
+    final name = TextEditingController();
+    final email = TextEditingController();
+    final phone = TextEditingController();
+    final password = TextEditingController();
+    final confirmation = TextEditingController();
+
+    final created = await shad.showOverlay<bool>(
+      context,
+      shad.DialogConfiguration(),
+      builder: (dialogContext) => Material(
+        color: Colors.transparent,
+        child: shad.AlertDialog(
+          title: const Text('Add delivery partner'),
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 460),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Create a delivery-partner account directly. No customer account is created or linked.',
+                  style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText, height: 1.5),
+                ),
+                const SizedBox(height: 16),
+                _partnerDialogField('Full name', name, 'Enter partner name'),
+                const SizedBox(height: 12),
+                _partnerDialogField('Email', email, 'name@example.com', keyboardType: TextInputType.emailAddress),
+                const SizedBox(height: 12),
+                _partnerDialogField('Phone (optional)', phone, '+919876543210', keyboardType: TextInputType.phone),
+                const SizedBox(height: 12),
+                _partnerDialogField('Password', password, 'Minimum 8 characters', obscureText: true),
+                const SizedBox(height: 12),
+                _partnerDialogField('Confirm password', confirmation, 'Re-enter password', obscureText: true),
+              ],
+            ),
           ),
+          actions: [
+            shad.OutlineButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancel'),
+            ),
+            shad.PrimaryButton(
+              onPressed: () {
+                final n = name.text.trim();
+                final e = email.text.trim();
+                final p = password.text;
+                final c = confirmation.text;
+                if (n.length < 2 || !e.contains('@') || p.length < 8 || p != c) {
+                  _partnersNotice(
+                    dialogContext,
+                    'Enter a valid name/email and matching password (8+ characters).',
+                    error: true,
+                  );
+                  return;
+                }
+                Navigator.pop(dialogContext, true);
+              },
+              child: const Text('Create partner'),
+            ),
+          ],
         ),
-        actions: [
-          shad.OutlineButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-          shad.PrimaryButton(onPressed: () { final value = int.tryParse(controller.text.trim()); if (value == null || value < 1) { _partnersNotice(dialogContext, 'Enter a valid positive user ID.', error: true); return; } Navigator.pop(dialogContext, value); }, child: const Text('Create partner')),
-        ],
-      )).future;
-    controller.dispose();
-    if (userId == null || !mounted) return;
+      ),
+    ).future;
+
+    if (created != true || !mounted) {
+      for (final controller in [name, email, phone, password, confirmation]) {
+        controller.dispose();
+      }
+      return;
+    }
 
     setState(() => _busy = true);
     try {
-      await _api.create(userId: userId);
+      await _api.create(
+        name: name.text.trim(),
+        email: email.text.trim(),
+        phone: phone.text.trim().isEmpty ? null : phone.text.trim(),
+        password: password.text,
+        passwordConfirmation: confirmation.text,
+      );
       if (!mounted) return;
       setState(() => _busy = false);
       await _loadPartners(page: 1);
-      if (mounted) _partnersNotice(context, 'Partner record created. Admin approval is still required.');
+      if (mounted) {
+        _partnersNotice(context, 'Delivery partner created. Approve the account to make it available for assignment.');
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy = false);
       _partnersNotice(context, e.toString().replaceFirst('Bad state: ', ''), error: true);
+    } finally {
+      for (final controller in [name, email, phone, password, confirmation]) {
+        controller.dispose();
+      }
     }
+  }
+
+  Widget _partnerDialogField(
+    String label,
+    TextEditingController controller,
+    String placeholder, {
+    TextInputType? keyboardType,
+    bool obscureText = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 6),
+          child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+        ),
+        shad.TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+          placeholder: Text(placeholder),
+        ),
+      ],
+    );
   }
 
   void _exportRoster() {
@@ -339,11 +417,11 @@ class _DeliveryPartnerApi {
     return _DeliveryPartnerRecord.fromJson(decoded['data'] as Map);
   }
 
-  Future<void> create({required int userId}) async {
+  Future<void> create({required String name, required String email, String? phone, required String password, required String passwordConfirmation}) async {
     final response = await http.post(
       Uri.parse('$base/admin/delivery-partners'),
       headers: headers,
-      body: jsonEncode({'user_id': userId}),
+      body: jsonEncode({'name': name, 'email': email, 'phone': phone, 'password': password, 'password_confirmation': passwordConfirmation}),
     );
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw StateError('Onboarding failed (${response.statusCode}): ${_responseMessage(response.body)}');
