@@ -102,6 +102,10 @@ class DeliveryLocationController
             'data' => [
                 'order_id' => $order->id,
                 'status' => $order->status,
+                'destination' => [
+                    'latitude' => data_get($order->delivery_address_snapshot, 'latitude'),
+                    'longitude' => data_get($order->delivery_address_snapshot, 'longitude'),
+                ],
                 'location' => $location,
                 'is_stale' => $stale,
                 'delivery_partner' => $partner ? [
