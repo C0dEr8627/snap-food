@@ -163,7 +163,11 @@ class _TrackingBody extends ConsumerWidget {
             _DeliveryPartnerSection(partner: tracking.deliveryPartner!),
           ],
           const SizedBox(height: SnapFoodSpacing.md),
-          _LocationSection(location: location, stale: tracking.isStale),
+          _LocationSection(
+            location: location,
+            stale: tracking.isStale,
+            partnerAssigned: tracking.deliveryPartner != null,
+          ),
           const SizedBox(height: SnapFoodSpacing.md),
           _RefreshNote(stale: tracking.isStale),
         ],
@@ -462,10 +466,15 @@ class _DeliveryPartnerSection extends StatelessWidget {
 }
 
 class _LocationSection extends StatelessWidget {
-  const _LocationSection({required this.location, required this.stale});
+  const _LocationSection({
+    required this.location,
+    required this.stale,
+    required this.partnerAssigned,
+  });
 
   final OrderTrackingLocation? location;
   final bool stale;
+  final bool partnerAssigned;
 
   @override
   Widget build(BuildContext context) {
@@ -482,7 +491,9 @@ class _LocationSection extends StatelessWidget {
                 SizedBox(width: SnapFoodSpacing.sm),
                 Expanded(
                   child: Text(
-                    'The delivery partner has not shared a location yet.',
+                    partnerAssigned
+                        ? 'Your delivery partner has not shared a location yet.'
+                        : 'Live location will become available after a delivery partner is assigned.',
                   ),
                 ),
               ],
