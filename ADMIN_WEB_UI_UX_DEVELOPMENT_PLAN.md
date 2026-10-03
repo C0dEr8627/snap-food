@@ -1026,6 +1026,36 @@ The admin UI/UX modernization is complete when:
   - The palette currently navigates/searches through supported admin sections; it does not invent a separate global entity index because the browser has no authoritative aggregated search endpoint.
   - Full browser interaction and visual QA remain dependent on a runnable Flutter Web environment.
   - Dedicated data-table, drawer and feedback work remains deferred to Tasks 5 and 6.
+### 2026-10-03 — Task 5
+- Status: 🟢 Complete
+- Implemented:
+  - Added reusable `SfDataTable` and `SfTablePagination` primitives.
+  - Standardized table headers, cell padding, row height, hover behavior, borders and horizontal overflow handling.
+  - Added contextual row interaction through whole-row tap plus compact icon action affordances.
+  - Migrated Users to the shared table component with avatars, role/status badges, aligned numeric columns and detail access.
+  - Migrated Delivery Partners to the shared table component with operational status, approval state and compact approval action.
+  - Migrated Invoices to the shared table component with invoice/order hierarchy, customer information, totals, payment state and pagination.
+  - Kept existing API models, backend contracts, filters and page-specific detail flows intact.
+  - Orders already have page-specific operational behavior and remain a follow-up integration candidate where its current layout can be safely migrated without changing business behavior.
+  - No restaurant concept or fabricated backend data was introduced.
+- Files/components changed:
+  - admin_web/lib/widgets/sf_data_table.dart
+  - admin_web/lib/main.dart
+  - admin_web/lib/pages/users_page.dart
+  - admin_web/lib/pages/partners_page.dart
+  - admin_web/lib/pages/invoices_page.dart
+- Validation:
+  - Re-fetched and inspected the updated component and migrated pages after implementation.
+  - Verified the shared component is registered in `main.dart`.
+  - Verified Users, Delivery Partners and Invoices reference `SfDataTable`.
+  - Verified table sizing uses explicit minimum/natural widths and horizontal scrolling rather than clipping cells.
+  - Verified status badges and avatars use shared components/design tokens.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful validation run is being claimed.
+- Limitations/follow-up:
+  - Orders retain their existing specialized operational list/table implementation pending a safe migration pass.
+  - Sticky headers, advanced sorting and multi-select are not added because current backend/page contracts do not require them.
+  - Full browser visual/overflow QA remains dependent on a runnable Flutter Web environment.
+
 ### Future entries
 
 After every task, append an entry containing:
