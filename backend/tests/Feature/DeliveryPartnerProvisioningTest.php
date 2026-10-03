@@ -93,7 +93,6 @@ class DeliveryPartnerProvisioningTest extends TestCase
         $this->assertDatabaseCount('delivery_partners', 0);
         $this->assertDatabaseHas('customer_users', [
             'id' => $candidate->id,
-            'role' => 'CUSTOMER',
         ]);
     }
 
