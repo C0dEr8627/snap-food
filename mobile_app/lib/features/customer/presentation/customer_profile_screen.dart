@@ -260,6 +260,70 @@ class _ProfileIdentity extends StatelessWidget {
   );
 }
 
+class _ProfileAction extends StatelessWidget {
+  const _ProfileAction({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Material(
+        color: SnapFoodColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+          child: Padding(
+            padding: const EdgeInsets.all(SnapFoodSpacing.md),
+            child: Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: SnapFoodColors.softYellow,
+                    borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+                  ),
+                  child: Icon(icon, size: 20, color: SnapFoodColors.warmBlack),
+                ),
+                const SizedBox(width: SnapFoodSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: SnapFoodTypography.titleMedium.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: SnapFoodTypography.bodySmall.copyWith(
+                          color: SnapFoodColors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right_rounded, color: SnapFoodColors.outline),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
 class _StatValue extends StatelessWidget {
   const _StatValue(this.value, this.label);
 
