@@ -22,6 +22,11 @@ class DeliveryPartnerUser extends Authenticatable
         return ['is_active' => 'boolean'];
     }
 
+    public function deliveryPartner()
+    {
+        return $this->hasOne(DeliveryPartner::class, 'user_id');
+    }
+
     public function hasRole(string $role): bool
     {
         return $role === 'DELIVERY_PARTNER';
