@@ -287,7 +287,7 @@ Requirements:
 - Ensure quantities and prices have strong visual hierarchy.
 
 ### Task 5 — Build branded feedback surfaces
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
 - Skeleton loading states.
 - Empty states.
@@ -567,6 +567,7 @@ Before marking any task complete, verify:
 | 2026-10-03 | Task 2 — Build Snap Foodd buttons and icon controls | ✅ Complete | Reworked the existing button component into reusable `SnapPrimaryButton`, `SnapSecondaryButton`, and `SnapIconButton` controls with branded colors, 48px+ touch targets, loading/disabled/selected states, semantics, tooltips, and token-based radii/spacing. Existing `SnapFoodPrimaryButton`/`SnapFoodSecondaryButton` names remain as compatibility aliases. Validation: source-level review completed; no business logic or navigation changes. Local Flutter commands were unavailable through the GitHub connector. |
 | 2026-10-03 | Task 3 — Build search, category and filter controls | ✅ Complete | Added reusable `SnapSearchField`, `SnapCategoryChip`, and `SnapFilterChip` controls and adopted them in the customer Home and Search surfaces, including branded focus/selected/inactive states, clear-search behavior, accessible labels, and comfortable touch targets. Existing catalogue filtering/search state and navigation behavior were preserved. Validation: source-level review completed; repository CI status was not available for the implementation commits through the connector, and local Flutter commands remain unavailable. |
 | 2026-10-03 | Task 4 — Build commerce primitives | ✅ Complete | Added reusable `SnapPrice`, `SnapRatingBadge`, `SnapQuantityStepper`, `SnapAddToCartButton`, and `SnapSectionHeader` commerce primitives, then adopted the price/quantity/add-to-cart/section-header patterns across customer Home, Food Details, Restaurant Menu, and Cart surfaces. Existing cart/catalogue state, navigation, quantity bounds, and server-authoritative pricing behavior were preserved. Validation: source-level review completed; implementation commit CI status returned no exposed checks through the connector, and local Flutter commands remain unavailable. |
+| 2026-10-03 | Task 5 — Build branded feedback surfaces | ✅ Complete | Added reusable `SnapBottomSheet`, `SnapEmptyState`, `SnapErrorState`, `SnapSkeleton`, `SnapLoadingState`, and `SnapAlertDialog` feedback surfaces. Adopted them across catalogue loading/empty/error states, Home filtering/empty/loading, cart empty state, address loading/empty/error, checkout errors, and live tracking loading/unavailable/error states. Skeleton animation respects the platform reduced-motion setting. Existing API, Riverpod state, navigation, filtering, cart, address, checkout, and tracking behavior were preserved. Validation: source-level review completed including delimiter/brace checks on changed Dart files; local Flutter/Dart commands remain unavailable through the GitHub connector, and no connector-exposed CI result was available for the implementation commits. |
 
 ---
 
@@ -580,6 +581,7 @@ Before marking any task complete, verify:
 - Completed Task 2: built reusable branded buttons and icon controls.
 - Completed Task 3: built and adopted branded search, category and filter controls.
 - Completed Task 4: built reusable commerce primitives and adopted them across core customer commerce surfaces.
+- Completed Task 5: built branded loading, skeleton, empty, error, bottom-sheet and dialog feedback surfaces and adopted them across customer flows.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
