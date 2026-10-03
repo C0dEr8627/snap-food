@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\Address;
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\User;
+use App\Models\CustomerUser;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -16,7 +16,7 @@ class ModelRelationshipTest extends TestCase
 
     public function test_user_addresses_relationship_is_bidirectional(): void
     {
-        $user = User::create([
+        $user = CustomerUser::create([
             'google_subject' => 'google-user-1',
             'name' => 'Test User',
             'email' => 'user1@example.test',
@@ -56,7 +56,7 @@ class ModelRelationshipTest extends TestCase
 
     public function test_foreign_keys_prevent_orphaned_children(): void
     {
-        $user = User::create([
+        $user = CustomerUser::create([
             'google_subject' => 'google-user-2',
             'name' => 'Test User',
         ]);
