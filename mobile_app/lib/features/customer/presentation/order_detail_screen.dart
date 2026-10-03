@@ -55,7 +55,13 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                   icon: Icons.arrow_back_rounded,
                   tooltip: 'Back',
                   semanticLabel: 'Back to orders',
-                  onPressed: () => context.pop(),
+                  onPressed: () {
+                    if (context.canPop()) {
+                      context.pop();
+                    } else {
+                      context.go('/orders');
+                    }
+                  },
                 ),
               ),
               title: Text(
