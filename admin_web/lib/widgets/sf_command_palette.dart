@@ -6,6 +6,7 @@ class SfCommandPalette extends StatefulWidget {
     required this.sections,
     required this.selectedSection,
     required this.onSelectSection,
+    this.onSearchInSection,
     this.onAddProduct,
     this.onManageCategories,
   });
@@ -13,6 +14,7 @@ class SfCommandPalette extends StatefulWidget {
   final List<AdminSection> sections;
   final AdminSection selectedSection;
   final ValueChanged<AdminSection> onSelectSection;
+  final void Function(AdminSection, String)? onSearchInSection;
   final VoidCallback? onAddProduct;
   final VoidCallback? onManageCategories;
 
@@ -21,6 +23,7 @@ class SfCommandPalette extends StatefulWidget {
     required List<AdminSection> sections,
     required AdminSection selectedSection,
     required ValueChanged<AdminSection> onSelectSection,
+    void Function(AdminSection, String)? onSearchInSection,
     VoidCallback? onAddProduct,
     VoidCallback? onManageCategories,
   }) {
@@ -34,6 +37,12 @@ class SfCommandPalette extends StatefulWidget {
           Navigator.of(dialogContext).pop();
           onSelectSection(value);
         },
+        onSearchInSection: onSearchInSection == null
+            ? null
+            : (value, query) {
+                Navigator.of(dialogContext).pop();
+                onSearchInSection(value, query);
+              },
         onAddProduct: onAddProduct == null
             ? null
             : () {
@@ -98,7 +107,12 @@ class _SfCommandPaletteState extends State<SfCommandPalette> {
 
   void _submit() {
     if (_matches.isNotEmpty) {
-      widget.onSelectSection(_matches.first);
+      final target = _matches.first;
+      if (_query.isNotEmpty && widget.onSearchInSection != null) {
+        widget.onSearchInSection!(target, _controller.text.trim());
+      } else {
+        widget.onSelectSection(target);
+      }
       return;
     }
     if (_catalogueActionVisible && widget.onAddProduct != null) {
@@ -197,10 +211,18 @@ class _SfCommandPaletteState extends State<SfCommandPalette> {
                             (section) => _PaletteItem(
                               icon: section.icon,
                               title: section.label,
-                              subtitle: section.subtitle,
+                              subtitle: _query.isEmpty
+                                  ? section.subtitle
+                                  : 'Search “${_controller.text.trim()}” in ${section.label}.',
                               selected: section == widget.selectedSection,
                               shortcut: section == widget.selectedSection ? 'Current' : null,
-                              onTap: () => widget.onSelectSection(section),
+                              onTap: () {
+                                if (_query.isNotEmpty && widget.onSearchInSection != null) {
+                                  widget.onSearchInSection!(section, _controller.text.trim());
+                                } else {
+                                  widget.onSelectSection(section);
+                                }
+                              },
                             ),
                           ),
                         ],
