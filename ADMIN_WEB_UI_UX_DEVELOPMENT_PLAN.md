@@ -892,7 +892,7 @@ The admin UI/UX modernization is complete when:
 | Task 12 — Delivery Partners | 🟢 Complete | 2026-10-03 | Redesigned Delivery Partners as an operations-focused availability/approval workspace using shared summary, filter, table, drawer, feedback and state components while preserving the existing partner list, approval and onboarding API contracts. |
 | Task 13 — Invoices / Billing | 🟢 Complete | 2026-10-03 | Refined finance workspace with shared header/filter/table/status/drawer language, supported current-page export and backend-truthful invoice detail presentation. |
 | Task 14 — Premium Form UX | 🟢 Complete | 2026-10-03 | Added shared form sections/fields with inline validation and required markers; upgraded Catalogue product editing with structured sections, field-level validation and destructive-action confirmation. |
-| Task 15 — Loading / Empty / Error / Success | ⬜ Not Started | 2026-10-03 | |
+| Task 15 — Loading / Empty / Error / Success | 🟢 Complete | 2026-10-03 | Standardized reusable loading/error/empty presentation and routed legacy generic admin notices through the branded feedback system; audited all current admin page state patterns. |
 | Task 16 — Responsive Admin Web | ⬜ Not Started | 2026-10-03 | |
 | Task 17 — Accessibility / Keyboard UX | ⬜ Not Started | 2026-10-03 | |
 | Task 18 — Motion & Micro-interactions | ⬜ Not Started | 2026-10-03 | |
@@ -1298,6 +1298,32 @@ The admin UI/UX modernization is complete when:
   - Full Flutter Web compile, formatter, analyzer, automated tests and browser visual/overflow QA still require a runnable local or CI execution environment.
   - Existing invoice helper classes with legacy styling remain in the file where they are not part of the active rendered path; they can be cleaned up during the later final visual QA/cleanup pass.
   - Task 14 — Premium Form UX is the next implementation target.
+
+### 2026-10-03 — Task 15
+- Status: 🟢 Complete
+- Implemented:
+  - Added reusable `SfLoadingState` to complement the existing `SfEmptyState`, `SfErrorState` and `SfSkeleton` primitives.
+  - Replaced the Orders page's generic full-page spinner and bespoke error card with shared loading/error states and a retry action.
+  - Replaced the Invoices page's bespoke loading/error/empty cards with shared branded loading, error and empty states, including a contextual reset-filters action.
+  - Routed the legacy shared `_notice` helper through `SfFeedback.showInfo` / `SfFeedback.showError`, removing the remaining generic floating snackbar styling from shared admin flows.
+  - Audited the current admin page set: Users, Delivery Partners and Categories already use shared skeleton/empty/error states; Catalogue retains contextual progress/error treatment for its mixed catalogue/editor workflow; Dashboard remains explicitly preview-mode content and does not simulate live async aggregates.
+  - Preserved existing API contracts, retry behavior, mutation success feedback and truthful preview/live messaging.
+- Files/components changed:
+  - `admin_web/lib/widgets/sf_core_components.dart`
+  - `admin_web/lib/widgets/admin_shared.dart`
+  - `admin_web/lib/pages/orders_page.dart`
+  - `admin_web/lib/pages/invoices_page.dart`
+  - `ADMIN_WEB_UI_UX_DEVELOPMENT_PLAN.md`
+- Validation:
+  - Re-fetched the modified files after implementation.
+  - Verified Orders and Invoices render paths use `SfLoadingState`, `SfErrorState` and `SfEmptyState`.
+  - Verified the legacy invoice loading/error state widgets were removed.
+  - Verified `_notice` now delegates to shared `SfFeedback` instead of constructing a generic SnackBar.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful local validation run is being claimed.
+- Limitations/follow-up:
+  - Flutter Web compile/analyzer/test execution and browser screenshot/overflow QA still require a runnable local or CI execution environment.
+  - Catalogue editor-specific progress indicators remain intentionally contextual and were not flattened into a generic page state.
+  - Task 16 — Responsive Admin Web is the next implementation target.
 
 ### Future entries
 
