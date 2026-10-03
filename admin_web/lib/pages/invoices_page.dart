@@ -78,19 +78,21 @@ class _InvoicesPageState extends State<InvoicesPage> {
     final mobile = width < 760;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const _InvoiceBreadcrumb(),
-      const SizedBox(height: 9),
-      Wrap(alignment: WrapAlignment.spaceBetween, spacing: 16, runSpacing: 12, children: [
-        SizedBox(width: mobile ? width - 42 : 570, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Invoices & Tax Billing Ledger', style: TextStyle(fontSize: mobile ? 24 : 30, fontWeight: FontWeight.w900, color: AdminColors.ink, letterSpacing: -.7)),
-          const SizedBox(height: 6),
-          const Text('Reconcile delivered orders, review billing snapshots, and manage invoice records.', style: TextStyle(fontSize: 12, height: 1.5, color: AdminColors.muted)),
-        ])),
-        Wrap(spacing: 8, children: [
-          shad.OutlineButton(onPressed: _exporting ? null : _exportPage, leading: _exporting ? const SizedBox(width: 14, height: 14, child: shad.CircularProgressIndicator(size: 14, strokeWidth: 2)) : const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 17), child: const Text('Export current page CSV')),
-          shad.PrimaryButton(onPressed: () => _notice(context, 'GSTR-1 export is not available in the current backend API.', error: true), leading: const AdminIcon(HugeIcons.strokeRoundedInvoice01, size: 17), child: const Text('Export GSTR-1')),
-        ]),
-      ]),
-      const SizedBox(height: 20),
+      const SizedBox(height: AdminSpacing.sm),
+      SfPageHeader(
+        title: 'Invoices & Billing',
+        description: 'Review stored invoice snapshots, billing totals and payment status with financial precision.',
+        actions: [
+          SfButton(
+            variant: SfButtonVariant.outline,
+            icon: HugeIcons.strokeRoundedDownload01,
+            loading: _exporting,
+            onPressed: _exporting ? null : _exportPage,
+            child: const Text('Export current page'),
+          ),
+        ],
+      ),
+      const SizedBox(height: AdminSpacing.xl),
       LayoutBuilder(builder: (context, c) {
         final columns = c.maxWidth >= 900 ? 4 : c.maxWidth >= 540 ? 2 : 1;
         return GridView.count(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), crossAxisCount: columns, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: columns == 1 ? 3.2 : columns == 4 ? 1.65 : 2.2, children: [
