@@ -20,15 +20,7 @@ class SearchScreen extends ConsumerStatefulWidget {
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final controller = TextEditingController();
   String query = '';
-
-  static const categories = [
-    (Icons.rice_bowl, 'Biryani'),
-    (Icons.local_pizza, 'Pizza'),
-    (Icons.lunch_dining, 'Burgers'),
-    (Icons.tapas, 'Street Food'),
-    (Icons.coffee, 'Cafés'),
-    (Icons.icecream, 'Desserts'),
-  ];
+  int? selectedCategoryId;
 
   @override
   void dispose() {
@@ -83,66 +75,55 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           .retry(),
                     ),
                     const Text(
-                      'Search by craving',
+                      'Browse by category',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 102,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: categories.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 12),
-                        itemBuilder: (_, i) => InkWell(
-                          borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-                          onTap: () {
-                            controller.text = categories[i].$2;
-                            setState(() => query = categories[i].$2);
-                          },
-                          child: Container(
-                            width: 82,
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: SnapFoodColors.surfaceContainerLowest,
-                              borderRadius: BorderRadius.circular(
-                                SnapFoodRadii.lg,
-                              ),
-                              border: Border.all(
-                                color: SnapFoodColors.softBorder,
-                              ),
-                            ),
-                            child: Column(
-                              children: [
-                                Container(
-                                  width: 46,
-                                  height: 46,
-                                  decoration: const BoxDecoration(
-                                    color: SnapFoodColors.primaryContainer,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    categories[i].$1,
-                                    color: SnapFoodColors.secondary,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  categories[i].$2,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
+                    const SizedBox(height: 10),
+                    catalogue.when(
+                      loading: () => const SizedBox(
+                        height: 40,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: SizedBox(
+                            width: 120,
+                            child: LinearProgressIndicator(),
                           ),
                         ),
                       ),
+                      error: (_, __) => const SizedBox.shrink(),
+                      data: (snapshot) {
+                        final availableCategories = snapshot.categories;
+                        if (availableCategories.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              SnapFilterChip(
+                                label: 'All',
+                                selected: selectedCategoryId == null,
+                                onSelected: (_) => setState(() {
+                                  selectedCategoryId = null;
+                                }),
+                              ),
+                              for (final category in availableCategories) ...[
+                                const SizedBox(width: 8),
+                                SnapFilterChip(
+                                  label: category.name,
+                                  selected: selectedCategoryId == category.id,
+                                  onSelected: (_) => setState(() {
+                                    selectedCategoryId = category.id;
+                                  }),
+                                ),
+                              ],
+                            ],
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 24),
                     catalogue.when(
@@ -155,6 +136,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                               (product) =>
                                   product.isActive &&
                                   product.isAvailable &&
+                                  (selectedCategoryId == null ||
+                                      product.categoryId == selectedCategoryId) &&
                                   (normalizedQuery.isEmpty ||
                                       product.name
                                           .toLowerCase()
@@ -173,9 +156,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    query.isEmpty
-                                        ? 'Popular near you'
-                                        : 'Results for “$query”',
+                                    query.isEmpty && selectedCategoryId == null
+                                        ? 'Browse the menu'
+                                        : query.isEmpty
+                                            ? 'Category results'
+                                            : 'Results for “$query”',
                                     style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w800,
