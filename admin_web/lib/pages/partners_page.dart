@@ -40,6 +40,19 @@ class _PartnersPageState extends State<PartnersPage> {
     if (mounted) setState(() {});
   }
 
+  Future<void> _showDetails(_DeliveryPartnerRecord partner) async {
+    await SfSideDrawer.show<void>(
+      context,
+      title: partner.name.isEmpty ? 'Partner details' : partner.name,
+      width: 460,
+      child: _PartnerDetailDrawer(
+        partner: partner,
+        busy: _busy,
+        onApproval: _setApproval,
+      ),
+    );
+  }
+
   @override
   void didUpdateWidget(covariant PartnersPage oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -247,6 +260,7 @@ class _PartnersPageState extends State<PartnersPage> {
             partners: _filtered,
             busy: _busy,
             onApproval: _setApproval,
+            onView: _showDetails,
           ),
         if (!_loading && _error == null && _total > 0) ...[
           const SizedBox(height: 12),
@@ -258,14 +272,7 @@ class _PartnersPageState extends State<PartnersPage> {
           ),
         ],
         const SizedBox(height: 22),
-        _KycQueueNotice(
-          pendingPartners: _partners.where((partner) => !partner.approved).toList(),
-          onReview: () => setState(() => _filter = 'PENDING'),
-          onApprove: (partner) => _setApproval(partner, true),
-          busy: _busy,
-        ),
-        const SizedBox(height: 14),
-        const _KycDataBoundary(),
+
       ],
     );
   }
@@ -420,81 +427,53 @@ class _PartnerCommandHeader extends StatelessWidget {
   final VoidCallback onManualOnboard;
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final actions = Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          shad.OutlineButton(
-            onPressed: onExport,
-            leading: const AdminIcon(HugeIcons.strokeRoundedDownload01, size: 17),
-            child: const Text('Export roster'),
-          ),
-          shad.PrimaryButton(
-            onPressed: onManualOnboard,
-            leading: const AdminIcon(HugeIcons.strokeRoundedUserAdd01, size: 17),
-            child: const Text('Manual onboard'),
-          ),
-        ],
-      );
-      final title = const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Delivery Partner Command', style: TextStyle(fontSize: 30, height: 1.1, fontWeight: FontWeight.w900, letterSpacing: -1.0, color: AdminColors.ink)),
-          SizedBox(height: 7),
-          Text('Fleet roster, partner approvals, and operational readiness.', style: TextStyle(fontSize: 12, color: AdminColors.muted)),
-          SizedBox(height: 10),
-          Text('FLEET LOGISTICS  /  MUMBAI CLUSTER  /  RIDER OPS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1.1, color: AdminColors.muted)),
-        ],
-      );
-      if (constraints.maxWidth < 760) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            title,
-            const SizedBox(height: 15),
-            actions,
-            const SizedBox(height: 12),
-            _ApiStatusPill(configured: apiConfigured),
-          ],
-        );
-      }
-      return Row(
+  Widget build(BuildContext context) => Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Expanded(child: title),
-          const SizedBox(width: 14),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [actions, const SizedBox(height: 9), _ApiStatusPill(configured: apiConfigured)],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Delivery Partners', style: AdminTypography.pageTitle),
+                const SizedBox(height: AdminSpacing.xs),
+                Text(
+                  apiConfigured
+                      ? 'Monitor approval and availability states from the admin API.'
+                      : 'Connect the admin API to load the delivery partner roster.',
+                  style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText),
+                ),
+              ],
+            ),
+          ),
+          Wrap(
+            spacing: AdminSpacing.sm,
+            children: [
+              SfButton(
+                variant: SfButtonVariant.outline,
+                onPressed: onExport,
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AdminIcon(HugeIcons.strokeRoundedDownload01, size: 18),
+                    SizedBox(width: AdminSpacing.xs),
+                    Text('Export'),
+                  ],
+                ),
+              ),
+              SfButton(
+                onPressed: apiConfigured ? onManualOnboard : null,
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AdminIcon(HugeIcons.strokeRoundedUserAdd01, size: 18),
+                    SizedBox(width: AdminSpacing.xs),
+                    Text('Add partner'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
-      );
-    });
-  }
-}
-
-class _ApiStatusPill extends StatelessWidget {
-  const _ApiStatusPill({required this.configured});
-  final bool configured;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-        decoration: BoxDecoration(
-          color: configured ? AdminColors.greenSoft : AdminColors.redSoft,
-          borderRadius: BorderRadius.circular(9),
-          border: Border.all(color: AdminColors.line),
-        ),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
-          _StatusDot(color: configured ? AdminColors.green : AdminColors.red),
-          const SizedBox(width: 7),
-          Text(
-            configured ? 'API configured • Authenticated requests enabled' : 'API token missing • Data unavailable',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: configured ? AdminColors.green : AdminColors.red),
-          ),
-        ]),
       );
 }
 
@@ -513,65 +492,40 @@ class _FleetSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final approved = partners.where((p) => p.approved && p.active).length;
+    final online = partners.where((p) => p.available).length;
+    final active = partners.where((p) => p.active).length;
     final pending = partners.where((p) => !p.approved).length;
-    final available = partners.where((p) => p.approved && p.active && p.available).length;
-    return LayoutBuilder(builder: (context, constraints) {
-      final columns = constraints.maxWidth >= 900 ? 4 : constraints.maxWidth >= 560 ? 2 : 1;
-      final cards = [
-        _FleetKpiCard(title: 'TOTAL FLEET STRENGTH', value: loading ? '—' : total.toString(), caption: 'Partners registered in backend', icon: HugeIcons.strokeRoundedScooterElectric, tone: AdminColors.amberSoft),
-        _FleetKpiCard(title: 'APPROVED & ACTIVE', value: loading ? '—' : approved.toString(), caption: 'On the current result page', icon: HugeIcons.strokeRoundedFlash, tone: AdminColors.greenSoft),
-        _FleetKpiCard(title: 'AVAILABLE NOW', value: loading ? '—' : available.toString(), caption: 'Availability reported by API', icon: HugeIcons.strokeRoundedRoute01, tone: AdminColors.blueSoft),
-        _FleetKpiCard(title: 'PENDING APPROVAL', value: loading ? '—' : pending.toString(), caption: 'Needs admin decision on this page', icon: HugeIcons.strokeRoundedTask01, tone: AdminColors.redSoft),
-      ];
-      return GridView.count(
-        crossAxisCount: columns,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: columns == 4 ? 1.8 : columns == 2 ? 2.15 : 4.2,
-        children: cards,
-      );
-    });
-  }
-}
 
-class _FleetKpiCard extends StatelessWidget {
-  const _FleetKpiCard({
-    required this.title,
-    required this.value,
-    required this.caption,
-    required this.icon,
-    required this.tone,
-  });
-  final String title;
-  final String value;
-  final String caption;
-  final AdminIconData icon;
-  final Color tone;
-
-  @override
-  Widget build(BuildContext context) => AdminCard(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(children: [
-              Expanded(child: Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .6, color: AdminColors.muted))),
-              Container(
-                width: 33,
-                height: 33,
-                decoration: BoxDecoration(color: tone, borderRadius: BorderRadius.circular(10)),
-                child: AdminIcon(icon, size: 17, color: AdminColors.ink),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final count = constraints.maxWidth >= 900 ? 4 : constraints.maxWidth >= 600 ? 2 : 1;
+        final width = (constraints.maxWidth - AdminSpacing.md * (count - 1)) / count;
+        final items = [
+          ('Total partners', total.toString(), 'All records', HugeIcons.strokeRoundedUserGroup, AdminDesignColors.yellowSoft),
+          ('Available', online.toString(), 'Current API page', HugeIcons.strokeRoundedDeliveryTruck01, AdminDesignColors.successSoft),
+          ('Active', active.toString(), 'Current API page', HugeIcons.strokeRoundedCheckmarkCircle02, AdminDesignColors.infoSoft),
+          ('Awaiting approval', pending.toString(), 'Current API page', HugeIcons.strokeRoundedClock02, AdminDesignColors.warningSoft),
+        ];
+        return Wrap(
+          spacing: AdminSpacing.md,
+          runSpacing: AdminSpacing.md,
+          children: [
+            for (final item in items)
+              SizedBox(
+                width: width,
+                child: SfStat(
+                  label: item.$1,
+                  value: loading ? '—' : item.$2,
+                  helper: apiConfigured ? item.$3 : 'API unavailable',
+                  icon: item.$4,
+                  tone: item.$5,
+                ),
               ),
-            ]),
-            const Spacer(),
-            Text(value, style: const TextStyle(fontSize: 27, fontWeight: FontWeight.w900, letterSpacing: -.7, color: AdminColors.ink)),
-            const SizedBox(height: 3),
-            Text(caption, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
-          ]),
-        ),
-      );
+          ],
+        );
+      },
+    );
+  }
 }
 
 class _PartnerFilterBar extends StatelessWidget {
@@ -592,195 +546,153 @@ class _PartnerFilterBar extends StatelessWidget {
   final bool loading;
 
   static const options = [
-    ('ALL', 'All partners'),
+    ('ALL', 'All'),
     ('ACTIVE', 'Active'),
-    ('PENDING', 'Pending approval / KYC'),
+    ('PENDING', 'Pending approval'),
     ('INACTIVE', 'Inactive'),
   ];
 
   @override
-  Widget build(BuildContext context) => AdminCard(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: LayoutBuilder(builder: (context, constraints) {
-            final search = SizedBox(
-              width: constraints.maxWidth < 700 ? double.infinity : 250,
-              child: shad.TextField(
-                controller: controller,
-                hintText: 'Search name, email or partner ID',
-                style: const TextStyle(fontSize: 11),
-                filled: true,
-                border: const Border.fromBorderSide(BorderSide(color: AdminColors.line)),
-                borderRadius: BorderRadius.circular(9),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                features: const [shad.InputClearFeature()],
-              ),
-            );
-            final chips = Wrap(
-              spacing: 7,
-              runSpacing: 7,
-              children: options.map((option) {
-                final active = filter == option.$1;
-                return (active ? shad.Button.secondary : shad.Button.ghost)(
-                  onPressed: () => onFilter(option.$1),
-                  child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    Text(option.$2, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: active ? AdminColors.ink : AdminColors.muted)),
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                      decoration: BoxDecoration(color: active ? AdminColors.yellow : AdminColors.canvas, borderRadius: BorderRadius.circular(6)),
-                      child: Text((counts[option.$1] ?? 0).toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
-                    ),
-                  ]),
-                );
-              }).toList(),
-            );
-            if (constraints.maxWidth < 700) {
-              return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                search,
-                const SizedBox(height: 10),
-                chips,
-                Align(alignment: Alignment.centerRight, child: shad.IconButton.ghost(onPressed: loading ? null : onRefresh, icon: const AdminIcon(HugeIcons.strokeRoundedRefresh))),
-              ]);
-            }
-            return Row(children: [
-              search,
-              const SizedBox(width: 10),
-              Expanded(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: chips)),
-              const SizedBox(width: 4),
-              shad.IconButton.ghost(onPressed: loading ? null : onRefresh, icon: const AdminIcon(HugeIcons.strokeRoundedRefresh)),
-            ]);
-          }),
+  Widget build(BuildContext context) => SfFilterBar(
+        leading: SizedBox(
+          width: 320,
+          child: SfSearchField(
+            controller: controller,
+            hintText: 'Search name, email or partner ID',
+          ),
         ),
+        filters: [
+          for (final option in options)
+            SfBadge(
+              label: '${option.$2} · ${counts[option.$1] ?? 0}',
+              backgroundColor: AdminDesignColors.subtleSurface,
+              foregroundColor: AdminDesignColors.secondaryText,
+            ),
+        ],
+        trailing: [
+          SfIconButton(
+            icon: HugeIcons.strokeRoundedRefresh,
+            tooltip: 'Refresh delivery partners',
+            onPressed: loading ? null : onRefresh,
+          ),
+        ],
       );
 }
 
 class _PartnerRoster extends StatelessWidget {
-  const _PartnerRoster({required this.partners, required this.busy, required this.onApproval});
+  const _PartnerRoster({
+    required this.partners,
+    required this.busy,
+    required this.onApproval,
+    required this.onView,
+  });
+
   final List<_DeliveryPartnerRecord> partners;
   final bool busy;
   final Future<void> Function(_DeliveryPartnerRecord, bool) onApproval;
+  final ValueChanged<_DeliveryPartnerRecord> onView;
 
   @override
   Widget build(BuildContext context) => SfDataTable(
-    minWidth: 900,
-    columns: const [
-      SfDataTableColumn(label: 'Partner', width: 260),
-      SfDataTableColumn(label: 'Contact', width: 240),
-      SfDataTableColumn(label: 'Duty status', width: 150),
-      SfDataTableColumn(label: 'Approval', width: 140),
-      SfDataTableColumn(label: 'Action', width: 110, alignment: Alignment.centerRight),
-    ],
-    rows: partners.map((partner) => [
-      Row(children: [
-        SfAvatar(name: partner.name, size: 36),
-        const SizedBox(width: AdminSpacing.sm),
-        Expanded(child: Text(partner.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w600))),
-      ]),
-      Text(partner.email, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText)),
-      SfStatusBadge(label: partner.available ? 'Available' : partner.active ? 'Active' : 'Offline'),
-      SfStatusBadge(label: partner.approved ? 'Approved' : 'Pending', status: partner.approved ? 'approved' : 'pending'),
-      SfIconButton(
-        icon: partner.approved ? HugeIcons.strokeRoundedTick01 : HugeIcons.strokeRoundedArrowRight01,
-        onPressed: busy ? null : () => onApproval(partner, !partner.approved),
-        tooltip: partner.approved ? 'Revoke approval' : 'Approve partner',
-      ),
-    ]).toList(),
-  );
-}
-
-class _PartnerMobileCard extends StatelessWidget {
-  const _PartnerMobileCard({required this.partner, required this.busy, required this.onApproval});
-  final _DeliveryPartnerRecord partner;
-  final bool busy;
-  final Future<void> Function(_DeliveryPartnerRecord, bool) onApproval;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(13),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Expanded(child: _PartnerIdentity(partner: partner)),
-            _ApprovalPill(approved: partner.approved),
-          ]),
-          const SizedBox(height: 10),
-          Text(partner.email, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
-          const SizedBox(height: 10),
-          Row(children: [
-            Expanded(child: _PartnerDutyStatus(partner: partner)),
-            shad.OutlineButton(onPressed: busy ? null : () => onApproval(partner, !partner.approved), leading: AdminIcon(partner.approved ? HugeIcons.strokeRoundedSecurityBlock : HugeIcons.strokeRoundedCheckmarkCircle01, size: 16), child: Text(partner.approved ? 'Remove approval' : 'Approve')),
-          ]),
-          const Divider(height: 16, color: AdminColors.line),
-        ]),
-      );
-}
-
-class _DetailLine extends StatelessWidget {
-  const _DetailLine({required this.label, required this.value});
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          SizedBox(width: 105, child: Text(label, style: const TextStyle(fontSize: 11, color: AdminColors.muted))),
-          Expanded(child: Text(value, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700))),
-        ]),
-      );
-}
-
-class _TelemetryBoundaryPill extends StatelessWidget {
-  const _TelemetryBoundaryPill();
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
-        decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(9), border: Border.all(color: AdminColors.line)),
-        child: const Row(mainAxisSize: MainAxisSize.min, children: [
-          _StatusDot(color: AdminColors.muted),
-          SizedBox(width: 6),
-          Text('Telemetry unavailable', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.muted)),
-        ]),
+        minWidth: 920,
+        columns: const [
+          SfDataTableColumn(label: 'Partner', width: 260),
+          SfDataTableColumn(label: 'Contact', width: 250),
+          SfDataTableColumn(label: 'Availability', width: 150),
+          SfDataTableColumn(label: 'Approval', width: 150),
+          SfDataTableColumn(label: 'Status', width: 130),
+          SfDataTableColumn(label: 'Action', width: 110, alignment: Alignment.centerRight),
+        ],
+        rows: [
+          for (final partner in partners)
+            [
+              Row(
+                children: [
+                  SfAvatar(name: partner.name, size: 38),
+                  const SizedBox(width: AdminSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      partner.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AdminTypography.body.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                partner.email,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText),
+              ),
+              SfStatusBadge(
+                label: partner.available ? 'Available' : 'Unavailable',
+                status: partner.available ? 'active' : 'inactive',
+              ),
+              SfStatusBadge(
+                label: partner.approved ? 'Approved' : 'Pending',
+                status: partner.approved ? 'approved' : 'pending',
+              ),
+              SfStatusBadge(
+                label: partner.active ? 'Active' : 'Inactive',
+                status: partner.active ? 'active' : 'inactive',
+              ),
+              SfIconButton(
+                icon: HugeIcons.strokeRoundedArrowRight01,
+                tooltip: 'View partner',
+                onPressed: () => onView(partner),
+              ),
+            ],
+        ],
+        onRowTap: (index) => onView(partners[index]),
       );
 }
 
 class _PartnerPagination extends StatelessWidget {
-  const _PartnerPagination({required this.currentPage, required this.lastPage, required this.total, required this.onPage});
+  const _PartnerPagination({
+    required this.currentPage,
+    required this.lastPage,
+    required this.total,
+    required this.onPage,
+  });
+
   final int currentPage;
   final int lastPage;
   final int total;
   final ValueChanged<int> onPage;
 
   @override
-  Widget build(BuildContext context) => Row(children: [
-        Text('Page $currentPage of $lastPage • $total partners', style: const TextStyle(fontSize: 11, color: AdminColors.muted, fontWeight: FontWeight.w700)),
-        const Spacer(),
-        shad.IconButton.ghost(onPressed: currentPage > 1 ? () => onPage(currentPage - 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowLeft01)),
-        shad.IconButton.ghost(onPressed: currentPage < lastPage ? () => onPage(currentPage + 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01)),
-      ]);
+  Widget build(BuildContext context) => SfTablePagination(
+        page: currentPage,
+        lastPage: lastPage,
+        total: total,
+        onPrevious: currentPage > 1 ? () => onPage(currentPage - 1) : null,
+        onNext: currentPage < lastPage ? () => onPage(currentPage + 1) : null,
+      );
 }
 
 class _PartnerLoadingState extends StatelessWidget {
   const _PartnerLoadingState();
 
   @override
-  Widget build(BuildContext context) => AdminCard(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(children: [
-            const Row(children: [
-              shad.CircularProgressIndicator(size: 18, strokeWidth: 2),
-              SizedBox(width: 11),
-              Text('Loading delivery partners…', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
-            ]),
-            const SizedBox(height: 18),
-            ...List.generate(3, (index) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 7),
-              child: Container(height: 48, decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(9)),
-                child: const SizedBox.expand()),
-            )),
-          ]),
+  Widget build(BuildContext context) => SfCard(
+        padding: const EdgeInsets.all(AdminSpacing.xl),
+        child: Column(
+          children: [
+            for (var i = 0; i < 5; i++) ...[
+              Row(
+                children: const [
+                  SfSkeleton(width: 42, height: 42),
+                  SizedBox(width: AdminSpacing.md),
+                  SfSkeleton(width: 220, height: 14),
+                  Spacer(),
+                  SfSkeleton(width: 120, height: 14),
+                ],
+              ),
+              if (i < 4) const SizedBox(height: AdminSpacing.lg),
+            ],
+          ],
         ),
       );
 }
@@ -791,19 +703,10 @@ class _PartnerErrorBanner extends StatelessWidget {
   final VoidCallback onRetry;
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: AdminColors.redSoft, borderRadius: BorderRadius.circular(12), border: Border.all(color: AdminColors.redSoft)),
-        child: Row(children: [
-          const AdminIcon(HugeIcons.strokeRoundedCloud, color: AdminColors.red, size: 20),
-          const SizedBox(width: 10),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('Delivery partner data could not be loaded', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.red)),
-            const SizedBox(height: 3),
-            Text(message, style: const TextStyle(fontSize: 11, color: AdminColors.ink, height: 1.4)),
-          ])),
-          shad.OutlineButton(onPressed: onRetry, child: const Text('Retry')),
-        ]),
+  Widget build(BuildContext context) => SfErrorState(
+        title: 'Could not load delivery partners',
+        message: message,
+        onRetry: onRetry,
       );
 }
 
@@ -813,126 +716,143 @@ class _PartnerEmptyState extends StatelessWidget {
   final VoidCallback onClear;
 
   @override
-  Widget build(BuildContext context) => AdminCard(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 34),
-          child: Center(child: Column(children: [
-            Container(width: 48, height: 48, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(15)), child: const AdminIcon(HugeIcons.strokeRoundedDeliveryTruck01, color: AdminColors.amber, size: 24)),
-            const SizedBox(height: 12),
-            Text(hasQuery ? 'No partners match these filters' : 'No delivery partners found', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
-            const SizedBox(height: 5),
-            const Text('Try another search or refresh the roster from the admin API.', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: AdminColors.muted)),
-            if (hasQuery) ...[
-              const SizedBox(height: 10),
-              shad.OutlineButton(onPressed: onClear, child: const Text('Clear filters')),
-            ],
-          ])),
-        ),
+  Widget build(BuildContext context) => SfEmptyState(
+        icon: HugeIcons.strokeRoundedDeliveryTruck01,
+        title: hasQuery ? 'No partners match these filters' : 'No delivery partners found',
+        message: hasQuery
+            ? 'Try another search or clear the current filters.'
+            : 'Delivery partner records will appear here when they are available.',
+        action: hasQuery
+            ? SfButton(
+                variant: SfButtonVariant.outline,
+                onPressed: onClear,
+                child: const Text('Clear filters'),
+              )
+            : null,
       );
 }
 
-class _KycQueueNotice extends StatelessWidget {
-  const _KycQueueNotice({
-    required this.pendingPartners,
-    required this.onReview,
-    required this.onApprove,
+class _PartnerDetailDrawer extends StatelessWidget {
+  const _PartnerDetailDrawer({
+    required this.partner,
     required this.busy,
+    required this.onApproval,
   });
-  final List<_DeliveryPartnerRecord> pendingPartners;
-  final VoidCallback onReview;
-  final Future<void> Function(_DeliveryPartnerRecord) onApprove;
+
+  final _DeliveryPartnerRecord partner;
   final bool busy;
+  final Future<void> Function(_DeliveryPartnerRecord, bool) onApproval;
 
   @override
-  Widget build(BuildContext context) => AdminCard(
-        child: Padding(
-          padding: const EdgeInsets.all(17),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(width: 42, height: 42, decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(12)), child: const AdminIcon(HugeIcons.strokeRoundedTaskDone01, color: AdminColors.amber, size: 21)),
-              const SizedBox(width: 12),
-              const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Sarathi & UIDAI Automated KYC Queue', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900)),
-                SizedBox(height: 4),
-                Text('Pending partner records from the admin API. Government document verification metadata is not currently exposed.', style: TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.5)),
-              ])),
-              const SizedBox(width: 8),
-              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6), decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(18)), child: Text('${pendingPartners.length} pending on page', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.amber))),
-                const SizedBox(height: 8),
-                shad.OutlineButton(onPressed: onReview, child: const Text('Filter pending')),
-              ]),
-            ]),
-            if (pendingPartners.isNotEmpty) ...[
-              const SizedBox(height: 14),
-              const Divider(height: 1, color: AdminColors.line),
-              const SizedBox(height: 8),
-              ...pendingPartners.map((partner) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 7),
-                child: LayoutBuilder(builder: (context, constraints) {
-                  final identity = Row(children: [
-                    Container(width: 34, height: 34, alignment: Alignment.center, decoration: BoxDecoration(color: AdminColors.peach, borderRadius: BorderRadius.circular(10)), child: Text(partner.name.trim().isEmpty ? 'DP' : partner.name.trim().split(RegExp(r'\\s+')).take(2).map((part) => part.isEmpty ? '' : part[0]).join().toUpperCase(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
-                    const SizedBox(width: 10),
-                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(partner.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
-                      const SizedBox(height: 2),
-                      Text('Partner #${partner.id} • ${partner.email}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
-                    ])),
-                  ]);
-                  final action = shad.PrimaryButton(
-                    onPressed: busy ? null : () => onApprove(partner),
-                    child: const Text('Approve & activate', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
-                  );
-                  if (constraints.maxWidth < 540) {
-                    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      identity,
-                      const SizedBox(height: 8),
-                      const Text('KYC documents / OCR score unavailable from current API', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
-                      const SizedBox(height: 6),
-                      Align(alignment: Alignment.centerRight, child: action),
-                    ]);
-                  }
-                  return Row(children: [
-                    Expanded(child: identity),
-                    const SizedBox(width: 12),
-                    const Text('KYC metadata unavailable', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
-                    const SizedBox(width: 12),
-                    action,
-                  ]);
-                }),
-              )),
-            ] else
-              const Padding(
-                padding: EdgeInsets.only(top: 15),
-                child: Text('No pending partner approvals on this page. KYC document queue requires a dedicated backend endpoint.', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SfAvatar(name: partner.name, size: 56),
+              const SizedBox(width: AdminSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(partner.name, style: AdminTypography.sectionTitle),
+                    const SizedBox(height: AdminSpacing.xxs),
+                    Text(partner.email, style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText)),
+                    const SizedBox(height: AdminSpacing.sm),
+                    Wrap(
+                      spacing: AdminSpacing.xs,
+                      runSpacing: AdminSpacing.xs,
+                      children: [
+                        SfStatusBadge(label: partner.approved ? 'Approved' : 'Pending', status: partner.approved ? 'approved' : 'pending'),
+                        SfStatusBadge(label: partner.active ? 'Active' : 'Inactive', status: partner.active ? 'active' : 'inactive'),
+                        SfStatusBadge(label: partner.available ? 'Available' : 'Unavailable', status: partner.available ? 'active' : 'inactive'),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-          ]),
+            ],
+          ),
+          const SizedBox(height: AdminSpacing.xl),
+          _PartnerDetailSection(
+            title: 'Partner record',
+            children: [
+              _PartnerDetailLine('Partner ID', '#${partner.id}'),
+              _PartnerDetailLine('Joined', _formatPartnerDate(partner.createdAt)),
+            ],
+          ),
+          const SizedBox(height: AdminSpacing.lg),
+          _PartnerDetailSection(
+            title: 'Supported actions',
+            children: [
+              SfButton(
+                variant: partner.approved ? SfButtonVariant.outline : SfButtonVariant.primary,
+                onPressed: busy ? null : () => onApproval(partner, !partner.approved),
+                child: Text(partner.approved ? 'Remove approval' : 'Approve partner'),
+              ),
+            ],
+          ),
+          const SizedBox(height: AdminSpacing.lg),
+          Text(
+            'Availability reflects the value returned by the admin API. No live location or telemetry is shown here.',
+            style: AdminTypography.small.copyWith(color: AdminDesignColors.secondaryText, height: 1.5),
+          ),
+        ],
+      );
+}
+
+class _PartnerDetailSection extends StatelessWidget {
+  const _PartnerDetailSection({required this.title, required this.children});
+  final String title;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: AdminTypography.cardTitle),
+          const SizedBox(height: AdminSpacing.sm),
+          SfCard(
+            padding: const EdgeInsets.all(AdminSpacing.md),
+            child: Column(children: children),
+          ),
+        ],
+      );
+}
+
+class _PartnerDetailLine extends StatelessWidget {
+  const _PartnerDetailLine(this.label, this.value);
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: AdminSpacing.sm),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 110,
+              child: Text(label, style: AdminTypography.small.copyWith(color: AdminDesignColors.secondaryText)),
+            ),
+            Expanded(child: Text(value, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w600)),
+          ],
         ),
       );
 }
 
-class _KycDataBoundary extends StatelessWidget {
-  const _KycDataBoundary();
-
-  @override
-  Widget build(BuildContext context) => Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(12), border: Border.all(color: AdminColors.line)),
-        child: const Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          AdminIcon(HugeIcons.strokeRoundedInformationCircle, color: AdminColors.muted, size: 18),
-          SizedBox(width: 10),
-          Expanded(child: Text(
-            'KYC integration boundary: no document URLs, UIDAI/Sarathi verification metadata, trust scores, rejection endpoint, or re-upload endpoint were found in the existing API. These controls are intentionally not simulated. The existing approval endpoint is used only for its supported approve/unapprove action.',
-            style: TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.5),
-          )),
-        ]),
-      );
+String _formatPartnerDate(String? value) {
+  if (value == null || value.trim().isEmpty) return 'Not provided';
+  final parsed = DateTime.tryParse(value);
+  if (parsed == null) return value;
+  return '${parsed.day.toString().padLeft(2, '0')}/${parsed.month.toString().padLeft(2, '0')}/${parsed.year}';
 }
 
-void _partnersNotice(BuildContext context, String message, {bool error = false}) =>
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(message),
-      backgroundColor: error ? AdminColors.red : null,
-      behavior: SnackBarBehavior.floating,
-    ));
+void _partnersNotice(BuildContext context, String message, {bool error = false}) {
+  if (error) {
+    SfFeedback.showError(context, message);
+  } else {
+    SfFeedback.showSuccess(context, message);
+  }
+}
