@@ -880,7 +880,7 @@ The admin UI/UX modernization is complete when:
 |---|---|---|---|
 | Task 1 — Admin Design System | 🟢 Complete | 2026-10-03 | Centralized admin color, typography, spacing, radius, elevation, motion and Material/shadcn theme tokens; legacy AdminColors now aliases the semantic token layer. Validation commands could not be executed through the available GitHub connector. |
 | Task 2 — Core Components | 🟢 Complete | 2026-10-03 | Added branded reusable buttons, icon buttons, inputs/search, badges/status badges, cards, stat blocks, page headers, filter bars, empty/error/skeleton states and avatars; legacy AdminCard now consumes SfCard. Validation commands could not be executed through the available GitHub connector. |
-| Task 3 — Admin Shell & Sidebar | ⬜ Not Started | 2026-10-03 | |
+| Task 3 — Admin Shell & Sidebar | 🟢 Complete | 2026-10-03 | Redesigned the admin shell with grouped navigation, restrained active states, responsive drawer navigation, contextual header, section search, admin profile access and supported system-status treatment. Preserved routing/authentication and did not introduce restaurant concepts. Validation commands could not be executed through the available GitHub connector. |
 | Task 4 — Global Search / Command Palette | ⬜ Not Started | 2026-10-03 | |
 | Task 5 — Premium Data Tables | ⬜ Not Started | 2026-10-03 | |
 | Task 6 — Drawers, Dialogs & Feedback | ⬜ Not Started | 2026-10-03 | |
@@ -972,6 +972,32 @@ The admin UI/UX modernization is complete when:
 - Limitations/follow-up:
   - `SfDataTable`, `SfDrawer`, `SfEntityDrawer` and `SfCommandPalette` remain intentionally deferred to their dedicated tasks because they require broader interaction/API context.
   - Existing page-specific widgets have not yet been migrated wholesale; that migration belongs to the table, drawer and individual page tasks.
+
+### 2026-10-03 — Task 3
+- Status: 🟢 Complete
+- Implemented:
+  - Redesigned the admin shell around the centralized design-system tokens and a consistent 248px desktop sidebar.
+  - Reframed Dashboard as **Overview** and grouped navigation into Workspace, Operations, Catalogue, Customers and Finance.
+  - Replaced the oversized shadcn navigation buttons with compact reusable navigation items with restrained active, hover and pressed feedback.
+  - Added supported system-status and admin identity treatment to the sidebar.
+  - Added responsive navigation behavior: full sidebar on desktop and a shadcn drawer overlay on narrower widths.
+  - Added responsive header context with section title, search field, notifications affordance and admin profile/logout menu.
+  - Standardized page heading treatment across all sections, including Partners and Invoices, and retained Catalogue-specific actions.
+  - Updated shell spacing, canvas/surface treatment and typography to consume centralized design tokens.
+  - Preserved existing section switching, authentication/logout callbacks, catalogue actions and page-level API behavior.
+  - Confirmed no restaurant concept was introduced.
+- Files/components changed:
+  - admin_web/lib/app/admin_shell.dart
+- Validation:
+  - Re-fetched and inspected the final shell source after implementation.
+  - Verified the final shell contains the new grouped navigation, responsive navigation trigger/drawer, profile/system-status treatment and shared page heading path.
+  - Verified no restaurant terminology was introduced in the shell implementation.
+  - Checked GitHub Actions workflow runs associated with the final commit; no workflow run was returned by the available connector.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful validation run is being claimed.
+- Limitations/follow-up:
+  - Browser screenshot/interactive visual QA remains to be performed in an environment capable of running the Flutter Web app.
+  - Global command-palette behavior remains intentionally deferred to Task 4.
+  - Detailed table/drawer/page redesign remains deferred to Tasks 5 onward.
 
 ### Future entries
 
