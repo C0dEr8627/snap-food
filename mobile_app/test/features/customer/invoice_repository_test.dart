@@ -1,8 +1,26 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:snap_foodd/core/network/api_client.dart';
+import 'package:snap_foodd/core/network/api_transport.dart';
 import 'package:snap_foodd/features/customer/data/invoice_models.dart';
 import 'package:snap_foodd/features/customer/data/invoice_repository.dart';
 
 void main() {
+  test('remote invoice repository calls the customer invoice route', () async {
+    final transport = _InvoiceRouteTestTransport();
+    final repository = RemoteInvoiceRepository(
+      ApiClient(
+        config: const ApiConfig(baseUrl: 'http://localhost:8000/api/v1'),
+        transport: transport,
+      ),
+    );
+
+    final invoice = await repository.fetchInvoice('42');
+
+    expect(transport.lastRequest?.url.path, '/api/v1/consumer/orders/42/invoice');
+    expect(invoice.orderId, 42);
+  });
+
   test('decodes the frozen invoice response shape', () {
     final invoice = Invoice.fromJson({
       'id': 7,
@@ -64,4 +82,19 @@ void main() {
     ).fetchInvoice('2');
     expect(result.invoiceNumber, 'INV-2026-00000002');
   });
+}
+
+
+class _InvoiceRouteTestTransport implements ApiTransport {
+  http.Request? lastRequest;
+
+  @override
+  Future<http.Response> send(http.Request request) async {
+    lastRequest = request;
+    return http.Response(
+      '{"data":{"id":7,"order_id":42,"invoice_number":"INV-2026-00000042","customer_name":"Demo Customer","items":[],"subtotal":"10.00","delivery_fee":"2.00","total":"12.00","payment_method":"COD","payment_status":"PAID"}}',
+      200,
+      headers: {'content-type': 'application/json'},
+    );
+  }
 }
