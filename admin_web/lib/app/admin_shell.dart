@@ -164,10 +164,7 @@ class _AdminShellState extends State<AdminShell> {
                   ),
                 ),
                 Expanded(
-                  child: Scrollbar(
-                    thumbVisibility: desktop || rail,
-                    child: SingleChildScrollView(
-                      primary: true,
+                  child: SingleChildScrollView(
                       padding: EdgeInsets.fromLTRB(
                         desktop ? AdminSpacing.xl : AdminSpacing.md,
                         desktop ? AdminSpacing.xl : AdminSpacing.lg,
@@ -231,7 +228,6 @@ class _AdminShellState extends State<AdminShell> {
                           ),
                         ),
                       ),
-                    ),
                   ),
                 ),
               ],
