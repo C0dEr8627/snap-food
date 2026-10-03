@@ -881,7 +881,7 @@ The admin UI/UX modernization is complete when:
 | Task 1 — Admin Design System | 🟢 Complete | 2026-10-03 | Centralized admin color, typography, spacing, radius, elevation, motion and Material/shadcn theme tokens; legacy AdminColors now aliases the semantic token layer. Validation commands could not be executed through the available GitHub connector. |
 | Task 2 — Core Components | 🟢 Complete | 2026-10-03 | Added branded reusable buttons, icon buttons, inputs/search, badges/status badges, cards, stat blocks, page headers, filter bars, empty/error/skeleton states and avatars; legacy AdminCard now consumes SfCard. Validation commands could not be executed through the available GitHub connector. |
 | Task 3 — Admin Shell & Sidebar | 🟢 Complete | 2026-10-03 | Redesigned the admin shell with grouped navigation, restrained active states, responsive drawer navigation, contextual header, section search, admin profile access and supported system-status treatment. Preserved routing/authentication and did not introduce restaurant concepts. Validation commands could not be executed through the available GitHub connector. |
-| Task 4 — Global Search / Command Palette | ⬜ Not Started | 2026-10-03 | |
+| Task 4 — Global Search / Command Palette | 🟢 Complete | 2026-10-03 | Added a reusable command palette with ⌘K/Ctrl+K access, section navigation, supported catalogue quick actions, Escape/Enter handling, focus management and query handoff into the existing section search APIs. No fabricated entity results were introduced. |
 | Task 5 — Premium Data Tables | ⬜ Not Started | 2026-10-03 | |
 | Task 6 — Drawers, Dialogs & Feedback | ⬜ Not Started | 2026-10-03 | |
 | Task 7 — Overview | ⬜ Not Started | 2026-10-03 | |
@@ -999,6 +999,33 @@ The admin UI/UX modernization is complete when:
   - Global command-palette behavior remains intentionally deferred to Task 4.
   - Detailed table/drawer/page redesign remains deferred to Tasks 5 onward.
 
+### 2026-10-03 — Task 4
+- Status: 🟢 Complete
+- Implemented:
+  - Added a reusable SfCommandPalette for the admin web application.
+  - Added global ⌘ K / Ctrl + K keyboard activation through the browser keydown stream.
+  - Added a clear header search affordance with the supported shortcut hint and a responsive search icon on narrower widths.
+  - Added searchable navigation across the existing admin sections: Overview, Orders, Products & Catalogue, Users, Delivery Partners and Invoices & Billing.
+  - When a query is entered, the palette can hand that query to the selected section's existing search flow rather than fabricating cross-entity results.
+  - Added supported catalogue quick actions for Add product and Manage categories when the admin is already in Catalogue.
+  - Added Escape-to-close, Enter-to-submit, visible focus, semantic labels and an explicit empty state.
+  - Preserved existing page APIs, routing and authentication behavior.
+  - Confirmed no restaurant concept or fabricated entity data was introduced.
+- Files/components changed:
+  - admin_web/lib/widgets/sf_command_palette.dart
+  - admin_web/lib/main.dart
+  - admin_web/lib/app/admin_shell.dart
+- Validation:
+  - Re-fetched and inspected the final command-palette component and shell integration after the sequential edits.
+  - Verified the widget is registered in main.dart.
+  - Verified the shell owns the global keyboard listener and cancels the subscription during disposal.
+  - Verified command-palette queries are routed to the existing section search query rather than invented result records.
+  - Verified the implementation uses existing HugeIcons and centralized admin design tokens.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful validation run is being claimed.
+- Limitations/follow-up:
+  - The palette currently navigates/searches through supported admin sections; it does not invent a separate global entity index because the browser has no authoritative aggregated search endpoint.
+  - Full browser interaction and visual QA remain dependent on a runnable Flutter Web environment.
+  - Dedicated data-table, drawer and feedback work remains deferred to Tasks 5 and 6.
 ### Future entries
 
 After every task, append an entry containing:
