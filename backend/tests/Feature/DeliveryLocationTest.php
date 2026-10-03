@@ -161,6 +161,44 @@ class DeliveryLocationTest extends TestCase
             ->assertJsonPath('data.is_stale', true);
     }
 
+    public function test_customer_can_track_order_before_partner_is_assigned(): void
+    {
+        $customer = $this->customer('customer-unassigned-track');
+        $order = Order::create([
+            'customer_id' => $customer->id,
+            'delivery_address_snapshot' => ['line1' => 'Test'],
+            'subtotal' => 100,
+            'delivery_fee' => 20,
+            'total' => 120,
+            'payment_method' => Order::PAYMENT_METHOD_COD,
+            'payment_status' => Order::PAYMENT_STATUS_PENDING,
+            'status' => Order::STATUS_PLACED,
+        ]);
+
+        $this->actingAs($customer, 'sanctum')
+            ->getJson('/api/v1/consumer/orders/'.$order->id.'/tracking')
+            ->assertOk()
+            ->assertJsonPath('data.status', Order::STATUS_PLACED)
+            ->assertJsonPath('data.location', null)
+            ->assertJsonPath('data.delivery_partner', null)
+            ->assertJsonPath('data.is_stale', false);
+    }
+
+    public function test_customer_tracking_includes_assigned_partner_contact_details(): void
+    {
+        $customer = $this->customer('customer-partner-contact');
+        $partner = $this->partnerUser('partner-contact');
+        $partner->update(['phone' => '+919876543210']);
+        $assignment = $this->assignment($customer, $partner, Order::STATUS_ASSIGNED);
+
+        $this->actingAs($customer, 'sanctum')
+            ->getJson('/api/v1/consumer/orders/'.$assignment->order_id.'/tracking')
+            ->assertOk()
+            ->assertJsonPath('data.delivery_partner.name', $partner->name)
+            ->assertJsonPath('data.delivery_partner.phone', '+919876543210')
+            ->assertJsonPath('data.location', null);
+    }
+
     public function test_other_customer_cannot_read_tracking(): void
     {
         $customer = $this->customer('customer-track-owner');
