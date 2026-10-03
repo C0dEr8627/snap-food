@@ -822,7 +822,7 @@ class _CatalogueList extends StatelessWidget {
         Row(children: [
           Expanded(child: Text('Showing ' + (total == 0 ? '0' : '1') + '–' + products.length.toString() + ' of ' + total.toString(), style: const AdminTypography.small)),
           shad.IconButton.ghost(onPressed: page > 1 ? () => onPage(page - 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowLeft01, size: 18)),
-          Text(page.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+          Text(page.toString(), style: AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),
           shad.IconButton.ghost(onPressed: page < lastPage ? () => onPage(page + 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 18)),
         ]),
       ]),
@@ -854,8 +854,8 @@ class _ProductTile extends StatelessWidget {
           child: Container(
             color: AdminDesignColors.canvas,
             child: product.image != null && product.image!.isNotEmpty
-                ? Image.network(product.image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminDesignColors.brandAmber)))
-                : const Center(child: AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 28, color: AdminDesignColors.brandAmber)),
+                ? Image.network(product.image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Center(child: AdminIcon(HugeIcons.strokeRoundedItem01, size: 28, color: AdminDesignColors.brandAmber)))
+                : const Center(child: AdminIcon(HugeIcons.strokeRoundedItem01, size: 28, color: AdminDesignColors.brandAmber)),
           ),
         ),
         Expanded(child: Padding(
@@ -872,7 +872,7 @@ class _ProductTile extends StatelessWidget {
             const SizedBox(height: AdminSpacing.sm),
             Row(children: [
               Expanded(child: Text('₹' + product.price.toStringAsFixed(0), style: const AdminTypography.body.copyWith(fontWeight: FontWeight.w700))),
-              Text(product.outOfStock ? 'Sold out' : product.stock.toString() + ' units', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: product.outOfStock ? AdminDesignColors.error : product.lowStock ? AdminDesignColors.warning : AdminDesignColors.primaryText)),
+              Text(product.outOfStock ? 'Sold out' : product.stock.toString() + ' units', style: AdminTypography.small.copyWith(fontWeight: FontWeight.w600, color: product.outOfStock ? AdminDesignColors.error : product.lowStock ? AdminDesignColors.warning : AdminDesignColors.primaryText)),
             ]),
           ]),
         )),
@@ -1055,7 +1055,7 @@ class _ProductRow extends StatelessWidget {
 class _Thumb extends StatelessWidget {
   const _Thumb({this.image, required this.name}); final String? image; final String name;
   @override Widget build(BuildContext context) => ClipRRect(borderRadius: BorderRadius.circular(10), child: Container(width: 50, height: 50, color: AdminDesignColors.canvas, child: image != null && image!.isNotEmpty ? Image.network(image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _placeholder()) : _placeholder()));
-  Widget _placeholder() => const AdminIcon(HugeIcons.strokeRoundedRestaurant01, size: 22, color: AdminDesignColors.brandAmber);
+  Widget _placeholder() => const AdminIcon(HugeIcons.strokeRoundedItem01, size: 22, color: AdminDesignColors.brandAmber);
 }
 
 class _Badge extends StatelessWidget {
@@ -1303,7 +1303,7 @@ class _ProductEditor extends StatelessWidget {
                 (e) => InputChip(
                   label: Text(
                     e,
-                    style: const TextStyle(fontSize: 12),
+                    style: AdminTypography.small,
                   ),
                   onDeleted: () {
                     setEditorState(() {
@@ -1514,7 +1514,7 @@ Widget _label(String text, String? trailing) => Padding(
 Widget _field(TextEditingController c, String hint, {String? label, int? maxLength, int maxLines = 1, TextInputType? keyboard, String? Function(String?)? validator}) => Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    if (label != null) Padding(padding: const EdgeInsets.only(bottom: 5), child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AdminDesignColors.secondaryText))),
+    if (label != null) Padding(padding: const EdgeInsets.only(bottom: 5), child: Text(label, style: const AdminTypography.small.copyWith(fontWeight: FontWeight.w700, color: AdminDesignColors.secondaryText))),
     shad.TextField(
       controller: c,
       maxLines: maxLines,
@@ -1577,5 +1577,5 @@ Widget _dropdownField(
 
 class _ErrorBanner extends StatelessWidget {
   const _ErrorBanner({required this.message, required this.onRetry}); final String message; final VoidCallback onRetry;
-  @override Widget build(BuildContext context) => Container(width: double.infinity, margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.all(11), decoration: BoxDecoration(color: AdminDesignColors.errorSoft, borderRadius: BorderRadius.circular(10)), child: Row(children: [const AdminIcon(HugeIcons.strokeRoundedAlertCircle, size: 17, color: AdminDesignColors.error), const SizedBox(width: 8), Expanded(child: Text(message, style: const TextStyle(fontSize: 12))), shad.OutlineButton(onPressed: onRetry, child: const Text('Retry', style: TextStyle(fontSize: 12)))]));
+  @override Widget build(BuildContext context) => Container(width: double.infinity, margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.all(11), decoration: BoxDecoration(color: AdminDesignColors.errorSoft, borderRadius: BorderRadius.circular(10)), child: Row(children: [const AdminIcon(HugeIcons.strokeRoundedAlertCircle, size: 17, color: AdminDesignColors.error), const SizedBox(width: 8), Expanded(child: Text(message, style: AdminTypography.small)), shad.OutlineButton(onPressed: onRetry, child: const Text('Retry', style: TextStyle(fontSize: 12)))]));
 }
