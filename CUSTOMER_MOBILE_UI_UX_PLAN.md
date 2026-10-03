@@ -456,13 +456,15 @@ Requirements:
 - Preserved saved-address selection, inline address creation, `CreateOrderRequest`, order submission, cart clearing, and order-detail navigation.
 
 ### Task 14 — Redesign address selection/book
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- Clear address tiles.
-- Selected state that is not color-only.
-- Add/edit/delete actions.
-- Empty state.
-- Checkout integration.
+- Reworked the address book around clear, reusable SnapAddressTile surfaces with explicit selected semantics and a visible “Selected” label so selection does not rely on color alone.
+- Preserved address selection behavior and checkout integration: selecting an address still updates AddressBookController and returns to the previous flow when the route can pop.
+- Reworked add-address into a branded, inline form with token-based spacing, reusable Snap buttons, validation, safe-area handling and inline API error feedback.
+- Preserved the existing /addresses GET/POST/DELETE API behavior, selected-address state and address model.
+- Added confirmation before deletion and branded error feedback for failed deletes.
+- The current customer address API exposes add and delete operations but no documented update/edit operation. An edit action was therefore not fabricated; the reusable tile supports an edit callback for future API support, while the current UI truthfully exposes only supported add/delete behavior.
+- Checkout continues to consume the selected SavedAddress through the existing toDeliveryAddress() path; no order or address API contract was changed.
 
 ---
 
@@ -601,6 +603,7 @@ Before marking any task complete, verify:
 | 2026-10-03 | Task 11 — Restaurant menu | ⏭️ Not Applicable | Confirmed that Snap Foodd has no customer-facing restaurant concept or product-to-restaurant relationship. Restaurant menu work is intentionally skipped; future customer UI work remains product/catalogue-first. |
 | 2026-10-03 | Task 12 — Redesign Cart | ✅ Complete | Reworked the customer Cart with stronger item/price hierarchy, token-based spacing/typography, tactile quantity controls, branded empty state, clearer bill details, and a safe-area-aware sticky checkout CTA using reusable Snap components. The existing CartController, remote repository synchronization, optimistic quantity changes, checkout route, image fallback, and server-authoritative final pricing behavior were preserved. Validation: changed Dart source was structurally reviewed; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector; no connector-exposed CI result was available for the implementation commit. |
 | 2026-10-03 | Task 13 — Redesign Checkout | ✅ Complete | Reworked Checkout into a high-trust, product/catalogue-first commerce flow with clear delivery address, order summary, COD payment selection, preview price breakdown, explicit server-authoritative final-total messaging, and a safe-area-aware sticky primary CTA. Reused Snap Foodd components and preserved saved-address selection, inline address creation, `CreateOrderRequest`, order submission, cart clearing, and order-detail navigation. Validation: changed Dart source has balanced delimiter counts; the implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
+| 2026-10-03 | Task 14 — Redesign address selection/book | ✅ Complete | Reworked the customer address book with a reusable SnapAddressTile, explicit selected semantics, clearer saved-address hierarchy, branded add-address form, inline validation/error feedback, delete confirmation, and preserved checkout selection behavior. The existing address contract currently exposes GET/POST/DELETE but no documented update/edit endpoint, so an edit action was intentionally not fabricated; the reusable tile supports a future edit callback when the API supports it. Validation: changed Dart source files have balanced braces/parentheses/brackets; the implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 
 ---
 
@@ -625,6 +628,7 @@ Before marking any task complete, verify:
 - Confirmed Task 11 is not applicable because Snap Foodd has no restaurant concept.
 - Completed Task 12: redesigned Cart with stronger commerce hierarchy, branded empty state, reusable quantity/CTA controls, clearer bill details, and preserved server-authoritative cart behavior.
 - Completed Task 13: redesigned Checkout around address, order summary, COD payment, transparent price preview/final-total messaging, and a safe-area-aware place-order CTA while preserving existing checkout/order behavior.
+- Completed Task 14: redesigned the address book with reusable selected-address tiles, branded add-address flow, safe deletion confirmation, and preserved checkout selection behavior; documented the current API limitation around address editing.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
