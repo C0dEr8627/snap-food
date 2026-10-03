@@ -334,7 +334,7 @@ class _OrdersPageState extends State<OrdersPage>{
           onAssign:()=>_assign(order),onPickedUp:()=>_transition(order,'PICKED_UP'),
           onOut:()=>_transition(order,'OUT_FOR_DELIVERY'),onDelivered:()=>_transition(order,'DELIVERED'),
           onInvoice:()=>_invoice(order),
-          onCustomerDetails:()=>_showCustomerDetails(order),onPartnerDetails:()=>_showPartnerDetails(order),
+          onCustomerDetails:(selected)=>_showCustomerDetails(selected),onPartnerDetails:(selected)=>_showPartnerDetails(selected),
         ),
       ],
       if(list.isEmpty)const Padding(padding:EdgeInsets.only(top:AdminSpacing.lg),child:SfEmptyState(title:'No orders in this workflow stage',message:'Change the operational filter or clear the search.')),
@@ -525,7 +525,7 @@ class _OrderWorkspace extends StatelessWidget{
     required this.onInvoice,required this.onCustomerDetails,required this.onPartnerDetails,
   });
   final _AdminOrder order;final bool busy,apiConfigured;
-  final VoidCallback onAccept,onReject,onPreparing,onReady,onAssign,onPickedUp,onOut,onDelivered,onInvoice;final VoidCallback onCustomerDetails,onPartnerDetails;
+  final VoidCallback onAccept,onReject,onPreparing,onReady,onAssign,onPickedUp,onOut,onDelivered,onInvoice;final ValueChanged<_AdminOrder> onCustomerDetails,onPartnerDetails;
 
   @override Widget build(BuildContext context){
     final action=_action(order.status);
