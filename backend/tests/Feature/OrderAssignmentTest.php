@@ -4,7 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\DeliveryPartner;
 use App\Models\Order;
-use App\Models\User;
+use App\Models\AdminUser;
+use App\Models\CustomerUser;
+use App\Models\DeliveryPartnerUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,18 +14,17 @@ class OrderAssignmentTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function user(string $suffix, string $role): User
+    private function customer(string $suffix): CustomerUser
     {
-        return User::create([
-            'google_subject' => 'google-assignment-'.$suffix,
-            'name' => ucfirst($suffix),
-            'email' => $suffix.'@example.test',
-            'role' => $role,
-            'is_active' => true,
-        ]);
+        return CustomerUser::create(['google_subject' => 'google-assignment-'.$suffix, 'name' => ucfirst($suffix), 'email' => $suffix.'@example.test', 'is_active' => true]);
     }
 
-    private function partner(User $user, bool $available = true): DeliveryPartner
+    private function partnerUser(string $suffix): DeliveryPartnerUser
+    {
+        return DeliveryPartnerUser::create(['google_subject' => 'google-assignment-'.$suffix, 'name' => ucfirst($suffix), 'email' => $suffix.'@example.test', 'is_active' => true]);
+    }
+
+    private function partner(DeliveryPartnerUser $user, bool $available = true): DeliveryPartner
     {
         return DeliveryPartner::create([
             'user_id' => $user->id,
@@ -35,14 +36,14 @@ class OrderAssignmentTest extends TestCase
         ]);
     }
 
-    private ?User $adminUser = null;
+    private ?AdminUser $adminUser = null;
 
-    private function admin(): User
+    private function admin(): AdminUser
     {
-        return $this->adminUser ??= $this->user('admin', User::ROLE_ADMIN);
+        return $this->adminUser ??= AdminUser::create(['google_subject' => 'google-assignment-admin', 'name' => 'Admin', 'email' => 'google-assignment-admin@example.test', 'is_active' => true]);
     }
 
-    private function order(User $customer, string $status = Order::STATUS_READY_FOR_PICKUP): Order
+    private function order(CustomerUser $customer, string $status = Order::STATUS_READY_FOR_PICKUP): Order
     {
         return Order::create([
             'customer_id' => $customer->id,
@@ -59,8 +60,8 @@ class OrderAssignmentTest extends TestCase
     public function test_admin_can_assign_eligible_partner_and_records_actor_history(): void
     {
         $admin = $this->admin();
-        $customer = $this->user('customer', User::ROLE_CUSTOMER);
-        $partner = $this->partner($this->user('partner', User::ROLE_DELIVERY_PARTNER));
+        $customer = $this->customer('customer');
+        $partner = $this->partner($this->partnerUser('partner'));
         $order = $this->order($customer);
 
         $this->actingAs($admin, 'sanctum')
@@ -87,8 +88,8 @@ class OrderAssignmentTest extends TestCase
 
     public function test_customer_cannot_assign_an_order(): void
     {
-        $customer = $this->user('customer-denied', User::ROLE_CUSTOMER);
-        $partner = $this->partner($this->user('partner-denied', User::ROLE_DELIVERY_PARTNER));
+        $customer = $this->customer('customer-denied');
+        $partner = $this->partner($this->partnerUser('partner-denied'));
         $order = $this->order($customer);
 
         $this->actingAs($customer, 'sanctum')
@@ -103,8 +104,8 @@ class OrderAssignmentTest extends TestCase
     public function test_unavailable_partner_is_rejected(): void
     {
         $admin = $this->admin();
-        $customer = $this->user('customer-unavailable', User::ROLE_CUSTOMER);
-        $partner = $this->partner($this->user('partner-unavailable', User::ROLE_DELIVERY_PARTNER), false);
+        $customer = $this->customer('customer-unavailable');
+        $partner = $this->partner($this->partnerUser('partner-unavailable'), false);
         $order = $this->order($customer);
 
         $this->actingAs($admin, 'sanctum')
@@ -118,8 +119,8 @@ class OrderAssignmentTest extends TestCase
     public function test_assignment_is_conflict_for_non_ready_or_already_assigned_order(): void
     {
         $admin = $this->admin();
-        $customer = $this->user('customer-conflict', User::ROLE_CUSTOMER);
-        $partner = $this->partner($this->user('partner-conflict', User::ROLE_DELIVERY_PARTNER));
+        $customer = $this->customer('customer-conflict');
+        $partner = $this->partner($this->partnerUser('partner-conflict'));
         $order = $this->order($customer, Order::STATUS_PREPARING);
 
         $this->actingAs($admin, 'sanctum')
