@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V1\Orders;
 
 use App\Models\Order;
-use App\Models\User;
 use App\Services\InvoiceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,11 +14,10 @@ class InvoiceController
     {
         $user = $request->user();
 
-        if ($user->role === User::ROLE_CUSTOMER && $order->customer_id !== $user->id) {
-            throw new AccessDeniedHttpException('You are not authorized to perform this action.');
-        }
-
-        if ($user->role !== User::ROLE_CUSTOMER && $user->role !== User::ROLE_ADMIN) {
+        if (
+            ($user->hasRole('CUSTOMER') && (int) $order->customer_id !== (int) $user->id)
+            || (! $user->hasRole('CUSTOMER') && ! $user->hasRole('ADMIN'))
+        ) {
             throw new AccessDeniedHttpException('You are not authorized to perform this action.');
         }
 
