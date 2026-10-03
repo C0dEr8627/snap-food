@@ -58,7 +58,7 @@ class AdminDashboardTest extends TestCase
 
     public function test_customer_cannot_access_dashboard_counts(): void
     {
-        $customer = CustomerUser::factory()->create();
+        $customer = CustomerCustomerUser::factory()->create();
 
         $this->actingAs($customer, 'web')
             ->get('/admin')
