@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\User;
+use App\Models\AdminUser;
+use App\Models\CustomerUser;
+use App\Models\DeliveryPartnerUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -16,7 +18,7 @@ class InvoiceApiTest extends TestCase
 
     public function test_delivered_customer_can_generate_and_read_invoice_from_order_snapshots(): void
     {
-        $customer = User::factory()->create(['role' => User::ROLE_CUSTOMER]);
+        $customer = CustomerCustomerUser::factory()->create();
         $order = Order::factory()->create([
             'customer_id' => $customer->id,
             'status' => Order::STATUS_DELIVERED,
@@ -53,7 +55,7 @@ class InvoiceApiTest extends TestCase
 
     public function test_invoice_uses_immutable_snapshot_after_order_changes(): void
     {
-        $customer = User::factory()->create(['role' => User::ROLE_CUSTOMER]);
+        $customer = CustomerCustomerUser::factory()->create();
         $order = Order::factory()->create([
             'customer_id' => $customer->id,
             'status' => Order::STATUS_DELIVERED,
@@ -83,7 +85,7 @@ class InvoiceApiTest extends TestCase
 
     public function test_invoice_requires_delivered_order(): void
     {
-        $customer = User::factory()->create(['role' => User::ROLE_CUSTOMER]);
+        $customer = CustomerCustomerUser::factory()->create();
         $order = Order::factory()->create([
             'customer_id' => $customer->id,
             'status' => Order::STATUS_OUT_FOR_DELIVERY,
@@ -97,8 +99,8 @@ class InvoiceApiTest extends TestCase
 
     public function test_other_customer_cannot_read_invoice(): void
     {
-        $owner = User::factory()->create(['role' => User::ROLE_CUSTOMER]);
-        $other = User::factory()->create(['role' => User::ROLE_CUSTOMER]);
+        $owner = CustomerCustomerUser::factory()->create();
+        $other = CustomerCustomerUser::factory()->create();
         $order = Order::factory()->create([
             'customer_id' => $owner->id,
             'status' => Order::STATUS_DELIVERED,
@@ -112,8 +114,8 @@ class InvoiceApiTest extends TestCase
 
     public function test_delivery_partner_cannot_read_invoice(): void
     {
-        $customer = User::factory()->create(['role' => User::ROLE_CUSTOMER]);
-        $partner = User::factory()->create(['role' => User::ROLE_DELIVERY_PARTNER]);
+        $customer = CustomerCustomerUser::factory()->create();
+        $partner = DeliveryPartnerCustomerUser::factory()->create();
         $order = Order::factory()->create([
             'customer_id' => $customer->id,
             'status' => Order::STATUS_DELIVERED,
@@ -127,8 +129,8 @@ class InvoiceApiTest extends TestCase
 
     public function test_admin_can_read_delivered_order_invoice(): void
     {
-        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $customer = User::factory()->create(['role' => User::ROLE_CUSTOMER]);
+        $admin = AdminCustomerUser::factory()->create();
+        $customer = CustomerCustomerUser::factory()->create();
         $order = Order::factory()->create([
             'customer_id' => $customer->id,
             'status' => Order::STATUS_DELIVERED,
@@ -142,7 +144,7 @@ class InvoiceApiTest extends TestCase
 
     public function test_invoice_number_is_unique_and_generation_is_idempotent(): void
     {
-        $customer = User::factory()->create(['role' => User::ROLE_CUSTOMER]);
+        $customer = CustomerCustomerUser::factory()->create();
         $order = Order::factory()->create([
             'customer_id' => $customer->id,
             'status' => Order::STATUS_DELIVERED,
