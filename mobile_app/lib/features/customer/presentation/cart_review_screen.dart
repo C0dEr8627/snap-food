@@ -3,11 +3,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../design_system/components/snap_food_button.dart';
 import '../../../design_system/components/snap_food_commerce.dart';
 import '../../../design_system/components/snap_food_feedback.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../../../design_system/tokens/app_spacing.dart';
+import '../../../design_system/tokens/app_typography.dart';
 import '../data/cart_models.dart';
 import 'cart_controller.dart';
 
@@ -39,91 +41,64 @@ class CartReviewScreen extends ConsumerWidget {
                       pinned: true,
                       backgroundColor: SnapFoodColors.surface,
                       surfaceTintColor: Colors.transparent,
-                      leading: IconButton(
+                      leading: SnapIconButton(
+                        icon: Icons.arrow_back_rounded,
+                        tooltip: 'Back',
+                        semanticLabel: 'Back',
                         onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(Icons.arrow_back),
                       ),
                       title: const Text(
                         'Your Cart',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                        ),
+                        style: SnapFoodTypography.titleLarge,
                       ),
                     ),
                     SliverPadding(
                       padding: EdgeInsets.fromLTRB(
-                        wide ? 24 : 16,
-                        8,
-                        wide ? 24 : 16,
-                        120,
+                        wide ? SnapFoodSpacing.lg : SnapFoodSpacing.mobileMargin,
+                        SnapFoodSpacing.sm,
+                        wide ? SnapFoodSpacing.lg : SnapFoodSpacing.mobileMargin,
+                        SnapFoodSpacing.xxl + SnapFoodSpacing.lg,
                       ),
                       sliver: SliverToBoxAdapter(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    itemCount.toString() +
-                                        ' items in your cart',
-                                    style: const TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w800,
+                        child: items.isEmpty
+                            ? const Padding(
+                                padding: EdgeInsets.only(top: SnapFoodSpacing.xl),
+                                child: SnapEmptyState(
+                                  icon: Icons.shopping_bag_outlined,
+                                  title: 'Your cart is empty',
+                                  message: 'Add a dish to start building your order.',
+                                ),
+                              )
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SnapSectionHeader(
+                                    title: '${itemCount} ${itemCount == 1 ? 'item' : 'items'} in your cart',
+                                    subtitle: 'Review your dishes before checkout.',
+                                    actionLabel: 'Add more',
+                                    onAction: () => Navigator.of(context).pop(),
+                                  ),
+                                  const SizedBox(height: SnapFoodSpacing.md),
+                                  ...items.map(
+                                    (item) => Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: SnapFoodSpacing.sm,
+                                      ),
+                                      child: _CartItemCard(
+                                        item: item,
+                                        onRemove: () => ref
+                                            .read(cartControllerProvider.notifier)
+                                            .changeQuantity(item.productId, -1),
+                                        onAdd: () => ref
+                                            .read(cartControllerProvider.notifier)
+                                            .changeQuantity(item.productId, 1),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                TextButton.icon(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  icon: const Icon(Icons.add, size: 16),
-                                  label: const Text(
-                                    'Add more',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: SnapFoodColors.secondary,
-                                    padding: EdgeInsets.zero,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            ...items.map(
-                              (item) => Padding(
-                                padding: const EdgeInsets.only(bottom: 10),
-                                child: _CartItemCard(
-                                  item: item,
-                                  onRemove: () => ref
-                                      .read(cartControllerProvider.notifier)
-                                      .changeQuantity(item.productId, -1),
-                                  onAdd: () => ref
-                                      .read(cartControllerProvider.notifier)
-                                      .changeQuantity(item.productId, 1),
-                                ),
+                                  const SizedBox(height: SnapFoodSpacing.lg),
+                                  _BillCard(itemTotal: subtotal),
+                                ],
                               ),
-                            ),
-                            if (items.isEmpty) const SnapEmptyState(
-                              icon: Icons.shopping_bag_outlined,
-                              title: 'Your cart is empty',
-                              message: 'Add a dish to start building your order.',
-                            ),
-                            if (items.isNotEmpty) ...[
-                              const SizedBox(height: 20),
-                              const Text(
-                                'Bill details',
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-                              ),
-                              const SizedBox(height: 10),
-                              _BillCard(itemTotal: subtotal),
-                              const SizedBox(height: 12),
-                              const _CheckoutPricingNote(),
-                            ],
-                          ],
-                        ),
                       ),
                     ),
                   ],
@@ -136,32 +111,24 @@ class CartReviewScreen extends ConsumerWidget {
       bottomNavigationBar: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-          child: FilledButton(
-            onPressed: items.isEmpty ? null : () => context.push('/checkout'),
-            style: FilledButton.styleFrom(
-              backgroundColor: SnapFoodColors.secondary,
-              foregroundColor: Colors.white,
-              minimumSize: const Size.fromHeight(52),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(SnapFoodRadii.md),
-              ),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Continue to checkout',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-                const Icon(Icons.arrow_forward, size: 19),
-              ],
-            ),
+          padding: const EdgeInsets.fromLTRB(
+            SnapFoodSpacing.mobileMargin,
+            SnapFoodSpacing.sm,
+            SnapFoodSpacing.mobileMargin,
+            SnapFoodSpacing.md,
           ),
+          child: items.isEmpty
+              ? SnapSecondaryButton(
+                  label: 'Browse dishes',
+                  icon: Icons.restaurant_menu_rounded,
+                  onPressed: () => Navigator.of(context).pop(),
+                )
+              : SnapPrimaryButton(
+                  label: 'Continue to checkout',
+                  icon: Icons.arrow_forward_rounded,
+                  semanticLabel: 'Continue to checkout',
+                  onPressed: () => context.push('/checkout'),
+                ),
         ),
       ),
     );
@@ -174,71 +141,71 @@ class _CartItemCard extends StatelessWidget {
     required this.onRemove,
     required this.onAdd,
   });
+
   final CartItem item;
   final VoidCallback onRemove;
   final VoidCallback onAdd;
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(
-      color: SnapFoodColors.surfaceContainerLowest,
-      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-      border: Border.all(color: SnapFoodColors.softBorder),
-    ),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _CartProductImage(item: item),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                item.name,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 12,
-                  height: 1.25,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                item.description,
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: SnapFoodColors.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
+        padding: const EdgeInsets.all(SnapFoodSpacing.md),
+        decoration: BoxDecoration(
+          color: SnapFoodColors.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+          border: Border.all(color: SnapFoodColors.softBorder),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _CartProductImage(item: item),
+            const SizedBox(width: SnapFoodSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SnapPrice(
-                    value: item.previewPrice.toString(),
-                    fontSize: 12,
+                  Text(
+                    item.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: SnapFoodTypography.titleMedium,
                   ),
-                  const Spacer(),
-                  SnapQuantityStepper(
-                    quantity: item.quantity,
-                    onDecrement: onRemove,
-                    onIncrement: onAdd,
-                    compact: true,
+                  const SizedBox(height: SnapFoodSpacing.xs),
+                  Text(
+                    item.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: SnapFoodTypography.bodySmall.copyWith(
+                      color: SnapFoodColors.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: SnapFoodSpacing.sm),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SnapPrice(
+                        value: item.previewPrice.toString(),
+                        fontSize: 15,
+                      ),
+                      const Spacer(),
+                      SnapQuantityStepper(
+                        quantity: item.quantity,
+                        onDecrement: onRemove,
+                        onIncrement: onAdd,
+                        compact: true,
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      );
 }
 
 class _CartProductImage extends StatelessWidget {
   const _CartProductImage({required this.item});
+
   final CartItem item;
 
   bool get _hasRemoteImage {
@@ -248,14 +215,14 @@ class _CartProductImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const size = 62.0;
+    const size = 72.0;
     final fallback = ClipRRect(
       borderRadius: BorderRadius.circular(SnapFoodRadii.md),
       child: Container(
         width: size,
         height: size,
         color: SnapFoodColors.primaryContainer,
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(SnapFoodSpacing.sm),
         child: SvgPicture.asset(
           'assets/images/customer/logo.svg',
           fit: BoxFit.contain,
@@ -280,81 +247,91 @@ class _CartProductImage extends StatelessWidget {
 
 class _BillCard extends StatelessWidget {
   const _BillCard({required this.itemTotal});
+
   final int itemTotal;
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      color: SnapFoodColors.surfaceContainerLowest,
-      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-      border: Border.all(color: SnapFoodColors.softBorder),
-    ),
-    child: Column(
-      children: [
-        _BillRow('Item total', '₹' + itemTotal.toString()),
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 11),
-          child: Divider(color: SnapFoodColors.softBorder, height: 1),
+        padding: const EdgeInsets.all(SnapFoodSpacing.md),
+        decoration: BoxDecoration(
+          color: SnapFoodColors.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+          border: Border.all(color: SnapFoodColors.softBorder),
         ),
-        const Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
+            const Text('Bill details', style: SnapFoodTypography.titleMedium),
+            const SizedBox(height: SnapFoodSpacing.md),
+            _BillRow(
+              label: 'Item total',
+              child: SnapPrice(value: itemTotal.toString(), fontSize: 16),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: SnapFoodSpacing.md),
+              child: Divider(color: SnapFoodColors.softBorder, height: 1),
+            ),
+            const _BillRow(
+              label: 'Delivery fee & final charges',
               child: Text(
-                'Delivery fee & final charges',
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: SnapFoodColors.onSurfaceVariant),
+                'Calculated at checkout',
+                style: SnapFoodTypography.labelMedium,
               ),
             ),
-            Text(
-              'Calculated at checkout',
-              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800),
+            const SizedBox(height: SnapFoodSpacing.sm),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                color: SnapFoodColors.surfaceContainerLow,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(SnapFoodRadii.md),
+                ),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(SnapFoodSpacing.sm),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.receipt_long_outlined,
+                      color: SnapFoodColors.secondary,
+                      size: 18,
+                    ),
+                    SizedBox(width: SnapFoodSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        'The server recalculates the final order amount from the current catalogue at checkout.',
+                        style: SnapFoodTypography.bodySmall,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
-      ],
-    ),
-  );
+      );
 }
 
 class _BillRow extends StatelessWidget {
-  const _BillRow(this.label, this.value);
+  const _BillRow({required this.label, required this.child});
+
   final String label;
-  final String value;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) => Row(
-    children: [
-      Expanded(child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: SnapFoodColors.onSurfaceVariant))),
-      Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
-    ],
-  );
-}
-
-class _CheckoutPricingNote extends StatelessWidget {
-  const _CheckoutPricingNote();
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(
-      color: SnapFoodColors.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(SnapFoodRadii.md),
-    ),
-    child: const Row(
-      children: [
-        Icon(
-          Icons.receipt_long_outlined,
-          color: SnapFoodColors.secondary,
-          size: 19,
-        ),
-        SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            'The server recalculates the final order amount from the current catalogue at checkout.',
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: SnapFoodTypography.bodySmall.copyWith(
+                color: SnapFoodColors.onSurfaceVariant,
+              ),
+            ),
           ),
-        ),
-      ],
-    ),
-  );
+          const SizedBox(width: SnapFoodSpacing.sm),
+          child,
+        ],
+      );
 }
