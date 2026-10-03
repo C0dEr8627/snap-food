@@ -92,7 +92,7 @@ class _UsersPageState extends flutter.State<UsersPage> {
         else if (_loading)
           const _UsersLoading()
         else if (users.isEmpty)
-          const _UsersEmpty()
+          _UsersEmpty()
         else
           _UsersTable(users: users, onView: (user) => _showDetails(user)),
         if (!_loading && _error == null && _total > 0) ...[
