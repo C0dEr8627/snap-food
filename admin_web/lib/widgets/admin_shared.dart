@@ -65,14 +65,3 @@ class AdminCard extends StatelessWidget {
   Widget build(BuildContext context) => SfCard(child: child, padding: padding);
 }
 
-class _Pill extends StatelessWidget {
-  const _Pill(this.text);
-  final String text;
-  @override
-  Widget build(BuildContext context) {
-    final lower = text.toLowerCase();
-    final Color bg = lower.contains('pending') || lower.contains('preparing') ? AdminColors.amberSoft : lower.contains('delivery') || lower.contains('approved') || lower.contains('available') || lower.contains('delivered') || lower.contains('ready') ? AdminColors.yellowSoft : lower.contains('offline') ? AdminColors.canvas : AdminColors.redSoft;
-    final Color fg = lower.contains('pending') || lower.contains('preparing') ? AdminColors.redDark : lower.contains('delivery') || lower.contains('approved') || lower.contains('available') || lower.contains('delivered') || lower.contains('ready') ? AdminColors.redDark : lower.contains('offline') ? AdminColors.muted : AdminColors.red;
-    return Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7), decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)), child: Text(text, style: TextStyle(fontSize: 12, height: 1.2, fontWeight: FontWeight.w700, color: fg)));
-  }
-}
