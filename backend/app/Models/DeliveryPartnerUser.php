@@ -17,6 +17,13 @@ class DeliveryPartnerUser extends Authenticatable
 
     protected $hidden = ['password', 'remember_token'];
 
+    protected $appends = ['role'];
+
+    public function getRoleAttribute(): string
+    {
+        return 'DELIVERY_PARTNER';
+    }
+
     protected function casts(): array
     {
         return ['is_active' => 'boolean'];
