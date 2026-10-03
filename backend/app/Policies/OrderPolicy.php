@@ -3,11 +3,11 @@
 namespace App\Policies;
 
 use App\Models\Order;
-use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 class OrderPolicy
 {
-    public function before(User $user): ?bool
+    public function before(Authenticatable $user): ?bool
     {
         if (! $user->is_active) {
             return false;
@@ -18,7 +18,7 @@ class OrderPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->hasRole(User::ROLE_CUSTOMER);
+        return $user->hasRole('CUSTOMER');
     }
 
     public function view(User $user, Order $order): bool
@@ -34,7 +34,7 @@ class OrderPolicy
 
     public function updateStatus(User $user, Order $order): bool
     {
-        return $user->hasRole(User::ROLE_ADMIN);
+        return $user->hasRole('ADMIN');
     }
 
     public function viewAdmin(User $user, Order $order): bool
