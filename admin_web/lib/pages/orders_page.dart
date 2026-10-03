@@ -111,12 +111,12 @@ class _AdminOrderApi{
     return fallback;
   }
 
-  Future<String?> invoice(String id)async{
+  Future<Map<String,dynamic>> invoice(String id)async{
     if(!configured)throw StateError('No authenticated admin session. Please sign in again.');
     final r=await http.get(Uri.parse(base+'/admin/orders/'+Uri.encodeComponent(id)+'/invoice'),headers:headers);
     if(r.statusCode<200||r.statusCode>=300)throw StateError('Invoice request failed ('+r.statusCode.toString()+').');
     final body=jsonDecode(r.body);
-    if(body is Map&&body['data'] is Map){final data=body['data'] as Map;return (data['file_reference']??data['invoice_number'])?.toString();}return null;
+    if(body is Map&&body['data'] is Map)return Map<String,dynamic>.from(body['data'] as Map);throw StateError('Invoice response was empty or invalid.');
   }
 }
 
@@ -136,7 +136,7 @@ class _DeliveryPartnerOption{
 class _OrdersPageState extends State<OrdersPage>{
   final api=const _AdminOrderApi(),search=TextEditingController();
   final orders=< _AdminOrder>[];
-  String filter='ALL';String? selectedId;bool busy=false;bool loading=true;String? loadError;
+  String filter='PLACED';String? selectedId;bool busy=false;bool loading=true;String? loadError;
 
   @override void initState(){super.initState();search.text=widget.searchQuery;search.addListener(_refresh);_loadOrders();}
   @override void didUpdateWidget(covariant OrdersPage oldWidget){super.didUpdateWidget(oldWidget);if(oldWidget.searchQuery!=widget.searchQuery&&search.text!=widget.searchQuery){search.text=widget.searchQuery;_loadOrders();}}
@@ -163,21 +163,22 @@ class _OrdersPageState extends State<OrdersPage>{
 
   bool _matchesFilter(String status){
     switch(filter){
-      case 'ACTION_REQUIRED':return ['PLACED','ACCEPTED','PREPARING','READY_FOR_PICKUP'].contains(status);
-      case 'DELIVERY':return ['ASSIGNED','PICKED_UP','OUT_FOR_DELIVERY'].contains(status);
-      case 'COMPLETED':return status=='DELIVERED';
-      case 'REJECTED':return status=='CANCELLED';
-      default:return true;
+      case 'ALL':return true;
+      case 'PLACED':return status=='PLACED';
+      case 'PREP':return ['ACCEPTED','PREPARING','READY_FOR_PICKUP','ASSIGNED','PICKED_UP'].contains(status);
+      case 'OUT':return status=='OUT_FOR_DELIVERY';
+      case 'DELIVERED':return status=='DELIVERED';
+      default:return false;
     }
   }
 
   int count(String value){
     return orders.where((o){
       if(value=='ALL')return true;
-      if(value=='ACTION_REQUIRED')return ['PLACED','ACCEPTED','PREPARING','READY_FOR_PICKUP'].contains(o.status);
-      if(value=='DELIVERY')return ['ASSIGNED','PICKED_UP','OUT_FOR_DELIVERY'].contains(o.status);
-      if(value=='COMPLETED')return o.status=='DELIVERED';
-      if(value=='REJECTED')return o.status=='CANCELLED';
+      if(value=='PLACED')return o.status=='PLACED';
+      if(value=='PREP')return ['ACCEPTED','PREPARING','READY_FOR_PICKUP','ASSIGNED','PICKED_UP'].contains(o.status);
+      if(value=='OUT')return o.status=='OUT_FOR_DELIVERY';
+      if(value=='DELIVERED')return o.status=='DELIVERED';
       return false;
     }).length;
   }
@@ -311,9 +312,51 @@ class _OrdersPageState extends State<OrdersPage>{
 
   Future<void> _invoice(_AdminOrder order)async{
     setState(()=>busy=true);
-    try{final ref=await api.invoice(order.id);if(mounted){setState(()=>busy=false);SfFeedback.showInfo(context,ref==null?'Invoice endpoint returned no file reference.':'Invoice reference: '+ref);}}
-    catch(e){if(mounted){setState(()=>busy=false);SfFeedback.showError(context,e.toString().replaceFirst('Bad state: ',''));}}
+    try{
+      final invoice=await api.invoice(order.id);
+      if(!mounted)return;
+      setState(()=>busy=false);
+      final rawItems=invoice['items'] is List?invoice['items'] as List:const [];
+      final address=invoice['delivery_address_snapshot'] is Map?Map<String,dynamic>.from(invoice['delivery_address_snapshot'] as Map):<String,dynamic>{};
+      final addressText=[address['line1'],address['line2'],address['city'],address['state'],address['postal_code']].whereType<String>().where((v)=>v.trim().isNotEmpty).join(', ');
+      showDialog<void>(context:context,builder:(dialogContext)=>AlertDialog(
+        title:const Text('Invoice'),
+        content:SizedBox(width:620,child:SingleChildScrollView(child:Column(crossAxisAlignment:CrossAxisAlignment.start,mainAxisSize:MainAxisSize.min,children:[
+          Text((invoice['invoice_number']??'Invoice').toString(),style:AdminTypography.cardTitle),
+          const SizedBox(height:4),Text('Order #'+(invoice['order_id']??order.id).toString()+'  •  '+(invoice['issued_at']??'').toString(),style:AdminTypography.small.copyWith(color:AdminDesignColors.secondaryText)),
+          const Divider(height:24),
+          _detailLine('Bill to',(invoice['customer_name']??order.customer).toString()),
+          if((invoice['customer_email']??'').toString().isNotEmpty)_detailLine('Email',invoice['customer_email'].toString()),
+          _detailLine('Delivery address',addressText.isEmpty?order.address:addressText),
+          const SizedBox(height:8),
+          Container(width:double.infinity,padding:const EdgeInsets.all(12),decoration:BoxDecoration(border:Border.all(color:AdminDesignColors.border),borderRadius:BorderRadius.circular(10)),child:Column(children:[
+            Row(children:[Expanded(child:Text('Item',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w800))),Text('Qty',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w800)),const SizedBox(width:20),SizedBox(width:100,child:Text('Amount',textAlign:TextAlign.right,style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w800)))]),
+            const Divider(),
+            for(final raw in rawItems.whereType<Map>())Padding(padding:const EdgeInsets.symmetric(vertical:7),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[
+              Expanded(child:Text((raw['product_name']??'Item').toString(),style:AdminTypography.body)),
+              Text((raw['quantity']??1).toString()),const SizedBox(width:20),
+              SizedBox(width:100,child:Text('₹'+_toDouble(raw['line_total']).toStringAsFixed(2),textAlign:TextAlign.right,style:AdminTypography.body)),
+            ])),
+            const Divider(),
+            _invoiceAmountRow('Subtotal',invoice['subtotal']),
+            _invoiceAmountRow('Delivery fee',invoice['delivery_fee']),
+            const Divider(),
+            _invoiceAmountRow('Total',invoice['total'],emphasize:true),
+          ])),
+          const SizedBox(height:12),
+          _detailLine('Payment method',(invoice['payment_method']??order.payment).toString()),
+          _detailLine('Payment status',(invoice['payment_status']??'UNKNOWN').toString()),
+          if((invoice['file_reference']??'').toString().isNotEmpty)_detailLine('File reference',invoice['file_reference'].toString()),
+        ]))),
+        actions:[TextButton(onPressed:()=>Navigator.pop(dialogContext),child:const Text('Close'))],
+      ));
+    }catch(e){if(mounted){setState(()=>busy=false);SfFeedback.showError(context,e.toString().replaceFirst('Bad state: ',''));}}
   }
+
+  Widget _invoiceAmountRow(String label,dynamic amount,{bool emphasize=false})=>Padding(
+    padding:const EdgeInsets.symmetric(vertical:4),
+    child:Row(children:[Expanded(child:Text(label,style:emphasize?AdminTypography.body.copyWith(fontWeight:FontWeight.w800):AdminTypography.body)),Text('₹'+_toDouble(amount).toStringAsFixed(2),style:emphasize?AdminTypography.cardTitle:AdminTypography.body.copyWith(fontWeight:FontWeight.w700))]),
+  );
 
   @override Widget build(BuildContext context){
     if(loading)return const Center(child:Padding(padding:EdgeInsets.all(AdminSpacing.xl),child:SfLoadingState(title:'Loading orders',message:'Preparing the operational order queue.')));
@@ -385,7 +428,6 @@ class _OrderFilters extends StatelessWidget {
     ('PREP', 'Preparing'),
     ('OUT', 'Out for Delivery'),
     ('DELIVERED', 'Delivered'),
-    ('DISPUTED', 'Disputed'),
   ];
 
   @override
