@@ -99,6 +99,10 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                   return SliverList(
                     delegate: SliverChildListDelegate([
                       _OrderHero(order: order),
+                      if (order.status == OrderStatus.cancelled && order.cancellationReason?.trim().isNotEmpty == true) ...[
+                        const SizedBox(height: SnapFoodSpacing.md),
+                        _CancellationReasonSection(reason: order.cancellationReason!.trim()),
+                      ],
                       const SizedBox(height: SnapFoodSpacing.lg),
                       SnapSectionHeader(
                         title: 'Items',
@@ -187,6 +191,41 @@ class _OrderHero extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      );
+}
+
+class _CancellationReasonSection extends StatelessWidget {
+  const _CancellationReasonSection({required this.reason});
+  final String reason;
+
+  @override
+  Widget build(BuildContext context) => _InfoSurface(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.info_outline_rounded, color: SnapFoodColors.error, size: 22),
+            const SizedBox(width: SnapFoodSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Cancellation reason',
+                    style: SnapFoodTypography.titleMedium.copyWith(fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(height: SnapFoodSpacing.xs),
+                  Text(
+                    reason,
+                    style: SnapFoodTypography.bodySmall.copyWith(
+                      color: SnapFoodColors.onSurfaceVariant,
+                      height: 1.45,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       );
 }
