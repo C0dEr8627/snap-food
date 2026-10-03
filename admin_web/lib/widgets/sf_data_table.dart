@@ -130,7 +130,8 @@ class SfDataTable extends StatelessWidget {
                   ],
                 ),
               ),
-            );
+            ),
+          );
           },
         ),
       ),
