@@ -886,7 +886,7 @@ The admin UI/UX modernization is complete when:
 | Task 6 — Drawers, Dialogs & Feedback | 🟢 Complete | 2026-10-03 | Added shared side-drawer, confirmation-dialog and success/error/info feedback primitives; integrated shared feedback into Catalogue and Delivery Partner action flows while preserving existing supported dialogs and backend behavior. |
 | Task 7 — Overview | 🟢 Complete | 2026-10-03 | Reworked the admin overview hierarchy around shared design-system spacing, responsive KPI grouping, operational snapshot and preview sales trend; removed restaurant/kitchen-specific terminology and clarified that the current aggregates are preview data rather than fabricated live metrics. |
 | Task 8 — Orders | 🟢 Complete | 2026-10-03 | Refined the operational order queue/detail experience with centralized design tokens, responsive hierarchy, truthful API-state messaging, shared confirmation/feedback primitives, cleaner status progression and removal of unsupported POS/node/sync/KOT/charge metadata. |
-| Task 9 — Catalogue / Products | ⬜ Not Started | 2026-10-03 | |
+| Task 9 — Catalogue / Products | 🟢 Complete | 2026-10-03 | Refined the product catalogue and category-management experience with centralized tokens, readable hierarchy, responsive editor sizing, shared feedback and truthful item/category workflows while preserving existing API behavior. |
 | Task 10 — Categories | ⬜ Not Started | 2026-10-03 | |
 | Task 11 — Users | ⬜ Not Started | 2026-10-03 | |
 | Task 12 — Delivery Partners | ⬜ Not Started | 2026-10-03 | |
@@ -1125,6 +1125,30 @@ The admin UI/UX modernization is complete when:
 - Limitations/follow-up:
   - Full browser interaction, visual overflow QA and compile-time validation still require a runnable Flutter Web environment.
   - Existing backend/API behavior remains authoritative; no new order capabilities were invented.
+
+### 2026-10-03 — Task 9
+- Status: 🟢 Complete
+- Implemented:
+  - Refined Catalogue spacing, typography, borders, category tabs, product-list hierarchy and editor presentation using the shared admin design system.
+  - Preserved the existing grid/list toggle, search, category filtering, food-type filtering, stock filtering, availability filtering and pagination behavior.
+  - Preserved existing product create/edit/deactivate flows, image selection/upload and category management API contracts.
+  - Replaced Catalogue success/error notices with shared `SfFeedback` messaging.
+  - Improved category-management typography and action treatment.
+  - Removed legacy `AdminColors` usage from the Catalogue page.
+  - Removed invalid restaurant terminology from the catalogue implementation.
+  - Kept preview/live behavior explicit rather than inventing new catalogue capabilities or data.
+- Files/components changed:
+  - `admin_web/lib/pages/catalogue_page.dart`
+- Validation:
+  - Re-fetched the final Catalogue source after each implementation refinement.
+  - Verified zero `AdminColors` references remain in Catalogue.
+  - Verified zero restaurant/kitchen/cloud-kitchen terminology remains.
+  - Verified shared `SfFeedback` adoption.
+  - Reviewed existing editor, category manager, filtering and API-facing repository usage for preservation.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful validation run is being claimed.
+- Limitations/follow-up:
+  - Full Flutter Web compile, browser interaction, visual overflow QA and focus behavior still require a runnable Flutter Web environment.
+  - Task 10 will focus specifically on Categories as its own admin area, building on the category-management primitives already present here.
 
 ### Future entries
 
