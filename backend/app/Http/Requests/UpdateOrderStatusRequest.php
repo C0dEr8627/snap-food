@@ -21,6 +21,7 @@ class UpdateOrderStatusRequest extends FormRequest
                 'ACCEPTED', 'PREPARING', 'READY_FOR_PICKUP', 'ASSIGNED',
                 'PICKED_UP', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED',
             ])],
+            'cancellation_reason' => ['nullable', 'string', 'max:500', 'required_if:status,CANCELLED'],
         ];
     }
 }
