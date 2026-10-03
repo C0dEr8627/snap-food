@@ -9,7 +9,7 @@ use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\OrderAssignment;
 use App\Models\Product;
-use App\Models\User;
+use App\Models\CustomerUser;
 use Illuminate\Contracts\View\View;
 
 class DashboardController extends Controller
@@ -43,7 +43,7 @@ class DashboardController extends Controller
         $directoryCounts = [
             'categories' => Category::query()->count(),
             'products' => Product::query()->count(),
-            'customers' => User::query()->where('role', User::ROLE_CUSTOMER)->count(),
+            'customers' => CustomerUser::query()->count(),
             'delivery_partners' => DeliveryPartner::query()->count(),
             'assignments' => OrderAssignment::query()->count(),
             'invoices' => Invoice::query()->count(),
