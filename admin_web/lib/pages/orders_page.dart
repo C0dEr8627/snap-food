@@ -125,11 +125,10 @@ class _AdminOrderApi{
 class _DeliveryPartnerOption{
   const _DeliveryPartnerOption({required this.id,required this.name,required this.email,required this.available});
   factory _DeliveryPartnerOption.fromJson(Map json){
-    final user=json['user'] is Map?json['user'] as Map:{};
     return _DeliveryPartnerOption(
       id:_toInt(json['id']),
-      name:(user['name']??'Unnamed partner').toString(),
-      email:(user['email']??'').toString(),
+      name:(json['name']??'Unnamed partner').toString(),
+      email:(json['email']??'').toString(),
       available:json['is_available']==true&&json['is_approved']==true&&json['is_active']==true,
     );
   }
