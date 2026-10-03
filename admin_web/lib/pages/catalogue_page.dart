@@ -1120,7 +1120,7 @@ class _ProductEditor extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _label('Item Image', null),
+            _formSectionHeading('Product image', 'Upload a product image or provide a public HTTPS URL.'),
             Material(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(12),
@@ -1181,7 +1181,14 @@ class _ProductEditor extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AdminSpacing.md),
-        _field(imageUrl, 'https://...', label: 'Image URL'),
+        _field(imageUrl, 'https://...', label: 'Image URL', helperText: 'Optional. Leave blank when using an uploaded file.', validator: (value) {
+          final raw = (value ?? '').trim();
+          if (raw.isEmpty) return null;
+          final uri = Uri.tryParse(raw);
+          return uri == null || !uri.hasScheme || !['http', 'https'].contains(uri.scheme.toLowerCase()) || uri.host.isEmpty
+              ? 'Enter a valid HTTPS image URL.'
+              : null;
+        }),
         const SizedBox(height: 5),
         const Text(
           'Choose a file for preview or provide an image URL.',
@@ -1201,7 +1208,6 @@ class _ProductEditor extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
         const SizedBox(height: 2),
-        _label('Dish Name *', 'Required'),
         _formSectionHeading('Basic information', 'Identity and customer-facing description.'),
         _field(name, 'Smokey Chicken Tikka Roll', label: 'Product name', maxLength: 180, requiredField: true, validator: (value) => (value ?? '').trim().isEmpty ? 'Product name is required.' : null),
         const SizedBox(height: AdminSpacing.md),
@@ -1406,8 +1412,17 @@ class _ProductEditor extends StatelessWidget {
           Align(
             alignment: Alignment.center,
             child: shad.OutlineButton(
-              onPressed: saving ? null : onDeactivate,
-              child: const Text('Deactivate item', style: TextStyle(fontSize: 11, color: AdminDesignColors.error)),
+              onPressed: saving ? null : () async {
+                final confirmed = await SfConfirmDialog.show(
+                  context,
+                  title: 'Deactivate product?',
+                  message: 'The product will no longer be active in the catalogue. This action changes its availability state.',
+                  confirmLabel: 'Deactivate',
+                  destructive: true,
+                );
+                if (confirmed) await onDeactivate();
+              },
+              child: const Text('Deactivate item'),
             ),
           ),
         ],
