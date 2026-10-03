@@ -882,7 +882,7 @@ The admin UI/UX modernization is complete when:
 | Task 2 — Core Components | 🟢 Complete | 2026-10-03 | Added branded reusable buttons, icon buttons, inputs/search, badges/status badges, cards, stat blocks, page headers, filter bars, empty/error/skeleton states and avatars; legacy AdminCard now consumes SfCard. Validation commands could not be executed through the available GitHub connector. |
 | Task 3 — Admin Shell & Sidebar | 🟢 Complete | 2026-10-03 | Redesigned the admin shell with grouped navigation, restrained active states, responsive drawer navigation, contextual header, section search, admin profile access and supported system-status treatment. Preserved routing/authentication and did not introduce restaurant concepts. Validation commands could not be executed through the available GitHub connector. |
 | Task 4 — Global Search / Command Palette | 🟢 Complete | 2026-10-03 | Added a reusable command palette with ⌘K/Ctrl+K access, section navigation, supported catalogue quick actions, Escape/Enter handling, focus management and query handoff into the existing section search APIs. No fabricated entity results were introduced. |
-| Task 5 — Premium Data Tables | ⬜ Not Started | 2026-10-03 | |
+| Task 5 — Premium Data Tables | 🟢 Complete | 2026-10-03 | Reusable SfDataTable/SfTablePagination added; Users, Delivery Partners and Invoices migrated to shared table language with intentional overflow, density, status badges, avatars and pagination. |
 | Task 6 — Drawers, Dialogs & Feedback | ⬜ Not Started | 2026-10-03 | |
 | Task 7 — Overview | ⬜ Not Started | 2026-10-03 | |
 | Task 8 — Orders | ⬜ Not Started | 2026-10-03 | |
