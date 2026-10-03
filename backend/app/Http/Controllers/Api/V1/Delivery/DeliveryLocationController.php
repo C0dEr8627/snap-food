@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Api\V1\Delivery;
 
 use App\Exceptions\ConflictException;
-use App\Models\AdminUser;
-use App\Models\CustomerUser;
 use App\Models\DeliveryLocation;
 use App\Models\Order;
 use App\Models\OrderAssignment;
