@@ -488,7 +488,7 @@ class _ProfileSections extends StatelessWidget {
           icon: Icons.info_outline_rounded,
           title: 'About Snap Foodd',
           subtitle: 'Learn more at snapfoodd.com',
-          onTap: _openSnapFooddWebsite,
+          onTap: () => _openSnapFooddWebsite(context),
         ),
         const SizedBox(height: 24),
         SizedBox(
@@ -504,19 +504,24 @@ class _ProfileSections extends StatelessWidget {
   }
 }
 
-Future<void> _openSnapFooddWebsite() async {
+Future<void> _openSnapFooddWebsite(BuildContext context) async {
   final uri = Uri.parse('https://snapfoodd.com');
   try {
     final opened = await launchUrl(
       uri,
       mode: LaunchMode.externalApplication,
     );
-    if (!opened) {
-      // The profile page remains usable even when the device has no browser
-      // handler available for external links.
+    if (!opened && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to open snapfoodd.com.')),
+      );
     }
   } catch (_) {
-    // Keep this action non-blocking; browser availability is platform-specific.
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to open snapfoodd.com.')),
+      );
+    }
   }
 }
 
