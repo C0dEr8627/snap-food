@@ -228,6 +228,123 @@ class _InvoiceDetailLine extends flutter.StatelessWidget {
   );
 }
 
+
+class _InvoiceFilterPill extends flutter.StatelessWidget {
+  const _InvoiceFilterPill(this.label, this.active, this.onTap);
+  final String label;
+  final bool active;
+  final VoidCallback onTap;
+
+  @override
+  flutter.Widget build(BuildContext context) => SfButton(
+    variant: active ? SfButtonVariant.secondary : SfButtonVariant.ghost,
+    onPressed: onTap,
+    child: Text(label),
+  );
+}
+
+class _InvoiceLedgerCard extends flutter.StatelessWidget {
+  const _InvoiceLedgerCard({
+    required this.invoices,
+    required this.mobile,
+    required this.page,
+    required this.total,
+    required this.lastPage,
+    required this.onPage,
+    required this.onView,
+  });
+
+  final List<_LedgerInvoice> invoices;
+  final bool mobile;
+  final int page, total, lastPage;
+  final ValueChanged<int> onPage;
+  final ValueChanged<_LedgerInvoice> onView;
+
+  @override
+  flutter.Widget build(BuildContext context) => Column(
+    children: [
+      if (mobile)
+        ...invoices.map((invoice) => _InvoiceMobileCard(
+          invoice: invoice,
+          onView: () => onView(invoice),
+        ))
+      else
+        SfDataTable(
+          minWidth: 980,
+          columns: const [
+            SfDataTableColumn(label: 'Invoice / Order', width: 190),
+            SfDataTableColumn(label: 'Issued', width: 150),
+            SfDataTableColumn(label: 'Customer', width: 220),
+            SfDataTableColumn(label: 'Total', width: 130, alignment: Alignment.centerRight),
+            SfDataTableColumn(label: 'Payment', width: 150),
+            SfDataTableColumn(label: 'Status', width: 140),
+          ],
+          rows: invoices.map((item) => <flutter.Widget>[
+            Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+              Text(item.number, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w700)),
+              Text('Order #' + item.orderId.toString(), style: AdminTypography.caption),
+            ]),
+            Text(item.issuedAt ?? 'Not recorded', maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.small),
+            Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+              Text(item.customer, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w600)),
+              if (item.email.isNotEmpty) Text(item.email, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.caption),
+            ]),
+            Text(_inr(item.total), style: AdminTypography.body.copyWith(fontWeight: FontWeight.w700)),
+            Text(item.paymentMethod, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.small),
+            SfStatusBadge(label: item.paymentStatus),
+          ]).toList(),
+          onRowTap: (index) => onView(invoices[index]),
+        ),
+      SfTablePagination(
+        page: page,
+        lastPage: lastPage,
+        total: total,
+        onPrevious: page > 1 ? () => onPage(page - 1) : null,
+        onNext: page < lastPage ? () => onPage(page + 1) : null,
+      ),
+    ],
+  );
+}
+
+class _InvoiceMobileCard extends flutter.StatelessWidget {
+  const _InvoiceMobileCard({required this.invoice, required this.onView});
+  final _LedgerInvoice invoice;
+  final VoidCallback onView;
+
+  @override
+  flutter.Widget build(BuildContext context) => InkWell(
+    onTap: onView,
+    child: Padding(
+      padding: const EdgeInsets.all(AdminSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(invoice.number, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w800)),
+              const SizedBox(height: AdminSpacing.xxs),
+              Text('Order #' + invoice.orderId.toString() + ' · ' + invoice.customer, style: AdminTypography.caption),
+            ])),
+            SfStatusBadge(label: invoice.paymentStatus),
+          ]),
+          const SizedBox(height: AdminSpacing.sm),
+          Row(children: [
+            Expanded(child: Text(invoice.email.isEmpty ? 'No email recorded' : invoice.email, style: AdminTypography.caption)),
+            Text(_inr(invoice.total), style: AdminTypography.body.copyWith(fontWeight: FontWeight.w800)),
+          ]),
+          const SizedBox(height: AdminSpacing.xs),
+          Text('Items ' + _inr(invoice.subtotal) + ' · Delivery ' + _inr(invoice.deliveryFee), style: AdminTypography.caption),
+          const SizedBox(height: AdminSpacing.sm),
+          Row(children: [
+            Expanded(child: Text(invoice.paymentMethod, style: AdminTypography.small)),
+            SfButton(variant: SfButtonVariant.outline, onPressed: onView, child: const Text('View details')),
+          ]),
+        ],
+      ),
+    ),
+  );
+}
+
 class _InvoiceLedgerApi {
   const _InvoiceLedgerApi();
   String get base { final v = apiBaseUrl.trim(); return (v.isEmpty ? 'https://api.snapfoodd.in/api/v1' : v).replaceFirst(RegExp(r'/$'), ''); }
