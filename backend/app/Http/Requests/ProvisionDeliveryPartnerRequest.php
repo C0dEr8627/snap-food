@@ -11,7 +11,7 @@ class ProvisionDeliveryPartnerRequest extends FormRequest
     public function authorize(): bool
     {
         return $this->user()?->is_active === true
-            && $this->user()->hasRole(User::ROLE_ADMIN);
+            && $this->user() instanceof AdminUser;
     }
 
     public function rules(): array
@@ -20,7 +20,7 @@ class ProvisionDeliveryPartnerRequest extends FormRequest
             'user_id' => [
                 'required',
                 'integer',
-                Rule::exists('users', 'id')->where(fn ($query) => $query->where('is_active', true)),
+                Rule::exists('customer_users', 'id')->where(fn ($query) => $query->where('is_active', true)),
             ],
         ];
     }
