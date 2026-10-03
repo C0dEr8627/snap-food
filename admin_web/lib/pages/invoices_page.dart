@@ -185,16 +185,27 @@ class _InvoicesPageState extends State<InvoicesPage> {
         ],
       ),
       const SizedBox(height: AdminSpacing.xl),
-      LayoutBuilder(builder: (context, c) {
-        final columns = c.maxWidth >= 900 ? 4 : c.maxWidth >= 540 ? 2 : 1;
-        return GridView.count(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), crossAxisCount: columns, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: columns == 1 ? 3.2 : columns == 4 ? 1.65 : 2.2, children: [
-          _InvoiceKpi(title: 'TAX INVOICES ISSUED', value: _loading ? '—' : _total.toString(), caption: 'Stored invoices matching filters', icon: HugeIcons.strokeRoundedInvoice01, accent: AdminColors.amber),
-          _InvoiceKpi(title: 'TOTAL NET BILLED', value: _loading ? '—' : _inr(_billed), caption: 'Invoice totals in current result set', icon: HugeIcons.strokeRoundedWallet01, accent: AdminColors.ink),
-          _InvoiceKpi(title: 'PAID INVOICES', value: _loading ? '—' : _inr(_paidTotal), caption: _paidCount.toString() + ' marked PAID', icon: HugeIcons.strokeRoundedStoreVerified01, accent: AdminColors.green),
-          const _InvoiceKpi(title: 'RIDER PAYOUTS', value: 'Not available', caption: 'Payout ledger is not exposed by API', icon: HugeIcons.strokeRoundedDeliveryTruck01, accent: AdminColors.muted),
-        ]);
-      }),
-      const SizedBox(height: 18),
+      LayoutBuilder(
+        builder: (context, constraints) {
+          final columns = constraints.maxWidth >= 1000 ? 4 : constraints.maxWidth >= 640 ? 2 : 1;
+          final unpaid = _billed - _paidTotal;
+          return GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: columns,
+            crossAxisSpacing: AdminSpacing.md,
+            mainAxisSpacing: AdminSpacing.md,
+            childAspectRatio: columns == 1 ? 3.8 : columns == 4 ? 1.8 : 2.5,
+            children: [
+              SfStat(label: 'INVOICES', value: _loading ? '—' : _total.toString(), helper: 'Matching current filters', icon: HugeIcons.strokeRoundedInvoice01),
+              SfStat(label: 'TOTAL BILLED', value: _loading ? '—' : _inr(_billed), helper: 'Invoice totals in result set', icon: HugeIcons.strokeRoundedWallet01),
+              SfStat(label: 'PAID', value: _loading ? '—' : _inr(_paidTotal), helper: _loading ? '—' : _paidCount.toString() + ' invoices marked PAID', icon: HugeIcons.strokeRoundedCheckmarkCircle02),
+              SfStat(label: 'UNPAID', value: _loading ? '—' : _inr(unpaid), helper: 'Calculated as billed less paid', icon: HugeIcons.strokeRoundedClock01, status: const SfStatusBadge(label: 'Pending')),
+            ],
+          );
+        },
+      ),
+      const SizedBox(height: AdminSpacing.lg),
       SfFilterBar(
         leading: SizedBox(
           width: mobile ? width - 42 : 320,
