@@ -4,12 +4,12 @@ namespace App\Services\Orders;
 
 use App\Exceptions\OrderStateConflictException;
 use App\Models\Order;
-use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\DB;
 
 class OrderStatusService
 {
-    public function transition(Order $order, string $targetStatus, User $actor): Order
+    public function transition(Order $order, string $targetStatus, Authenticatable $actor): Order
     {
         return DB::transaction(function () use ($order, $targetStatus, $actor): Order {
             $locked = Order::query()->lockForUpdate()->findOrFail($order->id);
