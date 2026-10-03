@@ -383,7 +383,7 @@ class _UsersEmpty extends flutter.StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const AdminIcon(HugeIcons.strokeRoundedUsers01, size: 32, color: AdminDesignColors.secondaryText),
+            const AdminIcon(HugeIcons.strokeRoundedUser, size: 32, color: AdminDesignColors.secondaryText),
             const SizedBox(height: AdminSpacing.md),
             Text('No users found', style: AdminTypography.sectionTitle),
             const SizedBox(height: AdminSpacing.xs),
