@@ -139,12 +139,12 @@ class AdminOperationsWebTest extends TestCase
     {
         $admin = AdminUser::factory()->create();
         $partnerUser = DeliveryPartnerUser::factory()->create();
-        $partner = DeliveryPartner::create([
-            'user_id' => $partnerUser->id,
+        $partner = $partnerUser->forceFill([
             'is_approved' => false,
             'is_active' => true,
             'is_available' => false,
         ]);
+        $partner->save();
 
         $this->actingAs($admin, 'web')
             ->from('/admin/delivery-partners')
