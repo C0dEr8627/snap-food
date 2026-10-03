@@ -38,7 +38,21 @@ class SfButton extends StatelessWidget {
       SfButtonVariant.destructive => Colors.white,
     };
 
-    Widget button = Material(
+    Widget button = Shortcuts(
+      shortcuts: const <ShortcutActivator, Intent>{
+        SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+        SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+      },
+      child: Actions(
+        actions: <Type, Action<Intent>>{
+          ActivateIntent: CallbackAction<ActivateIntent>(
+            onInvoke: (_) {
+              if (enabled) onPressed?.call();
+              return null;
+            },
+          ),
+        },
+        child: Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: enabled ? onPressed : null,
@@ -78,6 +92,8 @@ class SfButton extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
         ),
       ),
     );
