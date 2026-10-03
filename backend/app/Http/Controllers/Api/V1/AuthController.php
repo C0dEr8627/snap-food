@@ -55,7 +55,7 @@ class AuthController extends Controller
         if (
             $user === null
             || ! $user->is_active
-                        || $user->password === null
+            || $user->password === null
             || ! Hash::check($validated['password'], $user->password)
         ) {
             return response()->json([
@@ -199,7 +199,6 @@ class AuthController extends Controller
         if (
             $user === null
             || ! $user->is_active
-            
             || $user->password === null
             || ! Hash::check($validated['password'], $user->password)
         ) {
@@ -254,7 +253,7 @@ class AuthController extends Controller
             }
         }
 
-        if ($user === null || ! $user->is_active ) {
+        if ($user === null || ! $user->is_active) {
             return response()->json([
                 'message' => 'This Google account is not authorized for the admin dashboard.',
                 'errors' => (object) [],
