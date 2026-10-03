@@ -113,7 +113,7 @@ class _AdminShellState extends State<AdminShell> {
   void initState() {
     super.initState();
     _keyboardSubscription = html.window.onKeyDown.listen((event) {
-      final key = event.key.toLowerCase();
+      final key = (event.key ?? '').toLowerCase();
       if ((event.ctrlKey || event.metaKey) && key == 'k') {
         event.preventDefault();
         if (mounted) _openCommandPalette();
@@ -317,6 +317,7 @@ class _Sidebar extends StatelessWidget {
                           ),
                         ),
                       ],
+                    ),
                     ),
                   ],
                 ],
