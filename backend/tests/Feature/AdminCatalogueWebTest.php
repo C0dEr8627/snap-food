@@ -4,7 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\User;
+use App\Models\AdminUser;
+use App\Models\CustomerUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,7 +15,7 @@ class AdminCatalogueWebTest extends TestCase
 
     public function test_admin_can_create_update_and_deactivate_catalogue_records(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = AdminCustomerUser::factory()->create();
 
         $this->actingAs($admin, 'web')
             ->post('/admin/catalogue/categories', [
@@ -66,7 +67,7 @@ class AdminCatalogueWebTest extends TestCase
 
     public function test_customer_cannot_access_catalogue_management_or_write_actions(): void
     {
-        $customer = User::factory()->create();
+        $customer = CustomerUser::factory()->create();
         $category = Category::create(['name' => 'Meals', 'slug' => 'meals', 'sort_order' => 0, 'is_active' => true]);
 
         $this->actingAs($customer, 'web')
@@ -80,7 +81,7 @@ class AdminCatalogueWebTest extends TestCase
 
     public function test_catalogue_search_and_filter_are_available_to_admin(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = AdminCustomerUser::factory()->create();
         $category = Category::create(['name' => 'Drinks', 'slug' => 'drinks', 'sort_order' => 0, 'is_active' => true]);
         Product::create([
             'category_id' => $category->id,
