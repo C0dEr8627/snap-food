@@ -444,18 +444,6 @@ class _InvoiceStatus extends StatelessWidget {
   }
 }
 
-class _InvoiceStateCard extends StatelessWidget {
-  const _InvoiceStateCard({required this.icon, required this.title, required this.message, required this.action, required this.onAction});
-  final AdminIconData icon; final String title, message, action; final VoidCallback onAction;
-  @override Widget build(BuildContext context) => Container(width: double.infinity, padding: const EdgeInsets.all(30), decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(16)),
-    child: Column(children: [AdminIcon(icon, size: 32, color: AdminColors.amber), const SizedBox(height: 12), Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)), const SizedBox(height: 6), Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11.5, color: AdminColors.muted, height: 1.5)), const SizedBox(height: 14), shad.PrimaryButton(onPressed: onAction, child: Text(action))]));
-}
-
-class _InvoiceLoadingCard extends StatelessWidget {
-  const _InvoiceLoadingCard();
-  @override Widget build(BuildContext context) => Container(width: double.infinity, padding: const EdgeInsets.all(24), decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(16)), child: const Column(children: [shad.CircularProgressIndicator(), SizedBox(height: 14), Text('Loading invoice ledger…', style: TextStyle(fontSize: 12, color: AdminColors.muted))]));
-}
-
 class _InvoiceDetailLine extends StatelessWidget {
   const _InvoiceDetailLine(this.label, this.value, {this.strong = false});
   final String label, value; final bool strong;
