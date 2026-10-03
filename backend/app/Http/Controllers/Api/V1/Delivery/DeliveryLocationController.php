@@ -79,27 +79,24 @@ class DeliveryLocationController
             throw new AccessDeniedHttpException('You are not authorized to track this order.');
         }
 
-        if (! in_array($order->status, [
-            Order::STATUS_ASSIGNED,
-            Order::STATUS_PICKED_UP,
-            Order::STATUS_OUT_FOR_DELIVERY,
-        ], true)) {
-            throw new ConflictException('Order tracking is not active.');
-        }
+        // Tracking starts as soon as an order is placed. Before assignment or
+        // before the partner shares GPS, return status with an empty location
+        // instead of a 409 that breaks the customer's tracking timeline.
+        $assignment = $order->assignment()->with('deliveryPartner')->first();
 
-        $assignment = $order->assignment;
+        $location = $assignment
+            ? DeliveryLocation::query()
+                ->where('assignment_id', $assignment->id)
+                ->latest('recorded_at')
+                ->first()
+            : null;
 
-        if (! $assignment) {
-            throw new ConflictException('Order tracking is not available yet.');
-        }
+        $stale = $assignment !== null && (
+            ! $location
+            || $location->recorded_at->lt(now()->subSeconds(self::STALE_AFTER_SECONDS))
+        );
 
-        $location = DeliveryLocation::query()
-            ->where('assignment_id', $assignment->id)
-            ->latest('recorded_at')
-            ->first();
-
-        $stale = ! $location
-            || $location->recorded_at->lt(now()->subSeconds(self::STALE_AFTER_SECONDS));
+        $partner = $assignment?->deliveryPartner;
 
         return response()->json([
             'data' => [
@@ -107,6 +104,11 @@ class DeliveryLocationController
                 'status' => $order->status,
                 'location' => $location,
                 'is_stale' => $stale,
+                'delivery_partner' => $partner ? [
+                    'name' => $partner->name,
+                    'phone' => $partner->phone,
+                    'assigned_at' => $assignment->assigned_at,
+                ] : null,
                 'stale_after_seconds' => self::STALE_AFTER_SECONDS,
             ],
         ]);
