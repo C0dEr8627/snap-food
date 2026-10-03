@@ -59,7 +59,7 @@ class SnapBottomSheet extends StatelessWidget {
                   const SizedBox(height: SnapFoodSpacing.xs),
                   Text(
                     subtitle!,
-                    style: SnapFoodTypography.bodyMediumSmall,
+                    style: SnapFoodTypography.bodySmall,
                   ),
                 ],
                 const SizedBox(height: SnapFoodSpacing.md),
@@ -114,7 +114,7 @@ class SnapEmptyState extends StatelessWidget {
         Text(
           title,
           textAlign: TextAlign.center,
-          style: SnapFoodTypography.sectionTitle.copyWith(
+          style: SnapFoodTypography.titleLarge.copyWith(
             fontSize: compact ? 16 : 18,
           ),
         ),
@@ -125,7 +125,7 @@ class SnapEmptyState extends StatelessWidget {
             child: Text(
               message!,
               textAlign: TextAlign.center,
-              style: SnapFoodTypography.supporting,
+              style: SnapFoodTypography.bodySmall,
             ),
           ),
         ],
@@ -198,7 +198,7 @@ class SnapErrorState extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: SnapFoodTypography.sectionTitle.copyWith(
+            style: SnapFoodTypography.titleLarge.copyWith(
               fontSize: compact ? 16 : 18,
             ),
           ),
@@ -208,7 +208,7 @@ class SnapErrorState extends StatelessWidget {
             child: Text(
               message,
               textAlign: TextAlign.center,
-              style: SnapFoodTypography.supporting,
+              style: SnapFoodTypography.bodySmall,
             ),
           ),
           if (onRetry != null) ...[
@@ -296,6 +296,7 @@ class _SnapSkeletonState extends State<SnapSkeleton>
     ),
   );
 }
+}
 
 class SnapAlertDialog extends StatelessWidget {
   const SnapAlertDialog({
@@ -322,8 +323,8 @@ class SnapAlertDialog extends StatelessWidget {
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(SnapFoodRadii.xl),
     ),
-    title: Text(title, style: SnapFoodTypography.sectionTitle),
-    content: Text(message, style: SnapFoodTypography.body),
+    title: Text(title, style: SnapFoodTypography.titleLarge),
+    content: Text(message, style: SnapFoodTypography.bodyMedium),
     actions: [
       TextButton(
         onPressed: onCancel ?? () => Navigator.of(context).pop(false),
@@ -375,7 +376,7 @@ class SnapLoadingState extends StatelessWidget {
                 Text(
                   message!,
                   textAlign: TextAlign.center,
-                  style: SnapFoodTypography.supporting,
+                  style: SnapFoodTypography.bodySmall,
                 ),
               ],
             ],
