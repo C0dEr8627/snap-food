@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Delivery;
 
 use App\Exceptions\ConflictException;
+use App\Models\DeliveryPartnerUser;
 use App\Models\Order;
 use App\Models\OrderAssignment;
 use Illuminate\Http\JsonResponse;
@@ -14,9 +15,9 @@ class DeliveryPartnerOrderController
 {
     public function index(Request $request): JsonResponse
     {
-        $partner = $request->user()->deliveryPartner;
+        $partner = $request->user();
 
-        if (! $partner || ! $partner->is_active || ! $partner->is_approved) {
+        if (! $partner instanceof DeliveryPartnerUser || ! $partner->is_active || ! $partner->is_approved) {
             throw new AccessDeniedHttpException('Delivery partner access is not active.');
         }
 
@@ -45,9 +46,9 @@ class DeliveryPartnerOrderController
         ]);
 
         $actor = $request->user();
-        $partner = $actor->deliveryPartner;
+        $partner = $actor;
 
-        if (! $partner || ! $partner->is_active || ! $partner->is_approved) {
+        if (! $partner instanceof DeliveryPartnerUser || ! $partner->is_active || ! $partner->is_approved) {
             abort(403, 'Delivery partner access is not active.');
         }
 
@@ -70,8 +71,8 @@ class DeliveryPartnerOrderController
             $order->save();
 
             if ($target === Order::STATUS_DELIVERED) {
-                $lockedPartner = $lockedAssignment->deliveryPartner()->lockForUpdate()->first();
-                $lockedPartner?->update(['is_available' => true]);
+                $lockedPartner = DeliveryPartnerUser::query()->lockForUpdate()->findOrFail($lockedAssignment->delivery_partner_id);
+                $lockedPartner->update(['is_available' => true]);
             }
 
             $order->statusHistory()->create([
