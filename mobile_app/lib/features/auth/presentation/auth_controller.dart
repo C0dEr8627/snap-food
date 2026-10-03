@@ -151,6 +151,15 @@ class AuthController extends AsyncNotifier<AuthStatus> {
     });
   }
 
+  Future<void> updateProfile({required String name, required String phone}) async {
+    final current = state.value;
+    if (current?.user == null || !current!.isAuthenticated) {
+      throw const ApiException(message: 'Please sign in again to update your profile.', code: 'UNAUTHORIZED');
+    }
+    final user = await _repository.updateProfile(name: name, phone: phone);
+    state = AsyncData(AuthStatus(user: user, isAuthenticated: true));
+  }
+
   Future<void> logout() async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
