@@ -53,7 +53,10 @@ class SnapFooddAdminApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        child: const AdminAuthGate(),
+        child: const Material(
+          color: AdminDesignColors.canvas,
+          child: AdminAuthGate(),
+        ),
       ),
     ),
   );
@@ -230,9 +233,11 @@ class _AdminShellState extends State<AdminShell> {
     );
   }
 
-  void _select(AdminSection value) {
+  void _select(AdminSection value, [BuildContext? drawerContext]) {
     setState(() => section = value);
-    shad.closeDrawer(context);
+    if (drawerContext != null) {
+      shad.closeDrawer(drawerContext);
+    }
   }
 
   Future<void> _openMobileNav(BuildContext context, double width) async {
@@ -242,7 +247,7 @@ class _AdminShellState extends State<AdminShell> {
       constraints: BoxConstraints(maxWidth: width),
       builder: (drawerContext) => _Sidebar(
         selected: section,
-        onSelect: _select,
+        onSelect: (value) => _select(value, drawerContext),
         user: widget.user,
         onLogout: widget.onLogout,
         compact: true,
