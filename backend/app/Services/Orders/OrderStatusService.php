@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class OrderStatusService
 {
-    public function transition(Order $order, string $targetStatus, Authenticatable $actor): Order
+    public function transition(Order $order, string $targetStatus, Authenticatable $actor, ?string $cancellationReason = null): Order
     {
         return DB::transaction(function () use ($order, $targetStatus, $actor): Order {
             $locked = Order::query()->lockForUpdate()->findOrFail($order->id);
@@ -20,6 +20,9 @@ class OrderStatusService
 
             $fromStatus = $locked->status;
             $locked->status = $targetStatus;
+            $locked->cancellation_reason = $targetStatus === Order::STATUS_CANCELLED
+                ? trim((string) $cancellationReason)
+                : null;
             $locked->save();
 
             $locked->statusHistory()->create([
