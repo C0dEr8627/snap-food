@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AddressController;
 use App\Http\Controllers\Api\V1\Admin\DeliveryPartnerController;
+use App\Http\Controllers\Api\V1\Admin\DashboardController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CartController;
@@ -84,6 +85,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     });
 
     Route::prefix('admin')->name('api.v1.admin.')->middleware('role:ADMIN')->group(function (): void {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::get('/invoices', [AdminInvoiceController::class, 'index'])->name('invoices.index');
         Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
         Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
