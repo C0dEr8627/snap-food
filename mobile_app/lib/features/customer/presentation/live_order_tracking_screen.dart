@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_exception.dart';
+import '../../../design_system/components/snap_food_feedback.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import 'order_controller.dart';
@@ -64,7 +65,7 @@ class _LiveOrderTrackingScreenState
               message: 'Open tracking from a specific order to see live status.',
             )
           : tracking.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const SnapLoadingState(message: 'Loading live delivery status…'),
               error: (error, _) => _ErrorView(error: error, onRetry: _load),
               data: (value) => value == null
                   ? const _Unavailable(
@@ -341,19 +342,11 @@ class _Unavailable extends StatelessWidget {
   final String message;
 
   @override
-  Widget build(BuildContext context) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(28),
-          child: Text(
-            message,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 12,
-              color: SnapFoodColors.onSurfaceVariant,
-            ),
-          ),
-        ),
-      );
+  Widget build(BuildContext context) => SnapEmptyState(
+    icon: Icons.location_searching_outlined,
+    title: 'Tracking unavailable',
+    message: message,
+  );
 }
 
 class _ErrorView extends StatelessWidget {
@@ -366,24 +359,10 @@ class _ErrorView extends StatelessWidget {
     final message = error is ApiException
         ? (error as ApiException).message
         : 'We could not load live tracking.';
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.cloud_off_outlined, size: 44),
-            const SizedBox(height: 12),
-            Text(message, textAlign: TextAlign.center),
-            const SizedBox(height: 14),
-            FilledButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
-            ),
-          ],
-        ),
-      ),
+    return SnapErrorState(
+      title: 'Tracking unavailable',
+      message: message,
+      onRetry: onRetry,
     );
   }
 }
