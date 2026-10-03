@@ -634,7 +634,7 @@ class _OrderProgress extends StatelessWidget{
           Container(width:25,height:25,alignment:Alignment.center,decoration:BoxDecoration(
             color:i<current?AdminDesignColors.brandYellow:i==current?AdminDesignColors.ink:AdminDesignColors.surface,
             shape:BoxShape.circle,border:Border.all(color:i<=current?Colors.transparent:AdminDesignColors.border),
-          ),child:i<current?const AdminIcon(HugeIcons.strokeRoundedCheckmark01,size:14,color:AdminDesignColors.ink):Text('•',style:TextStyle(color:i==current?Colors.white:AdminDesignColors.secondaryText,fontWeight:FontWeight.w900))),
+          ),child:i<current?const AdminIcon(HugeIcons.strokeRoundedCheckmarkCircle01,size:14,color:AdminDesignColors.ink):Text('•',style:TextStyle(color:i==current?Colors.white:AdminDesignColors.secondaryText,fontWeight:FontWeight.w900))),
           const SizedBox(height:5),
           Text(_prettyStatus(steps[i]),maxLines:2,textAlign:TextAlign.center,overflow:TextOverflow.ellipsis,style:TextStyle(fontSize:10,fontWeight:FontWeight.w800,color:i==current?AdminDesignColors.primaryText:AdminDesignColors.secondaryText)),
         ])),
