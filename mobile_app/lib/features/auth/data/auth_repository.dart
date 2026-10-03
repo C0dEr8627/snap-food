@@ -117,6 +117,24 @@ class RemoteAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<AuthUser> updateProfile({required String name, required String phone}) async {
+    final response = await _client.request('PATCH', '/me', body: {
+      'name': name.trim(),
+      'phone': phone.trim().isEmpty ? null : phone.trim(),
+    });
+    if (response is Map<String, dynamic> && response['data'] is Map) {
+      final data = response['data'] as Map;
+      if (data['user'] is Map) {
+        return AuthUser.fromJson(Map<String, dynamic>.from(data['user'] as Map));
+      }
+    }
+    throw const ApiException(
+      message: 'The server returned an unexpected profile response.',
+      code: 'INVALID_RESPONSE',
+    );
+  }
+
+  @override
   Future<void> logout() async {
     try {
       await _client.post('/auth/logout');
