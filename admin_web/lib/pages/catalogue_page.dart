@@ -254,10 +254,6 @@ class _CataloguePageState extends State<CataloguePage> {
             ),
           ),
         ),
-          ),
-            ),
-          ),
-        ),
       ),
     ).future;
   }
