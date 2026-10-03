@@ -157,8 +157,7 @@ class _OrdersHeader extends StatelessWidget{
       SizedBox(height:8),Text('Operational order queue with live status updates, delivery assignment and billing access.',style:AdminTypography.small),
     ]);
     final actions=Wrap(spacing:8,runSpacing:8,children:[
-      Container(padding:const EdgeInsets.symmetric(horizontal:11,vertical:10),decoration:BoxDecoration(color:apiConfigured?AdminDesignColors.successSoft:AdminDesignColors.errorSoft,borderRadius:BorderRadius.circular(10),border:Border.all(color:AdminDesignColors.border)),child:Row(mainAxisSize:MainAxisSize.min,children:[_StatusDot(color:apiConfigured?AdminDesignColors.success:AdminDesignColors.error),const SizedBox(width:AdminSpacing.xs),const Text('NODE IN-BLR-01',style:AdminTypography.small.copyWith(fontWeight: FontWeight.w700))])),
-      Container(padding:const EdgeInsets.symmetric(horizontal:11,vertical:10),decoration:BoxDecoration(color:AdminDesignColors.warningSoft,borderRadius:BorderRadius.circular(10),border:Border.all(color:AdminDesignColors.border)),child:const Row(mainAxisSize:MainAxisSize.min,children:[_StatusDot(color:AdminDesignColors.warning),SizedBox(width:7),Text('Auto Sync 5s Active',style:AdminTypography.small.copyWith(fontWeight: FontWeight.w700))])),
+      Container(padding:const EdgeInsets.symmetric(horizontal:AdminSpacing.sm,vertical:AdminSpacing.xs),decoration:BoxDecoration(color:apiConfigured?AdminDesignColors.successSoft:AdminDesignColors.errorSoft,borderRadius:BorderRadius.circular(AdminRadii.control),border:Border.all(color:AdminDesignColors.border)),child:Row(mainAxisSize:MainAxisSize.min,children:[_StatusDot(color:apiConfigured?AdminDesignColors.success:AdminDesignColors.error),const SizedBox(width:AdminSpacing.xs),Text(apiConfigured?'API connected':'Authentication required',style:AdminTypography.small.copyWith(fontWeight: FontWeight.w700))])),
       shad.OutlineButton(onPressed:onExport,leading:const AdminIcon(HugeIcons.strokeRoundedDownload01,size:16),child:const Text('Export CSV')),
     ]);
     return box.maxWidth<760?Column(crossAxisAlignment:CrossAxisAlignment.start,children:[title,const SizedBox(height:14),actions]):Row(crossAxisAlignment:CrossAxisAlignment.end,children:[Expanded(child:title),const SizedBox(width:AdminSpacing.lg),Flexible(child:actions)]);
@@ -425,8 +424,30 @@ class _PersonCard extends StatelessWidget{
 }
 
 class _Bill extends StatelessWidget{
-  const _Bill(this.o);final _AdminOrder o;
-  @override Widget build(BuildContext context){final sub=o.total-69;Widget line(String a,String b,{bool strong=false})=>Row(children:[Expanded(child:Text(a,style:strong ? AdminTypography.body.copyWith(fontWeight: FontWeight.w700) : AdminTypography.small)),Text(b,style:TextStyle(fontSize:strong?12.5:8.5,fontWeight:FontWeight.w900))]);return Container(padding:const EdgeInsets.all(12),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminDesignColors.border)),child:Column(children:[line('Item Subtotal','₹'+sub.toStringAsFixed(2)),line('GST & Packaging Charges','₹69.00'),const Divider(height:17),line('Grand Total','₹'+o.total.toStringAsFixed(2),strong:true),const SizedBox(height:9),Row(children:[const Text('PAYMENT',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText)),const Spacer(),Container(padding:const EdgeInsets.symmetric(horizontal:7,vertical:4),decoration:BoxDecoration(color:AdminDesignColors.successSoft,borderRadius:BorderRadius.circular(6)),child:const Text('PAID',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.success))),const SizedBox(width:6),Text(o.payment,style:const AdminTypography.small)])]));}
+  const _Bill(this.o);
+  final _AdminOrder o;
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(AdminSpacing.md),
+    decoration: BoxDecoration(
+      color: AdminDesignColors.surface,
+      borderRadius: BorderRadius.circular(AdminRadii.card),
+      border: Border.all(color: AdminDesignColors.border),
+    ),
+    child: Column(
+      children: [
+        Row(children: [
+          Expanded(child: Text('Order total', style: AdminTypography.body.copyWith(fontWeight: FontWeight.w600))),
+          Text('₹${o.total.toStringAsFixed(2)}', style: AdminTypography.cardTitle),
+        ]),
+        const Divider(height: AdminSpacing.xxl),
+        Row(children: [
+          Expanded(child: Text('Payment method', style: AdminTypography.small)),
+          Text(o.payment, style: AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),
+        ]),
+      ],
+    ),
+  );
 }
 
 class _EmptyOrders extends StatelessWidget{const _EmptyOrders({required this.onClear});final VoidCallback onClear;@override Widget build(BuildContext context)=>AdminCard(child:Padding(padding:const EdgeInsets.all(34),child:Center(child:Column(children:[const AdminIcon(HugeIcons.strokeRoundedInbox,size:34,color:AdminDesignColors.secondaryText),const SizedBox(height:9),const Text('No orders match this view',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)),const SizedBox(height:5),const Text('Try another status filter or clear the order search.',style:AdminTypography.small),const SizedBox(height:AdminSpacing.md),shad.OutlineButton(onPressed:onClear,child:const Text('Clear filters'))]))));}
