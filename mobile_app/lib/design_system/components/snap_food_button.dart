@@ -167,6 +167,60 @@ class SnapIconButton extends StatelessWidget {
   }
 }
 
+/// Compact add-to-cart conversion control used on catalogue surfaces.
+class SnapAddToCartButton extends StatelessWidget {
+  const SnapAddToCartButton({
+    required this.label,
+    required this.onPressed,
+    this.enabled = true,
+    this.loading = false,
+    super.key,
+  });
+
+  final String label;
+  final VoidCallback? onPressed;
+  final bool enabled;
+  final bool loading;
+
+  @override
+  Widget build(BuildContext context) {
+    final canPress = enabled && !loading && onPressed != null;
+    return Semantics(
+      button: true,
+      enabled: canPress,
+      label: label,
+      child: SizedBox(
+        height: 48,
+        child: FilledButton(
+          onPressed: canPress ? onPressed : null,
+          style: FilledButton.styleFrom(
+            backgroundColor: SnapFoodColors.foodRed,
+            foregroundColor: SnapFoodColors.onPrimary,
+            disabledBackgroundColor: SnapFoodColors.outlineVariant,
+            disabledForegroundColor: SnapFoodColors.onSurfaceVariant,
+            minimumSize: const Size(48, 48),
+            padding: const EdgeInsets.symmetric(horizontal: SnapFoodSpacing.lg),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+            ),
+          ),
+          child: loading
+              ? const SizedBox.square(
+                  dimension: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2.2),
+                )
+              : Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Backwards-compatible aliases for existing customer screens.
 typedef SnapFoodPrimaryButton = SnapPrimaryButton;
 typedef SnapFoodSecondaryButton = SnapSecondaryButton;
