@@ -885,7 +885,7 @@ The admin UI/UX modernization is complete when:
 | Task 5 — Premium Data Tables | 🟢 Complete | 2026-10-03 | Reusable SfDataTable/SfTablePagination added; Users, Delivery Partners and Invoices migrated to shared table language with intentional overflow, density, status badges, avatars and pagination. |
 | Task 6 — Drawers, Dialogs & Feedback | 🟢 Complete | 2026-10-03 | Added shared side-drawer, confirmation-dialog and success/error/info feedback primitives; integrated shared feedback into Catalogue and Delivery Partner action flows while preserving existing supported dialogs and backend behavior. |
 | Task 7 — Overview | 🟢 Complete | 2026-10-03 | Reworked the admin overview hierarchy around shared design-system spacing, responsive KPI grouping, operational snapshot and preview sales trend; removed restaurant/kitchen-specific terminology and clarified that the current aggregates are preview data rather than fabricated live metrics. |
-| Task 8 — Orders | ⬜ Not Started | 2026-10-03 | |
+| Task 8 — Orders | 🟢 Complete | 2026-10-03 | Refined the operational order queue/detail experience with centralized design tokens, responsive hierarchy, truthful API-state messaging, shared confirmation/feedback primitives, cleaner status progression and removal of unsupported POS/node/sync/KOT/charge metadata. |
 | Task 9 — Catalogue / Products | ⬜ Not Started | 2026-10-03 | |
 | Task 10 — Categories | ⬜ Not Started | 2026-10-03 | |
 | Task 11 — Users | ⬜ Not Started | 2026-10-03 | |
@@ -1101,6 +1101,30 @@ The admin UI/UX modernization is complete when:
 - Limitations/follow-up:
   - Overview figures remain the application's existing preview dataset and are explicitly presented as preview data.
   - Live dashboard aggregation should be implemented only when the authoritative backend/API contract exposes those aggregates.
+
+### 2026-10-03 — Task 8
+- Status: 🟢 Complete
+- Implemented:
+  - Modernized the Orders header and action hierarchy around the existing live order API and CSV export capability.
+  - Replaced scattered legacy `AdminColors` usage with centralized admin design tokens.
+  - Reworked spacing, typography, borders, status treatments and responsive queue/detail layout to match the shared admin language.
+  - Removed unsupported/fabricated UI claims including a specific node identifier, fixed five-second sync claim, manual POS action, estimated dispatch time, hard-coded tax/packaging charge, KOT ticket metadata and unsupported print/share actions.
+  - Replaced the existing cancellation overlay with the shared `SfConfirmDialog`.
+  - Replaced order mutation/invoice feedback with shared `SfFeedback` success/error/info messaging.
+  - Kept the existing authoritative endpoints for order listing, status transitions and invoice retrieval.
+  - Preserved CSV export and existing order filtering/status progression behavior.
+  - Removed restaurant/kitchen terminology from the order workflow.
+- Files/components changed:
+  - `admin_web/lib/pages/orders_page.dart`
+- Validation:
+  - Re-fetched the final Orders source after implementation refinements.
+  - Verified zero restaurant, kitchen, cloud-kitchen and KOT terminology remains in the final source.
+  - Verified legacy `AdminColors` references were removed from Orders.
+  - Verified shared `SfFeedback` and `SfConfirmDialog` usage.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful validation run is being claimed.
+- Limitations/follow-up:
+  - Full browser interaction, visual overflow QA and compile-time validation still require a runnable Flutter Web environment.
+  - Existing backend/API behavior remains authoritative; no new order capabilities were invented.
 
 ### Future entries
 
