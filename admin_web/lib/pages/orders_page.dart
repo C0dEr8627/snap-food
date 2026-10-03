@@ -13,7 +13,6 @@ class _AdminOrder {
     final address=j['delivery_address_snapshot'] is Map?Map<String,dynamic>.from(j['delivery_address_snapshot'] as Map):<String,dynamic>{};
     final assignment=j['assignment'] is Map?Map<String,dynamic>.from(j['assignment'] as Map):<String,dynamic>{};
     final dp=assignment['delivery_partner'] is Map?Map<String,dynamic>.from(assignment['delivery_partner'] as Map):<String,dynamic>{};
-    final dpUser=dp['user'] is Map?Map<String,dynamic>.from(dp['user'] as Map):<String,dynamic>{};
     final rawItems=j['items'] is List?j['items'] as List:const [];
     final lines=rawItems.whereType<Map>().map((x)=>_OrderLine(_toInt(x['quantity']),x['product_name']?.toString()??'Item','',_toDouble(x['line_total']))).toList();
     return _AdminOrder(
@@ -21,7 +20,7 @@ class _AdminOrder {
       phone:customer['phone']?.toString()??'',address:[address['line1'],address['line2'],address['city'],address['state']].whereType<String>().where((v)=>v.isNotEmpty).join(', '),
       total:_toDouble(j['total']),items:lines.fold(0,(n,x)=>n+x.qty),payment:j['payment_method']?.toString()??'UNKNOWN',
       time:j['created_at']?.toString()??'',status:j['status']?.toString()??'PLACED',lines:lines,
-      partner:dpUser['name']?.toString(),cancellationReason:j['cancellation_reason']?.toString());
+      partner:dp['name']?.toString(),cancellationReason:j['cancellation_reason']?.toString());
   }
   final String id,customer,phone,address,payment,time,status;
   final double total;
@@ -101,8 +100,7 @@ class _AdminOrderApi{
     final body=jsonDecode(r.body);
     final data=body is Map&&body['data'] is Map?body['data'] as Map:{};
     final partner=data['delivery_partner'] is Map?data['delivery_partner'] as Map:{};
-    final user=partner['user'] is Map?partner['user'] as Map:{};
-    return (user['name']??'Delivery partner').toString();
+    return (partner['name']??'Delivery partner').toString();
   }
 
   static String _orderApiMessage(String body,String fallback){
