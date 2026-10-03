@@ -3,31 +3,31 @@
 namespace App\Policies;
 
 use App\Models\Address;
-use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 class AddressPolicy
 {
-    public function before(User $user): ?bool
+    public function before(Authenticatable $user): ?bool
     {
-        return $user->is_active && $user->hasRole(User::ROLE_ADMIN) ? true : null;
+        return $user->is_active && $user->hasRole('ADMIN') ? true : null;
     }
 
-    public function view(User $user, Address $address): bool
-    {
-        return $address->user_id === $user->id;
-    }
-
-    public function create(User $user): bool
-    {
-        return $user->is_active && $user->hasRole(User::ROLE_CUSTOMER);
-    }
-
-    public function update(User $user, Address $address): bool
+    public function view(Authenticatable $user, Address $address): bool
     {
         return $address->user_id === $user->id;
     }
 
-    public function delete(User $user, Address $address): bool
+    public function create(Authenticatable $user): bool
+    {
+        return $user->is_active && $user->hasRole('CUSTOMER');
+    }
+
+    public function update(Authenticatable $user, Address $address): bool
+    {
+        return $address->user_id === $user->id;
+    }
+
+    public function delete(Authenticatable $user, Address $address): bool
     {
         return $address->user_id === $user->id;
     }
