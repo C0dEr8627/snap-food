@@ -134,7 +134,7 @@ class _UsersApi {
         if (token.isNotEmpty) 'Authorization': 'Bearer $token',
       };
 
-  Future<_UsersPage> list({required int page, required String search}) async {
+  Future<_UsersPage> list({required int page, required String search, String? role}) async {
     if (token.isEmpty) {
       throw StateError('Admin session is not available. Please sign in again.');
     }
@@ -142,6 +142,7 @@ class _UsersApi {
       'page': page.toString(),
       'per_page': '20',
       if (search.isNotEmpty) 'search': search,
+      if (role != null && role.isNotEmpty && role != 'ALL') 'role': role,
     };
     final uri = Uri.parse('$base/admin/users').replace(queryParameters: params);
     final response = await http.get(uri, headers: headers);
