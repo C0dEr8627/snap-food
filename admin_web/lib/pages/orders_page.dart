@@ -112,8 +112,23 @@ class _OrdersPageState extends State<OrdersPage>{
   int count(String f)=>orders.where((o)=>f=='ALL'||_orderFilter(o.status)==f).length;
 
   @override Widget build(BuildContext context){
-    if(loading) return const Center(child: Padding(padding: EdgeInsets.all(AdminSpacing.xxxl), child: shad.CircularProgressIndicator()));
-    if(loadError!=null) return Center(child:Padding(padding:EdgeInsets.all(40),child:AdminCard(child:Padding(padding:EdgeInsets.all(22),child:Column(mainAxisSize:MainAxisSize.min,children:[const AdminIcon(HugeIcons.strokeRoundedAlert02,size:28,color:AdminDesignColors.error),const SizedBox(height:10),const Text('Unable to load orders',style:TextStyle(fontWeight:FontWeight.w900)),const SizedBox(height:5),Text(loadError!,textAlign:TextAlign.center,style:const AdminTypography.small),const SizedBox(height:AdminSpacing.md),shad.OutlineButton(onPressed:_loadOrders,child:const Text('Retry'))])))));
+    if(loading) return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(AdminSpacing.xl),
+        child: SfLoadingState(
+          title: 'Loading orders',
+          message: 'Fetching the latest order queue and delivery assignment data.',
+        ),
+      ),
+    );
+    if(loadError!=null) return Padding(
+      padding: const EdgeInsets.all(AdminSpacing.xl),
+      child: SfErrorState(
+        title: 'Unable to load orders',
+        message: loadError!,
+        onRetry: _loadOrders,
+      ),
+    );
     final list=filtered,order=selected,desktop=MediaQuery.sizeOf(context).width>=1120;
     final pages=list.isEmpty?1:((list.length-1)~/10)+1;if(page>pages)page=pages;
     final queue=_OrderQueue(orders:list,selectedId:order?.id,page:page,onPage:(v)=>setState(()=>page=v),onSelect:(v)=>setState(()=>selectedId=v));
