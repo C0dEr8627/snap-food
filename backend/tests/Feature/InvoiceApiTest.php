@@ -18,7 +18,7 @@ class InvoiceApiTest extends TestCase
 
     public function test_delivered_customer_can_generate_and_read_invoice_from_order_snapshots(): void
     {
-        $customer = CustomerCustomerUser::factory()->create();
+        $customer = CustomerUser::factory()->create();
         $order = Order::factory()->create([
             'customer_id' => $customer->id,
             'status' => Order::STATUS_DELIVERED,
@@ -55,7 +55,7 @@ class InvoiceApiTest extends TestCase
 
     public function test_invoice_uses_immutable_snapshot_after_order_changes(): void
     {
-        $customer = CustomerCustomerUser::factory()->create();
+        $customer = CustomerUser::factory()->create();
         $order = Order::factory()->create([
             'customer_id' => $customer->id,
             'status' => Order::STATUS_DELIVERED,
@@ -85,7 +85,7 @@ class InvoiceApiTest extends TestCase
 
     public function test_invoice_requires_delivered_order(): void
     {
-        $customer = CustomerCustomerUser::factory()->create();
+        $customer = CustomerUser::factory()->create();
         $order = Order::factory()->create([
             'customer_id' => $customer->id,
             'status' => Order::STATUS_OUT_FOR_DELIVERY,
@@ -99,8 +99,8 @@ class InvoiceApiTest extends TestCase
 
     public function test_other_customer_cannot_read_invoice(): void
     {
-        $owner = CustomerCustomerUser::factory()->create();
-        $other = CustomerCustomerUser::factory()->create();
+        $owner = CustomerUser::factory()->create();
+        $other = CustomerUser::factory()->create();
         $order = Order::factory()->create([
             'customer_id' => $owner->id,
             'status' => Order::STATUS_DELIVERED,
@@ -114,8 +114,8 @@ class InvoiceApiTest extends TestCase
 
     public function test_delivery_partner_cannot_read_invoice(): void
     {
-        $customer = CustomerCustomerUser::factory()->create();
-        $partner = DeliveryPartnerCustomerUser::factory()->create();
+        $customer = CustomerUser::factory()->create();
+        $partner = DeliveryPartnerUser::factory()->create();
         $order = Order::factory()->create([
             'customer_id' => $customer->id,
             'status' => Order::STATUS_DELIVERED,
@@ -129,8 +129,8 @@ class InvoiceApiTest extends TestCase
 
     public function test_admin_can_read_delivered_order_invoice(): void
     {
-        $admin = AdminCustomerUser::factory()->create();
-        $customer = CustomerCustomerUser::factory()->create();
+        $admin = AdminUser::factory()->create();
+        $customer = CustomerUser::factory()->create();
         $order = Order::factory()->create([
             'customer_id' => $customer->id,
             'status' => Order::STATUS_DELIVERED,
@@ -144,7 +144,7 @@ class InvoiceApiTest extends TestCase
 
     public function test_invoice_number_is_unique_and_generation_is_idempotent(): void
     {
-        $customer = CustomerCustomerUser::factory()->create();
+        $customer = CustomerUser::factory()->create();
         $order = Order::factory()->create([
             'customer_id' => $customer->id,
             'status' => Order::STATUS_DELIVERED,
