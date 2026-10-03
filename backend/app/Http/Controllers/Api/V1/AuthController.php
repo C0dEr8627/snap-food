@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GoogleLoginRequest;
-use App\Models\User;
+use App\Models\CustomerUser;
+use App\Models\DeliveryPartnerUser;
+use App\Models\AdminUser;
+use Illuminate\Contracts\Auth\Authenticatable;
 use App\Services\Auth\GoogleCredentialVerifier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,7 +32,6 @@ class AuthController extends Controller
             'email' => strtolower(trim($validated['email'])),
             'phone' => $validated['phone'],
             'password' => Hash::make($validated['password']),
-            'role' => User::ROLE_CUSTOMER,
             'is_active' => true,
         ]);
 
@@ -53,8 +55,7 @@ class AuthController extends Controller
         if (
             $user === null
             || ! $user->is_active
-            || ! $user->hasRole(User::ROLE_CUSTOMER)
-            || $user->password === null
+                        || $user->password === null
             || ! Hash::check($validated['password'], $user->password)
         ) {
             return response()->json([
@@ -95,8 +96,7 @@ class AuthController extends Controller
                     'google_subject' => $identity['sub'],
                     'name' => $identity['name'],
                     'email' => $identity['email'],
-                    'role' => 'CUSTOMER',
-                    'is_active' => true,
+                            'is_active' => true,
                 ]);
             }
 
@@ -131,8 +131,7 @@ class AuthController extends Controller
         if (
             $user === null
             || ! $user->is_active
-            || ! $user->hasRole(User::ROLE_DELIVERY_PARTNER)
-            || $user->password === null
+                        || $user->password === null
             || ! Hash::check($validated['password'], $user->password)
         ) {
             return response()->json([
@@ -192,8 +191,7 @@ class AuthController extends Controller
                     'name' => 'Admin',
                     'email' => $bootstrapEmail,
                     'password' => Hash::make($bootstrapPassword),
-                    'role' => User::ROLE_ADMIN,
-                    'is_active' => true,
+                            'is_active' => true,
                 ]);
             }
         }
@@ -256,7 +254,7 @@ class AuthController extends Controller
             }
         }
 
-        if ($user === null || ! $user->is_active || ! $user->hasRole(User::ROLE_ADMIN)) {
+        if ($user === null || ! $user->is_active ) {
             return response()->json([
                 'message' => 'This Google account is not authorized for the admin dashboard.',
                 'errors' => (object) [],
