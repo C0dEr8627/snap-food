@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\AdminUser;
 use App\Models\CustomerUser;
 use App\Models\DeliveryLocation;
-use App\Models\DeliveryPartner;
 use App\Models\DeliveryPartnerUser;
 use App\Models\Order;
 use App\Models\OrderAssignment;
@@ -29,10 +28,13 @@ class DeliveryLocationTest extends TestCase
     private function partnerUser(string $suffix): DeliveryPartnerUser
     {
         return DeliveryPartnerUser::create([
-            'google_subject' => 'delivery-location-'.$suffix,
             'name' => ucfirst($suffix),
             'email' => $suffix.'@example.test',
             'is_active' => true,
+            'is_approved' => true,
+            'is_available' => true,
+            'approved_at' => now(),
+            'approved_by' => $this->admin()->id,
         ]);
     }
 
@@ -48,21 +50,8 @@ class DeliveryLocationTest extends TestCase
         ]);
     }
 
-    private function partner(DeliveryPartnerUser $user): DeliveryPartner
+    private function assignment(CustomerUser $customer, DeliveryPartnerUser $partner, string $status = Order::STATUS_OUT_FOR_DELIVERY): OrderAssignment
     {
-        return DeliveryPartner::create([
-            'user_id' => $user->id,
-            'is_approved' => true,
-            'is_active' => true,
-            'is_available' => true,
-            'approved_at' => now(),
-            'approved_by' => $this->admin()->id,
-        ]);
-    }
-
-    private function assignment(CustomerUser $customer, DeliveryPartnerUser $partnerUser, string $status = Order::STATUS_OUT_FOR_DELIVERY): OrderAssignment
-    {
-        $partner = $this->partner($partnerUser);
         $order = Order::create([
             'customer_id' => $customer->id,
             'delivery_address_snapshot' => ['line1' => 'Test'],
@@ -127,7 +116,6 @@ class DeliveryLocationTest extends TestCase
         $owner = $this->partnerUser('partner-owner');
         $intruder = $this->partnerUser('partner-intruder');
         $assignment = $this->assignment($customer, $owner);
-        $this->partner($intruder);
 
         $this->actingAs($intruder, 'sanctum')
             ->postJson('/api/v1/delivery/assignments/'.$assignment->id.'/location', [
