@@ -17,6 +17,13 @@ class CustomerUser extends Authenticatable
 
     protected $hidden = ['password', 'remember_token'];
 
+    protected $appends = ['role'];
+
+    public function getRoleAttribute(): string
+    {
+        return 'CUSTOMER';
+    }
+
     protected function casts(): array
     {
         return ['is_active' => 'boolean'];
