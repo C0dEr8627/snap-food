@@ -374,6 +374,29 @@ class _UsersTable extends flutter.StatelessWidget {
     onRowTap: (index) => onView(users[index]),
   );
 }
+class _UsersEmpty extends flutter.StatelessWidget {
+  const _UsersEmpty();
+
+  @override
+  flutter.Widget build(BuildContext context) => SfCard(
+        padding: const EdgeInsets.all(AdminSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const AdminIcon(HugeIcons.strokeRoundedUsers01, size: 32, color: AdminDesignColors.secondaryText),
+            const SizedBox(height: AdminSpacing.md),
+            Text('No users found', style: AdminTypography.sectionTitle),
+            const SizedBox(height: AdminSpacing.xs),
+            Text(
+              'Try a different search or role filter.',
+              textAlign: TextAlign.center,
+              style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText),
+            ),
+          ],
+        ),
+      );
+}
+
 class _UsersLoading extends flutter.StatelessWidget {
   const _UsersLoading();
 
