@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../design_system/components/snap_food_commerce.dart';
+import '../../../design_system/components/snap_food_inputs.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import 'catalogue_controller.dart';
 import 'catalogue_state_message.dart';
@@ -222,20 +224,10 @@ class _RestaurantMenuScreenState extends ConsumerState<RestaurantMenuScreen> {
                       scrollDirection: Axis.horizontal,
                       itemCount: categories.length,
                       separatorBuilder: (_, index) => const SizedBox(width: 8),
-                      itemBuilder: (_, i) => ChoiceChip(
+                      itemBuilder: (_, i) => SnapCategoryChip(
+                        label: categories[i],
                         selected: selectedCategory == i,
-                        onSelected: (_) => setState(() => selectedCategory = i),
-                        showCheckmark: false,
-                        label: Text(
-                          categories[i],
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        selectedColor: SnapFoodColors.primaryContainer,
-                        backgroundColor: SnapFoodColors.surfaceContainerLowest,
-                        side: BorderSide.none,
+                        onSelected: () => setState(() => selectedCategory = i),
                       ),
                     ),
                   ),
@@ -414,18 +406,7 @@ class _MenuSection extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          subtitle,
-          style: const TextStyle(
-            fontSize: 11,
-            color: SnapFoodColors.onSurfaceVariant,
-          ),
-        ),
+        SnapSectionHeader(title: title, subtitle: subtitle),
         const SizedBox(height: 10),
         for (final item in items)
           Padding(
@@ -548,12 +529,10 @@ class _MenuItemCard extends StatelessWidget {
                 const SizedBox(height: 7),
                 Row(
                   children: [
-                    Text(
-                      '₹' + item.price.toString(),
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                      ),
+                    SnapPrice(
+                      value: item.price.toString(),
+                      oldValue: item.oldPrice?.toString(),
+                      fontSize: 13,
                     ),
                     if (item.oldPrice != null) ...[
                       const SizedBox(width: 5),
@@ -568,72 +547,17 @@ class _MenuItemCard extends StatelessWidget {
                     ],
                     const Spacer(),
                     if (quantity == 0)
-                      OutlinedButton(
+                      SnapAddToCartButton(
+                        label: 'ADD',
                         onPressed: onAdd,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: SnapFoodColors.secondary,
-                          side: const BorderSide(
-                            color: SnapFoodColors.secondary,
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 13,
-                            vertical: 7,
-                          ),
-                        ),
-                        child: const Text(
-                          'ADD',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
                       )
                     else
-                      Container(
-                        decoration: BoxDecoration(
-                          color: SnapFoodColors.secondary,
-                          borderRadius: BorderRadius.circular(
-                            SnapFoodRadii.full,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              onPressed: onRemove,
-                              icon: const Icon(
-                                Icons.remove,
-                                color: Colors.white,
-                                size: 15,
-                              ),
-                              constraints: const BoxConstraints(
-                                minWidth: 30,
-                                minHeight: 30,
-                              ),
-                              padding: EdgeInsets.zero,
-                            ),
-                            Text(
-                              quantity.toString(),
-                              style: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: onAdd,
-                              icon: const Icon(
-                                Icons.add,
-                                color: Colors.white,
-                                size: 15,
-                              ),
-                              constraints: const BoxConstraints(
-                                minWidth: 30,
-                                minHeight: 30,
-                              ),
-                              padding: EdgeInsets.zero,
-                            ),
-                          ],
-                        ),
+                      SnapQuantityStepper(
+                        quantity: quantity,
+                        min: 0,
+                        onDecrement: onRemove,
+                        onIncrement: onAdd,
+                        compact: true,
                       ),
                   ],
                 ),
