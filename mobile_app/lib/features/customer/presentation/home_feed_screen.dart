@@ -632,13 +632,13 @@ class _DeliveryLocation extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedAddress =
         ref.watch(addressBookControllerProvider).value?.selectedAddress;
-    final label = selectedAddress?.label ?? 'Choose a delivery address';
+    final label = selectedAddress?.label ?? 'Use current location';
     final detail = selectedAddress?.displayLine;
 
     return Semantics(
       button: true,
       label: detail == null || detail.isEmpty
-          ? 'Delivery address: $label. Choose delivery address'
+          ? 'Delivery address: $label. Open delivery address options'
           : 'Delivery address: $label, $detail. Change delivery address',
       child: InkWell(
         onTap: () => context.push('/addresses'),
