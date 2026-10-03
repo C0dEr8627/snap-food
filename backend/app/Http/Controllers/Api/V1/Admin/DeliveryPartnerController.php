@@ -7,7 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProvisionDeliveryPartnerRequest;
 use App\Http\Requests\UpdateDeliveryPartnerApprovalRequest;
 use App\Models\DeliveryPartner;
-use App\Models\User;
+use App\Models\CustomerUser;
+use App\Models\DeliveryPartnerUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,21 +31,23 @@ class DeliveryPartnerController extends Controller
             $customer = CustomerUser::query()->lockForUpdate()->findOrFail($request->integer('user_id'));
 
             if (! $customer->is_active) {
-                abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Inactive users cannot be provisioned as delivery partners.');
+                abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Inactive customers cannot be provisioned as delivery partners.');
             }
 
-            if ($user->hasRole(User::ROLE_ADMIN)) {
-                throw new ConflictException('Admin users cannot be provisioned as delivery partners.');
+            if (DeliveryPartnerUser::query()->where('email', $customer->email)->exists()) {
+                throw new ConflictException('A delivery partner account already exists for this email.');
             }
 
-            if ($user->hasRole(User::ROLE_DELIVERY_PARTNER)) {
-                throw new ConflictException('User is already a delivery partner.');
-            }
-
-            $user->update(['role' => User::ROLE_DELIVERY_PARTNER]);
+            $partnerUser = DeliveryPartnerUser::create([
+                'name' => $customer->name,
+                'email' => $customer->email,
+                'phone' => $customer->phone,
+                'password' => $customer->password,
+                'is_active' => $customer->is_active,
+            ]);
 
             return DeliveryPartner::create([
-                'user_id' => $user->id,
+                'user_id' => $partnerUser->id,
                 'is_approved' => false,
                 'is_active' => true,
                 'is_available' => false,
@@ -73,7 +76,7 @@ class DeliveryPartnerController extends Controller
 
             $partner->save();
 
-            return $partner->load('user:id,name,email,role,is_active', 'approver:id,name,email');
+            return $partner->load('user:id,name,email,is_active', 'approver:id,name,email');
         });
 
         return response()->json(['data' => $partner]);
