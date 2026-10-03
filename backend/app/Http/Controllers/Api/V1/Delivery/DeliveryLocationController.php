@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Api\V1\Delivery;
 
 use App\Exceptions\ConflictException;
+use App\Models\AdminUser;
+use App\Models\CustomerUser;
 use App\Models\DeliveryLocation;
 use App\Models\Order;
 use App\Models\OrderAssignment;
-use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -72,7 +73,10 @@ class DeliveryLocationController
     {
         $user = $request->user();
 
-        if ($user->role !== User::ROLE_ADMIN && (int) $order->customer_id !== (int) $user->id) {
+        if (
+            ! $user->hasRole('ADMIN')
+            && (! $user->hasRole('CUSTOMER') || (int) $order->customer_id !== (int) $user->id)
+        ) {
             throw new AccessDeniedHttpException('You are not authorized to track this order.');
         }
 
