@@ -128,13 +128,13 @@ class _SfCommandPaletteState extends State<SfCommandPalette> {
   Widget build(BuildContext context) => Focus(
     autofocus: true,
     onKeyEvent: (_, event) {
-      if (event is KeyDownEvent &&
-          event.logicalKey == LogicalKeyboardKey.escape) {
+      if (event is flutter.KeyDownEvent &&
+          event.logicalKey == flutter.LogicalKeyboardKey.escape) {
         Navigator.of(context).pop();
         return KeyEventResult.handled;
       }
-      if (event is KeyDownEvent &&
-          event.logicalKey == LogicalKeyboardKey.enter) {
+      if (event is flutter.KeyDownEvent &&
+          event.logicalKey == flutter.LogicalKeyboardKey.enter) {
         _submit();
         return KeyEventResult.handled;
       }
