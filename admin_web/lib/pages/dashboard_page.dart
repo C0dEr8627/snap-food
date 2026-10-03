@@ -185,7 +185,7 @@ class _SalesCard extends StatelessWidget {
         final factor=max==0?0:p.revenue/max;
         return Expanded(child:Padding(padding:const EdgeInsets.symmetric(horizontal:5),child:Column(mainAxisAlignment:MainAxisAlignment.end,children:[
           Text(p.revenue==0?'—':_compactMoney(p.revenue),style:const TextStyle(fontSize:10,fontWeight:FontWeight.w800,color:AdminColors.muted)),const SizedBox(height:5),
-          Expanded(child:Align(alignment:Alignment.bottomCenter,child:FractionallySizedBox(heightFactor:factor.clamp(.05,1.0),widthFactor:.62,child:Container(decoration:BoxDecoration(color:AdminColors.amber,borderRadius:BorderRadius.circular(6)))))),
+          Expanded(child:Align(alignment:Alignment.bottomCenter,child:FractionallySizedBox(heightFactor:factor.clamp(.05,1.0).toDouble(),widthFactor:.62,child:Container(decoration:BoxDecoration(color:AdminColors.amber,borderRadius:BorderRadius.circular(6)))))),
           const SizedBox(height:7),Text(p.label,style:const TextStyle(fontSize:10,fontWeight:FontWeight.w800,color:AdminColors.muted)),Text(p.orders.toString(),style:const TextStyle(fontSize:10)),
         ])));
       }).toList())),
@@ -214,20 +214,83 @@ class _FlowCard extends StatelessWidget {
 }
 
 class _RecentOrdersCard extends StatelessWidget {
-  const _RecentOrdersCard({required this.orders}); final List<_RecentOrder> orders;
-  @override Widget build(BuildContext context)=>AdminCard(child:Padding(padding:const EdgeInsets.fromLTRB(18,17,18,7),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-    Row(children:[const Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('Recent orders',style:TextStyle(fontSize:15,fontWeight:FontWeight.w900)),SizedBox(height:3),Text('Latest activity across the Snap Foodd order lifecycle',style:TextStyle(fontSize:11,color:AdminColors.muted))])),Text(orders.length.toString()+' shown',style:const TextStyle(fontSize:11,fontWeight:FontWeight.w800,color:AdminColors.muted))]),
-    const SizedBox(height:8),
-    if(orders.isEmpty)const Padding(padding:EdgeInsets.all(24),child:Center(child:Text('No orders yet.',style:TextStyle(fontSize:12,color:AdminColors.muted))))
-    else ...orders.map((o){final s=_dashboardStatusStyle(o.status);return Container(padding:const EdgeInsets.symmetric(vertical:11),decoration:const BoxDecoration(border:Border(bottom:BorderSide(color:AdminColors.line))),child:Row(children:[
-      Container(width:36,height:36,decoration:BoxDecoration(color:AdminColors.canvas,borderRadius:BorderRadius.circular(9)),child:const AdminIcon(HugeIcons.strokeRoundedShoppingBag01,size:17,color:AdminColors.ink)),const SizedBox(width:9),
-      Expanded(flex:3,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('#'+o.id,style:const TextStyle(fontSize:12,fontWeight:FontWeight.w900)),const SizedBox(height:2),Text(o.customer,style:const TextStyle(fontSize:11,color:AdminColors.muted))])),
-      Expanded(flex:2,child:Text(o.partner??'Unassigned',maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:11,color:AdminColors.muted))),
-      Expanded(flex:2,child:Text(o.payment,style:const TextStyle(fontSize:11,color:AdminColors.muted))),
-      Expanded(flex:2,child:Text(_money(o.total),style:const TextStyle(fontSize:12,fontWeight:FontWeight.w900))),
-      Container(constraints:const BoxConstraints(minWidth:82),alignment:Alignment.center,padding:const EdgeInsets.symmetric(horizontal:7,vertical:5),decoration:BoxDecoration(color:s.$1,borderRadius:BorderRadius.circular(20)),child:Text(o.status.replaceAll('_',' '),style:TextStyle(fontSize:9,fontWeight:FontWeight.w900,color:s.$2))),
-    ]);}),
-  ])));
+  const _RecentOrdersCard({required this.orders});
+  final List<_RecentOrder> orders;
+
+  @override
+  Widget build(BuildContext context) {
+    return AdminCard(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(18, 17, 18, 7),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Recent orders', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
+                      SizedBox(height: 3),
+                      Text('Latest activity across the Snap Foodd order lifecycle', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
+                    ],
+                  ),
+                ),
+                Text(orders.length.toString() + ' shown', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.muted)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (orders.isEmpty)
+              const Padding(
+                padding: EdgeInsets.all(24),
+                child: Center(child: Text('No orders yet.', style: TextStyle(fontSize: 12, color: AdminColors.muted))),
+              )
+            else
+              ...orders.map((o) {
+                final s = _dashboardStatusStyle(o.status);
+                return Container(
+                  padding: const EdgeInsets.symmetric(vertical: 11),
+                  decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AdminColors.line))),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(9)),
+                        child: const AdminIcon(HugeIcons.strokeRoundedShoppingBag01, size: 17, color: AdminColors.ink),
+                      ),
+                      const SizedBox(width: 9),
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('#' + o.id, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
+                            const SizedBox(height: 2),
+                            Text(o.customer, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
+                          ],
+                        ),
+                      ),
+                      Expanded(flex: 2, child: Text(o.partner ?? 'Unassigned', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted))),
+                      Expanded(flex: 2, child: Text(o.payment, style: const TextStyle(fontSize: 11, color: AdminColors.muted))),
+                      Expanded(flex: 2, child: Text(_money(o.total), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
+                      Container(
+                        constraints: const BoxConstraints(minWidth: 82),
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+                        decoration: BoxDecoration(color: s.$1, borderRadius: BorderRadius.circular(20)),
+                        child: Text(o.status.replaceAll('_', ' '), style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: s.$2)),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _DashboardWarning extends StatelessWidget {
