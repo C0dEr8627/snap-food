@@ -895,7 +895,7 @@ The admin UI/UX modernization is complete when:
 | Task 15 — Loading / Empty / Error / Success | 🟢 Complete | 2026-10-03 | Standardized reusable loading/error/empty presentation and routed legacy generic admin notices through the branded feedback system; audited all current admin page state patterns. |
 | Task 16 — Responsive Admin Web | 🟢 Complete | 2026-10-03 | Added an explicit 4-tier admin shell strategy: full sidebar ≥1200px, compact sidebar rail at 900–1199px, drawer navigation at 600–899px, and narrow mobile fallback below 600px; audited page breakpoints, table overflow and responsive grids. |
 | Task 17 — Accessibility / Keyboard UX | 🟢 Complete | 2026-10-03 | Audited shared admin interaction semantics and keyboard/focus affordances; strengthened shared button/icon-button semantics, preserved native keyboard activation and documented accessibility QA limitations. |
-| Task 18 — Motion & Micro-interactions | ⬜ Not Started | 2026-10-03 | |
+| Task 18 — Motion & Micro-interactions | 🟢 Complete | 2026-10-03 | Standardized restrained motion usage around the existing AdminMotion tokens, preserved navigation/button hover transitions and added a reusable SfAnimatedSwitcher for state transitions without introducing decorative animation. |
 | Task 19 — Final Visual QA & Cleanup | ⬜ Not Started | 2026-10-03 | |
 
 ### Status meanings
@@ -1299,6 +1299,27 @@ The admin UI/UX modernization is complete when:
   - Full Flutter Web compile, formatter, analyzer, automated tests and browser visual/overflow QA still require a runnable local or CI execution environment.
   - Existing invoice helper classes with legacy styling remain in the file where they are not part of the active rendered path; they can be cleaned up during the later final visual QA/cleanup pass.
   - Task 14 — Premium Form UX is the next implementation target.
+
+### 2026-10-03 — Task 18
+- Status: 🟢 Complete
+- Implemented:
+  - Audited current admin motion usage across the shell, shared components and primary workspaces.
+  - Confirmed the existing motion token layer is intentionally restrained: 120ms hover, 180ms navigation, 200ms dialog, 230ms drawer and 350ms data-update durations with shared easing curves.
+  - Kept existing `AnimatedContainer` interactions for navigation and buttons rather than adding page-wide animation.
+  - Added reusable `SfAnimatedSwitcher` for future state/content transitions, using the centralized AdminMotion duration and easing tokens.
+  - Avoided decorative looping animation, large-scale entrance effects and excessive motion that could make the data-dense admin UI feel slower or distracting.
+  - Preserved existing API contracts, routing, authentication and business behavior.
+- Files/components changed:
+  - `admin_web/lib/widgets/sf_core_components.dart`
+  - `ADMIN_WEB_UI_UX_DEVELOPMENT_PLAN.md`
+- Validation:
+  - Audited animation primitives and motion-token usage across the admin shell and major pages.
+  - Re-fetched the final shared component source after implementation.
+  - Verified the new reusable switcher consumes centralized AdminMotion timing/easing tokens.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action.
+- Limitations/follow-up:
+  - Browser-level animation smoothness, reduced-motion preferences and frame-performance profiling still require a runnable Flutter Web environment.
+  - Task 19 — Final Visual QA & Cleanup is now the next and final implementation target.
 
 ### 2026-10-03 — Task 17
 - Status: 🟢 Complete
