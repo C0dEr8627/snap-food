@@ -36,18 +36,11 @@ class SnapFooddAdminApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
     title: 'Snap Foodd Admin',
     debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: AdminColors.amber),
-      scaffoldBackgroundColor: AdminColors.canvas,
-      useMaterial3: true,
-    ),
+    theme: AdminTheme.material(),
     home: shad.ShadcnApp(
       title: 'Snap Foodd Admin',
       debugShowCheckedModeBanner: false,
-      theme: shad.ThemeData(
-        colorScheme: shad.LegacyColorSchemes.lightZinc(),
-        radius: 0.65,
-      ),
+      theme: AdminTheme.shadcn(),
       // ShadcnApp creates its own localization scope. Restore the Material
       // delegates inside it for Material TextField, Scaffold and Tooltip.
       home: Localizations(
