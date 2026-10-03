@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\User;
+use App\Models\AdminUser;
 
 return [
     'defaults' => [
@@ -11,24 +11,24 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'admins',
         ],
         'sanctum' => [
             'driver' => 'sanctum',
-            'provider' => 'users',
+            'provider' => 'admins',
         ],
     ],
 
     'providers' => [
-        'users' => [
+        'admins' => [
             'driver' => 'eloquent',
-            'model' => User::class,
+            'model' => AdminUser::class,
         ],
     ],
 
     'passwords' => [
         'users' => [
-            'provider' => 'users',
+            'provider' => 'admins',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
