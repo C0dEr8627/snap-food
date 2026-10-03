@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../design_system/components/snap_food_commerce.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import 'catalogue_controller.dart';
 import 'catalogue_state_message.dart';
@@ -254,42 +255,25 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                     child: Row(
                       children: [
-                        _QuantityControl(
+                        SnapQuantityStepper(
                           quantity: quantity,
-                          onRemove: quantity > 1
+                          onDecrement: quantity > 1
                               ? () => setState(() => quantity--)
                               : null,
-                          onAdd: quantity < 99
+                          onIncrement: quantity < 99
                               ? () => setState(() => quantity++)
                               : null,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: FilledButton(
-                            onPressed: product.isActive && product.isAvailable
-                                ? () => _addToCart(product)
-                                : null,
-                            style: FilledButton.styleFrom(
-                              backgroundColor: SnapFoodColors.secondary,
-                              foregroundColor: Colors.white,
-                              minimumSize: const Size.fromHeight(50),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  SnapFoodRadii.md,
-                                ),
-                              ),
-                            ),
-                            child: Text(
-                              'Add ' +
-                                  quantity.toString() +
-                                  (quantity == 1 ? ' item' : ' items') +
-                                  '  •  ₹' +
-                                  (previewPrice * quantity).toString(),
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
+                          child: SnapAddToCartButton(
+                            enabled: product.isActive && product.isAvailable,
+                            onPressed: () => _addToCart(product),
+                            label: 'Add ' +
+                                quantity.toString() +
+                                (quantity == 1 ? ' item' : ' items') +
+                                '  •  ₹' +
+                                (previewPrice * quantity).toString(),
                           ),
                         ),
                       ],
@@ -390,8 +374,8 @@ class _Tag extends StatelessWidget {
   );
 }
 
-class _QuantityControl extends StatelessWidget {
-  const _QuantityControl({
+class _LegacyQuantityControl extends StatelessWidget {
+  const _LegacyQuantityControl({
     required this.quantity,
     required this.onRemove,
     required this.onAdd,
