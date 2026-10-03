@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exceptions\ConflictException;
 use App\Exceptions\OrderStateConflictException;
 use App\Http\Controllers\Controller;
-use App\Models\DeliveryPartner;
+use App\Models\DeliveryPartnerUser;
 use App\Models\Order;
 use App\Services\Orders\OrderAssignmentService;
 use App\Services\Orders\OrderStatusService;
@@ -24,7 +24,7 @@ class OrderController extends Controller
         ]);
 
         $query = Order::query()
-            ->with(['customer', 'assignment.deliveryPartner.user'])
+            ->with(['customer', 'assignment.deliveryPartner'])
             ->latest('id');
 
         if (! empty($validated['q'])) {
@@ -59,7 +59,7 @@ class OrderController extends Controller
         $order->load([
             'customer',
             'items.product',
-            'assignment.deliveryPartner.user',
+            'assignment.deliveryPartner',
             'assignment.assigner',
             'statusHistory.actor',
             'invoice',
@@ -69,7 +69,12 @@ class OrderController extends Controller
             'order' => $order,
             'nextStatuses' => Order::allowedTransitions()[$order->status] ?? [],
             'eligiblePartners' => $order->status === Order::STATUS_READY_FOR_PICKUP && ! $order->assignment
-                ? DeliveryPartner::query()->with('user:id,name,email')->where('is_approved', true)->where('is_active', true)->where('is_available', true)->whereHas('user', fn ($users) => $users->where('is_active', true))->orderBy('id')->get()
+                ? DeliveryPartnerUser::query()
+                    ->where('is_approved', true)
+                    ->where('is_active', true)
+                    ->where('is_available', true)
+                    ->orderBy('id')
+                    ->get()
                 : collect(),
         ]);
     }
@@ -78,11 +83,11 @@ class OrderController extends Controller
     {
         Gate::authorize('updateStatus', $order);
         $validated = $request->validate([
-            'delivery_partner_id' => ['required', 'integer', 'exists:delivery_partners,id'],
+            'delivery_partner_id' => ['required', 'integer', 'exists:delivery_partner_users,id'],
         ]);
 
         try {
-            $partner = DeliveryPartner::query()->findOrFail($validated['delivery_partner_id']);
+            $partner = DeliveryPartnerUser::query()->findOrFail($validated['delivery_partner_id']);
             $assignmentService->assign($order, $partner, $request->user());
         } catch (ConflictException $e) {
             abort(409, $e->getMessage());
