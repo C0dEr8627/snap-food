@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../design_system/components/snap_food_button.dart';
+import '../../../design_system/components/snap_food_commerce.dart';
+import '../../../design_system/components/snap_food_feedback.dart';
 import '../../../design_system/tokens/app_colors.dart';
+import '../../../design_system/tokens/app_typography.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../../../design_system/tokens/app_spacing.dart';
 import '../../auth/presentation/auth_controller.dart';
@@ -115,30 +119,27 @@ class _ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Material(
-    color: SnapFoodColors.surface.withAlpha(245),
-    elevation: 1,
-    child: SizedBox(
-      height: 64,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Row(
-          children: [
-            IconButton(
-              tooltip: 'Back to home',
-              onPressed: () => context.go('/home'),
-              icon: const Icon(Icons.arrow_back_rounded),
-            ),
-            const Expanded(
-              child: Text(
-                'My Profile',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+        color: SnapFoodColors.surface,
+        child: SizedBox(
+          height: 64,
+          child: Row(
+            children: [
+              SnapIconButton(
+                icon: Icons.arrow_back_rounded,
+                tooltip: 'Back to home',
+                semanticLabel: 'Back to home',
+                onPressed: () => context.go('/home'),
               ),
-            ),
-          ],
+              Expanded(
+                child: Text(
+                  'My profile',
+                  style: SnapFoodTypography.titleMedium,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    ),
-  );
+      );
 }
 
 class _ProfileIdentity extends StatelessWidget {
@@ -252,7 +253,7 @@ class _ProfileIdentity extends StatelessWidget {
       _ProfileAction(
         icon: Icons.favorite_border,
         title: 'Favorites',
-        subtitle: 'Your saved restaurants and dishes',
+        subtitle: 'Your saved dishes',
         onTap: () => context.go('/favorites'),
       ),
     ],
@@ -293,100 +294,74 @@ class _StatDivider extends StatelessWidget {
 }
 
 class _ProfileSections extends StatelessWidget {
-  const _ProfileSections({required this.selectedAddress, required this.onLogout});
+  const _ProfileSections({
+    required this.selectedAddress,
+    required this.onLogout,
+  });
+
   final SavedAddress? selectedAddress;
   final VoidCallback onLogout;
 
   @override
-  Widget build(BuildContext context) => Column(
-    children: [
-      _SectionCard(
-        title: 'Your account',
-        children: [
-          _AccountRow(
-            icon: Icons.location_on_outlined,
-            title: 'Saved addresses',
-            subtitle: selectedAddress == null
-                ? 'Add or manage your delivery addresses'
-                : '${selectedAddress?.label} · ${selectedAddress?.displayLine}',
-            onTap: () => context.go('/addresses'),
-          ),
-          _AccountRow(
-            icon: Icons.credit_card_outlined,
-            title: 'Payment methods',
-            subtitle: 'UPI, cards and cash preferences',
-          ),
-          _AccountRow(
-            icon: Icons.local_offer_outlined,
-            title: 'Offers & coupons',
-            subtitle: 'View available discounts',
-          ),
-        ],
-      ),
-      const SizedBox(height: 14),
-      _SectionCard(
-        title: 'Preferences',
-        children: [
-          _AccountRow(
-            icon: Icons.notifications_none,
-            title: 'Notifications',
-            subtitle: 'Order updates and offers',
-            trailing: Switch.adaptive(
-              value: true,
-              onChanged: (_) {},
-              activeTrackColor: SnapFoodColors.primaryContainer,
-              activeThumbColor: SnapFoodColors.secondary,
-            ),
-          ),
-          _AccountRow(
-            icon: Icons.language_outlined,
-            title: 'Language',
-            subtitle: 'English',
-          ),
-          _AccountRow(
-            icon: Icons.help_outline,
-            title: 'Help & support',
-            subtitle: 'FAQs and contact support',
-          ),
-        ],
-      ),
-      const SizedBox(height: 14),
-      _SectionCard(
-        title: 'More',
-        children: [
-          _AccountRow(
-            icon: Icons.shield_outlined,
-            title: 'Privacy & security',
-            subtitle: 'Manage your account privacy',
-          ),
-          _AccountRow(
-            icon: Icons.info_outline,
-            title: 'About Snap Fooddd',
-            subtitle: 'Version 1.0.0',
-          ),
-        ],
-      ),
-      const SizedBox(height: 14),
-      const _EmbeddedSettings(),
-      const SizedBox(height: 14),
-      SizedBox(
-        width: double.infinity,
-        child: OutlinedButton.icon(
-          onPressed: onLogout,
-          icon: const Icon(Icons.logout, size: 18),
-          label: const Text('Log out'),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: SnapFoodColors.secondary,
-            minimumSize: const Size.fromHeight(48),
-            side: const BorderSide(color: SnapFoodColors.softBorder),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(SnapFoodRadii.md),
-            ),
+  Widget build(BuildContext context) {
+    final addressSubtitle = selectedAddress == null
+        ? 'Add or manage your delivery addresses'
+        : selectedAddress!.label + ' · ' + selectedAddress!.displayLine;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SnapSectionHeader(
+          title: 'Your account',
+          subtitle: 'Quick access to orders, favorites and delivery addresses.',
+        ),
+        const SizedBox(height: 8),
+        _AccountRow(
+          icon: Icons.receipt_long_outlined,
+          title: 'My orders',
+          subtitle: 'Track current and previous orders',
+          onTap: () => context.go('/orders'),
+        ),
+        _AccountRow(
+          icon: Icons.favorite_rounded,
+          title: 'Favorites',
+          subtitle: 'Your saved dishes',
+          onTap: () => context.go('/favorites'),
+        ),
+        _AccountRow(
+          icon: Icons.location_on_outlined,
+          title: 'Saved addresses',
+          subtitle: addressSubtitle,
+          onTap: () => context.go('/addresses'),
+        ),
+        const SizedBox(height: 24),
+        const SnapSectionHeader(
+          title: 'Account',
+          subtitle: 'Your signed-in customer account.',
+        ),
+        const SizedBox(height: 8),
+        const _AccountRow(
+          icon: Icons.person_outline_rounded,
+          title: 'Account details',
+          subtitle: 'Name and contact information from your account',
+        ),
+        const _AccountRow(
+          icon: Icons.info_outline_rounded,
+          title: 'About Snap Foodd',
+          subtitle: 'Customer food commerce experience',
+        ),
+        const SizedBox(height: 24),
+        SizedBox(
+          width: double.infinity,
+          child: SnapSecondaryButton(
+            label: 'Log out',
+            icon: Icons.logout_rounded,
+            onPressed: onLogout,
           ),
         ),
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }
 
 class _SectionCard extends StatelessWidget {
