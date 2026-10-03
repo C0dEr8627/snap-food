@@ -68,7 +68,7 @@ class GeolocatorDeliveryLocationSource implements DeliveryLocationSource {
       (position) => DeliveryPosition(
         latitude: position.latitude,
         longitude: position.longitude,
-        recordedAt: position.timestamp?.toUtc() ?? DateTime.now().toUtc(),
+        recordedAt: position.timestamp.toUtc(),
         accuracy: position.accuracy,
       ),
     );
