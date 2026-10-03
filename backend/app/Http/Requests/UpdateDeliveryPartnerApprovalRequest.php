@@ -10,7 +10,7 @@ class UpdateDeliveryPartnerApprovalRequest extends FormRequest
     public function authorize(): bool
     {
         return $this->user()?->is_active === true
-            && $this->user()->hasRole(User::ROLE_ADMIN);
+            && $this->user() instanceof AdminUser;
     }
 
     public function rules(): array
