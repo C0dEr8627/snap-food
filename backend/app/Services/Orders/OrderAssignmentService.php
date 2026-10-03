@@ -21,9 +21,7 @@ class OrderAssignmentService
                 throw new ConflictException('Only orders ready for pickup can be assigned.');
             }
 
-            $lockedPartner = DeliveryPartner::query()
-                ->lockForUpdate()
-                ->findOrFail($deliveryPartner->id);
+            $lockedPartner = DeliveryPartner::query()->lockForUpdate()->findOrFail($deliveryPartner->id);
 
             if (! $lockedPartner->is_approved || ! $lockedPartner->is_active || ! $lockedPartner->is_available) {
                 throw new ConflictException('Delivery partner is not eligible for assignment.');
@@ -52,10 +50,11 @@ class OrderAssignmentService
                 'from_status' => $fromStatus,
                 'to_status' => Order::STATUS_ASSIGNED,
                 'actor_id' => $actor->id,
+                'actor_type' => $actor::class,
             ]);
 
             return $assignment->load(
-                'deliveryPartner.user:id,name,email,role,is_active',
+                'deliveryPartner.user:id,name,email,is_active',
                 'assigner:id,name,email',
                 'order:id,customer_id,status,total'
             );
