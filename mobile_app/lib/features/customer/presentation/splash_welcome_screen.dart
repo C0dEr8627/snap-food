@@ -32,8 +32,8 @@ class _SplashScreenState extends State<SplashScreen>
     );
     _controller.forward();
 
-    Timer(const Duration(milliseconds: 1800), () {
-      if (mounted) context.go('/login');
+    Timer(const Duration(milliseconds: 1500), () {
+      if (mounted) context.go('/welcome');
     });
   }
 
@@ -52,15 +52,15 @@ class _SplashScreenState extends State<SplashScreen>
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          width: 190,
-          height: 190,
+          width: 170,
+          height: 170,
           child: SvgPicture.asset(
             'assets/images/customer/logo-without-bg.svg',
             fit: BoxFit.contain,
             semanticsLabel: 'Snap Foodd',
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 20),
         const Text(
           'Snap Foodd',
           textAlign: TextAlign.center,
@@ -72,9 +72,9 @@ class _SplashScreenState extends State<SplashScreen>
             letterSpacing: -1.2,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         const Text(
-          'Your cravings. Your favourites.\nDelivered with care.',
+          'Good food, just a snap away.',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: SnapFoodColors.onSurfaceVariant,
@@ -83,14 +83,14 @@ class _SplashScreenState extends State<SplashScreen>
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 36),
+        const SizedBox(height: 32),
         SizedBox(
-          width: 30,
-          height: 30,
+          width: 28,
+          height: 28,
           child: CircularProgressIndicator(
             strokeWidth: 2.5,
-            color: SnapFoodColors.secondary,
-            backgroundColor: SnapFoodColors.secondary.withAlpha(30),
+            color: SnapFoodColors.foodRed,
+            backgroundColor: SnapFoodColors.foodRed.withAlpha(25),
           ),
         ),
       ],
@@ -144,13 +144,13 @@ class _SplashScreenState extends State<SplashScreen>
             child: SafeArea(
               top: false,
               child: Text(
-                'GOOD FOOD, JUST A SNAP AWAY',
+                'YOUR CRAVINGS. ONE EASY ORDER.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: SnapFoodColors.outline,
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
-                  letterSpacing: 2.1,
+                  letterSpacing: 1.8,
                 ),
               ),
             ),
