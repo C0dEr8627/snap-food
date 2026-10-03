@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:geolocator/geolocator.dart';
+
 class DeliveryPosition {
   const DeliveryPosition({
     required this.latitude,
@@ -24,12 +26,65 @@ abstract interface class DeliveryLocationSource {
   Future<void> dispose();
 }
 
+class GeolocatorDeliveryLocationSource implements DeliveryLocationSource {
+  Stream<DeliveryPosition>? _positions;
+
+  @override
+  Future<DeliveryLocationPermission> requestPermission() async {
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        return DeliveryLocationPermission.unavailable;
+      }
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      return switch (permission) {
+        LocationPermission.always ||
+        LocationPermission.whileInUse =>
+          DeliveryLocationPermission.granted,
+        LocationPermission.denied =>
+          DeliveryLocationPermission.denied,
+        LocationPermission.deniedForever =>
+          DeliveryLocationPermission.deniedForever,
+        LocationPermission.unableToDetermine =>
+          DeliveryLocationPermission.unavailable,
+      };
+    } catch (_) {
+      return DeliveryLocationPermission.unavailable;
+    }
+  }
+
+  @override
+  Stream<DeliveryPosition> get positions {
+    return _positions ??= Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      ),
+    ).map(
+      (position) => DeliveryPosition(
+        latitude: position.latitude,
+        longitude: position.longitude,
+        recordedAt: position.timestamp?.toUtc() ?? DateTime.now().toUtc(),
+        accuracy: position.accuracy,
+      ),
+    );
+  }
+
+  @override
+  Future<void> dispose() async {
+    _positions = null;
+  }
+}
+
 /// Foreground-only adapter used by the active delivery trip.
 ///
-/// The platform implementation is deliberately injected. This keeps GPS,
-/// permission APIs and platform plugins out of the delivery domain layer.
-/// It also guarantees that no location stream is started until an active
-/// assignment explicitly subscribes to it.
+/// GPS is subscribed only while an active assignment is being navigated.
+/// Updates are throttled before they are sent to the API to avoid unnecessary
+/// network/database writes while preserving a responsive customer marker.
 class ForegroundDeliveryLocationAdapter {
   ForegroundDeliveryLocationAdapter({
     required DeliveryLocationSource source,
@@ -64,8 +119,8 @@ class ForegroundDeliveryLocationAdapter {
         _flushIfReady(onPosition);
       },
       onError: (_) {
-        // The owner observes source errors through its own UI/controller
-        // boundary. The adapter stops emitting but does not fabricate data.
+        // The controller reports failed publishes; the adapter never
+        // fabricates a location when the platform stream fails.
       },
     );
     return permission;
@@ -84,14 +139,6 @@ class ForegroundDeliveryLocationAdapter {
       _pending = null;
       if (next != null && _running) {
         onPosition(next);
-        _throttleTimer = Timer(_updateInterval, () {
-          _throttleTimer = null;
-          if (_pending != null && _running) {
-            final latest = _pending;
-            _pending = null;
-            if (latest != null) onPosition(latest);
-          }
-        });
       }
     });
   }
