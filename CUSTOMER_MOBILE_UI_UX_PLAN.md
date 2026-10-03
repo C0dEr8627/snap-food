@@ -482,14 +482,16 @@ Requirements:
 
 
 ### Task 16 — Redesign Order Details
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- Restaurant/order identity.
-- Items and totals.
-- Status.
-- Delivery information.
-- Actions such as reorder/support where supported.
-- Strong information grouping.
+- Reworked Order Details around order identity and status-first hierarchy; the product decision that Snap Foodd has no restaurant concept is preserved, so no restaurant identity or metadata was introduced.
+- Grouped ordered items, quantities and API-supported line totals into a scan-friendly items section. Product names are read from the existing order payload when available; no unsupported product data is fabricated.
+- Grouped delivery-address snapshot, payment method/status, subtotal, delivery fee and total using the existing order contract.
+- Reused SnapOrderStatus, SnapPrice, SnapSectionHeader, SnapPrimaryButton, SnapSecondaryButton and branded loading/error/empty states.
+- Preserved existing order-detail loading through OrderHistoryController and the current order repository/API contract.
+- Preserved live-tracking preview and the existing `/orders/:id/tracking` route for non-terminal orders.
+- Preserved the existing delivered-order invoice route; no reorder/support actions were fabricated because the current customer order contract does not expose those operations.
+- Added safe-area-aware scrolling, accessible order/status semantics, stronger grouping and tokenized spacing/typography without changing business logic.
 
 ### Task 17 — Redesign live order tracking
 **Status:** ⬜ Not Started
@@ -607,6 +609,7 @@ Before marking any task complete, verify:
 | 2026-10-03 | Task 13 — Redesign Checkout | ✅ Complete | Reworked Checkout into a high-trust, product/catalogue-first commerce flow with clear delivery address, order summary, COD payment selection, preview price breakdown, explicit server-authoritative final-total messaging, and a safe-area-aware sticky primary CTA. Reused Snap Foodd components and preserved saved-address selection, inline address creation, `CreateOrderRequest`, order submission, cart clearing, and order-detail navigation. Validation: changed Dart source has balanced delimiter counts; the implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 14 — Redesign address selection/book | ✅ Complete | Reworked the customer address book with a reusable SnapAddressTile, explicit selected semantics, clearer saved-address hierarchy, branded add-address form, inline validation/error feedback, delete confirmation, and preserved checkout selection behavior. The existing address contract currently exposes GET/POST/DELETE but no documented update/edit endpoint, so an edit action was intentionally not fabricated; the reusable tile supports a future edit callback when the API supports it. Validation: changed Dart source files have balanced braces/parentheses/brackets; the implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 15 — Redesign Orders | ✅ Complete | Reworked Orders into clear Active orders and Past orders sections with scan-friendly cards, reusable SnapOrderStatus semantics, prominent totals and item counts, branded loading/error/empty states, refresh and pagination preservation, and existing order-detail navigation. Reorder was not fabricated because the current customer order contract/controller exposes no reorder operation. Validation: changed Dart source files have balanced braces/parentheses/brackets; implementation commits exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
+| 2026-10-03 | Task 16 — Redesign Order Details | ✅ Complete | Reworked Order Details around order identity, status, items, delivery snapshot, payment/total information and supported actions. Reused Snap Foodd order/status/price/buttons/feedback components, preserved existing order-detail loading, live-tracking navigation and delivered-order invoice behavior, and intentionally did not fabricate restaurant identity, reorder or support actions because the current product/API contract does not expose them. Validation: changed Dart source has balanced braces/parentheses/brackets; implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 
 ---
 
@@ -633,6 +636,7 @@ Before marking any task complete, verify:
 - Completed Task 13: redesigned Checkout around address, order summary, COD payment, transparent price preview/final-total messaging, and a safe-area-aware place-order CTA while preserving existing checkout/order behavior.
 - Completed Task 14: redesigned the address book with reusable selected-address tiles, branded add-address flow, safe deletion confirmation, and preserved checkout selection behavior; documented the current API limitation around address editing.
 - Completed Task 15: redesigned Orders with active/past grouping, scan-first order cards, reusable status semantics, branded states, and preserved pagination/detail navigation; documented that reorder is not supported by the current order contract.
+- Completed Task 16: redesigned Order Details around status-first order identity, item/totals hierarchy, delivery snapshot, payment information and supported tracking/invoice actions while preserving the existing order API and avoiding unsupported restaurant/reorder/support concepts.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
