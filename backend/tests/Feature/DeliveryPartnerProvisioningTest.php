@@ -3,7 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\DeliveryPartner;
-use App\Models\User;
+use App\Models\AdminUser;
+use App\Models\CustomerUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -11,26 +12,35 @@ class DeliveryPartnerProvisioningTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function user(string $suffix, string $role = User::ROLE_CUSTOMER): User
+    private function customer(string $suffix): CustomerUser
     {
-        return User::create([
+        return CustomerUser::create([
             'google_subject' => 'google-partner-'.$suffix,
             'name' => ucfirst($suffix),
             'email' => $suffix.'@example.test',
-            'role' => $role,
+            'is_active' => true,
+        ]);
+    }
+
+    private function admin(string $suffix): AdminUser
+    {
+        return AdminUser::create([
+            'google_subject' => 'google-partner-'.$suffix,
+            'name' => ucfirst($suffix),
+            'email' => $suffix.'@example.test',
             'is_active' => true,
         ]);
     }
 
     public function test_admin_can_provision_and_approve_delivery_partner(): void
     {
-        $admin = $this->user('admin', User::ROLE_ADMIN);
-        $candidate = $this->user('candidate');
+        $admin = $this->admin('admin');
+        $candidate = $this->customer('candidate');
 
         $this->actingAs($admin, 'sanctum')
             ->postJson('/api/v1/admin/delivery-partners', ['user_id' => $candidate->id])
             ->assertCreated()
-            ->assertJsonPath('data.user.role', User::ROLE_DELIVERY_PARTNER)
+            ->assertJsonPath('data.user.role', 'DELIVERY_PARTNER')
             ->assertJsonPath('data.is_approved', false);
 
         $partner = DeliveryPartner::query()->firstOrFail();
@@ -52,8 +62,8 @@ class DeliveryPartnerProvisioningTest extends TestCase
 
     public function test_admin_can_revoke_approval_and_partner_becomes_unavailable(): void
     {
-        $admin = $this->user('revoke-admin', User::ROLE_ADMIN);
-        $candidate = $this->user('revoke-candidate');
+        $admin = $this->admin('revoke-admin');
+        $candidate = $this->customer('revoke-candidate');
 
         $partner = DeliveryPartner::create([
             'user_id' => $candidate->id,
@@ -73,15 +83,15 @@ class DeliveryPartnerProvisioningTest extends TestCase
 
     public function test_customer_cannot_provision_delivery_partner(): void
     {
-        $customer = $this->user('customer');
-        $candidate = $this->user('candidate-denied');
+        $customer = $this->customer('customer');
+        $candidate = $this->customer('candidate-denied');
 
         $this->actingAs($customer, 'sanctum')
             ->postJson('/api/v1/admin/delivery-partners', ['user_id' => $candidate->id])
             ->assertForbidden();
 
         $this->assertDatabaseCount('delivery_partners', 0);
-        $this->assertDatabaseHas('users', [
+        $this->assertDatabaseHas('customer_users', [
             'id' => $candidate->id,
             'role' => User::ROLE_CUSTOMER,
         ]);
@@ -89,9 +99,9 @@ class DeliveryPartnerProvisioningTest extends TestCase
 
     public function test_duplicate_and_admin_provisioning_are_conflicts(): void
     {
-        $admin = $this->user('conflict-admin', User::ROLE_ADMIN);
-        $candidate = $this->user('conflict-candidate');
-        $adminTarget = $this->user('already-admin', User::ROLE_ADMIN);
+        $admin = $this->admin('conflict-admin');
+        $candidate = $this->customer('conflict-candidate');
+        $adminTarget = $this->admin('already-admin');
 
         $this->actingAs($admin, 'sanctum')
             ->postJson('/api/v1/admin/delivery-partners', ['user_id' => $candidate->id])
