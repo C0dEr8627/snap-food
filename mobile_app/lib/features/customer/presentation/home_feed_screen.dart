@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../design_system/components/snap_food_button.dart';
 import '../../../design_system/components/snap_food_commerce.dart';
 import '../../../design_system/components/snap_food_feedback.dart';
 import '../../../design_system/components/snap_food_inputs.dart';
@@ -124,9 +125,6 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
           ],
         ),
       ),
-      ),
-      ),
-    );
     );
   }
 
@@ -289,7 +287,7 @@ class _DiscoveryHeroContent extends StatelessWidget {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                color: SnapFoodColors.white,
+                                color: Colors.white,
                                 fontSize: 22,
                                 height: 1.1,
                                 fontWeight: FontWeight.w900,
@@ -298,7 +296,7 @@ class _DiscoveryHeroContent extends StatelessWidget {
                             const SizedBox(height: 5),
                             SnapPrice(
                               value: product.price,
-                              color: SnapFoodColors.white,
+                              color: Colors.white,
                               fontSize: 15,
                             ),
                           ],
@@ -630,67 +628,54 @@ class _DeliveryLocation extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedAddress = ref.watch(addressBookControllerProvider).value?.selectedAddress;
+    final selectedAddress =
+        ref.watch(addressBookControllerProvider).value?.selectedAddress;
     final label = selectedAddress?.label ?? 'Choose a delivery address';
     final detail = selectedAddress?.displayLine;
+
     return Semantics(
       button: true,
       label: detail == null || detail.isEmpty
           ? 'Delivery address: $label. Choose delivery address'
           : 'Delivery address: $label, $detail. Change delivery address',
       child: InkWell(
-      onTap: () => context.push('/addresses'),
-      borderRadius: BorderRadius.circular(SnapFoodRadii.full),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: SnapFoodColors.surfaceContainer,
+        onTap: () => context.push('/addresses'),
         borderRadius: BorderRadius.circular(SnapFoodRadii.full),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.location_on,
-            size: 18,
-            color: SnapFoodColors.secondary,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: SnapFoodColors.surfaceContainer,
+            borderRadius: BorderRadius.circular(SnapFoodRadii.full),
           ),
-          SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              detail == null || detail.isEmpty ? label : '$label · $detail',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-            ),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.location_on,
+                size: 18,
+                color: SnapFoodColors.secondary,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  detail == null || detail.isEmpty ? label : '$label · $detail',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const Icon(
+                Icons.expand_more,
+                size: 18,
+                color: SnapFoodColors.outline,
+              ),
+            ],
           ),
-          Icon(
-            Icons.expand_more,
-            size: 18,
-            color: SnapFoodColors.outline,
-          ),
-        ],
-      ),
-      ),
-    );
-  }
-
-  Future<void> _confirmExit(BuildContext context) async {
-    final shouldExit = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Exit Snap Foodd?'),
-        content: const Text('Are you sure you want to exit the application?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            style: FilledButton.styleFrom(backgroundColor: SnapFoodColors.secondary, foregroundColor: Colors.white),
-            child: const Text('Exit'),
-          ),
-        ],
+        ),
       ),
     );
-    if (shouldExit == true) await SystemNavigator.pop();
   }
 }
 
