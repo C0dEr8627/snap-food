@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
@@ -30,6 +31,17 @@ class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
     return Scaffold(
       backgroundColor: SnapFoodColors.surface,
       appBar: AppBar(
+        leading: IconButton(
+          tooltip: 'Back',
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/orders/' + Uri.encodeComponent(widget.orderId));
+            }
+          },
+          icon: const Icon(Icons.arrow_back_rounded),
+        ),
         title: const Text('Invoice'),
         backgroundColor: SnapFoodColors.surface,
         surfaceTintColor: Colors.transparent,
