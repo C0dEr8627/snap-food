@@ -4,9 +4,11 @@ namespace Tests\Feature;
 
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Models\Address;
+use App\Models\AdminUser;
 use App\Models\Category;
+use App\Models\CustomerUser;
 use App\Models\Product;
-use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -20,36 +22,34 @@ class AuthorizationPolicyTest extends TestCase
     {
         $middleware = new EnsureUserHasRole;
 
-        $admin = User::create([
+        $admin = AdminUser::create([
             'google_subject' => 'google-role-admin',
             'name' => 'Admin',
             'email' => 'admin@example.test',
-            'role' => User::ROLE_ADMIN,
             'is_active' => true,
         ]);
 
-        $customer = User::create([
+        $customer = CustomerUser::create([
             'google_subject' => 'google-role-customer',
             'name' => 'Customer',
             'email' => 'customer@example.test',
-            'role' => User::ROLE_CUSTOMER,
             'is_active' => true,
         ]);
 
         $adminRequest = Request::create('/api/v1/admin/test', 'GET');
-        $adminRequest->setUserResolver(fn (): User => $admin);
+        $adminRequest->setUserResolver(fn (): Authenticatable => $admin);
 
         $this->assertSame(
             200,
-            $middleware->handle($adminRequest, fn ($request) => response()->json(['ok' => true]), User::ROLE_ADMIN)->getStatusCode()
+            $middleware->handle($adminRequest, fn ($request) => response()->json(['ok' => true]), 'ADMIN')->getStatusCode()
         );
 
         $customerRequest = Request::create('/api/v1/admin/test', 'GET');
-        $customerRequest->setUserResolver(fn (): User => $customer);
+        $customerRequest->setUserResolver(fn (): Authenticatable => $customer);
 
         $this->assertSame(
             403,
-            $middleware->handle($customerRequest, fn ($request) => response()->json(['ok' => true]), User::ROLE_ADMIN)->getStatusCode()
+            $middleware->handle($customerRequest, fn ($request) => response()->json(['ok' => true]), 'ADMIN')->getStatusCode()
         );
     }
 
@@ -57,21 +57,20 @@ class AuthorizationPolicyTest extends TestCase
     {
         $middleware = new EnsureUserHasRole;
 
-        $user = User::create([
+        $user = AdminUser::create([
             'google_subject' => 'google-role-inactive',
             'name' => 'Inactive Admin',
             'email' => 'inactive-admin@example.test',
-            'role' => User::ROLE_ADMIN,
             'is_active' => false,
         ]);
 
         $request = Request::create('/api/v1/admin/test', 'GET');
-        $request->setUserResolver(fn (): User => $user);
+        $request->setUserResolver(fn (): Authenticatable => $user);
 
         $response = $middleware->handle(
             $request,
             fn ($next) => response()->json(['ok' => true]),
-            User::ROLE_ADMIN,
+            'ADMIN',
         );
 
         $this->assertSame(403, $response->getStatusCode());
@@ -80,27 +79,24 @@ class AuthorizationPolicyTest extends TestCase
 
     public function test_address_policy_enforces_customer_ownership_and_allows_admin_access(): void
     {
-        $owner = User::create([
+        $owner = CustomerUser::create([
             'google_subject' => 'google-policy-owner',
             'name' => 'Owner',
             'email' => 'owner@example.test',
-            'role' => User::ROLE_CUSTOMER,
             'is_active' => true,
         ]);
 
-        $other = User::create([
+        $other = CustomerUser::create([
             'google_subject' => 'google-policy-other',
             'name' => 'Other',
             'email' => 'other@example.test',
-            'role' => User::ROLE_CUSTOMER,
             'is_active' => true,
         ]);
 
-        $admin = User::create([
+        $admin = AdminUser::create([
             'google_subject' => 'google-policy-admin',
             'name' => 'Admin',
             'email' => 'policy-admin@example.test',
-            'role' => User::ROLE_ADMIN,
             'is_active' => true,
         ]);
 
@@ -125,19 +121,17 @@ class AuthorizationPolicyTest extends TestCase
 
     public function test_category_and_product_write_policies_are_admin_only(): void
     {
-        $admin = User::create([
+        $admin = AdminUser::create([
             'google_subject' => 'google-policy-admin-write',
             'name' => 'Admin',
             'email' => 'policy-admin-write@example.test',
-            'role' => User::ROLE_ADMIN,
             'is_active' => true,
         ]);
 
-        $customer = User::create([
+        $customer = CustomerUser::create([
             'google_subject' => 'google-policy-customer-write',
             'name' => 'Customer',
             'email' => 'policy-customer-write@example.test',
-            'role' => User::ROLE_CUSTOMER,
             'is_active' => true,
         ]);
 
