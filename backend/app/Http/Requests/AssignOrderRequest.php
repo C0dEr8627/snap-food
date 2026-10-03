@@ -14,7 +14,7 @@ class AssignOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'delivery_partner_id' => ['required', 'integer', 'exists:delivery_partners,id'],
+            'delivery_partner_id' => ['required', 'integer', 'exists:delivery_partner_users,id'],
         ];
     }
 }
