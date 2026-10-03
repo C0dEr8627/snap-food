@@ -142,6 +142,7 @@ class _SfCommandPaletteState extends State<SfCommandPalette> {
               child: TextField(
                 controller: _controller,
                 focusNode: _focusNode,
+                onSubmitted: (_) => _submit(),
                 autofocus: true,
                 style: AdminTypography.body,
                 decoration: InputDecoration(
