@@ -138,6 +138,6 @@ class _FavoriteImage extends StatelessWidget {
     height: 64,
     color: SnapFoodColors.primaryContainer,
     alignment: Alignment.center,
-    child: const Icon(Icons.restaurant_rounded, color: SnapFoodColors.secondary, size: 28),
+    child: const Icon(Icons.fastfood_rounded, color: SnapFoodColors.secondary, size: 28),
   );
 }
