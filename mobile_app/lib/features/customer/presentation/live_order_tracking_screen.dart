@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -157,6 +158,10 @@ class _TrackingBody extends ConsumerWidget {
           _StatusHero(status: status, tracking: tracking),
           const SizedBox(height: SnapFoodSpacing.md),
           _ProgressSection(status: status),
+          if (tracking.deliveryPartner != null) ...[
+            const SizedBox(height: SnapFoodSpacing.md),
+            _DeliveryPartnerSection(partner: tracking.deliveryPartner!),
+          ],
           const SizedBox(height: SnapFoodSpacing.md),
           _LocationSection(location: location, stale: tracking.isStale),
           const SizedBox(height: SnapFoodSpacing.md),
@@ -399,6 +404,63 @@ class _ProgressRow extends StatelessWidget {
   }
 }
 
+class _DeliveryPartnerSection extends StatelessWidget {
+  const _DeliveryPartnerSection({required this.partner});
+
+  final DeliveryPartnerContact partner;
+
+  @override
+  Widget build(BuildContext context) => _SectionSurface(
+        title: 'Your delivery partner',
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const CircleAvatar(
+              backgroundColor: SnapFoodColors.primaryContainer,
+              child: Icon(Icons.person_outline_rounded, color: SnapFoodColors.secondary),
+            ),
+            const SizedBox(width: SnapFoodSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(partner.name, style: SnapFoodTypography.titleMedium),
+                  const SizedBox(height: SnapFoodSpacing.xs),
+                  if (partner.phone == null)
+                    Text(
+                      'Contact number is not available yet.',
+                      style: SnapFoodTypography.bodySmall.copyWith(
+                        color: SnapFoodColors.onSurfaceVariant,
+                      ),
+                    )
+                  else ...[
+                    SelectableText(
+                      partner.phone!,
+                      style: SnapFoodTypography.bodyMedium.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: SnapFoodSpacing.xs),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton.icon(
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: partner.phone!));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Phone number copied')),
+                          );
+                        },
+                        icon: const Icon(Icons.copy_rounded, size: 16),
+                        label: const Text('Copy phone number'),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
 class _LocationSection extends StatelessWidget {
   const _LocationSection({required this.location, required this.stale});
 
@@ -619,6 +681,9 @@ String _statusMessage(OrderStatus status, OrderTracking tracking) {
   }
   if (status == OrderStatus.delivered) {
     return 'Your order has reached its delivery status.';
+  }
+  if (tracking.deliveryPartner == null) {
+    return 'Your order is being processed. Delivery partner details will appear here as soon as one is assigned.';
   }
   if (tracking.isStale) {
     return 'The latest delivery update is older than expected. The status above remains the latest server response.';
