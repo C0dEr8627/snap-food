@@ -3,7 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Order;
-use App\Models\User;
+use App\Models\AdminUser;
+use App\Models\CustomerUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -13,7 +14,7 @@ class AdminDashboardTest extends TestCase
 
     public function test_admin_dashboard_shows_current_order_counts(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = AdminCustomerUser::factory()->create();
 
         Order::factory()->create(['status' => Order::STATUS_PLACED]);
         Order::factory()->create(['status' => Order::STATUS_ACCEPTED]);
@@ -57,7 +58,7 @@ class AdminDashboardTest extends TestCase
 
     public function test_customer_cannot_access_dashboard_counts(): void
     {
-        $customer = User::factory()->create();
+        $customer = CustomerUser::factory()->create();
 
         $this->actingAs($customer, 'web')
             ->get('/admin')
