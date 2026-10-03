@@ -1448,6 +1448,52 @@ The admin UI/UX modernization is complete when:
   - If a new error remains, treat it as a separate concrete compiler issue rather than the previous cascading type-resolution failure.
 
 
+
+### 2026-10-03 — Admin Web compiler repair batch (shell, orders, catalogue, partners, users, shared keyboard/status components)
+- Status: 🟡 Source repairs complete; Flutter Web runtime/analyzer validation pending
+- Implemented:
+  - Repaired the admin shell sidebar brand-row widget nesting that caused the parser error at `Expanded(`.
+  - Made the shell keyboard shortcut null-safe for the browser event key.
+  - Added the missing `AdminMotion.easeOutCubic` compatibility token while retaining the centralized curve token.
+  - Extended `SfAvatar` to accept the background/foreground color arguments already supplied by the admin shell.
+  - Qualified command-palette keyboard event types with the Flutter namespace.
+  - Removed invalid `const` usage around non-const `AdminTypography.*.copyWith(...)` expressions across Orders and Catalogue.
+  - Repaired the Orders detail header widget closing sequence that caused the unmatched-parenthesis cascade.
+  - Repaired the Partners detail-row `Expanded` closing parenthesis.
+  - Replaced the dashboard's obsolete private `_Pill` reference with the shared `SfStatusBadge`.
+  - Removed the invalid const construction of the Users empty state.
+  - Replaced the unavailable Catalogue `HugeIcons.strokeRoundedItem01` reference with the existing `strokeRoundedPackage01` icon.
+- Files/components changed:
+  - `admin_web/lib/app/admin_shell.dart`
+  - `admin_web/lib/design_system/motion.dart`
+  - `admin_web/lib/widgets/sf_core_components.dart`
+  - `admin_web/lib/widgets/sf_command_palette.dart`
+  - `admin_web/lib/pages/orders_page.dart`
+  - `admin_web/lib/pages/catalogue_page.dart`
+  - `admin_web/lib/pages/partners_page.dart`
+  - `admin_web/lib/pages/users_page.dart`
+  - `admin_web/lib/pages/dashboard_page.dart`
+- Validation:
+  - Re-fetched every modified source file from the `frontend` branch after the repairs.
+  - Confirmed the reported invalid `const AdminTypography.*` patterns, unavailable Catalogue icon name and obsolete `_Pill` reference are no longer present in the inspected sources.
+  - Confirmed the command palette now uses `flutter.KeyDownEvent` and `flutter.LogicalKeyboardKey`.
+  - Confirmed the shell's sidebar `Expanded` nesting is syntactically closed and the Orders detail header has an explicit repaired closing sequence.
+  - The repository exposes Flutter CI workflows, but no workflow run was available for the latest repair commit at the time of this update; therefore no successful Flutter build/analyzer result is claimed.
+- Commits:
+  - `fd984d03e09b7cd7c9af7a6ce97040ae6cd1d2e2` — motion compatibility token
+  - `4aa46c4d55f9d986f6be181af6b7a3efc61b746b` — admin shell parser/keyboard repair
+  - `3227de4b7421b8994f1bc47c60e58077825ac827` — SfAvatar color-argument compatibility
+  - `450e9ae1e2d4ffe3408fc27e7a0c26c89ffa7005` — command palette keyboard type repair
+  - `08b013a5402c74627fe0af739110e42f97b3c6cf` — Users empty-state const repair
+  - `d914aa9892b78da3bc02fc381679a7ea1c672cb4` — Partners detail-row parser repair
+  - `887c7b9c7b87579b60fd66bb9c073a60552cc120` — Dashboard shared status badge repair
+  - `df6edb65774a0a7435197ac7faa4d065dc9b541f` — Catalogue typography/icon repair
+  - `11a7cd5d1bce51cba8551f4e3914573e6f03866f` — Orders typography repair
+  - `ae9caea6118cb1b2bb6b9cef567eb54d3ff45e92` — Orders detail nesting repair
+- Limitations/follow-up:
+  - Run the user's Flutter Web Chrome command again. If new diagnostics remain, fix only those concrete compiler errors before starting another UI/UX task.
+  - Task 19 remains complete; this is a post-task compile stabilization pass, not a new UI/UX task.
+
 ### Future entries
 
 After every task, append an entry containing:
