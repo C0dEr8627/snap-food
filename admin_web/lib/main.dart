@@ -17,6 +17,7 @@ part 'services/admin_auth_service.dart';
 part 'pages/login_page.dart';
 part 'app/admin_shell.dart';
 part 'widgets/admin_shared.dart';
+part 'widgets/sf_core_components.dart';
 part 'widgets/catalogue_shared.dart';
 part 'pages/dashboard_page.dart';
 part 'pages/orders_page.dart';
