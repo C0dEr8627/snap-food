@@ -153,124 +153,17 @@ class SnapQuantityStepper extends StatelessWidget {
     final incrementEnabled = quantity < max && onIncrement != null;
     final height = 48.0;
     final buttonSize = 48.0;
+    final semanticParts = <String>[
+      name,
+      if (rating != null)
+        'rated ' + rating!.clamp(0, 5).toStringAsFixed(1),
+      if (eta != null && eta!.trim().isNotEmpty) eta!,
+      if (!isOpen) 'currently closed',
+    ];
+
     return Semantics(
       container: true,
-      label: 'Quantity $quantity',
-      child: Container(
-        height: height,
-        decoration: BoxDecoration(
-          color: SnapFoodColors.secondary,
-          borderRadius: BorderRadius.circular(SnapFoodRadii.full),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _StepperButton(
-              icon: Icons.remove_rounded,
-              tooltip: 'Decrease quantity',
-              enabled: decrementEnabled,
-              size: buttonSize,
-              onPressed: decrementEnabled
-                  ? () {
-                      HapticFeedback.selectionClick();
-                      onDecrement?.call();
-                    }
-                  : null,
-            ),
-            ConstrainedBox(
-              constraints: BoxConstraints(minWidth: compact ? 24 : 30),
-              child: Text(
-                quantity.toString(),
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: compact ? 12 : 13,
-                  fontWeight: FontWeight.w900,
-                  color: SnapFoodColors.onSecondary,
-                ),
-              ),
-            ),
-            _StepperButton(
-              icon: Icons.add_rounded,
-              tooltip: 'Increase quantity',
-              enabled: incrementEnabled,
-              size: buttonSize,
-              onPressed: incrementEnabled
-                  ? () {
-                      HapticFeedback.selectionClick();
-                      onIncrement?.call();
-                    }
-                  : null,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _StepperButton extends StatelessWidget {
-  const _StepperButton({
-    required this.icon,
-    required this.tooltip,
-    required this.enabled,
-    required this.size,
-    required this.onPressed,
-  });
-
-  final IconData icon;
-  final String tooltip;
-  final bool enabled;
-  final double size;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) => Semantics(
-        button: true,
-        enabled: enabled,
-        label: tooltip,
-        child: IconButton(
-          onPressed: onPressed,
-          tooltip: tooltip,
-          constraints: BoxConstraints(
-            minWidth: size,
-            minHeight: size,
-          ),
-          padding: EdgeInsets.zero,
-          icon: Icon(
-            icon,
-            size: 18,
-            color: enabled
-                ? SnapFoodColors.onSecondary
-                : SnapFoodColors.onSecondary.withAlpha(110),
-          ),
-        ),
-      );
-}
-
-/// Consistent add-to-cart action that keeps the price visible.
-class SnapAddToCartButton extends StatelessWidget {
-  const SnapAddToCartButton({
-    required this.label,
-    required this.onPressed,
-    this.enabled = true,
-    this.loading = false,
-    this.semanticLabel,
-    super.key,
-  });
-
-  final String label;
-  final VoidCallback? onPressed;
-  final bool enabled;
-  final bool loading;
-  final String? semanticLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    final active = enabled && onPressed != null && !loading;
-    return Semantics(
-      button: true,
-      enabled: active,
-      label: semanticLabel ?? label,
+      label: semanticParts.join(', '),
       child: SizedBox(
         height: 52,
         child: FilledButton(
