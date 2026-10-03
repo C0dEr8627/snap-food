@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GoogleLoginRequest;
+use App\Models\AdminUser;
 use App\Models\CustomerUser;
 use App\Models\DeliveryPartnerUser;
-use App\Models\AdminUser;
-use Illuminate\Contracts\Auth\Authenticatable;
 use App\Services\Auth\GoogleCredentialVerifier;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -96,7 +96,7 @@ class AuthController extends Controller
                     'google_subject' => $identity['sub'],
                     'name' => $identity['name'],
                     'email' => $identity['email'],
-                            'is_active' => true,
+                    'is_active' => true,
                 ]);
             }
 
@@ -131,7 +131,7 @@ class AuthController extends Controller
         if (
             $user === null
             || ! $user->is_active
-                        || $user->password === null
+            || $user->password === null
             || ! Hash::check($validated['password'], $user->password)
         ) {
             return response()->json([
@@ -142,6 +142,7 @@ class AuthController extends Controller
         }
 
         $partner = $user->deliveryPartner;
+
         if ($partner === null || ! $partner->is_active) {
             return response()->json([
                 'message' => 'This delivery partner account is not active.',
@@ -170,10 +171,6 @@ class AuthController extends Controller
 
         $user = AdminUser::where('email', $validated['email'])->first();
 
-        // One-time production bootstrap: when the production database has no
-        // admin yet, allow the configured bootstrap credentials to create the
-        // first admin account. The credentials must be removed from .env after
-        // the first successful login.
         if ($user === null) {
             $bootstrapEmail = config('services.google.admin_bootstrap_email');
             $bootstrapPassword = env('ADMIN_BOOTSTRAP_PASSWORD');
@@ -191,7 +188,7 @@ class AuthController extends Controller
                     'name' => 'Admin',
                     'email' => $bootstrapEmail,
                     'password' => Hash::make($bootstrapPassword),
-                            'is_active' => true,
+                    'is_active' => true,
                 ]);
             }
         }
@@ -243,7 +240,7 @@ class AuthController extends Controller
             ) {
                 $user = AdminUser::where('email', $bootstrapEmail)->first();
 
-                if ($user !== null && $user->is_active ) {
+                if ($user !== null && $user->is_active) {
                     $user->forceFill([
                         'google_subject' => $identity['sub'],
                         'name' => $identity['name'],
