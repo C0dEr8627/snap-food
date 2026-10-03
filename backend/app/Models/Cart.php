@@ -13,6 +13,6 @@ class Cart extends \Illuminate\Database\Eloquent\Model
         return ['quantity' => 'integer'];
     }
 
-    public function user(): BelongsTo { return $this->belongsTo(User::class); }
+    public function user(): BelongsTo { return $this->belongsTo(CustomerUser::class, 'user_id'); }
     public function product(): BelongsTo { return $this->belongsTo(Product::class); }
 }
