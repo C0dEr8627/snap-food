@@ -58,7 +58,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     icon: Icons.tune_rounded,
                     tooltip: 'Filters',
                     semanticLabel: 'Open filters',
-                    onPressed: _noop,
+                    onPressed: null,
                   ),
                 ],
               ),
