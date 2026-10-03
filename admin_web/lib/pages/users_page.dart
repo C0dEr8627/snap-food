@@ -1,6 +1,6 @@
 part of '../main.dart';
 
-class UsersPage extends StatefulWidget {
+class UsersPage extends flutter.StatefulWidget {
   const UsersPage({super.key, this.searchQuery = ''});
   final String searchQuery;
 
@@ -71,7 +71,7 @@ class _UsersPageState extends flutter.State<UsersPage> {
 
   @override
   flutter.Widget build(BuildContext context) {
-    final users = _filtered;
+    final users = _users;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -239,7 +239,105 @@ class _UserAddress {
       );
 }
 
-class _UsersTable extends StatelessWidget {
+
+class _UsersToolbar extends flutter.StatelessWidget {
+  const _UsersToolbar({
+    required this.controller,
+    required this.filter,
+    required this.onFilter,
+    required this.onSearch,
+    required this.onRefresh,
+    required this.loading,
+  });
+  final TextEditingController controller;
+  final String filter;
+  final ValueChanged<String> onFilter;
+  final VoidCallback onSearch;
+  final VoidCallback onRefresh;
+  final bool loading;
+
+  @override
+  flutter.Widget build(BuildContext context) => SfCard(
+    padding: const EdgeInsets.all(AdminSpacing.md),
+    child: Wrap(
+      spacing: AdminSpacing.sm,
+      runSpacing: AdminSpacing.sm,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        SizedBox(
+          width: 320,
+          child: SfSearchField(
+            controller: controller,
+            hintText: 'Search name, email or user ID',
+            onSubmitted: (_) => onSearch(),
+          ),
+        ),
+        _UsersFilterPill('All', filter == 'ALL', () => onFilter('ALL')),
+        _UsersFilterPill('Customers', filter == 'CUSTOMER', () => onFilter('CUSTOMER')),
+        _UsersFilterPill('Partners', filter == 'PARTNER', () => onFilter('PARTNER')),
+        _UsersFilterPill('Riders', filter == 'RIDER', () => onFilter('RIDER')),
+        SfButton(
+          variant: SfButtonVariant.outline,
+          onPressed: loading ? null : onRefresh,
+          child: const Text('Refresh'),
+        ),
+      ],
+    ),
+  );
+}
+
+class _UsersFilterPill extends flutter.StatelessWidget {
+  const _UsersFilterPill(this.label, this.active, this.onTap);
+  final String label;
+  final bool active;
+  final VoidCallback onTap;
+
+  @override
+  flutter.Widget build(BuildContext context) => SfButton(
+    variant: active ? SfButtonVariant.secondary : SfButtonVariant.ghost,
+    onPressed: onTap,
+    child: Text(label),
+  );
+}
+
+class _UsersError extends flutter.StatelessWidget {
+  const _UsersError({required this.message, required this.onRetry});
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  flutter.Widget build(BuildContext context) => SfErrorState(
+    title: 'Unable to load users',
+    message: message,
+    onRetry: onRetry,
+  );
+}
+
+class _UsersPagination extends flutter.StatelessWidget {
+  const _UsersPagination({
+    required this.page,
+    required this.lastPage,
+    required this.total,
+    required this.visible,
+    required this.onPage,
+  });
+  final int page;
+  final int lastPage;
+  final int total;
+  final int visible;
+  final ValueChanged<int> onPage;
+
+  @override
+  flutter.Widget build(BuildContext context) => SfTablePagination(
+    page: page,
+    lastPage: lastPage,
+    total: total,
+    onPrevious: page > 1 ? () => onPage(page - 1) : null,
+    onNext: page < lastPage ? () => onPage(page + 1) : null,
+  );
+}
+
+class _UsersTable extends flutter.StatelessWidget {
   const _UsersTable({required this.users, required this.onView});
   final List<_PlatformUser> users;
   final ValueChanged<_PlatformUser> onView;
@@ -276,7 +374,7 @@ class _UsersTable extends StatelessWidget {
     onRowTap: (index) => onView(users[index]),
   );
 }
-class _UsersLoading extends StatelessWidget {
+class _UsersLoading extends flutter.StatelessWidget {
   const _UsersLoading();
 
   @override
@@ -301,7 +399,7 @@ class _UsersLoading extends StatelessWidget {
       );
 }
 
-class _UserDetails extends StatelessWidget {
+class _UserDetails extends flutter.StatelessWidget {
   const _UserDetails({required this.user});
   final _PlatformUser user;
 
@@ -356,7 +454,7 @@ class _UserDetails extends StatelessWidget {
       );
 }
 
-class _UserDetailSection extends StatelessWidget {
+class _UserDetailSection extends flutter.StatelessWidget {
   const _UserDetailSection({required this.title, required this.children});
   final String title;
   final List<flutter.Widget> children;
@@ -372,7 +470,7 @@ class _UserDetailSection extends StatelessWidget {
       );
 }
 
-class _UserDetailLine extends StatelessWidget {
+class _UserDetailLine extends flutter.StatelessWidget {
   const _UserDetailLine(this.label, this.value);
   final String label;
   final String value;
@@ -390,7 +488,7 @@ class _UserDetailLine extends StatelessWidget {
       );
 }
 
-class _AddressCard extends StatelessWidget {
+class _AddressCard extends flutter.StatelessWidget {
   const _AddressCard({required this.address});
   final _UserAddress address;
 
