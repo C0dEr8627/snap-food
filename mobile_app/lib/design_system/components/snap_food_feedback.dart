@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../tokens/app_colors.dart';
 import '../tokens/app_radii.dart';
-import '../tokens/app_shadows.dart';
 import '../tokens/app_spacing.dart';
 import '../tokens/app_typography.dart';
 
@@ -268,7 +267,19 @@ class _SnapSkeletonState extends State<SnapSkeleton>
   }
 
   @override
-  Widget build(BuildContext context) => AnimatedBuilder(
+  Widget build(BuildContext context) {
+    if (MediaQuery.of(context).disableAnimations) {
+      return Container(
+        width: widget.width,
+        height: widget.height,
+        margin: widget.margin,
+        decoration: BoxDecoration(
+          color: SnapFoodColors.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+        ),
+      );
+    }
+    return AnimatedBuilder(
     animation: _opacity,
     builder: (context, child) => Opacity(
       opacity: _opacity.value,
@@ -283,6 +294,50 @@ class _SnapSkeletonState extends State<SnapSkeleton>
         borderRadius: BorderRadius.circular(widget.borderRadius),
       ),
     ),
+  );
+}
+
+class SnapAlertDialog extends StatelessWidget {
+  const SnapAlertDialog({
+    required this.title,
+    required this.message,
+    this.cancelLabel = 'Cancel',
+    this.confirmLabel = 'Confirm',
+    this.onCancel,
+    this.onConfirm,
+    super.key,
+  });
+
+  final String title;
+  final String message;
+  final String cancelLabel;
+  final String confirmLabel;
+  final VoidCallback? onCancel;
+  final VoidCallback? onConfirm;
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    backgroundColor: SnapFoodColors.surface,
+    surfaceTintColor: Colors.transparent,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(SnapFoodRadii.xl),
+    ),
+    title: Text(title, style: SnapFoodTypography.sectionTitle),
+    content: Text(message, style: SnapFoodTypography.body),
+    actions: [
+      TextButton(
+        onPressed: onCancel ?? () => Navigator.of(context).pop(false),
+        child: Text(cancelLabel),
+      ),
+      FilledButton(
+        onPressed: onConfirm ?? () => Navigator.of(context).pop(true),
+        style: FilledButton.styleFrom(
+          backgroundColor: SnapFoodColors.secondary,
+          foregroundColor: SnapFoodColors.white,
+        ),
+        child: Text(confirmLabel),
+      ),
+    ],
   );
 }
 
