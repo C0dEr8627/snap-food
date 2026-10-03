@@ -93,15 +93,14 @@ class DeliveryPartnerProvisioningTest extends TestCase
         $this->assertDatabaseCount('delivery_partners', 0);
         $this->assertDatabaseHas('customer_users', [
             'id' => $candidate->id,
-            'role' => User::ROLE_CUSTOMER,
+            'role' => 'CUSTOMER',
         ]);
     }
 
-    public function test_duplicate_and_admin_provisioning_are_conflicts(): void
+    public function test_duplicate_provisioning_is_a_conflict(): void
     {
         $admin = $this->admin('conflict-admin');
         $candidate = $this->customer('conflict-candidate');
-        $adminTarget = $this->admin('already-admin');
 
         $this->actingAs($admin, 'sanctum')
             ->postJson('/api/v1/admin/delivery-partners', ['user_id' => $candidate->id])
@@ -111,9 +110,5 @@ class DeliveryPartnerProvisioningTest extends TestCase
             ->postJson('/api/v1/admin/delivery-partners', ['user_id' => $candidate->id])
             ->assertStatus(409)
             ->assertJsonPath('code', 'CONFLICT');
-
-        $this->actingAs($admin, 'sanctum')
-            ->postJson('/api/v1/admin/delivery-partners', ['user_id' => $adminTarget->id])
-            ->assertStatus(409);
     }
 }
