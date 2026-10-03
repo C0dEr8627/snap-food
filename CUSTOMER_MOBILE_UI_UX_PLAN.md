@@ -563,7 +563,7 @@ Use motion for:
 Respect reduced-motion preferences.
 
 ### Task 21 — Final accessibility and responsive UX pass
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
 Audit:
 
@@ -626,6 +626,7 @@ Before marking any task complete, verify:
 | 2026-10-03 | Task 18 — Redesign Profile and Favorites | ✅ Complete | Reworked Profile around authenticated account identity, order/favorite/address counts, supported account navigation and branded list rows. Reworked Favorites around image-led saved dishes with responsive layouts, stronger food imagery, Snap price/remove controls, browse action and branded loading/error/empty states. Preserved existing auth/logout, favorites controller/API, address/order routes and product-detail navigation. Removed unsupported/fabricated payment, coupon, notification, language, support and privacy controls from the profile. Validation: changed Dart source files have balanced braces/parentheses/brackets; implementation commits exposed no GitHub status checks/workflow runs through the connector; local Flutter/Dart formatter, analyzer and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 19 — Improve onboarding and welcome experience | ✅ Complete | Added a food-first welcome screen with warm editorial illustration, concise catalogue-first copy, clear create-account/sign-in actions, compact and wide layouts, safe-area-aware scrolling, and existing design-system components/tokens. Updated the splash route to lead into /welcome rather than bypassing it for /login. Preserved login/register destinations, Google/password auth, session restoration, and GoRouter auth guards. Validation: reviewed route wiring and source structure; local Flutter/Dart formatter, analyzer and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 20 — Add motion and tactile feedback | ✅ Complete | Added restrained haptic feedback for filter/category selection, quantity changes, add-to-cart, icon actions and bottom navigation; added short selection/status transitions that respect the reduced-motion preference. Preserved native pressed feedback, routes, API/state behavior and all business logic; no dependency added. Validation: changed source files have balanced brace/parenthesis/bracket counts and interactions were reviewed at source level. Local Flutter/Dart formatter, analyzer and tests, physical-device haptic checks, and visual UI testing were unavailable through the GitHub connector. |
+| 2026-10-03 | Task 21 — Final accessibility and responsive UX pass | ✅ Complete | Audited shared controls and the customer Home navigation/location header. Raised category/filter chip minimum height to 48px, ensured compact quantity steppers retain 48px button targets, added accessible profile and delivery-address labels, and exposed bottom-navigation labels and selected state through semantics. Preserved routes, state, APIs and business logic. Validation: changed Dart sources have balanced brace/parenthesis/bracket counts and source-level behavior was reviewed. Local formatter/analyzer/tests, screen-reader testing, text-scaling device checks and visual responsive testing were unavailable through the GitHub connector. |
 
 ---
 
@@ -657,6 +658,7 @@ Before marking any task complete, verify:
 - Completed Task 18: redesigned Profile and Favorites around supported account data, branded account navigation, food-first saved dishes, responsive layouts and useful feedback states while preserving authentication, favorites and existing customer routes.
 - Completed Task 19: refreshed the onboarding welcome experience with food-first visual storytelling, catalogue-accurate copy, clear account actions and responsive layouts; connected the splash screen to the welcome route while preserving existing authentication and navigation behavior.
 - Completed Task 20: added restrained tactile feedback for meaningful selection, quantity, add-to-cart, icon and navigation actions; introduced reduced-motion-aware bottom-navigation and order-status transitions without adding dependencies or changing business behavior.
+- Completed Task 21: completed a targeted accessibility/responsive pass on shared chips, quantity steppers and Home header/navigation; improved touch targets and semantics while preserving existing product behavior. Source-level delimiter checks passed; device-level accessibility and Flutter tooling validation remain outstanding.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
@@ -670,7 +672,7 @@ The customer mobile redesign is complete when:
 1. All applicable tasks above are completed or explicitly documented as blocked/not applicable.
 2. The customer app consistently uses the Snap Foodd visual language.
 3. Home/discovery feels food-first, premium and easy to scan.
-4. Product and restaurant discovery are both strong.
+4. Catalogue/product discovery is strong and accurately reflects the supported product model.
 5. Food details, cart and checkout feel like one coherent commerce flow.
 6. Orders and tracking are clear and trustworthy.
 7. Loading, empty, error and success states are branded.
