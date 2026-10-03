@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../design_system/components/snap_food_commerce.dart';
 import '../../../design_system/components/snap_food_feedback.dart';
+import '../../../design_system/components/snap_food_feedback.dart';
 import '../../../design_system/components/snap_food_inputs.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
@@ -137,17 +138,13 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
   Future<void> _confirmExit(BuildContext context) async {
     final shouldExit = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Exit Snap Foodd?'),
-        content: const Text('Are you sure you want to exit the application?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            style: FilledButton.styleFrom(backgroundColor: SnapFoodColors.secondary, foregroundColor: Colors.white),
-            child: const Text('Exit'),
-          ),
-        ],
+      builder: (dialogContext) => SnapAlertDialog(
+        title: 'Exit Snap Foodd?',
+        message: 'Are you sure you want to exit the application?',
+        cancelLabel: 'Cancel',
+        confirmLabel: 'Exit',
+        onCancel: () => Navigator.of(dialogContext).pop(false),
+        onConfirm: () => Navigator.of(dialogContext).pop(true),
       ),
     );
     if (shouldExit == true) await SystemNavigator.pop();
