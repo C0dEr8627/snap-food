@@ -26,6 +26,7 @@ part 'widgets/catalogue_shared.dart';
 part 'pages/dashboard_page.dart';
 part 'pages/orders_page.dart';
 part 'pages/catalogue_page.dart';
+part 'pages/categories_page.dart';
 part 'pages/partners_page.dart';
 part 'pages/invoices_page.dart';
 part 'pages/users_page.dart';
