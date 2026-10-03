@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../design_system/components/snap_food_commerce.dart';
+import '../../../design_system/components/snap_food_inputs.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_spacing.dart';
 import 'catalogue_controller.dart';
@@ -159,6 +160,7 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
                                     SnapCategoryChip(
                                       label: product.category!.name,
                                       selected: false,
+                                      onSelected: () {},
                                     ),
                                 ],
                               ),
