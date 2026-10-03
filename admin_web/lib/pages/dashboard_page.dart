@@ -225,7 +225,7 @@ class _RecentOrdersCard extends StatelessWidget {
       Expanded(flex:2,child:Text(o.partner??'Unassigned',maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:11,color:AdminColors.muted))),
       Expanded(flex:2,child:Text(o.payment,style:const TextStyle(fontSize:11,color:AdminColors.muted))),
       Expanded(flex:2,child:Text(_money(o.total),style:const TextStyle(fontSize:12,fontWeight:FontWeight.w900))),
-      Container(constraints:const BoxConstraints(minWidth:82),alignment:Alignment.center,padding:const EdgeInsets.symmetric(horizontal:7,vertical:5),decoration:BoxDecoration(color:s.\$1,borderRadius:BorderRadius.circular(20)),child:Text(o.status.replaceAll('_',' '),style:TextStyle(fontSize:9,fontWeight:FontWeight.w900,color:s.\$2))),
+      Container(constraints:const BoxConstraints(minWidth:82),alignment:Alignment.center,padding:const EdgeInsets.symmetric(horizontal:7,vertical:5),decoration:BoxDecoration(color:s.$1,borderRadius:BorderRadius.circular(20)),child:Text(o.status.replaceAll('_',' '),style:TextStyle(fontSize:9,fontWeight:FontWeight.w900,color:s.$2))),
     ]);}),
   ])));
 }
