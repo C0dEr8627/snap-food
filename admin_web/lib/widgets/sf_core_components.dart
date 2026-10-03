@@ -118,7 +118,7 @@ class SfIconButton extends StatelessWidget {
       enabled: onPressed != null,
       label: tooltip,
       child: Material(
-      color: selected ? AdminDesignColors.yellowSoft : Colors.transparent,
+        color: selected ? AdminDesignColors.yellowSoft : Colors.transparent,
       borderRadius: BorderRadius.circular(AdminRadii.control),
       child: InkWell(
         onTap: onPressed,
