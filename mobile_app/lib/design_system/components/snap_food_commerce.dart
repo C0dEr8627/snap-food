@@ -151,8 +151,8 @@ class SnapQuantityStepper extends StatelessWidget {
   Widget build(BuildContext context) {
     final decrementEnabled = quantity > min && onDecrement != null;
     final incrementEnabled = quantity < max && onIncrement != null;
-    final height = compact ? 40.0 : 48.0;
-    final buttonSize = compact ? 40.0 : 48.0;
+    final height = 48.0;
+    final buttonSize = 48.0;
     return Semantics(
       container: true,
       label: 'Quantity $quantity',
