@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../design_system/components/snap_food_commerce.dart';
+import '../../../design_system/components/snap_food_feedback.dart';
 import '../../../design_system/components/snap_food_inputs.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
@@ -38,12 +39,17 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
 
     final result = await showModalBottomSheet<_HomeFilterResult>(
       context: context,
-      showDragHandle: true,
-      builder: (sheetContext) => _HomeFilterSheet(
+      showDragHandle: false,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => SnapBottomSheet(
+        title: 'Filter dishes',
+        subtitle: 'Tune the catalogue to what you want right now.',
+        child: _HomeFilterSheet(
         categories: catalogue.categories,
         selectedCategoryId: selectedCategoryId,
         onlyAvailable: onlyAvailable,
         sortLowToHigh: sortLowToHigh,
+      ),
       ),
     );
 
@@ -207,7 +213,7 @@ class DatabaseCatalogueSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final catalogue = ref.watch(catalogueControllerProvider);
     return catalogue.when(
-      loading: () => const SizedBox(height: 220, child: Center(child: CircularProgressIndicator())),
+      loading: () => const SizedBox(height: 220, child: SnapLoadingState(message: 'Loading dishes…')),
       error: (error, _) => const SizedBox.shrink(),
       data: (snapshot) {
         final normalizedQuery = searchQuery.trim().toLowerCase();
@@ -228,22 +234,11 @@ class DatabaseCatalogueSection extends ConsumerWidget {
           });
 
         if (products.isEmpty) {
-          return Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: SnapFoodColors.surfaceContainerLowest,
-              borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-              border: Border.all(color: SnapFoodColors.outline.withAlpha(25)),
-            ),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Nothing here yet', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-                SizedBox(height: 5),
-                Text('Try another category to explore available dishes.', style: TextStyle(fontSize: 12, color: SnapFoodColors.onSurfaceVariant)),
-              ],
-            ),
+          return const SnapEmptyState(
+            icon: Icons.restaurant_menu_outlined,
+            title: 'Nothing here yet',
+            message: 'Try another category or search to explore available dishes.',
+            compact: true,
           );
         }
 
