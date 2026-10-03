@@ -1426,6 +1426,28 @@ The admin UI/UX modernization is complete when:
   - Catalogue editor-specific progress indicators remain intentionally contextual and were not flattened into a generic page state.
   - Task 16 — Responsive Admin Web is the next implementation target.
 
+### 2026-10-03 — Admin Web Flutter type-resolution compile repair
+- Status: 🟢 Complete
+- Implemented:
+  - Corrected the admin shared/page widget inheritance declarations to use the library's unqualified Flutter StatelessWidget, StatefulWidget, State<T> and SingleTickerProviderStateMixin types.
+  - Removed the conflicting qualified base-type declarations that were causing Flutter to treat page state classes as non-Flutter states and shared widgets as incompatible with Widget.
+  - This resolves the cascading lifecycle errors (initState, dispose, didUpdateWidget, widget, mounted, context, setState) and the widget-assignment errors reported across Invoices and Users.
+  - Kept flutter.Widget collection/return annotations where they are useful and did not change API contracts or business behavior.
+- Files/components changed:
+  - admin_web/lib/widgets/sf_core_components.dart
+  - admin_web/lib/pages/invoices_page.dart
+  - admin_web/lib/pages/users_page.dart
+  - admin_web/lib/pages/partners_page.dart
+  - admin_web/lib/pages/categories_page.dart
+- Validation:
+  - Re-fetched the affected files after the commits.
+  - Audited all Dart files under admin_web/lib/pages/ and confirmed there are no remaining flutter.StatelessWidget, flutter.StatefulWidget or flutter.State<...> page-base declarations.
+  - No local Flutter analyzer/build was executed; the GitHub connector does not provide a local Flutter shell execution environment.
+- Limitations/follow-up:
+  - Run flutter clean, flutter pub get and the existing Chrome command locally to confirm the compiler is clean in the user's Flutter SDK environment.
+  - If a new error remains, treat it as a separate concrete compiler issue rather than the previous cascading type-resolution failure.
+
+
 ### Future entries
 
 After every task, append an entry containing:
