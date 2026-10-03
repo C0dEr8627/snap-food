@@ -159,25 +159,40 @@ final orderTrackingControllerProvider =
 class OrderTrackingController extends AsyncNotifier<OrderTracking?> {
   OrderRepository get _repository => ref.read(orderRepositoryProvider);
 
+  bool _requestInFlight = false;
+
   @override
   Future<OrderTracking?> build() async {
     ref.watch(authUserIdProvider);
     return null;
   }
 
-  Future<void> load(String orderId) async {
+  Future<void> load(
+    String orderId, {
+    bool showLoading = false,
+  }) async {
+    if (_requestInFlight) return;
+    _requestInFlight = true;
+
     final previous = state;
+    if (showLoading && !previous.hasValue) {
+      state = const AsyncLoading();
+    }
 
-    // Keep the existing tracking data on screen while polling/refreshing.
-    // This prevents the whole page from flashing back to a loading state.
-    final next = await AsyncValue.guard(
-      () => _repository.fetchTracking(orderId),
-    );
+    try {
+      final next = await AsyncValue.guard(
+        () => _repository.fetchTracking(orderId),
+      );
 
-    if (next.hasError && previous.hasValue) {
-      state = next.copyWithPrevious(previous);
-    } else {
-      state = next;
+      // On refresh errors, keep the last successful tracking response visible
+      // instead of replacing the entire screen with an error state.
+      if (next.hasError && previous.hasValue) {
+        state = next.copyWithPrevious(previous);
+      } else {
+        state = next;
+      }
+    } finally {
+      _requestInFlight = false;
     }
   }
 }
