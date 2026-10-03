@@ -1,191 +1,6 @@
 part of '../main.dart';
 
-class InvoicesPage extends StatefulWidget {
-  const InvoicesPage({super.key, this.searchQuery = ''});
-  final String searchQuery;
-  @override flutter.State<InvoicesPage> createState() => _InvoicesPageState();
-}
-
-class _InvoicesPageState extends flutter.State<InvoicesPage> {
-  final _api = const _InvoiceLedgerApi();
-  final _search = TextEditingController();
-  List<_LedgerInvoice> _items = [];
-  int _total = 0, _page = 1, _lastPage = 1, _paidCount = 0;
-  double _billed = 0, _paidTotal = 0;
-  String _status = 'ALL';
-  String? _error;
-  DateTime? _from, _to;
-  bool _loading = true, _exporting = false;
-
-  @override void initState() { super.initState(); _search.text = widget.searchQuery; _load(); }
-
-  @override
-  void didUpdateWidget(covariant InvoicesPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.searchQuery != widget.searchQuery && _search.text != widget.searchQuery) {
-      _search.text = widget.searchQuery;
-      _load(page: 1);
-    }
-  }
-  @override void dispose() { _search.dispose(); super.dispose(); }
-
-  Future<void> _load({int page = 1}) async {
-    setState(() { _loading = true; _error = null; });
-    try {
-      final result = await _api.list(page: page, search: _search.text.trim(), status: _status, from: _from, to: _to);
-      if (!mounted) return;
-      setState(() { _items = result.items; _total = result.total; _page = result.page; _lastPage = result.lastPage; _billed = result.totalAmount; _paidCount = result.paidCount; _paidTotal = result.paidAmount; _loading = false; });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() { _loading = false; _error = e.toString().replaceFirst('Bad state: ', ''); });
-    }
-  }
-
-  Future<void> _pickDate(bool start) async {
-    final now = DateTime.now();
-    final selected = await showDatePicker(context: context, initialDate: (start ? _from : _to) ?? now, firstDate: DateTime(2020), lastDate: DateTime(now.year + 2));
-    if (selected == null || !mounted) return;
-    setState(() { if (start) { _from = selected; } else { _to = selected; } });
-  }
-
-  void _reset() {
-    _search.clear();
-    setState(() { _status = 'ALL'; _from = null; _to = null; });
-    _load(page: 1);
-  }
-
-  Future<void> _exportPage() async {
-    if (_items.isEmpty) { _notice(context, 'No invoice records on this page.', error: true); return; }
-    setState(() => _exporting = true);
-    try {
-      String cell(String s) => '"' + s.replaceAll('"', '""') + '"';
-      final rows = <List<String>>[
-        ['Invoice', 'Order ID', 'Issued at', 'Customer', 'Email', 'Subtotal', 'Delivery fee', 'Total', 'Payment method', 'Payment status', 'File reference'],
-        ..._items.map((i) => [i.number, i.orderId.toString(), i.issuedAt ?? '', i.customer, i.email, i.subtotal.toStringAsFixed(2), i.deliveryFee.toStringAsFixed(2), i.total.toStringAsFixed(2), i.paymentMethod, i.paymentStatus, i.fileReference ?? '']),
-      ];
-      final csv = rows.map((r) => r.map(cell).join(',')).join('\r\n');
-      final blob = html.Blob([utf8.encode(csv)], 'text/csv;charset=utf-8');
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      html.AnchorElement(href: url)..setAttribute('download', 'snap-foodd-invoices-page-' + _page.toString() + '.csv')..click();
-      html.Url.revokeObjectUrl(url);
-      if (mounted) _notice(context, 'Exported ' + _items.length.toString() + ' invoices from the current page.');
-    } catch (e) { if (mounted) _notice(context, 'Export failed: ' + e.toString(), error: true); }
-    finally { if (mounted) setState(() => _exporting = false); }
-  }
-
-  @override flutter.Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-    final mobile = width < 760;
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const _InvoiceBreadcrumb(),
-      const SizedBox(height: AdminSpacing.sm),
-      SfPageHeader(
-        title: 'Invoices & Billing',
-        description: 'Review stored invoice snapshots, billing totals and payment status with financial precision.',
-        actions: [
-          SfButton(
-            variant: SfButtonVariant.outline,
-            icon: HugeIcons.strokeRoundedDownload01,
-            loading: _exporting,
-            onPressed: _exporting ? null : _exportPage,
-            child: const Text('Export current page'),
-          ),
-        ],
-      ),
-      const SizedBox(height: AdminSpacing.xl),Page extends StatefulWidget {
-  const InvoicesPage({super.key, this.searchQuery = ''});
-  final String searchQuery;
-  @override flutter.State<InvoicesPage> createState() => _InvoicesPageState();
-}
-
-class _InvoicesPageState extends flutter.State<InvoicesPage> {
-  final _api = const _InvoiceLedgerApi();
-  final _search = TextEditingController();
-  List<_LedgerInvoice> _items = [];
-  int _total = 0, _page = 1, _lastPage = 1, _paidCount = 0;
-  double _billed = 0, _paidTotal = 0;
-  String _status = 'ALL';
-  String? _error;
-  DateTime? _from, _to;
-  bool _loading = true, _exporting = false;
-
-  @override void initState() { super.initState(); _search.text = widget.searchQuery; _load(); }
-
-  @override
-  void didUpdateWidget(covariant InvoicesPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.searchQuery != widget.searchQuery && _search.text != widget.searchQuery) {
-      _search.text = widget.searchQuery;
-      _load(page: 1);
-    }
-  }
-  @override void dispose() { _search.dispose(); super.dispose(); }
-
-  Future<void> _load({int page = 1}) async {
-    setState(() { _loading = true; _error = null; });
-    try {
-      final result = await _api.list(page: page, search: _search.text.trim(), status: _status, from: _from, to: _to);
-      if (!mounted) return;
-      setState(() { _items = result.items; _total = result.total; _page = result.page; _lastPage = result.lastPage; _billed = result.totalAmount; _paidCount = result.paidCount; _paidTotal = result.paidAmount; _loading = false; });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() { _loading = false; _error = e.toString().replaceFirst('Bad state: ', ''); });
-    }
-  }
-
-  Future<void> _pickDate(bool start) async {
-    final now = DateTime.now();
-    final selected = await showDatePicker(context: context, initialDate: (start ? _from : _to) ?? now, firstDate: DateTime(2020), lastDate: DateTime(now.year + 2));
-    if (selected == null || !mounted) return;
-    setState(() { if (start) { _from = selected; } else { _to = selected; } });
-  }
-
-  void _reset() {
-    _search.clear();
-    setState(() { _status = 'ALL'; _from = null; _to = null; });
-    _load(page: 1);
-  }
-
-  Future<void> _exportPage() async {
-    if (_items.isEmpty) { _notice(context, 'No invoice records on this page.', error: true); return; }
-    setState(() => _exporting = true);
-    try {
-      String cell(String s) => '"' + s.replaceAll('"', '""') + '"';
-      final rows = <List<String>>[
-        ['Invoice', 'Order ID', 'Issued at', 'Customer', 'Email', 'Subtotal', 'Delivery fee', 'Total', 'Payment method', 'Payment status', 'File reference'],
-        ..._items.map((i) => [i.number, i.orderId.toString(), i.issuedAt ?? '', i.customer, i.email, i.subtotal.toStringAsFixed(2), i.deliveryFee.toStringAsFixed(2), i.total.toStringAsFixed(2), i.paymentMethod, i.paymentStatus, i.fileReference ?? '']),
-      ];
-      final csv = rows.map((r) => r.map(cell).join(',')).join('\r\n');
-      final blob = html.Blob([utf8.encode(csv)], 'text/csv;charset=utf-8');
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      html.AnchorElement(href: url)..setAttribute('download', 'snap-foodd-invoices-page-' + _page.toString() + '.csv')..click();
-      html.Url.revokeObjectUrl(url);
-      if (mounted) _notice(context, 'Exported ' + _items.length.toString() + ' invoices from the current page.');
-    } catch (e) { if (mounted) _notice(context, 'Export failed: ' + e.toString(), error: true); }
-    finally { if (mounted) setState(() => _exporting = false); }
-  }
-
-  @override flutter.Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-    final mobile = width < 760;
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const _InvoiceBreadcrumb(),
-      const SizedBox(height: AdminSpacing.sm),
-      SfPageHeader(
-        title: 'Invoices & Billing',
-        description: 'Review stored invoice snapshots, billing totals and payment status with financial precision.',
-        actions: [
-          SfButton(
-            variant: SfButtonVariant.outline,
-            icon: HugeIcons.strokeRoundedDownload01,
-            loading: _exporting,
-            onPressed: _exporting ? null : _exportPage,
-            child: const Text('Export current page'),
-          ),
-        ],
-      ),
-      const SizedBox(height: AdminSpacing.xl),
-      LayoutBuilder(
+class Invoices      LayoutBuilder(
         builder: (context, constraints) {
           final columns = constraints.maxWidth >= 1000 ? 4 : constraints.maxWidth >= 640 ? 2 : 1;
           final unpaid = _billed - _paidTotal;
@@ -263,7 +78,7 @@ class _InvoicesPageState extends flutter.State<InvoicesPage> {
   }
 }
 
-class _InvoiceDetail extends StatelessWidget {
+class _InvoiceDetail extends flutter.StatelessWidget {
   const _InvoiceDetail({required this.invoice});
   final _LedgerInvoice invoice;
 
@@ -306,7 +121,7 @@ class _InvoiceDetail extends StatelessWidget {
   );
 }
 
-class _InvoiceDetailLine extends StatelessWidget {
+class _InvoiceDetailLine extends flutter.StatelessWidget {
   const _InvoiceDetailLine(this.label, this.value, {this.strong = false});
   final String label, value;
   final bool strong;
@@ -361,7 +176,7 @@ class _LedgerInvoice {
   }
 }
 
-class _InvoiceBreadcrumb extends StatelessWidget {
+class _InvoiceBreadcrumb extends flutter.StatelessWidget {
   const _InvoiceBreadcrumb();
   @override flutter.Widget build(BuildContext context) => const Wrap(spacing: 7, crossAxisAlignment: WrapCrossAlignment.center, children: [
     Text('ACCOUNTING & COMPLIANCE', style: TextStyle(fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w900, color: AdminColors.muted)),
@@ -369,105 +184,35 @@ class _InvoiceBreadcrumb extends StatelessWidget {
     Text('INVOICE LEDGER', style: TextStyle(fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w900, color: AdminColors.warning)),
   ]);
 }
-
-class _InvoiceKpi extends StatelessWidget {
-  const _InvoiceKpi({required this.title, required this.value, required this.caption, required this.icon, required this.accent});
-  final String title, value, caption; final AdminIconData icon; final Color accent;
-  @override flutter.Widget build(BuildContext context) => Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: AdminColors.line)),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Row(children: [Expanded(child: Text(title, style: const TextStyle(fontSize: 11, letterSpacing: .7, fontWeight: FontWeight.w900, color: AdminColors.muted))), AdminIcon(icon, size: 18, color: accent)]),
-      const SizedBox(height: 12), Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: value == 'Not available' ? 16 : 22, fontWeight: FontWeight.w900, color: AdminColors.ink, letterSpacing: -.5)),
-      const SizedBox(height: 5), Text(caption, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.4)),
-    ]));
-}
-
-class _InvoiceFilterPill extends StatelessWidget {
-  const _InvoiceFilterPill(this.label, this.active, this.onTap);
-  final String label; final bool active; final VoidCallback onTap;
-  @override flutter.Widget build(BuildContext context) => (active ? shad.Button.secondary : shad.Button.ghost)(
-    onPressed: onTap,
-    child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: active ? AdminColors.ink : AdminColors.muted)),
-  );
-}
-
-class _InvoiceLedgerCard extends StatelessWidget {
-  const _InvoiceLedgerCard({required this.invoices, required this.mobile, required this.page, required this.total, required this.lastPage, required this.onPage, required this.onView});
-  final List<_LedgerInvoice> invoices; final bool mobile; final int page, total, lastPage; final ValueChanged<int> onPage; final ValueChanged<_LedgerInvoice> onView;
-  @override flutter.Widget build(BuildContext context) => Column(children: [
-    SfDataTable(
-      minWidth: 980,
-      columns: const [
-        SfDataTableColumn(label: 'Invoice / Order', width: 190),
-        SfDataTableColumn(label: 'Issued', width: 150),
-        SfDataTableColumn(label: 'Customer', width: 220),
-        SfDataTableColumn(label: 'Total', width: 130, alignment: Alignment.centerRight),
-        SfDataTableColumn(label: 'Payment', width: 150),
-        SfDataTableColumn(label: 'Status', width: 140),
-      ],
-      rows: invoices.map((item) => [
-        Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text(item.number, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w700)),
-          Text('Order #\${item.orderId}', style: AdminTypography.caption),
-        ]),
-        Text(item.issuedAt ?? 'Not recorded', maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.small),
-        Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text(item.customer, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w600)),
-          if (item.email.isNotEmpty) Text(item.email, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.caption),
-        ]),
-        Text(_inr(item.total), style: AdminTypography.body.copyWith(fontWeight: FontWeight.w700)),
-        Text(item.paymentMethod, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.small),
-        SfStatusBadge(label: item.paymentStatus),
-      ]).toList(),
-      onRowTap: (index) => onView(invoices[index]),
-    ),
-    SfTablePagination(page: page, lastPage: lastPage, total: total, onPrevious: page > 1 ? () => onPage(page - 1) : null, onNext: page < lastPage ? () => onPage(page + 1) : null),
-  ]);
-}
-class _InvoiceMobileCard extends StatelessWidget {
-  const _InvoiceMobileCard({required this.invoice, required this.onView});
-  final _LedgerInvoice invoice; final VoidCallback onView;
-  @override flutter.Widget build(BuildContext context) => InkWell(onTap: onView, child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(invoice.number, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)), const SizedBox(height: 3), Text('#ORDER-' + invoice.orderId.toString() + ' · ' + invoice.customer, style: const TextStyle(fontSize: 11, color: AdminColors.muted))])), _InvoiceStatus(invoice.paymentStatus)]),
-    const SizedBox(height: 12), Row(children: [Expanded(child: Text(invoice.email.isEmpty ? 'No email recorded' : invoice.email, style: const TextStyle(fontSize: 11, color: AdminColors.muted))), Text(_inr(invoice.total), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900))]),
-    const SizedBox(height: 7), Text('Items ' + _inr(invoice.subtotal) + ' · Delivery ' + _inr(invoice.deliveryFee), style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
-    const SizedBox(height: 7), Row(children: [Expanded(child: Text(invoice.paymentMethod, style: const TextStyle(fontSize: 11))), shad.OutlineButton(onPressed: onView, child: const Text('View details'))]), const Divider(height: 1, color: AdminColors.line),
-  ])));
-}
-
-class _InvoiceStatus extends StatelessWidget {
-  const _InvoiceStatus(this.status); final String status;
-  @override flutter.Widget build(BuildContext context) {
-    final paid = status == 'PAID', pending = status == 'PENDING';
-    final bg = paid ? AdminColors.greenSoft : pending ? AdminColors.amberSoft : AdminColors.redSoft;
-    final fg = paid ? AdminColors.green : pending ? AdminColors.amber : AdminColors.red;
-    return Container(padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6), decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)), child: Text(status, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: fg)));
-  }
-}
-
-class _InvoiceDetailLine extends StatelessWidget {
-  const _InvoiceDetailLine(this.label, this.value, {this.strong = false});
-  final String label, value; final bool strong;
-  @override flutter.Widget build(BuildContext context) => Padding(padding: const EdgeInsets.symmetric(vertical: 5), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [SizedBox(width: 125, child: Text(label, style: const TextStyle(fontSize: 11, color: AdminColors.muted))), Expanded(child: Text(value, style: TextStyle(fontSize: 11.5, fontWeight: strong ? FontWeight.w900 : FontWeight.w700, color: AdminColors.ink)))]));
-}
-
-int _int(dynamic v, [int fallback = 0]) => v is int ? v : int.tryParse(v?.toString() ?? '') ?? fallback;
+int _int(dynamic v, [int fallback = 0]) => v is num ? v.toInt() : int.tryParse(v?.toString() ?? '') ?? fallback;
 double _number(dynamic v) => v is num ? v.toDouble() : double.tryParse(v?.toString() ?? '') ?? 0;
+
 String _inr(double v) => '₹' + _groupIndian(v.toStringAsFixed(2));
+
 String _groupIndian(String value) {
-  final p = value.split('.'), whole = p.first;
-  if (whole.length <= 3) return value;
-  final last = whole.substring(whole.length - 3);
-  var prefix = whole.substring(0, whole.length - 3);
+  final parts = value.split('.');
+  final whole = parts.first;
+  final negative = whole.startsWith('-');
+  final digits = negative ? whole.substring(1) : whole;
+  if (digits.length <= 3) return value;
+  final tail = digits.substring(digits.length - 3);
+  var head = digits.substring(0, digits.length - 3);
   final groups = <String>[];
-  while (prefix.length > 2) { groups.insert(0, prefix.substring(prefix.length - 2)); prefix = prefix.substring(0, prefix.length - 2); }
-  if (prefix.isNotEmpty) groups.insert(0, prefix);
-  return groups.join(',') + ',' + last + '.' + (p.length > 1 ? p[1] : '00');
+  while (head.length > 2) {
+    groups.insert(0, head.substring(head.length - 2));
+    head = head.substring(0, head.length - 2);
+  }
+  if (head.isNotEmpty) groups.insert(0, head);
+  return (negative ? '-' : '') + groups.join(',') + ',' + tail +
+      (parts.length > 1 ? '.' + parts[1] : '');
 }
-String _isoDate(DateTime d) => d.year.toString().padLeft(4, '0') + '-' + d.month.toString().padLeft(2, '0') + '-' + d.day.toString().padLeft(2, '0');
-String _date(DateTime d) => d.day.toString().padLeft(2, '0') + '/' + d.month.toString().padLeft(2, '0') + '/' + d.year.toString();
-String _formatTimestamp(String value) {
-  final parsed = DateTime.tryParse(value);
-  if (parsed == null) return value;
-  final d = parsed.toLocal(), hour = d.hour % 12 == 0 ? 12 : d.hour % 12;
-  return _date(d) + ' · ' + hour.toString() + ':' + d.minute.toString().padLeft(2, '0') + ' ' + (d.hour >= 12 ? 'PM' : 'AM');
-}
+
+String _isoDate(DateTime d) =>
+    d.year.toString().padLeft(4, '0') + '-' +
+    d.month.toString().padLeft(2, '0') + '-' +
+    d.day.toString().padLeft(2, '0');
+
+String _date(DateTime d) =>
+    d.day.toString().padLeft(2, '0') + '/' +
+    d.month.toString().padLeft(2, '0') + '/' +
+    d.year.toString();
