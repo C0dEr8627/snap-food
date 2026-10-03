@@ -7,8 +7,6 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      const _ConnectionBanner(),
-      const SizedBox(height: AdminSpacing.xxl),
       LayoutBuilder(
         builder: (context, c) {
           final count = c.maxWidth >= 1000 ? 4 : c.maxWidth >= 650 ? 2 : 1;
@@ -38,37 +36,6 @@ class DashboardPage extends StatelessWidget {
       const SizedBox(height: AdminSpacing.xxl),
       const _LiveOrdersCard(),
     ],
-  );
-}
-
-class _ConnectionBanner extends StatelessWidget {
-  const _ConnectionBanner();
-
-  @override
-  Widget build(BuildContext context) => AdminCard(
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-      child: Row(children: [
-        Container(width: 34, height: 34, decoration: BoxDecoration(color: AdminColors.greenSoft, borderRadius: BorderRadius.circular(9)), child: const AdminIcon(HugeIcons.strokeRoundedCloudSavingDone01, size: 18, color: AdminColors.green)),
-        const SizedBox(width: 11),
-        const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Laravel API v1', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
-          SizedBox(height: 2),
-          Text('Preview environment', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
-          SizedBox(height: 2),
-          Text('Preview data mode is active; live dashboard aggregates are not fabricated.', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
-        ])),
-        if (MediaQuery.sizeOf(context).width >= 650) ...[
-          const Text('Preview', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.muted)),
-          const SizedBox(width: 12),
-          OutlinedButton(
-            onPressed: () => _notice(context, 'Sync state is ready for the live API connection.'),
-            style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 9), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)), side: const BorderSide(color: AdminColors.line)),
-            child: const Text('API status', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
-          ),
-        ],
-      ]),
-    ),
   );
 }
 
