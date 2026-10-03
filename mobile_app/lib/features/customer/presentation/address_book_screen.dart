@@ -132,6 +132,14 @@ class _AddressBookScreenState extends ConsumerState<AddressBookScreen> {
                     ),
                     const SizedBox(height: SnapFoodSpacing.md),
                     _buildCurrentLocationAction(),
+                    if (formError != null && !adding) ...[
+                      const SizedBox(height: SnapFoodSpacing.sm),
+                      SnapErrorState(
+                        title: 'Could not use current location',
+                        message: formError!,
+                        compact: true,
+                      ),
+                    ],
                     const SizedBox(height: SnapFoodSpacing.md),
                     if (data.addresses.isEmpty && !adding)
                       const SnapEmptyState(
