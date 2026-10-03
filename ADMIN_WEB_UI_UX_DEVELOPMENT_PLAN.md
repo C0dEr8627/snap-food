@@ -607,7 +607,7 @@ Avoid presenting every possible action as a visible button.
 ## Phase 8 — Delivery Partners
 
 ### Task 12 — Redesign Delivery Partners as an Operations View
-**Status:** ⬜ Not Started
+**Status:** 🟢 Complete
 
 This page should communicate operational availability, not just CRUD records.
 
@@ -889,8 +889,8 @@ The admin UI/UX modernization is complete when:
 | Task 9 — Catalogue / Products | 🟢 Complete | 2026-10-03 | Refined the product catalogue and category-management experience with centralized tokens, readable hierarchy, responsive editor sizing, shared feedback and truthful item/category workflows while preserving existing API behavior. |
 | Task 10 — Categories | 🟢 Complete | 2026-10-03 | Added a dedicated Categories admin area with searchable shared-table presentation, active/inactive state management, create/edit/delete workflows, confirmation for destructive actions, preview/live data clarity and responsive empty/error/loading states. |
 | Task 11 — Users | 🟢 Complete | 2026-10-03 | Redesigned the Users workspace around the shared table/filter/drawer/state components, preserved the customer-users API contract and moved user details into a responsive right-side drawer. |
-| Task 12 — Delivery Partners | ⬜ Not Started | 2026-10-03 | **NEXT** — redesign Delivery Partners as an operations-focused availability/approval workspace using only supported backend states and actions. |
-| Task 13 — Invoices / Billing | ⬜ Not Started | 2026-10-03 | |
+| Task 12 — Delivery Partners | 🟢 Complete | 2026-10-03 | Redesigned Delivery Partners as an operations-focused availability/approval workspace using shared summary, filter, table, drawer, feedback and state components while preserving the existing partner list, approval and onboarding API contracts. |
+| Task 13 — Invoices / Billing | ⬜ Not Started | 2026-10-03 | **NEXT** — refine the finance surface around invoice precision, search/filtering, detail presentation and supported download/export behavior. |
 | Task 14 — Premium Form UX | ⬜ Not Started | 2026-10-03 | |
 | Task 15 — Loading / Empty / Error / Success | ⬜ Not Started | 2026-10-03 | |
 | Task 16 — Responsive Admin Web | ⬜ Not Started | 2026-10-03 | |
@@ -1204,6 +1204,33 @@ The admin UI/UX modernization is complete when:
   - Browser screenshot/interactive visual QA and actual Flutter Web compile validation remain dependent on a runnable environment or CI execution path.
   - The Users backend currently exposes list/search/pagination/detail data only; no user mutation action was invented.
   - Task 12 — Delivery Partners is the next implementation target.
+
+
+### 2026-10-03 — Task 12
+- Status: 🟢 Complete
+- Implemented:
+  - Reworked Delivery Partners into an operations-focused workspace with a concise status summary for total, available, active and awaiting-approval records.
+  - Replaced the legacy partner toolbar with shared SfFilterBar/SfSearchField, status counts and a refresh affordance.
+  - Kept the existing SfDataTable foundation and improved it with clearer partner/contact hierarchy, availability, approval and active-status badges, intentional horizontal overflow and row-to-detail interaction.
+  - Added a shared right-side SfSideDrawer detail experience using only fields exposed by the existing partner API: partner identity, email, approval, active state, availability and creation date.
+  - Preserved the existing supported approval/unapproval action and manual onboarding flow that links an existing active user ID to a delivery-partner record.
+  - Replaced legacy snackbar styling with shared SfFeedback success/error treatment.
+  - Added shared loading skeleton, empty state, error/retry state and pagination presentation.
+  - Removed the previous KYC-queue presentation and other unsupported verification metadata from the page; no live location, telemetry, document verification or trust-score UI is simulated.
+  - Removed remaining legacy AdminColors usage from the page implementation and kept the page free of restaurant concepts.
+- Files/components changed:
+  - admin_web/lib/pages/partners_page.dart
+  - ADMIN_WEB_UI_UX_DEVELOPMENT_PLAN.md
+- Validation:
+  - Re-fetched the final Delivery Partners source after the redesign and cleanup commit.
+  - Verified shared SfDataTable, SfSideDrawer, SfStatusBadge, SfFilterBar, SfSearchField, SfSkeleton, SfEmptyState, SfErrorState and SfFeedback usage.
+  - Verified the existing API endpoints remain the only data/mutation contracts used: /admin/delivery-partners, /admin/delivery-partners/{id}/approval and /admin/delivery-partners onboarding with user_id.
+  - Verified no restaurant terminology remains in the final Delivery Partners source and no unsupported KYC/telemetry presentation remains.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful validation run is being claimed.
+- Limitations/follow-up:
+  - Browser screenshot/interactive visual QA and actual Flutter Web compile validation remain dependent on a runnable environment or CI execution path.
+  - Search/filter counts are derived from the currently loaded API page; the existing backend list endpoint was preserved rather than inventing server-side filter parameters.
+  - Task 13 — Invoices / Billing is the next implementation target.
 
 ### Future entries
 
