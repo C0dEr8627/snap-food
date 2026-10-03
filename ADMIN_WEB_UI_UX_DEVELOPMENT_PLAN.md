@@ -1513,3 +1513,19 @@ Audited the affected declarations so page states and shared widgets now explicit
 
 ### Next
 If the local compiler reports additional errors after this repair, address only the remaining concrete diagnostics before continuing with Task 17 (Accessibility / Keyboard UX).
+
+### 2026-10-03 — Categories page source corruption repair
+- Status: 🟢 Complete
+- Implemented:
+  - Repaired `admin_web/lib/pages/categories_page.dart`, which had been written as a single source line containing literal `\\n` escape sequences. Dart therefore parsed the entire page incorrectly and reported cascading undefined-name/parser errors around `_categories`, `_loading`, and the `SfEmptyState` section.
+  - Restored real Dart line breaks throughout the file.
+  - Explicitly bound `CategoriesPage` to `flutter.StatefulWidget` and `_CategoriesPageState` to `flutter.State<CategoriesPage>`, matching the shared admin Flutter type-resolution repair.
+  - Preserved the existing category loading, filtering, CRUD, status, and table behavior.
+- Files/components changed:
+  - `admin_web/lib/pages/categories_page.dart`
+- Validation:
+  - Re-fetched the committed file from the `frontend` branch and confirmed normal multiline Dart source, valid page/state declarations, and intact category state fields/methods.
+  - Commit: `7b9ba68f842a5c802cd4fc59bd83da64ce914270`
+- Limitations/follow-up:
+  - Local Flutter analyzer/build execution is still required to confirm the entire admin web app compiles in the user's Flutter SDK environment.
+  - If the next compiler run reports additional diagnostics, fix those concrete errors before proceeding to the next UI/UX task.
