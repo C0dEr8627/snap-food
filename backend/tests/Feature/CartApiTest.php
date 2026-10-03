@@ -4,8 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Cart;
 use App\Models\Category;
+use App\Models\CustomerUser;
 use App\Models\Product;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -13,13 +13,12 @@ class CartApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function user(string $suffix): User
+    private function user(string $suffix): CustomerUser
     {
-        return User::create([
+        return CustomerUser::create([
             'google_subject' => 'google-cart-'.$suffix,
             'name' => ucfirst($suffix),
             'email' => $suffix.'@example.test',
-            'role' => User::ROLE_CUSTOMER,
             'is_active' => true,
         ]);
     }
