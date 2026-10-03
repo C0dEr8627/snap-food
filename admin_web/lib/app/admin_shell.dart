@@ -290,9 +290,10 @@ class _Sidebar extends StatelessWidget {
                 mainAxisAlignment: rail ? MainAxisAlignment.center : MainAxisAlignment.start,
                 children: [
                   const _BrandMark(),
-                  SizedBox(width: AdminSpacing.sm),
-                  Expanded(
-                    child: Column(
+                  if (!rail) ...[
+                    const SizedBox(width: AdminSpacing.sm),
+                    Expanded(
+                      child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
@@ -429,6 +430,7 @@ class _NavGroup extends StatelessWidget {
           item: item,
           active: item == selected,
           onTap: () => onSelect(item),
+          rail: rail,
         ),
       ),
     ],
@@ -579,30 +581,32 @@ class _SidebarProfile extends StatelessWidget {
           backgroundColor: AdminDesignColors.ink,
           foregroundColor: AdminDesignColors.surface,
         ),
-        const SizedBox(width: AdminSpacing.sm),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                user.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AdminTypography.small.copyWith(
-                  color: AdminDesignColors.primaryText,
-                  fontWeight: FontWeight.w600,
+        if (!compact) ...[
+          const SizedBox(width: AdminSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AdminTypography.small.copyWith(
+                    color: AdminDesignColors.primaryText,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                user.role,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AdminTypography.caption,
-              ),
-            ],
+                const SizedBox(height: 2),
+                Text(
+                  user.role,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AdminTypography.caption,
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
         SfIconButton(
           icon: HugeIcons.strokeRoundedLogout01,
           onPressed: onLogout,
