@@ -273,9 +273,9 @@ class _UsersToolbar extends flutter.StatelessWidget {
           ),
         ),
         _UsersFilterPill('All', filter == 'ALL', () => onFilter('ALL')),
+        _UsersFilterPill('Admin', filter == 'ADMIN', () => onFilter('ADMIN')),
         _UsersFilterPill('Customers', filter == 'CUSTOMER', () => onFilter('CUSTOMER')),
-        _UsersFilterPill('Partners', filter == 'PARTNER', () => onFilter('PARTNER')),
-        _UsersFilterPill('Riders', filter == 'RIDER', () => onFilter('RIDER')),
+        _UsersFilterPill('Delivery Partners', filter == 'DELIVERY_PARTNER', () => onFilter('DELIVERY_PARTNER')),
         SfButton(
           variant: SfButtonVariant.outline,
           onPressed: loading ? null : onRefresh,
