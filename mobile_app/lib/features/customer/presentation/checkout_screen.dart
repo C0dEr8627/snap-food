@@ -15,6 +15,8 @@ import 'cart_controller.dart';
 import 'order_controller.dart';
 import 'address_book_controller.dart';
 
+final directCheckoutItemsProvider = StateProvider<List<CartItem>?>((ref) => null);
+
 class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
   @override
@@ -52,6 +54,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   @override
   Widget build(BuildContext context) {
     final cart = ref.watch(cartControllerProvider);
+    final directItems = ref.watch(directCheckoutItemsProvider);
+    final checkoutItems = directItems ?? cart.items;
+    final checkoutItemCount = checkoutItems.fold<int>(0, (sum, item) => sum + item.quantity);
+    final checkoutSubtotal = checkoutItems.fold<int>(0, (sum, item) => sum + item.previewPrice * item.quantity);
     final checkoutState = ref.watch(orderCheckoutControllerProvider);
     final addressState = ref.watch(addressBookControllerProvider);
     final savedAddress = addressState.value?.selectedAddress;
@@ -140,20 +146,20 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   ],
                   const SizedBox(height: SnapFoodSpacing.xl),
                   SnapSectionHeader(
-                    title: 'Order summary',
-                    subtitle: cart.itemCount.toString() +
+                    title: directItems == null ? 'Order summary' : 'Order now · single item checkout',
+                    subtitle: checkoutItemCount.toString() +
                         ' item' +
-                        (cart.itemCount == 1 ? '' : 's'),
+                        (checkoutItemCount == 1 ? '' : 's'),
                   ),
                   const SizedBox(height: SnapFoodSpacing.sm),
-                  if (cart.items.isEmpty)
+                  if (checkoutItems.isEmpty)
                     const _CheckoutNotice(
                       icon: Icons.shopping_bag_outlined,
                       title: 'Your cart is empty',
                       message: 'Add dishes before placing an order.',
                     )
                   else
-                    _CheckoutSummary(items: cart.items),
+                    _CheckoutSummary(items: checkoutItems),
                   const SizedBox(height: SnapFoodSpacing.xl),
                   SnapSectionHeader(
                     title: 'Payment method',
@@ -168,7 +174,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         'Preview only — final charges are calculated by the server.',
                   ),
                   const SizedBox(height: SnapFoodSpacing.sm),
-                  _PriceBreakdown(previewSubtotal: cart.previewSubtotal),
+                  _PriceBreakdown(previewSubtotal: checkoutSubtotal),
                   if (apiError != null) ...[
                     const SizedBox(height: SnapFoodSpacing.md),
                     _ErrorBox(error: apiError),
@@ -192,7 +198,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             label: isSubmitting ? 'Placing order…' : 'Place COD order',
             icon: isSubmitting ? null : Icons.check_rounded,
             loading: isSubmitting,
-            onPressed: isSubmitting || cart.items.isEmpty ? null : _submit,
+            onPressed: isSubmitting || checkoutItems.isEmpty ? null : _submit,
             semanticLabel: 'Place cash on delivery order',
           ),
         ),
@@ -226,9 +232,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   Future<void> _submit() async {
     final savedAddress = ref.read(addressBookControllerProvider).value?.selectedAddress;
     if (savedAddress == null && !_formKey.currentState!.validate()) return;
-    final cart = ref.read(cartControllerProvider);
+    final directItems = ref.read(directCheckoutItemsProvider);
+    final checkoutItems = directItems ?? ref.read(cartControllerProvider).items;
     final lines = <OrderLineRequest>[];
-    for (final item in cart.items) {
+    for (final item in checkoutItems) {
       final productId = int.tryParse(item.productId);
       if (productId == null || productId <= 0) {
         _showMessage(
@@ -275,7 +282,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         .read(orderCheckoutControllerProvider.notifier)
         .submit(CreateOrderRequest(items: lines, deliveryAddress: deliveryAddress));
     if (!mounted || order == null) return;
-    ref.read(cartControllerProvider.notifier).clear();
+    if (directItems != null) {
+      ref.read(directCheckoutItemsProvider.notifier).state = null;
+    } else {
+      ref.read(cartControllerProvider.notifier).clear();
+    }
     context.go('/orders/${Uri.encodeComponent(order.id)}');
   }
 
