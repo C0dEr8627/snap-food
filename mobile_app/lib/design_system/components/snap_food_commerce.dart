@@ -567,6 +567,165 @@ class SnapProductCard extends StatelessWidget {
   }
 }
 
+
+/// Reusable delivery-address tile with a clear, non-color-only selected state.
+class SnapAddressTile extends StatelessWidget {
+  const SnapAddressTile({
+    required this.label,
+    required this.recipientName,
+    required this.addressLine,
+    this.selected = false,
+    this.onTap,
+    this.onEdit,
+    this.onDelete,
+    super.key,
+  });
+
+  final String label;
+  final String recipientName;
+  final String addressLine;
+  final bool selected;
+  final VoidCallback? onTap;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+        container: true,
+        selected: selected,
+        label: label + (selected ? ', selected' : '') + '. ' + recipientName + '. ' + addressLine,
+        child: Material(
+          color: selected
+              ? SnapFoodColors.softYellow
+              : SnapFoodColors.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+                border: Border.all(
+                  color: selected
+                      ? SnapFoodColors.secondary
+                      : SnapFoodColors.softBorder,
+                  width: selected ? 1.5 : 1,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(SnapFoodSpacing.md),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      selected
+                          ? Icons.radio_button_checked_rounded
+                          : Icons.location_on_outlined,
+                      color: selected
+                          ? SnapFoodColors.secondary
+                          : SnapFoodColors.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: SnapFoodSpacing.sm),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  label,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w800,
+                                    color: SnapFoodColors.warmBlack,
+                                  ),
+                                ),
+                              ),
+                              if (selected) ...[
+                                const SizedBox(width: SnapFoodSpacing.sm),
+                                const Text(
+                                  'Selected',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w800,
+                                    color: SnapFoodColors.secondary,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          const SizedBox(height: SnapFoodSpacing.xs),
+                          Text(
+                            recipientName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: SnapFoodColors.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: SnapFoodSpacing.xs),
+                          Text(
+                            addressLine,
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              height: 1.35,
+                              color: SnapFoodColors.warmBlack,
+                            ),
+                          ),
+                          if (onEdit != null || onDelete != null) ...[
+                            const SizedBox(height: SnapFoodSpacing.sm),
+                            Wrap(
+                              spacing: SnapFoodSpacing.xs,
+                              children: [
+                                if (onEdit != null)
+                                  TextButton.icon(
+                                    onPressed: onEdit,
+                                    icon: const Icon(Icons.edit_outlined, size: 16),
+                                    label: const Text('Edit'),
+                                    style: TextButton.styleFrom(
+                                      minimumSize: const Size(48, 40),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: SnapFoodSpacing.sm,
+                                      ),
+                                      foregroundColor: SnapFoodColors.secondary,
+                                    ),
+                                  ),
+                                if (onDelete != null)
+                                  TextButton.icon(
+                                    onPressed: onDelete,
+                                    icon: const Icon(Icons.delete_outline, size: 16),
+                                    label: const Text('Delete'),
+                                    style: TextButton.styleFrom(
+                                      minimumSize: const Size(48, 40),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: SnapFoodSpacing.sm,
+                                      ),
+                                      foregroundColor: SnapFoodColors.onSurfaceVariant,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+}
+
 /// Restaurant discovery card with metadata slots supplied by the feature layer.
 ///
 /// The component intentionally does not own restaurant data or navigation. This
