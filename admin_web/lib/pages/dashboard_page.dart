@@ -629,7 +629,7 @@ class _OrdersTable extends StatelessWidget {
             shad.TableCell(child: Text(r[1])),
             shad.TableCell(child: Text(r[2], style: const TextStyle(fontWeight: FontWeight.w800))),
             shad.TableCell(child: Text(r[3])),
-            shad.TableCell(child: _Pill(r[4])),
+            shad.TableCell(child: SfStatusBadge(label: r[4], status: r[4])),
             shad.TableCell(child: shad.IconButton.ghost(onPressed: () => _notice(context, 'Order details will be connected to the Laravel API.'), icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 19))),
           ])),
         ],
