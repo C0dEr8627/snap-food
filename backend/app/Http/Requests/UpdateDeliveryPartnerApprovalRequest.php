@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\User;
+use App\Models\AdminUser;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateDeliveryPartnerApprovalRequest extends FormRequest
