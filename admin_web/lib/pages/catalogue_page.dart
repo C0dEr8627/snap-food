@@ -346,7 +346,7 @@ class _CataloguePageState extends State<CataloguePage> {
       p.active = false; p.available = false;
       if (_live) await _load(keepSelection: false); else _applyPreviewFilters();
       if (mounted) { _newProduct(); SfFeedback.showSuccess(context, 'Item deactivated.'); }
-    } catch (e) { if (mounted) _notice(context, e.toString(), error: true); }
+    } catch (e) { if (mounted) SfFeedback.showError(context, e.toString()); }
     finally { if (mounted) setState(() => _saving = false); }
   }
 
@@ -464,7 +464,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
         widget.categories..clear()..addAll(list);
       }
       await widget.onChanged();
-      if (mounted) _notice(context, id == null ? 'Category created successfully.' : 'Category updated successfully.');
+      if (mounted) SfFeedback.showSuccess(context, id == null ? 'Category created successfully.' : 'Category updated successfully.');
     } catch (e) { if (mounted) _notice(context, e.toString(), error: true); }
     finally { if (mounted) setState(() => _busyId = null); }
   }
@@ -489,7 +489,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
         }
       }
       await widget.onChanged();
-      if (mounted) _notice(context, active ? 'Category activated.' : 'Category deactivated.');
+      if (mounted) SfFeedback.showSuccess(context, active ? 'Category activated.' : 'Category deactivated.');
     } catch (e) {
       if (mounted) _notice(context, e.toString(), error: true);
     } finally {
@@ -519,7 +519,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
         widget.categories..clear()..addAll(list);
       }
       await widget.onChanged();
-      if (mounted) _notice(context, 'Category deleted permanently.');
+      if (mounted) SfFeedback.showSuccess(context, 'Category deleted permanently.');
     } catch (e) { if (mounted) _notice(context, e.toString(), error: true); }
     finally { if (mounted) setState(() => _busyId = null); }
   }
@@ -608,7 +608,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(c.name, style: const TextStyle(fontWeight: FontWeight.w800)),
+                  Text(c.name, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w700)),
                   const SizedBox(height: 2),
                   Text(
                     (c.slug.isEmpty ? 'No slug' : c.slug) +
@@ -718,12 +718,12 @@ class _CategoryTabs extends StatelessWidget {
       cursor: SystemMouseCursors.click,
       child: InkWell(
         onTap: () => onSelect(id),
-        borderRadius: BorderRadius.circular(11),
+        borderRadius: BorderRadius.circular(AdminRadii.control),
         hoverColor: AdminDesignColors.warningSoft,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeOut,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+          duration: AdminMotion.hover,
+          curve: AdminMotion.easeOutCubic,
+          padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.md, vertical: AdminSpacing.sm),
           decoration: BoxDecoration(
             color: active ? AdminDesignColors.brandYellow : Colors.white,
             borderRadius: BorderRadius.circular(11),
@@ -733,7 +733,7 @@ class _CategoryTabs extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Text(label, style: TextStyle(fontSize: 11, fontWeight: active ? FontWeight.w900 : FontWeight.w700)),
+              Text(label, style: AdminTypography.small.copyWith(fontWeight: active ? FontWeight.w700 : FontWeight.w500)),
               if (count > 0) ...[
                 const SizedBox(width: AdminSpacing.xs),
                 Text(count.toString(), style: const AdminTypography.small),
