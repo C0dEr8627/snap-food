@@ -125,6 +125,7 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
         ),
       ),
       ),
+      ),
     );
   }
 
@@ -588,20 +589,30 @@ class HomeHeader extends ConsumerWidget {
                 tooltip: 'Notifications',
                 semanticLabel: 'Notifications',
               ),
-              InkWell(
-                onTap: () => context.go('/profile'),
-                borderRadius: BorderRadius.circular(24),
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: const BoxDecoration(
-                    color: SnapFoodColors.primaryContainer,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.person,
-                    size: 20,
-                    color: SnapFoodColors.warmBlack,
+              Semantics(
+                button: true,
+                label: 'Open profile',
+                child: InkWell(
+                  onTap: () => context.go('/profile'),
+                  borderRadius: BorderRadius.circular(24),
+                  child: SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: Center(
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: const BoxDecoration(
+                          color: SnapFoodColors.primaryContainer,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.person,
+                          size: 20,
+                          color: SnapFoodColors.warmBlack,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -621,7 +632,12 @@ class _DeliveryLocation extends ConsumerWidget {
     final selectedAddress = ref.watch(addressBookControllerProvider).value?.selectedAddress;
     final label = selectedAddress?.label ?? 'Choose a delivery address';
     final detail = selectedAddress?.displayLine;
-    return InkWell(
+    return Semantics(
+      button: true,
+      label: detail == null || detail.isEmpty
+          ? 'Delivery address: $label. Choose delivery address'
+          : 'Delivery address: $label, $detail. Change delivery address',
+      child: InkWell(
       onTap: () => context.push('/addresses'),
       borderRadius: BorderRadius.circular(SnapFoodRadii.full),
       child: Container(
@@ -933,7 +949,11 @@ class BottomNav extends StatelessWidget {
               children: [
                 for (var i = 0; i < items.length; i++)
                   Expanded(
-                    child: InkWell(
+                    child: Semantics(
+                      button: true,
+                      selected: i == selected,
+                      label: items[i].$2,
+                      child: InkWell(
                       onTap: () {
                         if (i != selected) {
                           HapticFeedback.selectionClick();
@@ -992,6 +1012,7 @@ class BottomNav extends StatelessWidget {
                           ),
                         ),
                       ),
+                    ),
                     ),
                   ),
               ],
