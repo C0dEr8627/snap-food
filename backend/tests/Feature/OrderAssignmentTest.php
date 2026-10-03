@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\DeliveryPartner;
 use App\Models\Order;
 use App\Models\AdminUser;
 use App\Models\CustomerUser;
@@ -19,17 +18,13 @@ class OrderAssignmentTest extends TestCase
         return CustomerUser::create(['google_subject' => 'google-assignment-'.$suffix, 'name' => ucfirst($suffix), 'email' => $suffix.'@example.test', 'is_active' => true]);
     }
 
-    private function partnerUser(string $suffix): DeliveryPartnerUser
+    private function partner(string $suffix, bool $available = true): DeliveryPartnerUser
     {
-        return DeliveryPartnerUser::create(['google_subject' => 'google-assignment-'.$suffix, 'name' => ucfirst($suffix), 'email' => $suffix.'@example.test', 'is_active' => true]);
-    }
-
-    private function partner(DeliveryPartnerUser $user, bool $available = true): DeliveryPartner
-    {
-        return DeliveryPartner::create([
-            'user_id' => $user->id,
-            'is_approved' => true,
+        return DeliveryPartnerUser::create([
+            'name' => ucfirst($suffix),
+            'email' => $suffix.'@example.test',
             'is_active' => true,
+            'is_approved' => true,
             'is_available' => $available,
             'approved_at' => now(),
             'approved_by' => $this->admin()->id,
@@ -61,7 +56,7 @@ class OrderAssignmentTest extends TestCase
     {
         $admin = $this->admin();
         $customer = $this->customer('customer');
-        $partner = $this->partner($this->partnerUser('partner'));
+        $partner = $this->partner('partner');
         $order = $this->order($customer);
 
         $this->actingAs($admin, 'sanctum')
@@ -86,10 +81,30 @@ class OrderAssignmentTest extends TestCase
         ]);
     }
 
+    public function test_admin_orders_list_remains_loadable_after_assignment(): void
+    {
+        $admin = $this->admin();
+        $customer = $this->customer('customer-list');
+        $partner = $this->partner('partner-list');
+        $order = $this->order($customer);
+
+        $this->actingAs($admin, 'sanctum')
+            ->postJson('/api/v1/admin/orders/'.$order->id.'/assignment', [
+                'delivery_partner_id' => $partner->id,
+            ])
+            ->assertCreated();
+
+        $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/orders?per_page=100')
+            ->assertOk()
+            ->assertJsonPath('data.data.0.assignment.delivery_partner.id', $partner->id)
+            ->assertJsonPath('data.data.0.assignment.delivery_partner.name', $partner->name);
+    }
+
     public function test_customer_cannot_assign_an_order(): void
     {
         $customer = $this->customer('customer-denied');
-        $partner = $this->partner($this->partnerUser('partner-denied'));
+        $partner = $this->partner('partner-denied');
         $order = $this->order($customer);
 
         $this->actingAs($customer, 'sanctum')
@@ -105,7 +120,7 @@ class OrderAssignmentTest extends TestCase
     {
         $admin = $this->admin();
         $customer = $this->customer('customer-unavailable');
-        $partner = $this->partner($this->partnerUser('partner-unavailable'), false);
+        $partner = $this->partner('partner-unavailable', false);
         $order = $this->order($customer);
 
         $this->actingAs($admin, 'sanctum')
@@ -120,7 +135,7 @@ class OrderAssignmentTest extends TestCase
     {
         $admin = $this->admin();
         $customer = $this->customer('customer-conflict');
-        $partner = $this->partner($this->partnerUser('partner-conflict'));
+        $partner = $this->partner('partner-conflict');
         $order = $this->order($customer, Order::STATUS_PREPARING);
 
         $this->actingAs($admin, 'sanctum')
