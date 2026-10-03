@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Product extends Model
 {
     protected $appends = ['image_url'];
+
     protected $fillable = [
         'category_id',
         'name',
@@ -36,9 +37,16 @@ class Product extends Model
     public function getImageUrlAttribute(): ?string
     {
         $image = $this->image;
-        if (! is_string($image) || trim($image) === '') return null;
-        if (preg_match('#^https?://#i', $image)) return $image;
-        return url('/api/v1/products/' . $this->getKey() . '/image');
+
+        if (! is_string($image) || trim($image) === '') {
+            return null;
+        }
+
+        if (preg_match('#^https?://#i', $image)) {
+            return $image;
+        }
+
+        return url('/api/v1/products/'.$this->getKey().'/image');
     }
 
     public function category(): BelongsTo
