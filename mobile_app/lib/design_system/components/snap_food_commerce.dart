@@ -566,3 +566,209 @@ class SnapProductCard extends StatelessWidget {
     );
   }
 }
+
+/// Restaurant discovery card with metadata slots supplied by the feature layer.
+///
+/// The component intentionally does not own restaurant data or navigation. This
+/// keeps rating, ETA, delivery fee and availability truthful to the API contract
+/// that supplies them.
+class SnapRestaurantCard extends StatelessWidget {
+  const SnapRestaurantCard({
+    required this.name,
+    required this.image,
+    this.rating,
+    this.reviewCount,
+    this.eta,
+    this.deliveryMetadata,
+    this.category,
+    this.isOpen = true,
+    this.onTap,
+    this.width = 280,
+    super.key,
+  });
+
+  final String name;
+  final Widget image;
+  final double? rating;
+  final int? reviewCount;
+  final String? eta;
+  final String? deliveryMetadata;
+  final String? category;
+  final bool isOpen;
+  final VoidCallback? onTap;
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = SnapFoodRadii.lg;
+    final metadata = <Widget>[];
+
+    if (rating != null) {
+      metadata.add(
+        SnapRatingBadge(
+          rating: rating!.clamp(0, 5),
+          reviewCount: reviewCount,
+          compact: true,
+        ),
+      );
+    }
+    if (eta != null && eta!.trim().isNotEmpty) {
+      metadata.add(_RestaurantMetadataChip(
+        icon: Icons.schedule_rounded,
+        label: eta!,
+      ));
+    }
+    if (deliveryMetadata != null && deliveryMetadata!.trim().isNotEmpty) {
+      metadata.add(_RestaurantMetadataChip(
+        icon: Icons.two_wheeler_rounded,
+        label: deliveryMetadata!,
+      ));
+    }
+
+    return Semantics(
+      container: true,
+      label: '\$name\${rating == null ? '' : ', rated \${rating!.clamp(0, 5).toStringAsFixed(1)}'}\${eta == null ? '' : ', \$eta'}\${isOpen ? '' : ', currently closed'}',
+      child: SizedBox(
+        width: width,
+        child: Material(
+          color: SnapFoodColors.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(radius),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(radius),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(radius),
+                border: Border.all(color: SnapFoodColors.softBorder),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    height: 152,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        image,
+                        Positioned(
+                          left: SnapFoodSpacing.sm,
+                          top: SnapFoodSpacing.sm,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: SnapFoodColors.surfaceContainerLowest.withAlpha(235),
+                              borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: SnapFoodSpacing.sm,
+                                vertical: SnapFoodSpacing.xs,
+                              ),
+                              child: Text(
+                                isOpen ? 'Open' : 'Closed',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  color: isOpen
+                                      ? SnapFoodColors.warmBlack
+                                      : SnapFoodColors.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      SnapFoodSpacing.md,
+                      SnapFoodSpacing.sm + SnapFoodSpacing.xs,
+                      SnapFoodSpacing.md,
+                      SnapFoodSpacing.md,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            height: 1.2,
+                            fontWeight: FontWeight.w800,
+                            color: SnapFoodColors.warmBlack,
+                          ),
+                        ),
+                        if (category != null && category!.trim().isNotEmpty) ...[
+                          const SizedBox(height: SnapFoodSpacing.xs),
+                          Text(
+                            category!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: SnapFoodColors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                        if (metadata.isNotEmpty) ...[
+                          const SizedBox(height: SnapFoodSpacing.sm),
+                          Wrap(
+                            spacing: SnapFoodSpacing.xs,
+                            runSpacing: SnapFoodSpacing.xs,
+                            children: metadata,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RestaurantMetadataChip extends StatelessWidget {
+  const _RestaurantMetadataChip({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+        decoration: BoxDecoration(
+          color: SnapFoodColors.surfaceContainer,
+          borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: SnapFoodSpacing.sm,
+            vertical: SnapFoodSpacing.xs,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 13, color: SnapFoodColors.secondary),
+              const SizedBox(width: SnapFoodSpacing.xs),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: SnapFoodColors.warmBlack,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+}
