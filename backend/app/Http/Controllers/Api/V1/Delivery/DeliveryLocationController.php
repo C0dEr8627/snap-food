@@ -102,10 +102,7 @@ class DeliveryLocationController
             'data' => [
                 'order_id' => $order->id,
                 'status' => $order->status,
-                'destination' => [
-                    'latitude' => data_get($order->delivery_address_snapshot, 'latitude'),
-                    'longitude' => data_get($order->delivery_address_snapshot, 'longitude'),
-                ],
+                'destination' => $this->destinationFromSnapshot($order->delivery_address_snapshot),
                 'location' => $location,
                 'is_stale' => $stale,
                 'delivery_partner' => $partner ? [
@@ -116,5 +113,20 @@ class DeliveryLocationController
                 'stale_after_seconds' => self::STALE_AFTER_SECONDS,
             ],
         ]);
+    }
+
+    private function destinationFromSnapshot(?array $snapshot): ?array
+    {
+        $latitude = data_get($snapshot, 'latitude');
+        $longitude = data_get($snapshot, 'longitude');
+
+        if ($latitude === null || $longitude === null) {
+            return null;
+        }
+
+        return [
+            'latitude' => (float) $latitude,
+            'longitude' => (float) $longitude,
+        ];
     }
 }
