@@ -430,7 +430,7 @@ Requirements:
 - Avoided generic add/remove snackbars; quantity changes continue through the existing optimistic cart controller flow with server reconciliation on failure.
 - Preserved product imagery fallback behavior, checkout routing, cart state, and server-authoritative pricing.
 ### Task 13 — Redesign Checkout
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
 Target hierarchy:
 
@@ -449,6 +449,11 @@ Requirements:
 - Strong error/validation treatment.
 - Safe-area aware sticky CTA.
 - Preserve checkout/order API behavior.
+- Reworked the checkout hierarchy around delivery address, order summary, payment method, price breakdown, final-total messaging, and the sticky place-order action.
+- Reused Snap Foodd controls including `SnapIconButton`, `SnapSectionHeader`, `SnapPrice`, `SnapPrimaryButton`, and branded checkout surfaces.
+- Kept the current COD-only API contract explicit instead of presenting unsupported payment choices.
+- Kept the current server-authoritative pricing behavior explicit: cart prices are shown as a preview, while delivery/final charges remain confirmed by the server after order placement.
+- Preserved saved-address selection, inline address creation, `CreateOrderRequest`, order submission, cart clearing, and order-detail navigation.
 
 ### Task 14 — Redesign address selection/book
 **Status:** ⬜ Not Started
@@ -595,6 +600,7 @@ Before marking any task complete, verify:
 | 2026-10-03 | Task 7 — Redesign product cards | ✅ Complete | Added the reusable `SnapProductCard` editorial card and adopted it on the customer Home catalogue. Product imagery now leads the composition with consistent cropping, stronger name/price hierarchy, category metadata when available, 40px favorite and 44px action targets, explicit availability semantics, restrained borders, and no fabricated rating/popularity badges. Existing favourite toggling and product-detail navigation remain feature-owned and unchanged. Validation: source-level brace/parenthesis/bracket checks passed for the changed component and Home screen; implementation commits exposed no CI status through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 11 — Restaurant menu | ⏭️ Not Applicable | Confirmed that Snap Foodd has no customer-facing restaurant concept or product-to-restaurant relationship. Restaurant menu work is intentionally skipped; future customer UI work remains product/catalogue-first. |
 | 2026-10-03 | Task 12 — Redesign Cart | ✅ Complete | Reworked the customer Cart with stronger item/price hierarchy, token-based spacing/typography, tactile quantity controls, branded empty state, clearer bill details, and a safe-area-aware sticky checkout CTA using reusable Snap components. The existing CartController, remote repository synchronization, optimistic quantity changes, checkout route, image fallback, and server-authoritative final pricing behavior were preserved. Validation: changed Dart source was structurally reviewed; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector; no connector-exposed CI result was available for the implementation commit. |
+| 2026-10-03 | Task 13 — Redesign Checkout | ✅ Complete | Reworked Checkout into a high-trust, product/catalogue-first commerce flow with clear delivery address, order summary, COD payment selection, preview price breakdown, explicit server-authoritative final-total messaging, and a safe-area-aware sticky primary CTA. Reused Snap Foodd components and preserved saved-address selection, inline address creation, `CreateOrderRequest`, order submission, cart clearing, and order-detail navigation. Validation: changed Dart source has balanced delimiter counts; the implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 
 ---
 
@@ -618,6 +624,7 @@ Before marking any task complete, verify:
 - Completed Task 10: polished Food Details using the real catalogue contract, stronger visual hierarchy, branded metadata, and preserved commerce behavior.
 - Confirmed Task 11 is not applicable because Snap Foodd has no restaurant concept.
 - Completed Task 12: redesigned Cart with stronger commerce hierarchy, branded empty state, reusable quantity/CTA controls, clearer bill details, and preserved server-authoritative cart behavior.
+- Completed Task 13: redesigned Checkout around address, order summary, COD payment, transparent price preview/final-total messaging, and a safe-area-aware place-order CTA while preserving existing checkout/order behavior.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
