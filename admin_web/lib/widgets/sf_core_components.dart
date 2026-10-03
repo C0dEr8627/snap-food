@@ -40,8 +40,7 @@ class SfButton extends StatelessWidget {
       SfButtonVariant.destructive => Colors.white,
     };
 
-    Widget button = Shortcuts(
-      child: Material(
+    Widget button = Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: enabled ? onPressed : null,
@@ -83,7 +82,6 @@ class SfButton extends StatelessWidget {
           ),
         ),
       ),
-        ),
       );
 
     if (expand) button = SizedBox(width: double.infinity, child: button);
@@ -95,9 +93,6 @@ class SfButton extends StatelessWidget {
   }
 }
 
-extension on BorderSide {
-  Border _toBorder() => Border.fromBorderSide(this);
-}
 
 class SfIconButton extends StatelessWidget {
   const SfIconButton({
