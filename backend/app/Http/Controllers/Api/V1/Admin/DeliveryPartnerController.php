@@ -18,7 +18,7 @@ class DeliveryPartnerController extends Controller
     {
         return response()->json([
             'data' => DeliveryPartner::query()
-                ->with('user:id,name,email,role,is_active')
+                ->with('user:id,name,email,is_active')
                 ->orderByDesc('id')
                 ->paginate(20),
         ]);
@@ -27,9 +27,9 @@ class DeliveryPartnerController extends Controller
     public function store(ProvisionDeliveryPartnerRequest $request): JsonResponse
     {
         $partner = DB::transaction(function () use ($request): DeliveryPartner {
-            $user = User::query()->lockForUpdate()->findOrFail($request->integer('user_id'));
+            $customer = CustomerUser::query()->lockForUpdate()->findOrFail($request->integer('user_id'));
 
-            if (! $user->is_active) {
+            if (! $customer->is_active) {
                 abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Inactive users cannot be provisioned as delivery partners.');
             }
 
@@ -48,7 +48,7 @@ class DeliveryPartnerController extends Controller
                 'is_approved' => false,
                 'is_active' => true,
                 'is_available' => false,
-            ])->load('user:id,name,email,role,is_active');
+            ])->load('user:id,name,email,is_active');
         });
 
         return response()->json(['data' => $partner], Response::HTTP_CREATED);
