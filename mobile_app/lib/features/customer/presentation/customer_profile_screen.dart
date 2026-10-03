@@ -66,6 +66,8 @@ class CustomerProfileScreen extends ConsumerWidget {
                                     child: _ProfileSections(
                                       selectedAddress: selectedAddress,
                                       onLogout: () => _confirmLogout(context, ref),
+                                    onEdit: () => _editProfile(context, ref, displayName, phone),
+                                      onEdit: () => _editProfile(context, ref, displayName, phone),
                                     ),
                                   ),
                                 ],
@@ -430,10 +432,12 @@ class _ProfileSections extends StatelessWidget {
   const _ProfileSections({
     required this.selectedAddress,
     required this.onLogout,
+    required this.onEdit,
   });
 
   final SavedAddress? selectedAddress;
   final VoidCallback onLogout;
+  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -473,10 +477,11 @@ class _ProfileSections extends StatelessWidget {
           subtitle: 'Your signed-in customer account.',
         ),
         const SizedBox(height: 8),
-        const _AccountRow(
+        _AccountRow(
           icon: Icons.person_outline_rounded,
           title: 'Account details',
-          subtitle: 'Name and contact information from your account',
+          subtitle: 'Edit your name and phone number',
+          onTap: onEdit,
         ),
         const _AccountRow(
           icon: Icons.info_outline_rounded,
