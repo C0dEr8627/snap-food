@@ -22,6 +22,26 @@ class CustomerUser extends Authenticatable
         return ['is_active' => 'boolean'];
     }
 
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'customer_id');
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class, 'user_id');
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'user_id');
+    }
+
+    public function cartItems()
+    {
+        return $this->hasMany(Cart::class, 'user_id');
+    }
+
     public function hasRole(string $role): bool
     {
         return $role === 'CUSTOMER';
