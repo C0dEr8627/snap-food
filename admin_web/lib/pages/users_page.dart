@@ -109,8 +109,8 @@ class _UsersPageState extends State<UsersPage> {
     );
   }
 
-  Future<void> _showDetails(_PlatformUser user) {
-    return SfSideDrawer.show<void>(
+  Future<void> _showDetails(_PlatformUser user) async {
+    await SfSideDrawer.show<void>(
       context,
       title: user.name.isEmpty ? 'User details' : user.name,
       width: 460,
@@ -275,21 +275,6 @@ class _UsersTable extends StatelessWidget {
     onRowTap: (index) => onView(users[index]),
   );
 }
-class _UsersPagination extends StatelessWidget {
-  const _UsersPagination({required this.page, required this.lastPage, required this.total, required this.visible, required this.onPage});
-  final int page, lastPage, total, visible;
-  final ValueChanged<int> onPage;
-
-  @override
-  Widget build(BuildContext context) => SfTablePagination(
-        page: page,
-        lastPage: lastPage,
-        total: total,
-        onPrevious: page > 1 ? () => onPage(page - 1) : null,
-        onNext: page < lastPage ? () => onPage(page + 1) : null,
-      );
-}
-
 class _UsersLoading extends StatelessWidget {
   const _UsersLoading();
 
