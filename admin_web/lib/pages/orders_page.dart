@@ -274,7 +274,7 @@ class _OrderQueue extends StatelessWidget{
   @override Widget build(BuildContext context){
     final start=(page-1)*10,visible=orders.skip(start).take(10).toList(),pages=orders.isEmpty?1:((orders.length-1)~/10)+1;
     return AdminCard(child:Padding(padding:const EdgeInsets.fromLTRB(14,14,14,10),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-      Row(children:[const Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('ORDER QUEUE',style:AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),SizedBox(height:3)])),Text('Showing '+visible.length.toString()+' of '+orders.length.toString()+' active tickets',style:AdminTypography.small),const SizedBox(width:AdminSpacing.sm),Container(padding:const EdgeInsets.symmetric(horizontal:9,vertical:7),decoration:BoxDecoration(color:AdminDesignColors.canvas,borderRadius:BorderRadius.circular(8),border:Border.all(color:AdminDesignColors.border)),child:const Row(children:[AdminIcon(HugeIcons.strokeRoundedSortingUp,size:15,color:AdminDesignColors.secondaryText),SizedBox(width:4),Text('Latest first',style:AdminTypography.small.copyWith(fontWeight: FontWeight.w600))]))]),
+      Row(children:[Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('ORDER QUEUE',style:AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),const SizedBox(height:3)])),Text('Showing '+visible.length.toString()+' of '+orders.length.toString()+' active tickets',style:AdminTypography.small),const SizedBox(width:AdminSpacing.sm),Container(padding:const EdgeInsets.symmetric(horizontal:9,vertical:7),decoration:BoxDecoration(color:AdminDesignColors.canvas,borderRadius:BorderRadius.circular(8),border:Border.all(color:AdminDesignColors.border)),child:Row(children:[const AdminIcon(HugeIcons.strokeRoundedSortingUp,size:15,color:AdminDesignColors.secondaryText),const SizedBox(width:4),Text('Latest first',style: AdminTypography.small.copyWith(fontWeight: FontWeight.w600))]))]),
       const SizedBox(height:AdminSpacing.md),
       Scrollbar(
         thumbVisibility:true,
@@ -296,7 +296,22 @@ class _OrderQueue extends StatelessWidget{
   }
 }
 
-class _OrderTableHeader extends StatelessWidget{const _OrderTableHeader();@override Widget build(BuildContext context)=>const Padding(padding:EdgeInsets.fromLTRB(10,8,10,8),child:Row(children:[SizedBox(width:30),Expanded(flex:13,child:Text('ORDER ID & TIME',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700))),Expanded(flex:17,child:Text('CUSTOMER & PHONE',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700))),Expanded(flex:20,child:Text('ADDRESS',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700))),Expanded(flex:12,child:Text('ITEMS / TOTAL',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700))),Expanded(flex:12,child:Text('STATUS',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700)))]));}
+class _OrderTableHeader extends StatelessWidget{
+  const _OrderTableHeader();
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(10,8,10,8),
+    child: Row(children:[
+      const SizedBox(width:30),
+      Expanded(flex:13,child:Text('ORDER ID & TIME',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700))),
+      Expanded(flex:17,child:Text('CUSTOMER & PHONE',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700))),
+      Expanded(flex:20,child:Text('ADDRESS',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700))),
+      Expanded(flex:12,child:Text('ITEMS / TOTAL',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700))),
+      Expanded(flex:12,child:Text('STATUS',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700))),
+    ]),
+  );
+}
 
 class _OrderRow extends StatelessWidget{
   const _OrderRow({required this.order,required this.selected,required this.onTap});
@@ -323,22 +338,29 @@ class _OrderDetails extends StatelessWidget{
   const _OrderDetails({required this.order,required this.busy,required this.apiConfigured,required this.onAdvance,required this.onInvoice,required this.onCancel});
   final _AdminOrder? order;final bool busy,apiConfigured;final VoidCallback? onAdvance,onInvoice,onCancel;
   @override Widget build(BuildContext context){
-    final o=order;if(o==null)return const AdminCard(child:Padding(padding:EdgeInsets.all(30),child:Center(child:Text('Select an order to view details',style:AdminTypography.body.copyWith(fontWeight:FontWeight.w700)))));
+    final o=order;
+    if(o==null){
+      return AdminCard(child:Padding(padding:const EdgeInsets.all(30),child:Center(child:Text('Select an order to view details',style:AdminTypography.body.copyWith(fontWeight:FontWeight.w700)))));
+    }
     final next=_nextStatus(o.status);
     return AdminCard(child:Padding(padding:const EdgeInsets.all(16),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-      Row(children:[Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(o.id,style:AdminTypography.sectionTitle),const SizedBox(height:AdminSpacing.xs),Row(children:[_OrderStatusBadge(o.status),const SizedBox(width:AdminSpacing.xs),if(apiConfigured)Text('LIVE ACTIVE',style:AdminTypography.small.copyWith(color:AdminDesignColors.success,fontWeight:FontWeight.w700))]))])),
+      Row(children:[Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(o.id,style:AdminTypography.sectionTitle),const SizedBox(height:AdminSpacing.xs),Row(children:[_OrderStatusBadge(o.status),const SizedBox(width:AdminSpacing.xs),if(apiConfigured)Text('LIVE ACTIVE',style:AdminTypography.small.copyWith(color:AdminDesignColors.success,fontWeight:FontWeight.w700))]))])]),
       const SizedBox(height:5),Text('Placed at '+o.time,style:AdminTypography.small),const SizedBox(height:AdminSpacing.lg),
-      _Panel(title:'Order status progression',trailing:'Step '+_progressStep(o.status).toString()+' of 5',child:_Progression(o.status)),const SizedBox(height:AdminSpacing.md),
       LayoutBuilder(builder:(context,c)=>c.maxWidth>=500?Row(children:[Expanded(child:_PersonCard('CUSTOMER',o.customer,[o.phone,o.address],HugeIcons.strokeRoundedUser)),const SizedBox(width:AdminSpacing.sm),Expanded(child:_PersonCard('DELIVERY PARTNER',o.partner??'Unassigned',[o.vehicle??'Awaiting partner assignment'],HugeIcons.strokeRoundedDeliveryTruck01,badge:o.partner==null?'UNASSIGNED':'ON DUTY'))]):Column(children:[_PersonCard('CUSTOMER',o.customer,[o.phone,o.address],HugeIcons.strokeRoundedUser),const SizedBox(height:10),_PersonCard('DELIVERY PARTNER',o.partner??'Unassigned',[o.vehicle??'Awaiting partner assignment'],HugeIcons.strokeRoundedDeliveryTruck01,badge:o.partner==null?'UNASSIGNED':'ON DUTY')])),
       const SizedBox(height:AdminSpacing.md),
-      _Panel(title:'ORDER ITEMS',trailing:o.items.toString()+' items',child:Column(children:o.lines.map((l)=>Padding(padding:const EdgeInsets.symmetric(vertical:7),child:Row(children:[Container(width:24,height:24,alignment:Alignment.center,decoration:BoxDecoration(color:AdminDesignColors.warningSoft,borderRadius:BorderRadius.circular(6)),child:Text(l.qty.toString()+'x',style:AdminTypography.small.copyWith(fontWeight: FontWeight.w700))),const SizedBox(width:9),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(l.name,style:AdminTypography.small.copyWith(fontWeight: FontWeight.w600)),if(l.modifier.isNotEmpty)Text(l.modifier,style:AdminTypography.small)])),Text('₹'+l.price.toStringAsFixed(2),style:AdminTypography.small.copyWith(fontWeight: FontWeight.w700))]))).toList())),const SizedBox(height:AdminSpacing.md),
-      _Bill(o),const SizedBox(height:AdminSpacing.md),
+      _Panel(title:'ORDER ITEMS',trailing:o.items.toString()+' items',child:Column(children:o.lines.map((l)=>Padding(padding:const EdgeInsets.symmetric(vertical:7),child:Row(children:[Container(width:24,height:24,alignment:Alignment.center,decoration:BoxDecoration(color:AdminDesignColors.warningSoft,borderRadius:BorderRadius.circular(6)),child:Text(l.qty.toString()+'x',style:AdminTypography.small.copyWith(fontWeight:FontWeight.w700))),const SizedBox(width:9),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(l.name,style:AdminTypography.small.copyWith(fontWeight:FontWeight.w600)),if(l.modifier.isNotEmpty)Text(l.modifier,style:AdminTypography.small)])),Text('₹'+l.price.toStringAsFixed(2),style:AdminTypography.small.copyWith(fontWeight:FontWeight.w700))]))).toList())),
+      const SizedBox(height:AdminSpacing.md),
+      _Bill(o),
+      const SizedBox(height:AdminSpacing.md),
       shad.PrimaryButton(onPressed:busy||next==null?null:onAdvance,leading:const AdminIcon(HugeIcons.strokeRoundedMotorbike02,size:18),child:Text(busy?'Updating…':'Advance to '+_prettyStatus(next??o.status))).sized(width:double.infinity,height:46),
-      const SizedBox(height:AdminSpacing.sm),Wrap(spacing:7,runSpacing:7,children:[shad.OutlineButton(onPressed:onInvoice,leading:const AdminIcon(HugeIcons.strokeRoundedInvoice01,size:15),child:const Text('Tax Invoice')),const SizedBox.shrink(),shad.OutlineButton(onPressed:onCancel,leading:const AdminIcon(HugeIcons.strokeRoundedCancel01,size:15,color:AdminDesignColors.error),child:const Text('Cancel order'))])
+      const SizedBox(height:AdminSpacing.sm),
+      Wrap(spacing:7,runSpacing:7,children:[
+        shad.OutlineButton(onPressed:onInvoice,leading:const AdminIcon(HugeIcons.strokeRoundedInvoice01,size:15),child:const Text('Tax Invoice')),
+        shad.OutlineButton(onPressed:onCancel,leading:const AdminIcon(HugeIcons.strokeRoundedCancel01,size:15,color:AdminDesignColors.error),child:const Text('Cancel order')),
+      ]),
     ])));
   }
 }
-
 class _Panel extends StatelessWidget{
   const _Panel({required this.title,required this.child,required this.trailing});final String title,trailing;final Widget child;
   @override Widget build(BuildContext context)=>Container(width:double.infinity,padding:const EdgeInsets.all(12),decoration:BoxDecoration(color:AdminDesignColors.canvas,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminDesignColors.border)),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Row(children:[Expanded(child:Text(title,style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700,letterSpacing:.5))),Text(trailing,style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700))]),const SizedBox(height:9),child]));
