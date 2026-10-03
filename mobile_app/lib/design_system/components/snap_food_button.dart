@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../tokens/app_colors.dart';
 import '../tokens/app_radii.dart';
@@ -141,7 +142,12 @@ class SnapIconButton extends StatelessWidget {
       selected: selected,
       label: semanticLabel ?? tooltip,
       child: IconButton(
-        onPressed: onPressed,
+        onPressed: onPressed == null
+            ? null
+            : () {
+                HapticFeedback.selectionClick();
+                onPressed?.call();
+              },
         tooltip: tooltip,
         icon: Icon(icon),
         style: IconButton.styleFrom(
