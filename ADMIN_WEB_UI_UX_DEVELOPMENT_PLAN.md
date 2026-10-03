@@ -930,6 +930,7 @@ The admin UI/UX modernization is complete when:
   - Avoided inventing tax, gateway, reconciliation, payout or restaurant data.
 - Files/components changed:
   - `admin_web/lib/pages/invoices_page.dart`
+  - `admin_web/lib/pages/categories_page.dart`
   - `ADMIN_WEB_UI_UX_DEVELOPMENT_PLAN.md`
 - Validation:
   - Inspected the final invoice implementation and authoritative invoice controller/model/routes.
@@ -1319,6 +1320,7 @@ The admin UI/UX modernization is complete when:
   - Verified Orders and Invoices render paths use `SfLoadingState`, `SfErrorState` and `SfEmptyState`.
   - Verified the legacy invoice loading/error state widgets were removed.
   - Verified `_notice` now delegates to shared `SfFeedback` instead of constructing a generic SnackBar.
+  - Corrected Categories to the current shared-state component API while auditing Task 15, including retry/empty-state action and badge property names.
   - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful local validation run is being claimed.
 - Limitations/follow-up:
   - Flutter Web compile/analyzer/test execution and browser screenshot/overflow QA still require a runnable local or CI execution environment.
