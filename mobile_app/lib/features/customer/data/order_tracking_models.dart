@@ -24,6 +24,27 @@ class OrderTrackingLocation {
   }
 }
 
+class OrderTrackingDestination {
+  const OrderTrackingDestination({
+    required this.latitude,
+    required this.longitude,
+  });
+
+  final double latitude;
+  final double longitude;
+
+  factory OrderTrackingDestination.fromJson(Map<String, dynamic> json) {
+    double number(Object? value) => value is num
+        ? value.toDouble()
+        : double.tryParse(value?.toString() ?? '') ?? 0;
+
+    return OrderTrackingDestination(
+      latitude: number(json['latitude']),
+      longitude: number(json['longitude']),
+    );
+  }
+}
+
 class DeliveryPartnerContact {
   const DeliveryPartnerContact({
     required this.name,
@@ -51,16 +72,19 @@ class OrderTracking {
     required this.status,
     required this.isStale,
     this.latestLocation,
+    this.destination,
     this.deliveryPartner,
   });
 
   final String status;
   final bool isStale;
   final OrderTrackingLocation? latestLocation;
+  final OrderTrackingDestination? destination;
   final DeliveryPartnerContact? deliveryPartner;
 
   factory OrderTracking.fromJson(Map<String, dynamic> json) {
     final rawLocation = json['latest_location'] ?? json['location'];
+    final rawDestination = json['destination'];
     final rawPartner = json['delivery_partner'];
     return OrderTracking(
       status: json['status']?.toString() ?? '',
@@ -68,6 +92,11 @@ class OrderTracking {
       latestLocation: rawLocation is Map
           ? OrderTrackingLocation.fromJson(
               Map<String, dynamic>.from(rawLocation),
+            )
+          : null,
+      destination: rawDestination is Map
+          ? OrderTrackingDestination.fromJson(
+              Map<String, dynamic>.from(rawDestination),
             )
           : null,
       deliveryPartner: rawPartner is Map
