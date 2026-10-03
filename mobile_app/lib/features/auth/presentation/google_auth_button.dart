@@ -70,7 +70,7 @@ class _GoogleAuthButtonState extends State<GoogleAuthButton> {
         ),
         child: _busy
             ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5))
-            : const Row(
+            : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SvgPicture.asset(
