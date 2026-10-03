@@ -300,7 +300,7 @@ Requirements:
 ## Phase 2 — Home & Discovery
 
 ### Task 6 — Redesign customer Home screen hierarchy
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
 Target hierarchy:
 
@@ -568,6 +568,7 @@ Before marking any task complete, verify:
 | 2026-10-03 | Task 3 — Build search, category and filter controls | ✅ Complete | Added reusable `SnapSearchField`, `SnapCategoryChip`, and `SnapFilterChip` controls and adopted them in the customer Home and Search surfaces, including branded focus/selected/inactive states, clear-search behavior, accessible labels, and comfortable touch targets. Existing catalogue filtering/search state and navigation behavior were preserved. Validation: source-level review completed; repository CI status was not available for the implementation commits through the connector, and local Flutter commands remain unavailable. |
 | 2026-10-03 | Task 4 — Build commerce primitives | ✅ Complete | Added reusable `SnapPrice`, `SnapRatingBadge`, `SnapQuantityStepper`, `SnapAddToCartButton`, and `SnapSectionHeader` commerce primitives, then adopted the price/quantity/add-to-cart/section-header patterns across customer Home, Food Details, Restaurant Menu, and Cart surfaces. Existing cart/catalogue state, navigation, quantity bounds, and server-authoritative pricing behavior were preserved. Validation: source-level review completed; implementation commit CI status returned no exposed checks through the connector, and local Flutter commands remain unavailable. |
 | 2026-10-03 | Task 5 — Build branded feedback surfaces | ✅ Complete | Added reusable `SnapBottomSheet`, `SnapEmptyState`, `SnapErrorState`, `SnapSkeleton`, `SnapLoadingState`, and `SnapAlertDialog` feedback surfaces. Adopted them across catalogue loading/empty/error states, Home filtering/empty/loading, cart empty state, address loading/empty/error, checkout errors, and live tracking loading/unavailable/error states. Skeleton animation respects the platform reduced-motion setting. Existing API, Riverpod state, navigation, filtering, cart, address, checkout, and tracking behavior were preserved. Validation: source-level review completed including delimiter/brace checks on changed Dart files; local Flutter/Dart commands remain unavailable through the GitHub connector, and no connector-exposed CI result was available for the implementation commits. |
+| 2026-10-03 | Task 6 — Redesign customer Home screen hierarchy | ✅ Complete | Reworked the customer Home into a clearer food-first hierarchy: delivery destination, craving-led search, categories, a catalogue-backed discovery hero, popular dishes, and lightweight bottom navigation. Reduced secondary chrome, tightened vertical rhythm, reused Tasks 1–5 components/tokens, and preserved catalogue filtering, favorites, cart, routing, and authentication behavior. The current consumer catalogue contract does not expose restaurant discovery data, so the Home does not fabricate a Top Restaurants feed; the plan documents that constraint for the later restaurant-first discovery task. Validation: source-level delimiter checks passed and the implementation commit exposed no CI status through the connector; local Flutter/Dart commands remain unavailable through the GitHub connector. |
 
 ---
 
@@ -582,6 +583,7 @@ Before marking any task complete, verify:
 - Completed Task 3: built and adopted branded search, category and filter controls.
 - Completed Task 4: built reusable commerce primitives and adopted them across core customer commerce surfaces.
 - Completed Task 5: built branded loading, skeleton, empty, error, bottom-sheet and dialog feedback surfaces and adopted them across customer flows.
+- Completed Task 6: redesigned the customer Home hierarchy with food-first discovery, craving-led search, categories, popular dishes, and lighter navigation chrome.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
