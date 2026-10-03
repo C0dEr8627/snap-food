@@ -2,6 +2,8 @@ part of '../main.dart';
 
 enum SfButtonVariant { primary, secondary, outline, ghost, destructive }
 
+const _adminMotion = AdminMotion.hover;
+
 class SfButton extends StatelessWidget {
   const SfButton({
     super.key,
@@ -45,7 +47,7 @@ class SfButton extends StatelessWidget {
         onTap: enabled ? onPressed : null,
         borderRadius: BorderRadius.circular(AdminRadii.control),
         child: AnimatedContainer(
-          duration: AdminMotion.hover,
+          duration: _adminMotion,
           curve: AdminMotion.curve,
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
@@ -137,6 +139,26 @@ class SfIconButton extends StatelessWidget {
     );
     return tooltip == null ? button : Tooltip(message: tooltip!, child: button);
   }
+}
+
+
+class SfAnimatedSwitcher extends StatelessWidget {
+  const SfAnimatedSwitcher({
+    super.key,
+    required this.child,
+    this.duration = AdminMotion.dataUpdate,
+  });
+
+  final Widget child;
+  final Duration duration;
+
+  @override
+  Widget build(BuildContext context) => AnimatedSwitcher(
+    duration: duration,
+    switchInCurve: AdminMotion.curve,
+    switchOutCurve: AdminMotion.curve,
+    child: child,
+  );
 }
 
 class SfInput extends StatelessWidget {
