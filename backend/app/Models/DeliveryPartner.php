@@ -28,11 +28,11 @@ class DeliveryPartner extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(DeliveryPartnerUser::class, 'user_id');
     }
 
     public function approver(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'approved_by');
+        return $this->belongsTo(AdminUser::class, 'approved_by');
     }
 }
