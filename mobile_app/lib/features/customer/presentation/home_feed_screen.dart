@@ -209,7 +209,28 @@ class DatabaseCatalogueSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final catalogue = ref.watch(catalogueControllerProvider);
     return catalogue.when(
-      loading: () => const SizedBox(height: 220, child: SnapLoadingState(message: 'Loading dishes…')),
+      loading: () => SizedBox(
+        height: 220,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: 2,
+          separatorBuilder: (_, __) => const SizedBox(width: 14),
+          itemBuilder: (_, __) => const SizedBox(
+            width: 214,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SnapSkeleton(height: 150, borderRadius: SnapFoodRadii.lg),
+                SizedBox(height: 10),
+                SnapSkeleton(width: 150, height: 14),
+                SizedBox(height: 8),
+                SnapSkeleton(width: 90, height: 14),
+              ],
+            ),
+          ),
+        ),
+      ),
       error: (error, _) => const SizedBox.shrink(),
       data: (snapshot) {
         final normalizedQuery = searchQuery.trim().toLowerCase();
