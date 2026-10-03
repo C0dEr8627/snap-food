@@ -58,7 +58,7 @@ class SfDataTable extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 child: SizedBox(
                   width: width,
-                child: Column(
+                  child: Column(
                   children: [
                     Container(
                       height: 46,
