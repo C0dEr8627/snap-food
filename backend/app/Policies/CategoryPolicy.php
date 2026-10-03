@@ -3,40 +3,40 @@
 namespace App\Policies;
 
 use App\Models\Category;
-use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 class CategoryPolicy
 {
-    public function before(User $user): ?bool
+    public function before(Authenticatable $user): ?bool
     {
         if (! $user->is_active) {
             return false;
         }
 
-        return $user->hasRole(User::ROLE_ADMIN) ? true : null;
+        return $user->hasRole('ADMIN') ? true : null;
     }
 
-    public function viewAny(User $user): bool
+    public function viewAny(Authenticatable $user): bool
     {
         return $user->is_active;
     }
 
-    public function view(User $user, Category $category): bool
+    public function view(Authenticatable $user, Category $category): bool
     {
         return $user->is_active;
     }
 
-    public function create(User $user): bool
+    public function create(Authenticatable $user): bool
+    {
+        return $user->is_active && $user->hasRole('ADMIN');
+    }
+
+    public function update(Authenticatable $user, Category $category): bool
     {
         return $user->is_active && $user->hasRole(User::ROLE_ADMIN);
     }
 
-    public function update(User $user, Category $category): bool
-    {
-        return $user->is_active && $user->hasRole(User::ROLE_ADMIN);
-    }
-
-    public function delete(User $user, Category $category): bool
+    public function delete(Authenticatable $user, Category $category): bool
     {
         return $user->is_active && $user->hasRole(User::ROLE_ADMIN);
     }
