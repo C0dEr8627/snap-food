@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/network/api_exception.dart';
+import '../../../design_system/components/snap_food_feedback.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import 'address_book_controller.dart';
@@ -46,32 +47,20 @@ class _AddressBookScreenState extends ConsumerState<AddressBookScreen> {
         surfaceTintColor: Colors.transparent,
       ),
       body: book.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              const Icon(Icons.location_off_outlined, size: 40),
-              const SizedBox(height: 10),
-              const Text('Could not load your saved addresses.'),
-              TextButton(onPressed: () => ref.read(addressBookControllerProvider.notifier).refresh(), child: const Text('Try again')),
-            ]),
-          ),
+        loading: () => const SnapLoadingState(message: 'Loading saved addresses…'),
+        error: (error, _) => SnapErrorState(
+          title: 'Addresses unavailable',
+          message: error is ApiException ? (error as ApiException).message : 'Could not load your saved addresses.',
+          onRetry: () => ref.read(addressBookControllerProvider.notifier).refresh(),
         ),
         data: (data) => ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
           children: [
             if (data.addresses.isEmpty && !adding)
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18)),
-                child: const Column(children: [
-                  Icon(Icons.location_on_outlined, size: 38, color: SnapFoodColors.secondary),
-                  SizedBox(height: 8),
-                  Text('No saved addresses yet', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
-                  SizedBox(height: 4),
-                  Text('Add your delivery address to use it across the app.', textAlign: TextAlign.center),
-                ]),
+              const SnapEmptyState(
+                icon: Icons.location_on_outlined,
+                title: 'No saved addresses yet',
+                message: 'Add your delivery address to use it across the app.',
               ),
             for (final address in data.addresses)
               Card(
