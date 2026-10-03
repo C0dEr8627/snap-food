@@ -5,7 +5,8 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\User;
+use App\Models\AdminUser;
+use App\Models\CustomerUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -13,15 +14,14 @@ class OrderApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function user(string $suffix, string $role = User::ROLE_CUSTOMER): User
+    private function customer(string $suffix): CustomerUser
     {
-        return User::create([
-            'google_subject' => 'google-order-'.$suffix,
-            'name' => ucfirst($suffix),
-            'email' => $suffix.'@example.test',
-            'role' => $role,
-            'is_active' => true,
-        ]);
+        return CustomerUser::create(['google_subject' => 'google-order-'.$suffix, 'name' => ucfirst($suffix), 'email' => $suffix.'@example.test', 'is_active' => true]);
+    }
+
+    private function admin(string $suffix): AdminUser
+    {
+        return AdminUser::create(['google_subject' => 'google-order-'.$suffix, 'name' => ucfirst($suffix), 'email' => $suffix.'@example.test', 'is_active' => true]);
     }
 
     private function product(): Product
@@ -67,7 +67,7 @@ class OrderApiTest extends TestCase
 
     public function test_customer_can_create_cod_order_with_server_calculated_totals_and_snapshots(): void
     {
-        $customer = $this->user('customer');
+        $customer = $this->customer('customer');
         $product = $this->product();
 
         $response = $this->actingAs($customer, 'sanctum')
@@ -105,7 +105,7 @@ class OrderApiTest extends TestCase
 
     public function test_checkout_ignores_client_price_and_rejects_unavailable_products(): void
     {
-        $customer = $this->user('customer-price');
+        $customer = $this->customer('customer-price');
         $product = $this->product();
 
         $payload = $this->checkoutPayload($product, 1);
@@ -127,8 +127,8 @@ class OrderApiTest extends TestCase
 
     public function test_customer_can_only_list_and_view_own_orders(): void
     {
-        $customer = $this->user('owner');
-        $otherCustomer = $this->user('other');
+        $customer = $this->customer('owner');
+        $otherCustomer = $this->customer('other');
         $product = $this->product();
 
         $this->actingAs($customer, 'sanctum')
@@ -149,7 +149,7 @@ class OrderApiTest extends TestCase
 
     public function test_admin_cannot_use_customer_order_endpoints(): void
     {
-        $admin = $this->user('admin', User::ROLE_ADMIN);
+        $admin = $this->admin('admin');
         $product = $this->product();
 
         $this->actingAs($admin, 'sanctum')
@@ -163,8 +163,8 @@ class OrderApiTest extends TestCase
 
     public function test_admin_can_transition_order_and_history_records_actor(): void
     {
-        $customer = $this->user('transition-customer');
-        $admin = $this->user('transition-admin', User::ROLE_ADMIN);
+        $customer = $this->customer('transition-customer');
+        $admin = $this->admin('transition-admin');
         $product = $this->product();
 
         $this->actingAs($customer, 'sanctum')
@@ -188,8 +188,8 @@ class OrderApiTest extends TestCase
 
     public function test_invalid_order_transition_returns_order_state_conflict(): void
     {
-        $customer = $this->user('conflict-customer');
-        $admin = $this->user('conflict-admin', User::ROLE_ADMIN);
+        $customer = $this->customer('conflict-customer');
+        $admin = $this->admin('conflict-admin');
         $product = $this->product();
 
         $this->actingAs($customer, 'sanctum')
@@ -211,7 +211,7 @@ class OrderApiTest extends TestCase
 
     public function test_customer_cannot_transition_order(): void
     {
-        $customer = $this->user('customer-transition-denied');
+        $customer = $this->customer('customer-transition-denied');
         $product = $this->product();
 
         $this->actingAs($customer, 'sanctum')
@@ -228,8 +228,8 @@ class OrderApiTest extends TestCase
 
     public function test_repeated_transition_is_a_state_conflict(): void
     {
-        $customer = $this->user('repeat-customer');
-        $admin = $this->user('repeat-admin', User::ROLE_ADMIN);
+        $customer = $this->customer('repeat-customer');
+        $admin = $this->admin('repeat-admin');
         $product = $this->product();
 
         $this->actingAs($customer, 'sanctum')
