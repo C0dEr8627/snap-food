@@ -475,13 +475,12 @@ class _DeliveryPartnerRecord {
   final String? createdAt;
 
   factory _DeliveryPartnerRecord.fromJson(Map json) {
-    final user = json['user'] is Map ? json['user'] as Map : const {};
     return _DeliveryPartnerRecord(
       id: _partnersAsInt(json['id'], 0),
-      name: (user['name'] ?? 'Unnamed partner').toString(),
-      email: (user['email'] ?? 'No email on file').toString(),
+      name: (json['name'] ?? 'Unnamed partner').toString(),
+      email: (json['email'] ?? 'No email on file').toString(),
       approved: json['is_approved'] == true,
-      active: json['is_active'] == true && user['is_active'] != false,
+      active: json['is_active'] == true,
       available: json['is_available'] == true,
       createdAt: json['created_at']?.toString(),
     );
