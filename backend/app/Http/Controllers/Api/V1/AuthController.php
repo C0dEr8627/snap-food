@@ -19,12 +19,12 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'min:2', 'max:120'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'phone' => ['required', 'regex:/^\\+91[6-9][0-9]{9}$/', 'unique:users,phone'],
+            'email' => ['required', 'email', 'max:255', 'unique:customer_users,email'],
+            'phone' => ['required', 'regex:/^\\+91[6-9][0-9]{9}$/', 'unique:customer_users,phone'],
             'password' => ['required', 'string', 'min:8', 'max:255', 'confirmed'],
         ]);
 
-        $user = User::create([
+        $user = CustomerUser::create([
             'name' => trim($validated['name']),
             'email' => strtolower(trim($validated['email'])),
             'phone' => $validated['phone'],
@@ -48,7 +48,7 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'max:255'],
         ]);
 
-        $user = User::where('email', strtolower(trim($validated['email'])))->first();
+        $user = CustomerUser::where('email', strtolower(trim($validated['email'])))->first();
 
         if (
             $user === null
@@ -85,13 +85,13 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $user = DB::transaction(function () use ($identity): User {
-            $user = User::where('google_subject', $identity['sub'])
+        $user = DB::transaction(function () use ($identity): CustomerUser {
+            $user = CustomerUser::where('google_subject', $identity['sub'])
                 ->lockForUpdate()
                 ->first();
 
             if ($user === null) {
-                return User::create([
+                return CustomerUser::create([
                     'google_subject' => $identity['sub'],
                     'name' => $identity['name'],
                     'email' => $identity['email'],
@@ -126,7 +126,7 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'max:255'],
         ]);
 
-        $user = User::where('email', strtolower(trim($validated['email'])))->first();
+        $user = DeliveryPartnerUser::where('email', strtolower(trim($validated['email'])))->first();
 
         if (
             $user === null
@@ -169,7 +169,7 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'max:255'],
         ]);
 
-        $user = User::where('email', $validated['email'])->first();
+        $user = AdminUser::where('email', $validated['email'])->first();
 
         // One-time production bootstrap: when the production database has no
         // admin yet, allow the configured bootstrap credentials to create the
@@ -186,9 +186,9 @@ class AuthController extends Controller
                 && is_string($bootstrapPassword)
                 && $bootstrapPassword !== ''
                 && hash_equals($bootstrapPassword, $validated['password'])
-                && ! User::where('role', User::ROLE_ADMIN)->exists()
+                && ! AdminUser::exists()
             ) {
-                $user = User::create([
+                $user = AdminUser::create([
                     'name' => 'Admin',
                     'email' => $bootstrapEmail,
                     'password' => Hash::make($bootstrapPassword),
@@ -201,7 +201,7 @@ class AuthController extends Controller
         if (
             $user === null
             || ! $user->is_active
-            || ! $user->hasRole(User::ROLE_ADMIN)
+            
             || $user->password === null
             || ! Hash::check($validated['password'], $user->password)
         ) {
@@ -233,7 +233,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $user = User::where('google_subject', $identity['sub'])->first();
+        $user = AdminUser::where('google_subject', $identity['sub'])->first();
 
         if ($user === null && app()->environment('local')) {
             $bootstrapEmail = config('services.google.admin_bootstrap_email');
@@ -244,9 +244,9 @@ class AuthController extends Controller
                 && is_string($identity['email'])
                 && strcasecmp($identity['email'], $bootstrapEmail) === 0
             ) {
-                $user = User::where('email', $bootstrapEmail)->first();
+                $user = AdminUser::where('email', $bootstrapEmail)->first();
 
-                if ($user !== null && $user->is_active && $user->hasRole(User::ROLE_ADMIN)) {
+                if ($user !== null && $user->is_active ) {
                     $user->forceFill([
                         'google_subject' => $identity['sub'],
                         'name' => $identity['name'],
@@ -308,7 +308,7 @@ class AuthController extends Controller
         ]);
     }
 
-    private function issueTokenOrReject(User $user): JsonResponse
+    private function issueTokenOrReject(Authenticatable $user): JsonResponse
     {
         if (! $user->is_active) {
             return response()->json([
@@ -321,7 +321,7 @@ class AuthController extends Controller
         return $this->issueToken($user);
     }
 
-    private function issueToken(User $user): JsonResponse
+    private function issueToken(Authenticatable $user): JsonResponse
     {
         return response()->json([
             'data' => [
