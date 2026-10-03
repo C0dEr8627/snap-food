@@ -39,20 +39,7 @@ class SfButton extends StatelessWidget {
     };
 
     Widget button = Shortcuts(
-      shortcuts: const <ShortcutActivator, Intent>{
-        SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
-        SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
-      },
-      child: Actions(
-        actions: <Type, Action<Intent>>{
-          ActivateIntent: CallbackAction<ActivateIntent>(
-            onInvoke: (_) {
-              if (enabled) onPressed?.call();
-              return null;
-            },
-          ),
-        },
-        child: Material(
+      child: Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: enabled ? onPressed : null,
@@ -95,8 +82,7 @@ class SfButton extends StatelessWidget {
         ),
       ),
         ),
-      ),
-    );
+      );
 
     if (expand) button = SizedBox(width: double.infinity, child: button);
     return Semantics(
