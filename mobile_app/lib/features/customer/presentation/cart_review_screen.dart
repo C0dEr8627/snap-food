@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../design_system/components/snap_food_commerce.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../../../design_system/tokens/app_spacing.dart';
@@ -210,18 +211,16 @@ class _CartItemCard extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Text(
-                    '₹' + item.previewPrice.toString(),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  SnapPrice(
+                    value: item.previewPrice.toString(),
+                    fontSize: 12,
                   ),
                   const Spacer(),
-                  _MiniQuantity(
+                  SnapQuantityStepper(
                     quantity: item.quantity,
-                    onRemove: onRemove,
-                    onAdd: onAdd,
+                    onDecrement: onRemove,
+                    onIncrement: onAdd,
+                    compact: true,
                   ),
                 ],
               ),
@@ -333,7 +332,7 @@ class _BillCard extends StatelessWidget {
     ),
     child: Column(
       children: [
-        _BillRow('Item total', '₹' + itemTotal.toString()),
+        _BillRow('Item total', itemTotal.toString()),
         const Padding(
           padding: EdgeInsets.symmetric(vertical: 11),
           child: Divider(color: SnapFoodColors.softBorder, height: 1),
