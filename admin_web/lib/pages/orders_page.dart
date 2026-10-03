@@ -112,40 +112,33 @@ class _OrdersPageState extends State<OrdersPage>{
   int count(String f)=>orders.where((o)=>f=='ALL'||_orderFilter(o.status)==f).length;
 
   @override Widget build(BuildContext context){
-    if(loading) return const Center(child:Padding(padding:EdgeInsets.all(40),child:shad.CircularProgressIndicator()));
-    if(loadError!=null) return Center(child:Padding(padding:EdgeInsets.all(40),child:AdminCard(child:Padding(padding:EdgeInsets.all(22),child:Column(mainAxisSize:MainAxisSize.min,children:[const AdminIcon(HugeIcons.strokeRoundedAlert02,size:28,color:AdminColors.red),const SizedBox(height:10),const Text('Unable to load orders',style:TextStyle(fontWeight:FontWeight.w900)),const SizedBox(height:5),Text(loadError!,textAlign:TextAlign.center,style:const TextStyle(fontSize:11,color:AdminColors.muted)),const SizedBox(height:12),shad.OutlineButton(onPressed:_loadOrders,child:const Text('Retry'))])))));
+    if(loading) return const Center(child: Padding(padding: EdgeInsets.all(AdminSpacing.xxxl), child: shad.CircularProgressIndicator()));
+    if(loadError!=null) return Center(child:Padding(padding:EdgeInsets.all(40),child:AdminCard(child:Padding(padding:EdgeInsets.all(22),child:Column(mainAxisSize:MainAxisSize.min,children:[const AdminIcon(HugeIcons.strokeRoundedAlert02,size:28,color:AdminDesignColors.error),const SizedBox(height:10),const Text('Unable to load orders',style:TextStyle(fontWeight:FontWeight.w900)),const SizedBox(height:5),Text(loadError!,textAlign:TextAlign.center,style:const AdminTypography.small),const SizedBox(height:AdminSpacing.md),shad.OutlineButton(onPressed:_loadOrders,child:const Text('Retry'))])))));
     final list=filtered,order=selected,desktop=MediaQuery.sizeOf(context).width>=1120;
     final pages=list.isEmpty?1:((list.length-1)~/10)+1;if(page>pages)page=pages;
     final queue=_OrderQueue(orders:list,selectedId:order?.id,page:page,onPage:(v)=>setState(()=>page=v),onSelect:(v)=>setState(()=>selectedId=v));
     final details=_OrderDetails(order:order,busy:busy,apiConfigured:api.configured,onAdvance:order==null?null:()=>advance(order),onInvoice:order==null?null:()=>invoice(order),onCancel:order==null?null:()=>cancel(order));
     return Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-      _OrdersHeader(apiConfigured:api.configured,onExport:()=>exportCsv(list),onPos:()=>_notice(context,'Manual POS flow is not present in the existing admin application.')),
-      const SizedBox(height:18),
+      _OrdersHeader(apiConfigured:api.configured,onExport:()=>exportCsv(list)),
+      const SizedBox(height:AdminSpacing.xxl),
       _OrderFilters(controller:search,active:filter,count:count,onChange:(v)=>setState((){filter=v;page=1;if(filtered.isNotEmpty)selectedId=filtered.first.id;})),
-      const SizedBox(height:16),
+      const SizedBox(height:AdminSpacing.lg),
       if(list.isEmpty)_EmptyOrders(onClear:()=>setState((){search.clear();filter='ALL';page=1;}))
-      else if(desktop)Row(crossAxisAlignment:CrossAxisAlignment.start,children:[Expanded(flex:62,child:queue),const SizedBox(width:16),Expanded(flex:38,child:details)])
-      else Column(children:[queue,const SizedBox(height:16),details]),
+      else if(desktop)Row(crossAxisAlignment:CrossAxisAlignment.start,children:[Expanded(flex:62,child:queue),const SizedBox(width:AdminSpacing.lg),Expanded(flex:38,child:details)])
+      else Column(children:[queue,const SizedBox(height:AdminSpacing.lg),details]),
     ]);
   }
 
   Future<void> advance(_AdminOrder order)async{
     final next=_nextStatus(order.status);if(next==null){_notice(context,'No valid next transition for '+order.status);return;}
-    setState(()=>busy=true);try{await api.status(order.id,next);final i=orders.indexWhere((o)=>o.id==order.id);if(i>=0)orders[i]=order.withStatus(next);if(mounted)setState(()=>busy=false);if(mounted)_notice(context,order.id+' advanced to '+next);}catch(e){if(mounted){setState(()=>busy=false);_notice(context,api.configured?e.toString():'Preview Data Mode: configure API_TOKEN for real status transitions.');}}
+    setState(()=>busy=true);try{await api.status(order.id,next);final i=orders.indexWhere((o)=>o.id==order.id);if(i>=0)orders[i]=order.withStatus(next);if(mounted)setState(()=>busy=false);if(mounted)SfFeedback.showSuccess(context,order.id+' advanced to '+next);}catch(e){if(mounted){setState(()=>busy=false);SfFeedback.showError(context,api.configured?e.toString():'No authenticated admin session is available for this status transition.');}}
   }
   Future<void> invoice(_AdminOrder order)async{
-    setState(()=>busy=true);try{final ref=await api.invoice(order.id);if(mounted)setState(()=>busy=false);if(mounted)_notice(context,ref==null?'Invoice endpoint exists; configure API_TOKEN for a real request.':'Invoice reference: '+ref);}catch(e){if(mounted){setState(()=>busy=false);_notice(context,e.toString());}}
+    setState(()=>busy=true);try{final ref=await api.invoice(order.id);if(mounted)setState(()=>busy=false);if(mounted)SfFeedback.showInfo(context,ref==null?'Invoice endpoint returned no file reference.':'Invoice reference: '+ref);}catch(e){if(mounted){setState(()=>busy=false);SfFeedback.showError(context,e.toString());}}
   }
   Future<void> cancel(_AdminOrder order)async{
-    final ok=await shad.showOverlay<bool>(context, shad.DialogConfiguration(), builder:(c)=>shad.AlertDialog(
-      title: const Text('Cancel order?'),
-      content: Text('Confirm cancellation for ' + order.id + '.'),
-      actions: [
-        shad.OutlineButton(onPressed:()=>Navigator.pop(c,false),child:const Text('Keep order')),
-        shad.DestructiveButton(onPressed:()=>Navigator.pop(c,true),child:const Text('Confirm cancel')),
-      ],
-    )).future;if(ok!=true)return;
-    setState(()=>busy=true);try{await api.status(order.id,'CANCELLED');final i=orders.indexWhere((o)=>o.id==order.id);if(i>=0)orders[i]=order.withStatus('CANCELLED');if(mounted)setState(()=>busy=false);if(mounted)_notice(context,order.id+' cancelled.');}catch(e){if(mounted){setState(()=>busy=false);_notice(context,api.configured?e.toString():'Preview Data Mode: configure API_TOKEN for cancellation requests.');}}
+    final ok=await SfConfirmDialog.show(context,title:'Cancel order?',message:'Confirm cancellation for '+order.id+'.',confirmLabel:'Confirm cancel',destructive:true);if(!ok)return;
+    setState(()=>busy=true);try{await api.status(order.id,'CANCELLED');final i=orders.indexWhere((o)=>o.id==order.id);if(i>=0)orders[i]=order.withStatus('CANCELLED');if(mounted)setState(()=>busy=false);if(mounted)SfFeedback.showSuccess(context,order.id+' cancelled.');}catch(e){if(mounted){setState(()=>busy=false);_notice(context,api.configured?e.toString():'Preview Data Mode: configure API_TOKEN for cancellation requests.');}}
   }
   void exportCsv(List<_AdminOrder> list){
     final rows=<List<String>>[['Order ID','Customer','Phone','Address','Items','Total','Payment','Time','Status'],...list.map((o)=>[o.id,o.customer,o.phone,o.address,o.items.toString(),o.total.toStringAsFixed(2),o.payment,o.time,o.status])];
@@ -155,21 +148,20 @@ class _OrdersPageState extends State<OrdersPage>{
 }
 
 class _OrdersHeader extends StatelessWidget{
-  const _OrdersHeader({required this.apiConfigured,required this.onExport,required this.onPos});
-  final bool apiConfigured;final VoidCallback onExport,onPos;
+  const _OrdersHeader({required this.apiConfigured,required this.onExport});
+  final bool apiConfigured;final VoidCallback onExport;
   @override Widget build(BuildContext context)=>LayoutBuilder(builder:(c,box){
     final title=const Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-      Text('LIVE ORDERS',style:TextStyle(fontSize:31,height:1,fontWeight:FontWeight.w900,letterSpacing:-1)),
-      Text('MANAGEMENT',style:TextStyle(fontSize:31,height:1.05,fontWeight:FontWeight.w900,letterSpacing:-1)),
-      SizedBox(height:8),Text('Dual-channel Flutter engine view for real-time dispatch, kitchen KOT, and fleet tracking.',style:TextStyle(fontSize:11.5,color:AdminColors.muted)),
+      Text('LIVE ORDERS',style:AdminTypography.pageTitle),
+      Text('MANAGEMENT',style:AdminTypography.pageTitle),
+      SizedBox(height:8),Text('Operational order queue with live status updates, delivery assignment and billing access.',style:AdminTypography.small),
     ]);
     final actions=Wrap(spacing:8,runSpacing:8,children:[
-      Container(padding:const EdgeInsets.symmetric(horizontal:11,vertical:10),decoration:BoxDecoration(color:apiConfigured?AdminColors.greenSoft:AdminColors.redSoft,borderRadius:BorderRadius.circular(10),border:Border.all(color:AdminColors.line)),child:Row(mainAxisSize:MainAxisSize.min,children:[_StatusDot(color:apiConfigured?AdminColors.green:AdminColors.red),const SizedBox(width:7),const Text('NODE IN-BLR-01',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900))])),
-      Container(padding:const EdgeInsets.symmetric(horizontal:11,vertical:10),decoration:BoxDecoration(color:AdminColors.amberSoft,borderRadius:BorderRadius.circular(10),border:Border.all(color:AdminColors.line)),child:const Row(mainAxisSize:MainAxisSize.min,children:[_StatusDot(color:AdminColors.amber),SizedBox(width:7),Text('Auto Sync 5s Active',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900))])),
+      Container(padding:const EdgeInsets.symmetric(horizontal:11,vertical:10),decoration:BoxDecoration(color:apiConfigured?AdminDesignColors.successSoft:AdminDesignColors.errorSoft,borderRadius:BorderRadius.circular(10),border:Border.all(color:AdminDesignColors.border)),child:Row(mainAxisSize:MainAxisSize.min,children:[_StatusDot(color:apiConfigured?AdminDesignColors.success:AdminDesignColors.error),const SizedBox(width:AdminSpacing.xs),const Text('NODE IN-BLR-01',style:AdminTypography.small.copyWith(fontWeight: FontWeight.w700))])),
+      Container(padding:const EdgeInsets.symmetric(horizontal:11,vertical:10),decoration:BoxDecoration(color:AdminDesignColors.warningSoft,borderRadius:BorderRadius.circular(10),border:Border.all(color:AdminDesignColors.border)),child:const Row(mainAxisSize:MainAxisSize.min,children:[_StatusDot(color:AdminDesignColors.warning),SizedBox(width:7),Text('Auto Sync 5s Active',style:AdminTypography.small.copyWith(fontWeight: FontWeight.w700))])),
       shad.OutlineButton(onPressed:onExport,leading:const AdminIcon(HugeIcons.strokeRoundedDownload01,size:16),child:const Text('Export CSV')),
-      shad.PrimaryButton(onPressed:onPos,leading:const AdminIcon(HugeIcons.strokeRoundedCashier,size:17),child:const Text('Manual POS Order')),
     ]);
-    return box.maxWidth<760?Column(crossAxisAlignment:CrossAxisAlignment.start,children:[title,const SizedBox(height:14),actions]):Row(crossAxisAlignment:CrossAxisAlignment.end,children:[Expanded(child:title),const SizedBox(width:16),Flexible(child:actions)]);
+    return box.maxWidth<760?Column(crossAxisAlignment:CrossAxisAlignment.start,children:[title,const SizedBox(height:14),actions]):Row(crossAxisAlignment:CrossAxisAlignment.end,children:[Expanded(child:title),const SizedBox(width:AdminSpacing.lg),Flexible(child:actions)]);
   });
 }
 
@@ -189,7 +181,7 @@ class _OrderFilters extends StatelessWidget {
   static const data = [
     ('ALL', 'All Orders'),
     ('PLACED', 'Pending'),
-    ('PREP', 'Kitchen Prep'),
+    ('PREP', 'Preparing'),
     ('OUT', 'Out for Delivery'),
     ('DELIVERED', 'Delivered'),
     ('DISPUTED', 'Disputed'),
@@ -211,7 +203,7 @@ class _OrderFilters extends StatelessWidget {
                   placeholder: const Text('Search by Order ID'),
                   style: const TextStyle(fontSize: 11),
                   filled: true,
-                  border: const Border.fromBorderSide(BorderSide(color: AdminColors.line)),
+                  border: const Border.fromBorderSide(BorderSide(color: AdminDesignColors.border)),
                   borderRadius: BorderRadius.circular(9),
                   features: const [
                     shad.InputLeadingFeature(AdminIcon(HugeIcons.strokeRoundedSearch01, size: 17)),
@@ -250,12 +242,12 @@ class _FilterChip extends StatelessWidget{
     child:(active ? shad.Button.secondary : shad.Button.ghost)(
       onPressed:onTap,
       child: Row(mainAxisSize:MainAxisSize.min,children:[
-        Text(label,style:TextStyle(fontSize:12,fontWeight:FontWeight.w900,color:active?AdminColors.ink:AdminColors.muted)),
-        const SizedBox(width:7),
+        Text(label,style:TextStyle(fontSize:12,fontWeight:FontWeight.w900,color:active?AdminDesignColors.primaryText:AdminDesignColors.secondaryText)),
+        const SizedBox(width:AdminSpacing.xs),
         Container(
           padding:const EdgeInsets.symmetric(horizontal:6,vertical:3),
-          decoration:BoxDecoration(color:active?AdminColors.yellow:AdminColors.canvas,borderRadius:BorderRadius.circular(6)),
-          child:Text(count.toString(),style:const TextStyle(fontSize:12,fontWeight:FontWeight.w900)),
+          decoration:BoxDecoration(color:active?AdminDesignColors.brandYellow:AdminDesignColors.canvas,borderRadius:BorderRadius.circular(6)),
+          child:Text(count.toString(),style:const AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),
         ),
       ]),
     ).sized(height:44),
@@ -268,8 +260,8 @@ class _OrderQueue extends StatelessWidget{
   @override Widget build(BuildContext context){
     final start=(page-1)*10,visible=orders.skip(start).take(10).toList(),pages=orders.isEmpty?1:((orders.length-1)~/10)+1;
     return AdminCard(child:Padding(padding:const EdgeInsets.fromLTRB(14,14,14,10),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-      Row(children:[const Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('ORDER QUEUE',style:TextStyle(fontSize:12,fontWeight:FontWeight.w900)),SizedBox(height:3)])),Text('Showing '+visible.length.toString()+' of '+orders.length.toString()+' active tickets',style:const TextStyle(fontSize: 11,color:AdminColors.muted)),const SizedBox(width:10),Container(padding:const EdgeInsets.symmetric(horizontal:9,vertical:7),decoration:BoxDecoration(color:AdminColors.canvas,borderRadius:BorderRadius.circular(8),border:Border.all(color:AdminColors.line)),child:const Row(children:[AdminIcon(HugeIcons.strokeRoundedSortingUp,size:15,color:AdminColors.muted),SizedBox(width:4),Text('Live Recency',style:TextStyle(fontSize: 11,fontWeight:FontWeight.w800))]))]),
-      const SizedBox(height:12),
+      Row(children:[const Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('ORDER QUEUE',style:AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),SizedBox(height:3)])),Text('Showing '+visible.length.toString()+' of '+orders.length.toString()+' active tickets',style:const AdminTypography.small),const SizedBox(width:AdminSpacing.sm),Container(padding:const EdgeInsets.symmetric(horizontal:9,vertical:7),decoration:BoxDecoration(color:AdminDesignColors.canvas,borderRadius:BorderRadius.circular(8),border:Border.all(color:AdminDesignColors.border)),child:const Row(children:[AdminIcon(HugeIcons.strokeRoundedSortingUp,size:15,color:AdminDesignColors.secondaryText),SizedBox(width:4),Text('Latest first',style:AdminTypography.small.copyWith(fontWeight: FontWeight.w600))]))]),
+      const SizedBox(height:AdminSpacing.md),
       Scrollbar(
         thumbVisibility:true,
         child:SingleChildScrollView(
@@ -278,19 +270,19 @@ class _OrderQueue extends StatelessWidget{
             constraints:const BoxConstraints(minWidth:720),
             child:Column(children:[
               const _OrderTableHeader(),
-              const Divider(height:1,color:AdminColors.line),
+              const Divider(height:1,color:AdminDesignColors.border),
               ...visible.map((o)=>_OrderRow(order:o,selected:o.id==selectedId,onTap:()=>onSelect(o.id))),
-              const Divider(height:1,color:AdminColors.line),
+              const Divider(height:1,color:AdminDesignColors.border),
             ]),
           ),
         ),
       ),
-      Row(children:[const Text('Rows per page: 10',style:TextStyle(fontSize: 11,color:AdminColors.muted,fontWeight:FontWeight.w700)),const Spacer(),Text((start+1).toString()+'–'+(start+visible.length).toString()+' of '+orders.length.toString(),style:const TextStyle(fontSize: 11,color:AdminColors.muted,fontWeight:FontWeight.w800)),shad.IconButton.ghost(onPressed:page>1?()=>onPage(page-1):null,icon:const AdminIcon(HugeIcons.strokeRoundedArrowLeft01,size:18)),shad.IconButton.ghost(onPressed:page<pages?()=>onPage(page+1):null,icon:const AdminIcon(HugeIcons.strokeRoundedArrowRight01,size:18))]),
+      Row(children:[const Text('10 rows per page',style:TextStyle(fontSize: 11,color:AdminDesignColors.secondaryText,fontWeight:FontWeight.w700)),const Spacer(),Text((start+1).toString()+'–'+(start+visible.length).toString()+' of '+orders.length.toString(),style:const TextStyle(fontSize: 11,color:AdminDesignColors.secondaryText,fontWeight:FontWeight.w800)),shad.IconButton.ghost(onPressed:page>1?()=>onPage(page-1):null,icon:const AdminIcon(HugeIcons.strokeRoundedArrowLeft01,size:18)),shad.IconButton.ghost(onPressed:page<pages?()=>onPage(page+1):null,icon:const AdminIcon(HugeIcons.strokeRoundedArrowRight01,size:18))]),
     ])));
   }
 }
 
-class _OrderTableHeader extends StatelessWidget{const _OrderTableHeader();@override Widget build(BuildContext context)=>const Padding(padding:EdgeInsets.fromLTRB(10,8,10,8),child:Row(children:[SizedBox(width:30),Expanded(flex:13,child:Text('ORDER ID & TIME',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted))),Expanded(flex:17,child:Text('CUSTOMER & PHONE',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted))),Expanded(flex:20,child:Text('ADDRESS',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted))),Expanded(flex:12,child:Text('ITEMS / TOTAL',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted))),Expanded(flex:12,child:Text('STATUS',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted)))]));}
+class _OrderTableHeader extends StatelessWidget{const _OrderTableHeader();@override Widget build(BuildContext context)=>const Padding(padding:EdgeInsets.fromLTRB(10,8,10,8),child:Row(children:[SizedBox(width:30),Expanded(flex:13,child:Text('ORDER ID & TIME',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText))),Expanded(flex:17,child:Text('CUSTOMER & PHONE',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText))),Expanded(flex:20,child:Text('ADDRESS',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText))),Expanded(flex:12,child:Text('ITEMS / TOTAL',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText))),Expanded(flex:12,child:Text('STATUS',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText)))]));}
 
 class _OrderRow extends StatelessWidget{
   const _OrderRow({required this.order,required this.selected,required this.onTap});
@@ -299,10 +291,10 @@ class _OrderRow extends StatelessWidget{
     onPressed:onTap,
     child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[
       SizedBox(width:44,height:44,child:Center(child:shad.Checkbox(state:selected?shad.CheckboxState.checked:shad.CheckboxState.unchecked,onChanged:(_)=>onTap()))),
-      Expanded(flex:13,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(order.id,style:const TextStyle(fontSize:12,fontWeight:FontWeight.w900)),const SizedBox(height:3),Text(order.time,style:const TextStyle(fontSize:11,color:AdminColors.muted))])),
-      Expanded(flex:17,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(order.customer,maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:11,fontWeight:FontWeight.w800)),const SizedBox(height:3),Text(order.phone,maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:11,color:AdminColors.muted))])),
-      Expanded(flex:20,child:Text(order.address,maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:11,color:AdminColors.muted,height:1.35))),
-      Expanded(flex:12,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('₹'+order.total.toStringAsFixed(2),style:const TextStyle(fontSize:12,fontWeight:FontWeight.w900)),const SizedBox(height:3),Text(order.items.toString()+' items • '+order.payment,style:const TextStyle(fontSize:11,color:AdminColors.muted))])),
+      Expanded(flex:13,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(order.id,style:const AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),const SizedBox(height:3),Text(order.time,style:const AdminTypography.small)])),
+      Expanded(flex:17,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(order.customer,maxLines:1,overflow:TextOverflow.ellipsis,style:const AdminTypography.small.copyWith(fontWeight: FontWeight.w600)),const SizedBox(height:3),Text(order.phone,maxLines:1,overflow:TextOverflow.ellipsis,style:const AdminTypography.small)])),
+      Expanded(flex:20,child:Text(order.address,maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:11,color:AdminDesignColors.secondaryText,height:1.35))),
+      Expanded(flex:12,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('₹'+order.total.toStringAsFixed(2),style:const AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),const SizedBox(height:3),Text(order.items.toString()+' items • '+order.payment,style:const AdminTypography.small)])),
       Expanded(flex:12,child:Align(alignment:Alignment.topLeft,child:_OrderStatusBadge(order.status))),
     ]),
   ).sized(width:double.infinity);
@@ -317,25 +309,25 @@ class _OrderDetails extends StatelessWidget{
   const _OrderDetails({required this.order,required this.busy,required this.apiConfigured,required this.onAdvance,required this.onInvoice,required this.onCancel});
   final _AdminOrder? order;final bool busy,apiConfigured;final VoidCallback? onAdvance,onInvoice,onCancel;
   @override Widget build(BuildContext context){
-    final o=order;if(o==null)return const AdminCard(child:Padding(padding:EdgeInsets.all(30),child:Center(child:Text('No selected order',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)))));
+    final o=order;if(o==null)return const AdminCard(child:Padding(padding:EdgeInsets.all(30),child:Center(child:Text('Select an order to view details',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)))));
     final next=_nextStatus(o.status);
     return AdminCard(child:Padding(padding:const EdgeInsets.all(16),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-      Row(children:[Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(o.id,style:const TextStyle(fontSize:18,fontWeight:FontWeight.w900)),const SizedBox(height:5),Row(children:[_OrderStatusBadge(o.status),const SizedBox(width:7),if(apiConfigured)const Text('LIVE ACTIVE',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.green))])])),shad.IconButton.ghost(onPressed:()=>_notice(context,'Print is not wired in the existing admin app.'),icon:const AdminIcon(HugeIcons.strokeRoundedPrinter,size:18)),shad.IconButton.ghost(onPressed:()=>_notice(context,'Share is not wired in the existing admin app.'),icon:const AdminIcon(HugeIcons.strokeRoundedShare08,size:18))]),
-      const SizedBox(height:5),Text('Placed at '+o.time+' IST • Estimated Dispatch: 8 min',style:const TextStyle(fontSize: 11,color:AdminColors.muted)),const SizedBox(height:15),
-      _Panel(title:'Order Dispatch Progression',trailing:'Step '+_progressStep(o.status).toString()+' of 5',child:_Progression(o.status)),const SizedBox(height:12),
-      LayoutBuilder(builder:(context,c)=>c.maxWidth>=500?Row(children:[Expanded(child:_PersonCard('CUSTOMER',o.customer,[o.phone,o.address],HugeIcons.strokeRoundedUser)),const SizedBox(width:10),Expanded(child:_PersonCard('DELIVERY PARTNER',o.partner??'Unassigned',[o.vehicle??'Awaiting partner assignment'],HugeIcons.strokeRoundedDeliveryTruck01,badge:o.partner==null?'UNASSIGNED':'ON DUTY'))]):Column(children:[_PersonCard('CUSTOMER',o.customer,[o.phone,o.address],HugeIcons.strokeRoundedUser),const SizedBox(height:10),_PersonCard('DELIVERY PARTNER',o.partner??'Unassigned',[o.vehicle??'Awaiting partner assignment'],HugeIcons.strokeRoundedDeliveryTruck01,badge:o.partner==null?'UNASSIGNED':'ON DUTY')])),
-      const SizedBox(height:12),
-      _Panel(title:'ITEMIZED KITCHEN MANIFEST',trailing:'KOT Ticket: #08',child:Column(children:o.lines.map((l)=>Padding(padding:const EdgeInsets.symmetric(vertical:7),child:Row(children:[Container(width:24,height:24,alignment:Alignment.center,decoration:BoxDecoration(color:AdminColors.amberSoft,borderRadius:BorderRadius.circular(6)),child:Text(l.qty.toString()+'x',style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),const SizedBox(width:9),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(l.name,style:const TextStyle(fontSize: 11,fontWeight:FontWeight.w800)),if(l.modifier.isNotEmpty)Text(l.modifier,style:const TextStyle(fontSize: 11,color:AdminColors.muted))])),Text('₹'+l.price.toStringAsFixed(2),style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))]))).toList())),const SizedBox(height:12),
-      _Bill(o),const SizedBox(height:12),
+      Row(children:[Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(o.id,style:const AdminTypography.sectionTitle),const SizedBox(height:5),Row(children:[_OrderStatusBadge(o.status),const SizedBox(width:AdminSpacing.xs),if(apiConfigured)const Text('LIVE ACTIVE',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.success))])])),const SizedBox.shrink()]),
+      const SizedBox(height:5),Text('Placed at '+o.time,style:const AdminTypography.small),const SizedBox(height:AdminSpacing.lg),
+      _Panel(title:'Order status progression',trailing:'Step '+_progressStep(o.status).toString()+' of 5',child:_Progression(o.status)),const SizedBox(height:AdminSpacing.md),
+      LayoutBuilder(builder:(context,c)=>c.maxWidth>=500?Row(children:[Expanded(child:_PersonCard('CUSTOMER',o.customer,[o.phone,o.address],HugeIcons.strokeRoundedUser)),const SizedBox(width:AdminSpacing.sm),Expanded(child:_PersonCard('DELIVERY PARTNER',o.partner??'Unassigned',[o.vehicle??'Awaiting partner assignment'],HugeIcons.strokeRoundedDeliveryTruck01,badge:o.partner==null?'UNASSIGNED':'ON DUTY'))]):Column(children:[_PersonCard('CUSTOMER',o.customer,[o.phone,o.address],HugeIcons.strokeRoundedUser),const SizedBox(height:10),_PersonCard('DELIVERY PARTNER',o.partner??'Unassigned',[o.vehicle??'Awaiting partner assignment'],HugeIcons.strokeRoundedDeliveryTruck01,badge:o.partner==null?'UNASSIGNED':'ON DUTY')])),
+      const SizedBox(height:AdminSpacing.md),
+      _Panel(title:'ORDER ITEMS',trailing:o.items.toString()+' items',child:Column(children:o.lines.map((l)=>Padding(padding:const EdgeInsets.symmetric(vertical:7),child:Row(children:[Container(width:24,height:24,alignment:Alignment.center,decoration:BoxDecoration(color:AdminDesignColors.warningSoft,borderRadius:BorderRadius.circular(6)),child:Text(l.qty.toString()+'x',style:const AdminTypography.small.copyWith(fontWeight: FontWeight.w700))),const SizedBox(width:9),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(l.name,style:const AdminTypography.small.copyWith(fontWeight: FontWeight.w600)),if(l.modifier.isNotEmpty)Text(l.modifier,style:const AdminTypography.small)])),Text('₹'+l.price.toStringAsFixed(2),style:const AdminTypography.small.copyWith(fontWeight: FontWeight.w700))]))).toList())),const SizedBox(height:AdminSpacing.md),
+      _Bill(o),const SizedBox(height:AdminSpacing.md),
       shad.PrimaryButton(onPressed:busy||next==null?null:onAdvance,leading:const AdminIcon(HugeIcons.strokeRoundedMotorbike02,size:18),child:Text(busy?'Updating…':'Advance to '+_prettyStatus(next??o.status))).sized(width:double.infinity,height:46),
-      const SizedBox(height:8),Wrap(spacing:7,runSpacing:7,children:[shad.OutlineButton(onPressed:onInvoice,leading:const AdminIcon(HugeIcons.strokeRoundedInvoice01,size:15),child:const Text('Tax Invoice')),shad.OutlineButton(onPressed:()=>_notice(context,'KOT printing is not wired in the existing admin app.'),leading:const AdminIcon(HugeIcons.strokeRoundedPrinter,size:15),child:const Text('Print KOT')),shad.OutlineButton(onPressed:onCancel,leading:const AdminIcon(HugeIcons.strokeRoundedCancel01,size:15,color:AdminColors.red),child:const Text('Reject / Cancel'))])
+      const SizedBox(height:AdminSpacing.sm),Wrap(spacing:7,runSpacing:7,children:[shad.OutlineButton(onPressed:onInvoice,leading:const AdminIcon(HugeIcons.strokeRoundedInvoice01,size:15),child:const Text('Tax Invoice')),const SizedBox.shrink(),shad.OutlineButton(onPressed:onCancel,leading:const AdminIcon(HugeIcons.strokeRoundedCancel01,size:15,color:AdminDesignColors.error),child:const Text('Cancel order'))])
     ])));
   }
 }
 
 class _Panel extends StatelessWidget{
   const _Panel({required this.title,required this.child,required this.trailing});final String title,trailing;final Widget child;
-  @override Widget build(BuildContext context)=>Container(width:double.infinity,padding:const EdgeInsets.all(12),decoration:BoxDecoration(color:AdminColors.canvas,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminColors.line)),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Row(children:[Expanded(child:Text(title,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900,letterSpacing:.5))),Text(trailing,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted))]),const SizedBox(height:9),child]));
+  @override Widget build(BuildContext context)=>Container(width:double.infinity,padding:const EdgeInsets.all(12),decoration:BoxDecoration(color:AdminDesignColors.canvas,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminDesignColors.border)),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Row(children:[Expanded(child:Text(title,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900,letterSpacing:.5))),Text(trailing,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText))]),const SizedBox(height:9),child]));
 }
 
 class _Progression extends StatelessWidget {
@@ -365,15 +357,15 @@ class _Progression extends StatelessWidget {
                   height: 25,
                   decoration: BoxDecoration(
                     color: i < current
-                        ? AdminColors.yellow
+                        ? AdminDesignColors.brandYellow
                         : i == current
-                            ? AdminColors.red
+                            ? AdminDesignColors.error
                             : Colors.white,
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: i <= current
                           ? Colors.transparent
-                          : AdminColors.line,
+                          : AdminDesignColors.border,
                     ),
                   ),
                   alignment: Alignment.center,
@@ -381,7 +373,7 @@ class _Progression extends StatelessWidget {
                       ? const AdminIcon(
                           HugeIcons.strokeRoundedCheckmarkCircle01,
                           size: 14,
-                          color: AdminColors.ink,
+                          color: AdminDesignColors.primaryText,
                         )
                       : Text(
                           (i + 1).toString(),
@@ -389,7 +381,7 @@ class _Progression extends StatelessWidget {
                             fontSize: 12, fontWeight: FontWeight.w900,
                             color: i == current
                                 ? Colors.white
-                                : AdminColors.muted,
+                                : AdminDesignColors.secondaryText,
                           ),
                         ),
                 ),
@@ -401,8 +393,8 @@ class _Progression extends StatelessWidget {
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: i == current
-                        ? AdminColors.red
-                        : AdminColors.muted,
+                        ? AdminDesignColors.error
+                        : AdminDesignColors.secondaryText,
                   ),
                 ),
               ],
@@ -414,8 +406,8 @@ class _Progression extends StatelessWidget {
                 height: 2,
                 margin: const EdgeInsets.only(bottom: 22),
                 color: i < current
-                    ? AdminColors.yellow
-                    : AdminColors.line,
+                    ? AdminDesignColors.brandYellow
+                    : AdminDesignColors.border,
               ),
             ),
         ],
@@ -426,18 +418,18 @@ class _Progression extends StatelessWidget {
 
 class _PersonCard extends StatelessWidget{
   const _PersonCard(this.title,this.name,this.lines,this.icon,{this.badge});final String title,name;final List<String> lines;final AdminIconData icon;final String? badge;
-  @override Widget build(BuildContext context)=>Container(padding:const EdgeInsets.all(11),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminColors.line)),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-    Row(children:[AdminIcon(icon,size:16,color:AdminColors.amber),const SizedBox(width:6),Text(title,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted)),const Spacer(),if(badge!=null)Container(padding:const EdgeInsets.symmetric(horizontal:6,vertical:4),decoration:BoxDecoration(color:badge=='ON DUTY'?AdminColors.greenSoft:AdminColors.redSoft,borderRadius:BorderRadius.circular(6)),child:Text(badge!,style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:badge=='ON DUTY'?AdminColors.green:AdminColors.red)))]),
-    const SizedBox(height:8),Text(name,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),const SizedBox(height:4),...lines.map((l)=>Padding(padding:const EdgeInsets.only(top:2),child:Text(l,maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize: 11,color:AdminColors.muted,height:1.3)))),
+  @override Widget build(BuildContext context)=>Container(padding:const EdgeInsets.all(11),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminDesignColors.border)),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+    Row(children:[AdminIcon(icon,size:16,color:AdminDesignColors.warning),const SizedBox(width:6),Text(title,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText)),const Spacer(),if(badge!=null)Container(padding:const EdgeInsets.symmetric(horizontal:6,vertical:4),decoration:BoxDecoration(color:badge=='ON DUTY'?AdminDesignColors.successSoft:AdminDesignColors.errorSoft,borderRadius:BorderRadius.circular(6)),child:Text(badge!,style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:badge=='ON DUTY'?AdminDesignColors.success:AdminDesignColors.error)))]),
+    const SizedBox(height:AdminSpacing.sm),Text(name,style:const AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),const SizedBox(height:4),...lines.map((l)=>Padding(padding:const EdgeInsets.only(top:2),child:Text(l,maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize: 11,color:AdminDesignColors.secondaryText,height:1.3)))),
   ]));
 }
 
 class _Bill extends StatelessWidget{
   const _Bill(this.o);final _AdminOrder o;
-  @override Widget build(BuildContext context){final sub=o.total-69;Widget line(String a,String b,{bool strong=false})=>Row(children:[Expanded(child:Text(a,style:TextStyle(fontSize:strong?10:8.5,fontWeight:strong?FontWeight.w900:FontWeight.w600,color:strong?AdminColors.ink:AdminColors.muted))),Text(b,style:TextStyle(fontSize:strong?12.5:8.5,fontWeight:FontWeight.w900))]);return Container(padding:const EdgeInsets.all(12),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminColors.line)),child:Column(children:[line('Item Subtotal','₹'+sub.toStringAsFixed(2)),line('GST & Packaging Charges','₹69.00'),const Divider(height:17),line('Grand Total','₹'+o.total.toStringAsFixed(2),strong:true),const SizedBox(height:9),Row(children:[const Text('PAYMENT',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.muted)),const Spacer(),Container(padding:const EdgeInsets.symmetric(horizontal:7,vertical:4),decoration:BoxDecoration(color:AdminColors.greenSoft,borderRadius:BorderRadius.circular(6)),child:const Text('PAID',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminColors.green))),const SizedBox(width:6),Text(o.payment,style:const TextStyle(fontSize: 11,color:AdminColors.muted))])]));}
+  @override Widget build(BuildContext context){final sub=o.total-69;Widget line(String a,String b,{bool strong=false})=>Row(children:[Expanded(child:Text(a,style:strong ? AdminTypography.body.copyWith(fontWeight: FontWeight.w700) : AdminTypography.small)),Text(b,style:TextStyle(fontSize:strong?12.5:8.5,fontWeight:FontWeight.w900))]);return Container(padding:const EdgeInsets.all(12),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminDesignColors.border)),child:Column(children:[line('Item Subtotal','₹'+sub.toStringAsFixed(2)),line('GST & Packaging Charges','₹69.00'),const Divider(height:17),line('Grand Total','₹'+o.total.toStringAsFixed(2),strong:true),const SizedBox(height:9),Row(children:[const Text('PAYMENT',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText)),const Spacer(),Container(padding:const EdgeInsets.symmetric(horizontal:7,vertical:4),decoration:BoxDecoration(color:AdminDesignColors.successSoft,borderRadius:BorderRadius.circular(6)),child:const Text('PAID',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.success))),const SizedBox(width:6),Text(o.payment,style:const AdminTypography.small)])]));}
 }
 
-class _EmptyOrders extends StatelessWidget{const _EmptyOrders({required this.onClear});final VoidCallback onClear;@override Widget build(BuildContext context)=>AdminCard(child:Padding(padding:const EdgeInsets.all(34),child:Center(child:Column(children:[const AdminIcon(HugeIcons.strokeRoundedInbox,size:34,color:AdminColors.muted),const SizedBox(height:9),const Text('No orders match this view',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)),const SizedBox(height:5),const Text('Try another status filter or clear the order search.',style:TextStyle(fontSize: 11,color:AdminColors.muted)),const SizedBox(height:12),shad.OutlineButton(onPressed:onClear,child:const Text('Clear filters'))]))));}
+class _EmptyOrders extends StatelessWidget{const _EmptyOrders({required this.onClear});final VoidCallback onClear;@override Widget build(BuildContext context)=>AdminCard(child:Padding(padding:const EdgeInsets.all(34),child:Center(child:Column(children:[const AdminIcon(HugeIcons.strokeRoundedInbox,size:34,color:AdminDesignColors.secondaryText),const SizedBox(height:9),const Text('No orders match this view',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)),const SizedBox(height:5),const Text('Try another status filter or clear the order search.',style:AdminTypography.small),const SizedBox(height:AdminSpacing.md),shad.OutlineButton(onPressed:onClear,child:const Text('Clear filters'))]))));}
 
 const _previewOrders=<_AdminOrder>[
   _AdminOrder(id:'#SFD-9042',customer:'Aarav Mehra',phone:'+919820144521',address:'Flat 402 Wing B, Sea Green Apts, Juhu Beach Ext.',total:849,items:3,payment:'UPI',time:'14:32 (4m ago)',status:'PREPARING',partner:'Ramesh Patil',vehicle:'Ather 450X (MH-02-EH-4819)',lines:[_OrderLine(1,'Truffle Melt Burger','Extra Cheese',480),_OrderLine(1,'Peri Peri Crinkle Fries','Jalapeño Dip',160),_OrderLine(1,'Alphonso Mango Shake','No Sugar Added',140)]),
@@ -456,4 +448,4 @@ String _orderFilter(String s){if(s=='PLACED')return 'PLACED';if(['ACCEPTED','PRE
 String? _nextStatus(String s)=>const {'PLACED':'ACCEPTED','ACCEPTED':'PREPARING','PREPARING':'READY_FOR_PICKUP','READY_FOR_PICKUP':'ASSIGNED','ASSIGNED':'PICKED_UP','PICKED_UP':'OUT_FOR_DELIVERY','OUT_FOR_DELIVERY':'DELIVERED'}[s];
 int _progressStep(String s){if(s=='PLACED')return 1;if(s=='ACCEPTED')return 2;if(s=='PREPARING')return 3;if(['READY_FOR_PICKUP','ASSIGNED','PICKED_UP','OUT_FOR_DELIVERY'].contains(s))return 4;if(s=='DELIVERED')return 5;return 1;}
 String _prettyStatus(String? s)=>(s??'UNKNOWN').replaceAll('_',' ');
-(Color,Color) _statusStyle(String s){if(['CANCELLED','DISPUTED','PREPARING'].contains(s))return(AdminColors.redSoft,AdminColors.red);if(['OUT_FOR_DELIVERY','DELIVERED'].contains(s))return(AdminColors.greenSoft,AdminColors.green);return(AdminColors.amberSoft,AdminColors.amber);}
+(Color,Color) _statusStyle(String s){if(['CANCELLED','DISPUTED','PREPARING'].contains(s))return(AdminDesignColors.errorSoft,AdminDesignColors.error);if(['OUT_FOR_DELIVERY','DELIVERED'].contains(s))return(AdminDesignColors.successSoft,AdminDesignColors.success);return(AdminDesignColors.warningSoft,AdminDesignColors.warning);}
