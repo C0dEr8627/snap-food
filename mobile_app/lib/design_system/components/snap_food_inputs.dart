@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../tokens/app_colors.dart';
 import '../tokens/app_radii.dart';
@@ -138,7 +139,10 @@ class SnapFilterChip extends StatelessWidget {
           ),
         ),
         child: InkWell(
-          onTap: () => onSelected(!selected),
+          onTap: () {
+            HapticFeedback.selectionClick();
+            onSelected(!selected);
+          },
           borderRadius: BorderRadius.circular(SnapFoodRadii.full),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 40),
@@ -215,7 +219,10 @@ class SnapCategoryChip extends StatelessWidget {
           ),
         ),
         child: InkWell(
-          onTap: onSelected,
+          onTap: () {
+            HapticFeedback.selectionClick();
+            onSelected();
+          },
           borderRadius: BorderRadius.circular(SnapFoodRadii.full),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 40),
