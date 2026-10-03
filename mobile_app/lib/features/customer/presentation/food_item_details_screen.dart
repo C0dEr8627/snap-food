@@ -374,40 +374,6 @@ class _Tag extends StatelessWidget {
   );
 }
 
-class _LegacyQuantityControl extends StatelessWidget {
-  const _LegacyQuantityControl({
-    required this.quantity,
-    required this.onRemove,
-    required this.onAdd,
-  });
-  final int quantity;
-  final VoidCallback? onRemove;
-  final VoidCallback? onAdd;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    height: 50,
-    decoration: BoxDecoration(
-      color: SnapFoodColors.surfaceContainerLowest,
-      borderRadius: BorderRadius.circular(SnapFoodRadii.md),
-      border: Border.all(color: SnapFoodColors.softBorder),
-    ),
-    child: Row(
-      children: [
-        IconButton(
-          onPressed: onRemove,
-          icon: const Icon(Icons.remove, size: 17),
-        ),
-        Text(
-          quantity.toString(),
-          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
-        ),
-        IconButton(onPressed: onAdd, icon: const Icon(Icons.add, size: 17)),
-      ],
-    ),
-  );
-}
-
 class _FoodHeroImage extends StatelessWidget {
   const _FoodHeroImage({
     required this.imageUrl,
