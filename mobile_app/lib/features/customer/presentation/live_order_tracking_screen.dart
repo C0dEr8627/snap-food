@@ -1,9 +1,10 @@
 import 'dart:async';
-import 'package:flutter/services.dart';
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/network/api_exception.dart';
 import '../../../design_system/components/snap_food_feedback.dart';
@@ -422,6 +423,27 @@ class _DeliveryPartnerSection extends StatelessWidget {
 
   final DeliveryPartnerContact partner;
 
+  Future<void> _callPartner(BuildContext context) async {
+    final phone = partner.phone?.trim();
+    if (phone == null || phone.isEmpty) return;
+
+    final uri = Uri(scheme: 'tel', path: phone);
+    try {
+      final launched = await launchUrl(uri);
+      if (!launched && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unable to open the phone app.')),
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unable to open the phone app.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) => _SectionSurface(
         title: 'Your delivery partner',
@@ -430,7 +452,10 @@ class _DeliveryPartnerSection extends StatelessWidget {
           children: [
             const CircleAvatar(
               backgroundColor: SnapFoodColors.primaryContainer,
-              child: Icon(Icons.person_outline_rounded, color: SnapFoodColors.secondary),
+              child: Icon(
+                Icons.person_outline_rounded,
+                color: SnapFoodColors.secondary,
+              ),
             ),
             const SizedBox(width: SnapFoodSpacing.sm),
             Expanded(
@@ -439,7 +464,7 @@ class _DeliveryPartnerSection extends StatelessWidget {
                 children: [
                   Text(partner.name, style: SnapFoodTypography.titleMedium),
                   const SizedBox(height: SnapFoodSpacing.xs),
-                  if (partner.phone == null)
+                  if (partner.phone == null || partner.phone!.trim().isEmpty)
                     Text(
                       'Contact number is not available yet.',
                       style: SnapFoodTypography.bodySmall.copyWith(
@@ -447,22 +472,19 @@ class _DeliveryPartnerSection extends StatelessWidget {
                       ),
                     )
                   else ...[
-                    SelectableText(
+                    Text(
                       partner.phone!,
-                      style: SnapFoodTypography.bodyMedium.copyWith(fontWeight: FontWeight.w700),
+                      style: SnapFoodTypography.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                    const SizedBox(height: SnapFoodSpacing.xs),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextButton.icon(
-                        onPressed: () {
-                          Clipboard.setData(ClipboardData(text: partner.phone!));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Phone number copied')),
-                          );
-                        },
-                        icon: const Icon(Icons.copy_rounded, size: 16),
-                        label: const Text('Copy phone number'),
+                    const SizedBox(height: SnapFoodSpacing.sm),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: () => _callPartner(context),
+                        icon: const Icon(Icons.call_rounded, size: 18),
+                        label: const Text('Call delivery partner'),
                       ),
                     ),
                   ],
