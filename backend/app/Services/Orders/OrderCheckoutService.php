@@ -14,8 +14,7 @@ class OrderCheckoutService
     public function create(StoreOrderRequest $request): Order
     {
         return DB::transaction(function () use ($request): Order {
-            $requestedItems = collect($request->validated('items'))
-                ->keyBy('product_id');
+            $requestedItems = collect($request->validated('items'))->keyBy('product_id');
 
             $products = Product::query()
                 ->with('category')
@@ -36,12 +35,7 @@ class OrderCheckoutService
             foreach ($requestedItems as $productId => $item) {
                 $product = $products->get($productId);
 
-                if (
-                    ! $product->is_active
-                    || ! $product->is_available
-                    || ! $product->category?->is_active
-                    || $product->stock_quantity < $item['quantity']
-                ) {
+                if (! $product->is_active || ! $product->is_available || ! $product->category?->is_active || $product->stock_quantity < $item['quantity']) {
                     throw ValidationException::withMessages([
                         'items' => ["Product {$productId} is unavailable for checkout."],
                     ]);
@@ -62,9 +56,10 @@ class OrderCheckoutService
 
             $deliveryFeeMinor = $this->toMinorUnits((string) config('orders.delivery_fee', '40.00'));
             $totalMinor = $minorSubtotal + $deliveryFeeMinor;
+            $actor = $request->user();
 
             $order = Order::create([
-                'customer_id' => $request->user()->id,
+                'customer_id' => $actor->id,
                 'delivery_address_snapshot' => $request->validated('delivery_address'),
                 'subtotal' => $this->fromMinorUnits($minorSubtotal),
                 'delivery_fee' => $this->fromMinorUnits($deliveryFeeMinor),
@@ -78,11 +73,11 @@ class OrderCheckoutService
             $order->statusHistory()->create([
                 'from_status' => null,
                 'to_status' => Order::STATUS_PLACED,
-                'actor_id' => $request->user()->id,
+                'actor_id' => $actor->id,
+                'actor_type' => $actor::class,
             ]);
 
-            // The customer's server-side cart is consumed atomically with checkout.
-            Cart::query()->where('user_id', $request->user()->id)->delete();
+            Cart::query()->where('user_id', $actor->id)->delete();
 
             return $order->load('items', 'statusHistory');
         });
