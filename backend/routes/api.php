@@ -1,18 +1,18 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AddressController;
 use App\Http\Controllers\Api\V1\Admin\DeliveryPartnerController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\AuthController;
-use App\Http\Controllers\Api\V1\AddressController;
 use App\Http\Controllers\Api\V1\CartController;
 use App\Http\Controllers\Api\V1\Catalogue\CategoryController;
 use App\Http\Controllers\Api\V1\Catalogue\ProductController;
 use App\Http\Controllers\Api\V1\Delivery\DeliveryLocationController;
 use App\Http\Controllers\Api\V1\Delivery\DeliveryPartnerOrderController;
-use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\FavoriteController;
-use App\Http\Controllers\Api\V1\Orders\AdminOrderAssignmentController;
+use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\Orders\AdminInvoiceController;
+use App\Http\Controllers\Api\V1\Orders\AdminOrderAssignmentController;
 use App\Http\Controllers\Api\V1\Orders\AdminOrderController;
 use App\Http\Controllers\Api\V1\Orders\InvoiceController;
 use App\Http\Controllers\Api\V1\Orders\OrderController;
