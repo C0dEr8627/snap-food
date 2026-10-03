@@ -359,7 +359,7 @@ class _UserDetails extends StatelessWidget {
 class _UserDetailSection extends StatelessWidget {
   const _UserDetailSection({required this.title, required this.children});
   final String title;
-  final List<flutter.flutter.Widget> children;
+  final List<flutter.Widget> children;
 
   @override
   flutter.Widget build(BuildContext context) => Column(
