@@ -494,11 +494,22 @@ Requirements:
 - Added safe-area-aware scrolling, accessible order/status semantics, stronger grouping and tokenized spacing/typography without changing business logic.
 
 ### Task 17 — Redesign live order tracking
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
+
+- Reworked live tracking into a status-first, safe-area-aware tracking experience using the existing order tracking provider and API contract.
+- Added a prominent current-status hero with accessible live-region semantics and reusable `SnapOrderStatus`.
+- Added a clear visual order-progress timeline for every status currently represented by the customer order contract.
+- Removed the previous restaurant-specific wording from tracking because Snap Foodd has no restaurant concept.
+- Preserved the existing 10-second polling behavior and pull-to-refresh interaction.
+- Preserved stale-location handling and made the distinction between live, stale and unavailable tracking explicit.
+- Reworked location presentation around the actual `OrderTrackingLocation` data, including coordinates, optional timestamp and optional accuracy; no map was fabricated because the current mobile infrastructure/API does not expose a map abstraction.
+- Did not fabricate ETA, rider identity/contact information or support actions because the current tracking model exposes none of those fields.
+- Preserved branded loading, error and unavailable states and added clearer cancelled-order handling.
+- Reused centralized spacing, typography, colors, radii and order-status components without changing tracking business logic or repository/API behavior.
 
 This should become a signature Snap Foodd experience:
 
-- Clear live ETA.
+- Clear live ETA (only when the tracking API exposes an ETA; the current contract does not).
 - Visual progress states.
 - Rider/delivery information when available.
 - Map abstraction where current infrastructure supports it.
@@ -610,6 +621,7 @@ Before marking any task complete, verify:
 | 2026-10-03 | Task 14 — Redesign address selection/book | ✅ Complete | Reworked the customer address book with a reusable SnapAddressTile, explicit selected semantics, clearer saved-address hierarchy, branded add-address form, inline validation/error feedback, delete confirmation, and preserved checkout selection behavior. The existing address contract currently exposes GET/POST/DELETE but no documented update/edit endpoint, so an edit action was intentionally not fabricated; the reusable tile supports a future edit callback when the API supports it. Validation: changed Dart source files have balanced braces/parentheses/brackets; the implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 15 — Redesign Orders | ✅ Complete | Reworked Orders into clear Active orders and Past orders sections with scan-friendly cards, reusable SnapOrderStatus semantics, prominent totals and item counts, branded loading/error/empty states, refresh and pagination preservation, and existing order-detail navigation. Reorder was not fabricated because the current customer order contract/controller exposes no reorder operation. Validation: changed Dart source files have balanced braces/parentheses/brackets; implementation commits exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 16 — Redesign Order Details | ✅ Complete | Reworked Order Details around order identity, status, items, delivery snapshot, payment/total information and supported actions. Reused Snap Foodd order/status/price/buttons/feedback components, preserved existing order-detail loading, live-tracking navigation and delivered-order invoice behavior, and intentionally did not fabricate restaurant identity, reorder or support actions because the current product/API contract does not expose them. Validation: changed Dart source has balanced braces/parentheses/brackets; implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
+| 2026-10-03 | Task 17 — Redesign live order tracking | ✅ Complete | Reworked live tracking into a status-first experience with a prominent current-status hero, reusable SnapOrderStatus, accessible progress timeline, safe-area-aware layout, pull-to-refresh, preserved 10-second polling, explicit stale/unavailable states, and API-backed location details. Removed restaurant-specific wording because Snap Foodd has no restaurant concept. ETA, rider identity/contact, map and support actions were not fabricated because the current tracking contract does not expose them; no map abstraction is currently available. Validation: changed Dart source has balanced braces/parentheses/brackets; implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 
 ---
 
@@ -637,6 +649,7 @@ Before marking any task complete, verify:
 - Completed Task 14: redesigned the address book with reusable selected-address tiles, branded add-address flow, safe deletion confirmation, and preserved checkout selection behavior; documented the current API limitation around address editing.
 - Completed Task 15: redesigned Orders with active/past grouping, scan-first order cards, reusable status semantics, branded states, and preserved pagination/detail navigation; documented that reorder is not supported by the current order contract.
 - Completed Task 16: redesigned Order Details around status-first order identity, item/totals hierarchy, delivery snapshot, payment information and supported tracking/invoice actions while preserving the existing order API and avoiding unsupported restaurant/reorder/support concepts.
+- Completed Task 17: redesigned live order tracking around current status, progress, stale/live location state and accessible tracking feedback while preserving the existing tracking API, polling and refresh behavior; documented that ETA, rider, map and support data are not currently available.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
