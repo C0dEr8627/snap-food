@@ -4,12 +4,12 @@ enum AdminSection { dashboard, orders, catalogue, users, partners, invoices }
 
 extension on AdminSection {
   String get label => switch (this) {
-    AdminSection.dashboard => 'Dashboard',
+    AdminSection.dashboard => 'Overview',
     AdminSection.orders => 'Orders',
-    AdminSection.catalogue => 'Catalogue',
+    AdminSection.catalogue => 'Products & Catalogue',
     AdminSection.users => 'Users',
     AdminSection.partners => 'Delivery partners',
-    AdminSection.invoices => 'Invoices & Tax Billing Ledger',
+    AdminSection.invoices => 'Invoices & Billing',
   };
   AdminIconData get icon => switch (this) {
     AdminSection.dashboard => HugeIcons.strokeRoundedDashboardSquare01,
@@ -22,8 +22,8 @@ extension on AdminSection {
   String get subtitle => switch (this) {
     AdminSection.dashboard => 'A clear view of today’s business and operations.',
     AdminSection.orders => 'Track every order from checkout to delivery.',
-    AdminSection.catalogue => 'Manage categories and menu items.',
-    AdminSection.users => 'View customer accounts, activity and saved addresses.',
+    AdminSection.catalogue => 'Manage products, categories and availability.',
+    AdminSection.users => 'Manage customer accounts and customer access.',
     AdminSection.partners => 'Review delivery partners and KYC status.',
     AdminSection.invoices => 'Reconcile invoice snapshots and review billing records.',
   };
@@ -90,7 +90,7 @@ class _AdminShellState extends State<AdminShell> {
     final desktop = width >= 1050;
     final tablet = width >= 720;
     return Scaffold(
-      drawer: null,
+      backgroundColor: AdminDesignColors.canvas,
       body: Row(children: [
         if (desktop) SizedBox(width: 248, height: double.infinity, child: _Sidebar(selected: section, onSelect: _select)),
         Expanded(child: Column(children: [
@@ -134,7 +134,7 @@ class _AdminShellState extends State<AdminShell> {
                           ? () => _catalogueKey.currentState?._manageCategories()
                           : null,
                     ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AdminSpacing.xxl),
                   switch (section) {
                     AdminSection.dashboard => const DashboardPage(),
                     AdminSection.orders => OrdersPage(searchQuery: _searchQuery),
@@ -174,71 +174,347 @@ class _AdminShellState extends State<AdminShell> {
 }
 
 class _Sidebar extends StatelessWidget {
-  const _Sidebar({required this.selected, required this.onSelect, this.compact = false});
+  const _Sidebar({
+    required this.selected,
+    required this.onSelect,
+    this.compact = false,
+    this.user,
+    this.onLogout,
+  });
+
   final AdminSection selected;
   final ValueChanged<AdminSection> onSelect;
   final bool compact;
+  final AdminUser? user;
+  final Future<void> Function()? onLogout;
 
   @override
   Widget build(BuildContext context) => Container(
     decoration: const BoxDecoration(
-      color: Colors.white,
-      border: Border(right: BorderSide(color: AdminColors.line, width: 1)),
+      color: AdminDesignColors.surface,
+      border: Border(right: BorderSide(color: AdminDesignColors.border)),
     ),
     child: Material(
-    color: Colors.white,
-    child: SafeArea(
-      child: SingleChildScrollView(
-      primary: true,
-      padding: EdgeInsets.zero,
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.fromLTRB(compact ? 22 : 24, 24, 20, 22),
-            child: const Row(
+      color: AdminDesignColors.surface,
+      child: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                compact ? AdminSpacing.lg : AdminSpacing.xl,
+                AdminSpacing.xl,
+                AdminSpacing.lg,
+                AdminSpacing.lg,
+              ),
+              child: const Row(
+                children: [
+                  _BrandMark(),
+                  SizedBox(width: AdminSpacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Snap Foodd',
+                          style: TextStyle(
+                            fontFamily: AdminTypography.fontFamily,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: AdminDesignColors.primaryText,
+                          ),
+                        ),
+                        SizedBox(height: 3),
+                        Text(
+                          'ADMIN CONSOLE',
+                          style: TextStyle(
+                            fontFamily: AdminTypography.fontFamily,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1.1,
+                            color: AdminDesignColors.tertiaryText,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.sm),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _NavGroup(
+                      label: 'WORKSPACE',
+                      items: const [AdminSection.dashboard],
+                      selected: selected,
+                      onSelect: onSelect,
+                    ),
+                    const SizedBox(height: AdminSpacing.lg),
+                    _NavGroup(
+                      label: 'OPERATIONS',
+                      items: const [AdminSection.orders, AdminSection.partners],
+                      selected: selected,
+                      onSelect: onSelect,
+                    ),
+                    const SizedBox(height: AdminSpacing.lg),
+                    _NavGroup(
+                      label: 'CATALOGUE',
+                      items: const [AdminSection.catalogue],
+                      selected: selected,
+                      onSelect: onSelect,
+                    ),
+                    const SizedBox(height: AdminSpacing.lg),
+                    _NavGroup(
+                      label: 'CUSTOMERS',
+                      items: const [AdminSection.users],
+                      selected: selected,
+                      onSelect: onSelect,
+                    ),
+                    const SizedBox(height: AdminSpacing.lg),
+                    _NavGroup(
+                      label: 'FINANCE',
+                      items: const [AdminSection.invoices],
+                      selected: selected,
+                      onSelect: onSelect,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (user != null && onLogout != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AdminSpacing.md,
+                  AdminSpacing.sm,
+                  AdminSpacing.md,
+                  AdminSpacing.md,
+                ),
+                child: Column(
+                  children: [
+                    const _SystemStatus(),
+                    const SizedBox(height: AdminSpacing.sm),
+                    _SidebarProfile(user: user!, onLogout: onLogout!),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+class _NavGroup extends StatelessWidget {
+  const _NavGroup({
+    required this.label,
+    required this.items,
+    required this.selected,
+    required this.onSelect,
+  });
+
+  final String label;
+  final List<AdminSection> items;
+  final AdminSection selected;
+  final ValueChanged<AdminSection> onSelect;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.sm),
+        child: Text(
+          label,
+          style: AdminTypography.caption.copyWith(
+            fontSize: 10,
+            letterSpacing: 1.1,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      const SizedBox(height: AdminSpacing.xs),
+      ...items.map(
+        (item) => _NavItem(
+          item: item,
+          active: item == selected,
+          onTap: () => onSelect(item),
+        ),
+      ),
+    ],
+  );
+}
+
+class _NavItem extends StatelessWidget {
+  const _NavItem({
+    required this.item,
+    required this.active,
+    required this.onTap,
+  });
+
+  final AdminSection item;
+  final bool active;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    selected: active,
+    label: item.label,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(AdminRadii.control),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AdminRadii.control),
+          hoverColor: AdminDesignColors.subtleSurface,
+          splashColor: AdminDesignColors.yellowSoft,
+          child: AnimatedContainer(
+            duration: AdminMotion.navigation,
+            curve: AdminMotion.easeOutCubic,
+            height: 42,
+            padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.sm),
+            decoration: BoxDecoration(
+              color: active ? AdminDesignColors.yellowSoft : Colors.transparent,
+              borderRadius: BorderRadius.circular(AdminRadii.control),
+              border: active
+                  ? const Border.fromBorderSide(
+                      BorderSide(color: AdminDesignColors.border),
+                    )
+                  : null,
+            ),
+            child: Row(
               children: [
-                _BrandMark(),
-                SizedBox(width: 11),
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('Snap Foodd', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AdminColors.ink)),
-                  SizedBox(height: 2),
-                  Text('ADMIN PORTAL', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1.2, color: AdminColors.muted)),
-                ])),
+                AdminIcon(
+                  item.icon,
+                  size: 18,
+                  color: active
+                      ? AdminDesignColors.primaryText
+                      : AdminDesignColors.secondaryText,
+                ),
+                const SizedBox(width: AdminSpacing.sm),
+                Expanded(
+                  child: Text(
+                    item.label,
+                    overflow: TextOverflow.ellipsis,
+                    style: AdminTypography.body.copyWith(
+                      fontSize: 13,
+                      fontWeight: active ? FontWeight.w600 : FontWeight.w500,
+                      color: active
+                          ? AdminDesignColors.primaryText
+                          : AdminDesignColors.secondaryText,
+                    ),
+                  ),
+                ),
+                if (active)
+                  const AdminIcon(
+                    HugeIcons.strokeRoundedArrowRight01,
+                    size: 16,
+                    color: AdminDesignColors.secondaryText,
+                  ),
               ],
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(22, 0, 18, 9),
-            child: Align(alignment: Alignment.centerLeft, child: Text('NAVIGATION', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.2, color: AdminColors.muted))),
+        ),
+      ),
+    ),
+  );
+}
+
+class _SystemStatus extends StatelessWidget {
+  const _SystemStatus();
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(
+      horizontal: AdminSpacing.sm,
+      vertical: AdminSpacing.sm,
+    ),
+    decoration: BoxDecoration(
+      color: AdminDesignColors.subtleSurface,
+      borderRadius: BorderRadius.circular(AdminRadii.control),
+      border: Border.all(color: AdminDesignColors.border),
+    ),
+    child: Row(
+      children: [
+        const _StatusDot(color: AdminDesignColors.success),
+        const SizedBox(width: AdminSpacing.xs),
+        Expanded(
+          child: Text(
+            'System operational',
+            style: AdminTypography.small.copyWith(
+              color: AdminDesignColors.primaryText,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          ...AdminSection.values.map((item) {
-            final active = item == selected;
-            final button = active
-                ? shad.Button.secondary(
-                    onPressed: () => onSelect(item),
-                    leading: AdminIcon(item.icon, size: 18),
-                    trailing: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 16),
-                    child: Text(item.label),
-                  )
-                : shad.Button.ghost(
-                    onPressed: () => onSelect(item),
-                    leading: AdminIcon(item.icon, size: 18),
-                    child: Text(item.label),
-                  );
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-              child: Semantics(
-                button: true,
-                selected: active,
-                label: item.label,
-                child: button.sized(width: double.infinity, height: 44),
+        ),
+        Text(
+          'API v1',
+          style: AdminTypography.caption.copyWith(
+            color: AdminDesignColors.secondaryText,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class _SidebarProfile extends StatelessWidget {
+  const _SidebarProfile({required this.user, required this.onLogout});
+
+  final AdminUser user;
+  final Future<void> Function() onLogout;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(AdminSpacing.sm),
+    decoration: BoxDecoration(
+      color: AdminDesignColors.surface,
+      borderRadius: BorderRadius.circular(AdminRadii.control),
+      border: Border.all(color: AdminDesignColors.border),
+    ),
+    child: Row(
+      children: [
+        SfAvatar(
+          name: user.name,
+          size: 34,
+          backgroundColor: AdminDesignColors.ink,
+          foregroundColor: AdminDesignColors.surface,
+        ),
+        const SizedBox(width: AdminSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                user.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AdminTypography.small.copyWith(
+                  color: AdminDesignColors.primaryText,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            );
-          }),
-        ],
-      ),
-      ),
-      ),
+              const SizedBox(height: 2),
+              Text(
+                user.role,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AdminTypography.caption,
+              ),
+            ],
+          ),
+        ),
+        SfIconButton(
+          icon: HugeIcons.strokeRoundedLogout01,
+          onPressed: onLogout,
+          tooltip: 'Logout',
+        ),
+      ],
     ),
   );
 }
@@ -269,70 +545,191 @@ class _Header extends StatelessWidget {
   const _Header({
     required this.desktop,
     required this.user,
+    required this.section,
     required this.onLogout,
     required this.searchController,
-    required this.searchQuery,
     required this.onSearch,
+    required this.onOpenNavigation,
   });
+
   final bool desktop;
   final AdminUser user;
+  final AdminSection section;
   final Future<void> Function() onLogout;
   final TextEditingController searchController;
-  final String searchQuery;
   final VoidCallback onSearch;
+  final VoidCallback onOpenNavigation;
 
   @override
   Widget build(BuildContext context) => Container(
-    height: desktop ? 78 : 64,
-    padding: EdgeInsets.symmetric(horizontal: desktop ? 24 : 16),
-    decoration: const BoxDecoration(color: Colors.white, border: Border(bottom: BorderSide(color: AdminColors.line))),
-    child: Row(children: [
-      if (desktop)
-        Expanded(
-          flex: 3,
-          child: shad.TextField(
-            controller: searchController,
-            onSubmitted: (_) => onSearch(),
-            textInputAction: TextInputAction.search,
-            hintText: 'Search this section...',
-            style: const TextStyle(fontSize: 11, color: AdminColors.ink),
-            filled: true,
-            border: const Border.fromBorderSide(BorderSide(color: AdminColors.line)),
-            borderRadius: BorderRadius.circular(11),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-            features: const [shad.InputClearFeature()],
-          ).constrained(maxWidth: 560, height: 42),
-        )
-      else
-        const Expanded(child: Text('Snap Foodd Admin', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900))),
-      if (desktop) const SizedBox(width: 16),
-      const SizedBox(width: 10),
-      Tooltip(
-        message: 'Notifications',
-        child: shad.IconButton.ghost(
-          onPressed: () => _notice(context, 'No new notifications in preview mode.'),
-          icon: const AdminIcon(HugeIcons.strokeRoundedNotification01, size: 20),
-        ),
-      ),
-      const SizedBox(width: 2),
-      Container(width: 34, height: 34, decoration: BoxDecoration(color: AdminColors.ink, borderRadius: BorderRadius.circular(10)), alignment: Alignment.center, child: Text(_initials(user.name), style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900))),
-      if (desktop) ...[
-        const SizedBox(width: 9),
-        Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(user.name, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w900)),
-          const SizedBox(height: 2),
-          Text(user.email, style: const TextStyle(fontSize: 9, color: AdminColors.muted)),
-        ]),
-        const SizedBox(width: 8),
-        Tooltip(
-          message: 'Logout',
-          child: shad.IconButton.ghost(
-            onPressed: onLogout,
-            icon: const AdminIcon(HugeIcons.strokeRoundedLogout01, size: 18),
+    height: desktop ? 76 : 64,
+    padding: EdgeInsets.symmetric(
+      horizontal: desktop ? AdminSpacing.xl : AdminSpacing.md,
+    ),
+    decoration: const BoxDecoration(
+      color: AdminDesignColors.surface,
+      border: Border(bottom: BorderSide(color: AdminDesignColors.border)),
+    ),
+    child: Row(
+      children: [
+        if (!desktop) ...[
+          SfIconButton(
+            icon: HugeIcons.strokeRoundedMenu01,
+            onPressed: onOpenNavigation,
+            tooltip: 'Open navigation',
           ),
+          const SizedBox(width: AdminSpacing.sm),
+          Expanded(
+            child: Text(
+              section.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AdminTypography.cardTitle.copyWith(fontSize: 16),
+            ),
+          ),
+        ] else ...[
+          Expanded(
+            child: Row(
+              children: [
+                Text(
+                  section.label,
+                  style: AdminTypography.sectionTitle.copyWith(fontSize: 16),
+                ),
+                const SizedBox(width: AdminSpacing.sm),
+                Container(
+                  width: 1,
+                  height: 18,
+                  color: AdminDesignColors.border,
+                ),
+                const SizedBox(width: AdminSpacing.sm),
+                Flexible(
+                  child: Text(
+                    'Admin workspace',
+                    overflow: TextOverflow.ellipsis,
+                    style: AdminTypography.small,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SfSearchField(
+            controller: searchController,
+            hintText: 'Search this section…',
+            onChanged: (_) => onSearch(),
+            onSubmitted: (_) => onSearch(),
+            autofocus: false,
+          ).constrained(maxWidth: 420, height: 42),
+        ],
+        const SizedBox(width: AdminSpacing.sm),
+        SfIconButton(
+          icon: HugeIcons.strokeRoundedNotification01,
+          onPressed: () => _notice(
+            context,
+            'No new notifications in preview mode.',
+          ),
+          tooltip: 'Notifications',
         ),
+        if (desktop) ...[
+          const SizedBox(width: AdminSpacing.xs),
+          PopupMenuButton<String>(
+            tooltip: 'Admin profile',
+            offset: const Offset(0, 46),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AdminRadii.card),
+            ),
+            onSelected: (value) {
+              if (value == 'logout') onLogout();
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem<String>(
+                enabled: false,
+                value: 'profile',
+                child: SizedBox(
+                  width: 220,
+                  child: Row(
+                    children: [
+                      SfAvatar(
+                        name: user.name,
+                        size: 34,
+                        backgroundColor: AdminDesignColors.ink,
+                        foregroundColor: AdminDesignColors.surface,
+                      ),
+                      const SizedBox(width: AdminSpacing.sm),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AdminTypography.small.copyWith(
+                                color: AdminDesignColors.primaryText,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              user.email,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AdminTypography.caption,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem<String>(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    AdminIcon(HugeIcons.strokeRoundedLogout01, size: 17),
+                    SizedBox(width: AdminSpacing.sm),
+                    Text('Log out'),
+                  ],
+                ),
+              ),
+            ],
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: Row(
+                children: [
+                  SfAvatar(
+                    name: user.name,
+                    size: 34,
+                    backgroundColor: AdminDesignColors.ink,
+                    foregroundColor: AdminDesignColors.surface,
+                  ),
+                  const SizedBox(width: AdminSpacing.xs),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 150),
+                    child: Text(
+                      user.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AdminTypography.small.copyWith(
+                        color: AdminDesignColors.primaryText,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AdminSpacing.xs),
+                  const AdminIcon(
+                    HugeIcons.strokeRoundedArrowDown01,
+                    size: 16,
+                    color: AdminDesignColors.secondaryText,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ],
-    ]),
+    ),
   );
 }
 
