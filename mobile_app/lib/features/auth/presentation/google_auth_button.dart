@@ -73,8 +73,12 @@ class _GoogleAuthButtonState extends State<GoogleAuthButton> {
             : const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.g_mobiledata_rounded, size: 28),
-                  SizedBox(width: 8),
+                  SvgPicture.asset(
+                    'assets/images/customer/google_g_logo.svg',
+                    width: 20,
+                    height: 20,
+                  ),
+                  SizedBox(width: 10),
                   Text(
                     'Continue with Google',
                     style: TextStyle(fontWeight: FontWeight.w700),
