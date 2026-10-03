@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../tokens/app_colors.dart';
 import '../tokens/app_radii.dart';
@@ -169,7 +170,12 @@ class SnapQuantityStepper extends StatelessWidget {
               tooltip: 'Decrease quantity',
               enabled: decrementEnabled,
               size: buttonSize,
-              onPressed: decrementEnabled ? onDecrement : null,
+              onPressed: decrementEnabled
+                  ? () {
+                      HapticFeedback.selectionClick();
+                      onDecrement?.call();
+                    }
+                  : null,
             ),
             ConstrainedBox(
               constraints: BoxConstraints(minWidth: compact ? 24 : 30),
@@ -188,7 +194,12 @@ class SnapQuantityStepper extends StatelessWidget {
               tooltip: 'Increase quantity',
               enabled: incrementEnabled,
               size: buttonSize,
-              onPressed: incrementEnabled ? onIncrement : null,
+              onPressed: incrementEnabled
+                  ? () {
+                      HapticFeedback.selectionClick();
+                      onIncrement?.call();
+                    }
+                  : null,
             ),
           ],
         ),
@@ -263,7 +274,12 @@ class SnapAddToCartButton extends StatelessWidget {
       child: SizedBox(
         height: 52,
         child: FilledButton(
-          onPressed: active ? onPressed : null,
+          onPressed: active
+              ? () {
+                  HapticFeedback.lightImpact();
+                  onPressed?.call();
+                }
+              : null,
           style: FilledButton.styleFrom(
             backgroundColor: SnapFoodColors.foodRed,
             foregroundColor: SnapFoodColors.onPrimary,
