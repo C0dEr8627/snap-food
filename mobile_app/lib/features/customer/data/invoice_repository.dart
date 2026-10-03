@@ -19,7 +19,7 @@ class RemoteInvoiceRepository implements InvoiceRepository {
         code: 'INVALID_ORDER_ID',
       );
     final response = await _client.get(
-      '/orders/' + Uri.encodeComponent(normalized) + '/invoice',
+      '/consumer/orders/' + Uri.encodeComponent(normalized) + '/invoice',
     );
     if (response is Map<String, dynamic>) {
       final data = response['data'];
