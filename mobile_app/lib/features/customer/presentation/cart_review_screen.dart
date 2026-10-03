@@ -51,6 +51,43 @@ class CartReviewScreen extends ConsumerWidget {
                         'Your Cart',
                         style: SnapFoodTypography.titleLarge,
                       ),
+                      actions: [
+                        if (items.isNotEmpty)
+                          TextButton.icon(
+                            onPressed: () async {
+                              final shouldClear = await showDialog<bool>(
+                                context: context,
+                                builder: (dialogContext) => AlertDialog(
+                                  title: const Text('Clear cart?'),
+                                  content: const Text('This will remove every item from your cart. This action cannot be undone.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(dialogContext).pop(false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    FilledButton(
+                                      style: FilledButton.styleFrom(backgroundColor: SnapFoodColors.error),
+                                      onPressed: () => Navigator.of(dialogContext).pop(true),
+                                      child: const Text('Clear cart'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (shouldClear == true) {
+                                ref.read(cartControllerProvider.notifier).clear();
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Cart cleared.')),
+                                  );
+                                }
+                              }
+                            },
+                            icon: const Icon(Icons.delete_sweep_outlined, size: 18),
+                            label: const Text('Clear'),
+                            style: TextButton.styleFrom(foregroundColor: SnapFoodColors.error),
+                          ),
+                        const SizedBox(width: 8),
+                      ],
                     ),
                     SliverPadding(
                       padding: EdgeInsets.fromLTRB(
