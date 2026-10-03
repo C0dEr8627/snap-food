@@ -30,3 +30,4 @@ flutter:
   assets:
     - assets/images/customer/logo.svg
     - assets/images/customer/logo-without-bg.svg
+    - assets/images/customer/google_g_logo.svg
