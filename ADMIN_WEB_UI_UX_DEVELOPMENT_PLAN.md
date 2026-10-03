@@ -568,7 +568,7 @@ Do not add restaurant metadata.
 ---
 
 ### Task 10 — Redesign Categories Management
-**Status:** ⬜ Not Started
+**Status:** 🟢 Complete
 
 Requirements:
 
@@ -887,8 +887,8 @@ The admin UI/UX modernization is complete when:
 | Task 7 — Overview | 🟢 Complete | 2026-10-03 | Reworked the admin overview hierarchy around shared design-system spacing, responsive KPI grouping, operational snapshot and preview sales trend; removed restaurant/kitchen-specific terminology and clarified that the current aggregates are preview data rather than fabricated live metrics. |
 | Task 8 — Orders | 🟢 Complete | 2026-10-03 | Refined the operational order queue/detail experience with centralized design tokens, responsive hierarchy, truthful API-state messaging, shared confirmation/feedback primitives, cleaner status progression and removal of unsupported POS/node/sync/KOT/charge metadata. |
 | Task 9 — Catalogue / Products | 🟢 Complete | 2026-10-03 | Refined the product catalogue and category-management experience with centralized tokens, readable hierarchy, responsive editor sizing, shared feedback and truthful item/category workflows while preserving existing API behavior. |
-| Task 10 — Categories | ⬜ Not Started | 2026-10-03 | |
-| Task 11 — Users | ⬜ Not Started | 2026-10-03 | |
+| Task 10 — Categories | 🟢 Complete | 2026-10-03 | Added a dedicated Categories admin area with searchable shared-table presentation, active/inactive state management, create/edit/delete workflows, confirmation for destructive actions, preview/live data clarity and responsive empty/error/loading states. |
+| Task 11 — Users | ⬜ Not Started | 2026-10-03 | **NEXT** — redesign the Users experience using the shared table/drawer language while preserving existing user APIs and detail flows. |
 | Task 12 — Delivery Partners | ⬜ Not Started | 2026-10-03 | |
 | Task 13 — Invoices / Billing | ⬜ Not Started | 2026-10-03 | |
 | Task 14 — Premium Form UX | ⬜ Not Started | 2026-10-03 | |
@@ -898,6 +898,35 @@ The admin UI/UX modernization is complete when:
 | Task 18 — Motion & Micro-interactions | ⬜ Not Started | 2026-10-03 | |
 | Task 19 — Final Visual QA & Cleanup | ⬜ Not Started | 2026-10-03 | |
 
+### 2026-10-03 — Task 10
+- Status: 🟢 Complete
+- Implemented:
+  - Added a dedicated **Categories** admin area instead of keeping category management only inside the Catalogue overlay.
+  - Added a searchable category list using the shared SfDataTable, with intentional horizontal overflow, readable column spacing and row-level interaction.
+  - Added category name, slug, product count, active/inactive status and sort-order presentation using existing backend fields only.
+  - Added create and edit category flows using the shared SfInput and SfButton primitives.
+  - Added active/inactive toggling using the existing category PATCH contract.
+  - Added destructive delete confirmation through SfConfirmDialog; categories with assigned products remain protected from deletion and are directed toward deactivation instead.
+  - Added shared success/error/info feedback plus branded empty, error and loading states.
+  - Added explicit Live API / Preview data treatment so preview records are not presented as live backend data.
+  - Added Categories to the existing admin navigation and section search/command-palette section list without changing authentication or backend contracts.
+  - Preserved the existing Catalogue category-management flow for compatibility; the new page provides the dedicated operational destination requested by Task 10.
+  - No restaurant concept or fabricated category capability/data was introduced.
+- Files/components changed:
+  - admin_web/lib/pages/categories_page.dart
+  - admin_web/lib/main.dart
+  - admin_web/lib/app/admin_shell.dart
+  - ADMIN_WEB_UI_UX_DEVELOPMENT_PLAN.md
+- Validation:
+  - Re-fetched and inspected the final Categories page, main library registration and admin shell navigation after the sequential implementation edits.
+  - Verified the page uses existing _CatalogueRepository category endpoints: /admin/categories, category create/update, active-state update and delete.
+  - Verified the page uses shared SfDataTable, SfInput, SfButton, SfStatusBadge, SfIconButton, SfEmptyState, SfErrorState, SfSkeleton, SfConfirmDialog and SfFeedback.
+  - Verified Categories is included in AdminSection.values, so existing command-palette navigation/search picks it up automatically.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful validation run is being claimed.
+- Limitations/follow-up:
+  - Browser screenshot/interactive visual QA and actual Flutter Web compile validation remain dependent on a runnable environment or CI execution path.
+  - The existing Catalogue embedded category manager remains for compatibility and is not removed in this task.
+  - Task 11 — Users is now the next implementation target.
 ### Status meanings
 
 - ⬜ Not Started
