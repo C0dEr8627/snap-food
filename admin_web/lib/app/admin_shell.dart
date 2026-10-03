@@ -200,6 +200,8 @@ class _AdminShellState extends State<AdminShell> {
       builder: (drawerContext) => _Sidebar(
         selected: section,
         onSelect: _select,
+        user: widget.user,
+        onLogout: widget.onLogout,
         compact: true,
       ),
     );
