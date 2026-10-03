@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../design_system/components/snap_food_commerce.dart';
 import '../../../design_system/components/snap_food_inputs.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
@@ -249,11 +250,9 @@ class DatabaseCatalogueSection extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                const Expanded(child: Text('Popular dishes', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900))),
-                Text('${products.length} items', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: SnapFoodColors.onSurfaceVariant)),
-              ],
+            SnapSectionHeader(
+              title: 'Popular dishes',
+              subtitle: products.length.toString() + ' items',
             ),
             const SizedBox(height: 12),
             SizedBox(
@@ -433,46 +432,14 @@ class _ProductCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Expanded(
-                              child: Text(
-                                '₹${product.price}',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  height: 1.1,
-                                  fontWeight: FontWeight.w900,
-                                  color: SnapFoodColors.secondary,
-                                ),
+                              child: SnapPrice(
+                                value: product.price,
+                                fontSize: 16,
                               ),
                             ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 7,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: SnapFoodColors.softYellow,
-                                borderRadius: BorderRadius.circular(99),
-                              ),
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.star_rounded,
-                                    size: 13,
-                                    color: SnapFoodColors.primary,
-                                  ),
-                                  SizedBox(width: 2),
-                                  Text(
-                                    '4.8',
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w800,
-                                      color: SnapFoodColors.warmBlack,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            const SnapRatingBadge(
+                              rating: 4.8,
+                              compact: true,
                             ),
                           ],
                         ),
