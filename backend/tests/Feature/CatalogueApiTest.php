@@ -2,9 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\AdminUser;
 use App\Models\Category;
+use App\Models\CustomerUser;
 use App\Models\Product;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,20 +13,19 @@ class CatalogueApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function user(string $role = User::ROLE_CUSTOMER, bool $active = true): User
+    private function customer(bool $active = true): CustomerUser
     {
-        return User::create([
+        return CustomerUser::create([
             'google_subject' => 'google-catalogue-'.uniqid(),
-            'name' => ucfirst(strtolower($role)),
-            'email' => strtolower($role).'-'.uniqid().'@example.test',
-            'role' => $role,
+            'name' => 'Customer',
+            'email' => 'customer-'.uniqid().'@example.test',
             'is_active' => $active,
         ]);
     }
 
     public function test_customer_can_list_only_active_available_catalogue_items(): void
     {
-        $customer = $this->user();
+        $customer = $this->customer();
 
         $activeCategory = Category::create(['name' => 'Pizza', 'slug' => 'pizza', 'is_active' => true]);
         $inactiveCategory = Category::create(['name' => 'Old', 'slug' => 'old', 'is_active' => false]);
@@ -70,7 +70,7 @@ class CatalogueApiTest extends TestCase
 
     public function test_customer_can_search_and_paginate_products(): void
     {
-        $customer = $this->user();
+        $customer = $this->customer();
         $category = Category::create(['name' => 'Pizza', 'slug' => 'pizza']);
 
         foreach (['Alpha', 'Beta', 'Gamma'] as $name) {
@@ -93,7 +93,7 @@ class CatalogueApiTest extends TestCase
 
     public function test_customer_cannot_write_catalogue(): void
     {
-        $customer = $this->user();
+        $customer = $this->customer();
         $category = Category::create(['name' => 'Pizza', 'slug' => 'pizza']);
 
         $this->actingAs($customer, 'sanctum')
@@ -112,7 +112,12 @@ class CatalogueApiTest extends TestCase
 
     public function test_admin_can_create_update_and_soft_deactivate_catalogue_items(): void
     {
-        $admin = $this->user(User::ROLE_ADMIN);
+        $admin = AdminUser::create([
+            'google_subject' => 'google-catalogue-admin',
+            'name' => 'Admin',
+            'email' => 'admin-catalogue@example.test',
+            'is_active' => true,
+        ]);
         $category = Category::create(['name' => 'Pizza', 'slug' => 'pizza']);
 
         $this->actingAs($admin, 'sanctum')
