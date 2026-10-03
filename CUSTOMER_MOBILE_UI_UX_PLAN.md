@@ -258,7 +258,7 @@ Requirements:
 **Done when:** The design system is internally consistent and screens can consume the same tokens reliably.
 
 ### Task 2 — Build Snap Foodd buttons and icon controls
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
 - Primary conversion button: food red.
 - Secondary/action button: gold/yellow treatment.
@@ -564,6 +564,7 @@ Before marking any task complete, verify:
 |---|---|---|---|
 | 2026-10-03 | Planning reset | ✅ Complete | Removed legacy AIDLC planning files and established this document as the new customer mobile UI/UX development source of truth. |
 | 2026-10-03 | Task 1 — Audit and stabilize the design-token foundation | ✅ Complete | Audited the existing mobile design system, aligned core brand colors with the plan, added centralized typography and elevation tokens, and tightened Material 3 theme defaults without changing product behavior. Validation: source-level review completed; repository Flutter CI is configured to run `dart format`, `flutter analyze`, `flutter test`, and Android debug build on frontend PRs. Local command execution was not available through the GitHub connector. |
+| 2026-10-03 | Task 2 — Build Snap Foodd buttons and icon controls | ✅ Complete | Reworked the existing button component into reusable `SnapPrimaryButton`, `SnapSecondaryButton`, and `SnapIconButton` controls with branded colors, 48px+ touch targets, loading/disabled/selected states, semantics, tooltips, and token-based radii/spacing. Existing `SnapFoodPrimaryButton`/`SnapFoodSecondaryButton` names remain as compatibility aliases. Validation: source-level review completed; no business logic or navigation changes. Local Flutter commands were unavailable through the GitHub connector. |
 
 ---
 
@@ -574,6 +575,7 @@ Before marking any task complete, verify:
 - Created the new customer mobile UI/UX development plan.
 - Established **Warm Editorial Food Commerce** as the target design direction.
 - Completed Task 1: stabilized customer mobile design tokens and Material 3 theme foundation.
+- Completed Task 2: built reusable branded buttons and icon controls.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
