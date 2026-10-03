@@ -1,12 +1,13 @@
 part of '../main.dart';
 
-enum AdminSection { dashboard, orders, catalogue, users, partners, invoices }
+enum AdminSection { dashboard, orders, catalogue, categories, users, partners, invoices }
 
 extension on AdminSection {
   String get label => switch (this) {
     AdminSection.dashboard => 'Overview',
     AdminSection.orders => 'Orders',
-    AdminSection.catalogue => 'Products & Catalogue',
+    AdminSection.catalogue => 'Products',
+    AdminSection.categories => 'Categories',
     AdminSection.users => 'Users',
     AdminSection.partners => 'Delivery partners',
     AdminSection.invoices => 'Invoices & Billing',
@@ -15,6 +16,7 @@ extension on AdminSection {
     AdminSection.dashboard => HugeIcons.strokeRoundedDashboardSquare01,
     AdminSection.orders => HugeIcons.strokeRoundedInvoice01,
     AdminSection.catalogue => HugeIcons.strokeRoundedPackage01,
+    AdminSection.categories => HugeIcons.strokeRoundedFolder01,
     AdminSection.users => HugeIcons.strokeRoundedUserGroup,
     AdminSection.partners => HugeIcons.strokeRoundedDeliveryTruck01,
     AdminSection.invoices => HugeIcons.strokeRoundedInvoice,
@@ -22,7 +24,8 @@ extension on AdminSection {
   String get subtitle => switch (this) {
     AdminSection.dashboard => 'A clear view of today’s business and operations.',
     AdminSection.orders => 'Track every order from checkout to delivery.',
-    AdminSection.catalogue => 'Manage products, categories and availability.',
+    AdminSection.catalogue => 'Manage products and availability.',
+    AdminSection.categories => 'Organize catalogue categories and availability.',
     AdminSection.users => 'Manage customer accounts and customer access.',
     AdminSection.partners => 'Review delivery partners and KYC status.',
     AdminSection.invoices => 'Reconcile invoice snapshots and review billing records.',
@@ -191,6 +194,9 @@ class _AdminShellState extends State<AdminShell> {
                                   OrdersPage(searchQuery: _searchQuery),
                                 AdminSection.catalogue => CataloguePage(
                                     key: _catalogueKey,
+                                    searchQuery: _searchQuery,
+                                  ),
+                                AdminSection.categories => CategoriesPage(
                                     searchQuery: _searchQuery,
                                   ),
                                 AdminSection.users =>
