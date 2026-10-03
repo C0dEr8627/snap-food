@@ -1,7 +1,6 @@
 part of '../main.dart';
 
-/// Snap Foodd's official brand palette. Keep admin UI accents within these
-/// five brand colors; semantic colors below are aliases of the same palette.
+/// Snap Foodd's centralized admin color aliases.
 abstract final class AdminColors {
   static const yellow = AdminDesignColors.brandYellow;
   static const amber = AdminDesignColors.brandAmber;
@@ -27,37 +26,7 @@ abstract final class AdminColors {
   static const blue = AdminDesignColors.info;
   static const blueSoft = AdminDesignColors.infoSoft;
   static const peach = AdminDesignColors.amberSoft;
-}art of '../main.dart';
-
-/// Snap Foodd's official brand palette. Keep admin UI accents within these
-/// five brand colors; semantic colors below are aliases of the same palette.
-abstract final class AdminColors {
-  static const yellow = Color(0xFFF2D022);
-  static const amber = Color(0xFFF2AE2E);
-  static const redDark = Color(0xFFA61C1C);
-  static const red = Color(0xFFD92929);
-  static const ink = Color(0xFF0D0D0D);
-
-  // Neutral structure and accessible text hierarchy.
-  static const muted = Color(0xFF595959);
-  static const canvas = Color(0xFFFFFDF3);
-  static const surface = Colors.white;
-  static const line = Color(0xFFE9E3CF);
-
-  // Status colors remain brand-compliant (no green or blue accents).
-  static const success = amber;
-  static const warning = redDark;
-  static const error = red;
-  static const redSoft = Color(0x1AD92929);
-  static const amberSoft = Color(0x1AF2AE2E);
-  static const yellowSoft = Color(0x1AF2D022);
-  static const green = amber;
-  static const greenSoft = amberSoft;
-  static const blue = redDark;
-  static const blueSoft = redSoft;
-  static const peach = Color(0x1AF2AE2E);
 }
-
 
 typedef AdminIconData = List<List>;
 
