@@ -125,6 +125,7 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
           ],
         ),
       ),
+      ),
     );
   }
 
