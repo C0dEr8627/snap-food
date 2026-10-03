@@ -13,9 +13,18 @@ class DatabaseSchemaTest extends TestCase
             $this->assertTrue(Schema::hasTable($table), "Missing table: {$table}");
         }
 
+        $this->assertFalse(Schema::hasTable('delivery_partners'));
+
         $this->assertTrue(Schema::hasColumn('customer_users', 'google_subject') && Schema::hasColumn('admin_users', 'google_subject'));
         $this->assertTrue(Schema::hasColumn('customer_users', 'is_active'));
-        $this->assertTrue(Schema::hasColumn('delivery_partner_users', 'is_active') && Schema::hasColumn('admin_users', 'is_active'));
+        $this->assertTrue(
+            Schema::hasColumn('delivery_partner_users', 'is_active')
+            && Schema::hasColumn('delivery_partner_users', 'is_approved')
+            && Schema::hasColumn('delivery_partner_users', 'is_available')
+            && Schema::hasColumn('delivery_partner_users', 'approved_at')
+            && Schema::hasColumn('delivery_partner_users', 'approved_by')
+            && Schema::hasColumn('admin_users', 'is_active')
+        );
 
         $this->assertTrue(Schema::hasColumn('addresses', 'user_id'));
         $this->assertTrue(Schema::hasColumn('addresses', 'latitude'));
