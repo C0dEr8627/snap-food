@@ -497,179 +497,36 @@ class DatabaseCatalogueSection extends ConsumerWidget {
   }
 }
 
-class _ProductCard extends StatelessWidget {
+class _ProductCard extends ConsumerWidget {
   const _ProductCard({required this.product});
 
   final CatalogueProduct product;
 
   @override
-  Widget build(BuildContext context) {
-    const cardRadius = 16.0;
-    const imageHeight = 148.0;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isFavorite =
+        ref.watch(favoriteControllerProvider).value?.contains(product.id) ??
+        false;
 
-    return SizedBox(
-      width: 210,
-      height: 270,
-      child: Material(
-        color: SnapFoodColors.surfaceContainerLowest,
-        elevation: 0,
-        borderRadius: BorderRadius.circular(cardRadius),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => context.push('/food/${product.id}'),
-          borderRadius: BorderRadius.circular(cardRadius),
-          splashColor: SnapFoodColors.primaryContainer.withAlpha(35),
-          highlightColor: SnapFoodColors.primaryContainer.withAlpha(18),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: SnapFoodColors.surfaceContainerLowest,
-              borderRadius: BorderRadius.circular(cardRadius),
-              border: Border.all(color: SnapFoodColors.softBorder),
-              boxShadow: const [],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(
-                  height: imageHeight,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      _CatalogueProductImage(
-                        imageUrl: product.imageUrl,
-                        width: 210,
-                        height: imageHeight,
-                        radius: cardRadius,
-                      ),
-                      Consumer(
-                        builder: (context, ref, _) {
-                          final isFavorite = ref.watch(favoriteControllerProvider).value?.contains(product.id) ?? false;
-                          return Positioned(
-                            top: 10,
-                            right: 10,
-                            child: Material(
-                              color: SnapFoodColors.surfaceContainerLowest.withAlpha(235),
-                              shape: const CircleBorder(),
-                              child: InkWell(
-                                customBorder: const CircleBorder(),
-                                onTap: () => ref.read(favoriteControllerProvider.notifier).toggle(product),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Icon(
-                                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                                    size: 18,
-                                    color: SnapFoodColors.secondary,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      Positioned(
-                        top: 10,
-                        left: 10,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: SnapFoodColors.surfaceContainerLowest.withAlpha(235),
-                            borderRadius: BorderRadius.circular(99),
-                            border: Border.all(
-                              color: SnapFoodColors.softBorder.withAlpha(180),
-                            ),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 9,
-                              vertical: 5,
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.bolt_rounded,
-                                  size: 13,
-                                  color: SnapFoodColors.secondary,
-                                ),
-                                SizedBox(width: 3),
-                                Text(
-                                  'Popular',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: 10,
-                        bottom: 10,
-                        child: Material(
-                          color: SnapFoodColors.primaryContainer,
-                          shape: const CircleBorder(),
-                          elevation: 1,
-                          shadowColor: SnapFoodColors.warmBlack.withAlpha(30),
-                          child: InkWell(
-                            onTap: () => context.push('/food/${product.id}'),
-                            customBorder: const CircleBorder(),
-                            child: const Padding(
-                              padding: EdgeInsets.all(9),
-                              child: Icon(
-                                Icons.add_rounded,
-                                color: SnapFoodColors.warmBlack,
-                                size: 20,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(14, 12, 12, 11),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          product.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            height: 1.25,
-                            fontWeight: FontWeight.w800,
-                            color: SnapFoodColors.onSurface,
-                          ),
-                        ),
-                        const Spacer(),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child: SnapPrice(
-                                value: product.price,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SnapRatingBadge(
-                              rating: 4.8,
-                              compact: true,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+    return SnapProductCard(
+      name: product.name,
+      price: product.price,
+      category: product.category?.name,
+      isAvailable: product.isAvailable,
+      isFavorite: isFavorite,
+      image: _CatalogueProductImage(
+        imageUrl: product.imageUrl,
+        width: 216,
+        height: 150,
+        radius: SnapFoodRadii.lg,
       ),
+      onTap: () => context.push('/food/${product.id}'),
+      onFavorite: () =>
+          ref.read(favoriteControllerProvider.notifier).toggle(product),
+      onAction: product.isAvailable
+          ? () => context.push('/food/${product.id}')
+          : null,
+      actionLabel: 'View dish',
     );
   }
 }
