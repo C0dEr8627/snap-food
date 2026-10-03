@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\DeliveryPartner;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\AdminUser;
@@ -35,9 +34,7 @@ class AdminOrderWebTest extends TestCase
             'line_total' => '100.00',
         ]);
 
-        Order::factory()->create([
-            'status' => Order::STATUS_PLACED,
-        ]);
+        Order::factory()->create(['status' => Order::STATUS_PLACED]);
 
         $this->actingAs($admin, 'web')
             ->get('/admin/orders?q=asha@example.test&status=PREPARING')
@@ -57,21 +54,14 @@ class AdminOrderWebTest extends TestCase
     public function test_admin_can_update_order_status_and_history_records_actor(): void
     {
         $admin = AdminUser::factory()->create();
-        $order = Order::factory()->create([
-            'status' => Order::STATUS_PLACED,
-        ]);
+        $order = Order::factory()->create(['status' => Order::STATUS_PLACED]);
 
         $this->actingAs($admin, 'web')
-            ->post('/admin/orders/'.$order->id.'/status', [
-                'status' => Order::STATUS_ACCEPTED,
-            ])
+            ->post('/admin/orders/'.$order->id.'/status', ['status' => Order::STATUS_ACCEPTED])
             ->assertRedirect('/admin/orders/'.$order->id)
             ->assertSessionHas('status', 'Order status updated.');
 
-        $this->assertDatabaseHas('orders', [
-            'id' => $order->id,
-            'status' => Order::STATUS_ACCEPTED,
-        ]);
+        $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => Order::STATUS_ACCEPTED]);
         $this->assertDatabaseHas('order_status_histories', [
             'order_id' => $order->id,
             'from_status' => Order::STATUS_PLACED,
@@ -83,34 +73,24 @@ class AdminOrderWebTest extends TestCase
     public function test_admin_status_action_rejects_invalid_transition(): void
     {
         $admin = AdminUser::factory()->create();
-        $order = Order::factory()->create([
-            'status' => Order::STATUS_DELIVERED,
-        ]);
+        $order = Order::factory()->create(['status' => Order::STATUS_DELIVERED]);
 
         $this->actingAs($admin, 'web')
-            ->post('/admin/orders/'.$order->id.'/status', [
-                'status' => Order::STATUS_ACCEPTED,
-            ])
+            ->post('/admin/orders/'.$order->id.'/status', ['status' => Order::STATUS_ACCEPTED])
             ->assertConflict();
 
-        $this->assertDatabaseHas('orders', [
-            'id' => $order->id,
-            'status' => Order::STATUS_DELIVERED,
-        ]);
+        $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => Order::STATUS_DELIVERED]);
     }
 
     public function test_admin_can_assign_eligible_partner_from_order_detail(): void
     {
         $admin = AdminUser::factory()->create();
         $customer = CustomerUser::factory()->create();
-        $partnerUser = DeliveryPartnerUser::factory()->create(['name' => 'Available Rider']);
-        $partner = DeliveryPartner::create([
-            'user_id' => $partnerUser->id,
+        $partner = DeliveryPartnerUser::factory()->create([
+            'name' => 'Available Rider',
             'is_approved' => true,
             'is_active' => true,
             'is_available' => true,
-            'approved_at' => now(),
-            'approved_by' => $admin->id,
         ]);
         $order = Order::factory()->create([
             'customer_id' => $customer->id,
@@ -124,9 +104,7 @@ class AdminOrderWebTest extends TestCase
             ->assertSee('Available Rider');
 
         $this->actingAs($admin, 'web')
-            ->post('/admin/orders/'.$order->id.'/assignment', [
-                'delivery_partner_id' => $partner->id,
-            ])
+            ->post('/admin/orders/'.$order->id.'/assignment', ['delivery_partner_id' => $partner->id])
             ->assertRedirect('/admin/orders/'.$order->id)
             ->assertSessionHas('status', 'Delivery partner assigned.');
 
@@ -136,7 +114,7 @@ class AdminOrderWebTest extends TestCase
             'delivery_partner_id' => $partner->id,
             'assigned_by' => $admin->id,
         ]);
-        $this->assertDatabaseHas('delivery_partners', ['id' => $partner->id, 'is_available' => false]);
+        $this->assertDatabaseHas('delivery_partner_users', ['id' => $partner->id, 'is_available' => false]);
         $this->assertDatabaseHas('order_status_histories', [
             'order_id' => $order->id,
             'from_status' => Order::STATUS_READY_FOR_PICKUP,
@@ -148,19 +126,15 @@ class AdminOrderWebTest extends TestCase
     public function test_admin_web_assignment_rejects_ineligible_partner(): void
     {
         $admin = AdminUser::factory()->create();
-        $partnerUser = DeliveryPartnerUser::factory()->create();
-        $partner = DeliveryPartner::create([
-            'user_id' => $partnerUser->id,
+        $partner = DeliveryPartnerUser::factory()->create([
             'is_approved' => false,
             'is_active' => true,
-            'is_available' => true,
+            'is_available' => false,
         ]);
         $order = Order::factory()->create(['status' => Order::STATUS_READY_FOR_PICKUP]);
 
         $this->actingAs($admin, 'web')
-            ->post('/admin/orders/'.$order->id.'/assignment', [
-                'delivery_partner_id' => $partner->id,
-            ])
+            ->post('/admin/orders/'.$order->id.'/assignment', ['delivery_partner_id' => $partner->id])
             ->assertConflict();
 
         $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => Order::STATUS_READY_FOR_PICKUP]);
