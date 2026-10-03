@@ -30,7 +30,7 @@ class AuthController extends Controller
         $user = CustomerUser::create([
             'name' => trim($validated['name']),
             'email' => strtolower(trim($validated['email'])),
-            'phone' => $validated['phone'],
+            'phone' => $validated['phone'] ?? null,
             'password' => Hash::make($validated['password']),
             'is_active' => true,
         ]);
