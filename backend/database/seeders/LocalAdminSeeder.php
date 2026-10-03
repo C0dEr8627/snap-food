@@ -21,7 +21,7 @@ class LocalAdminSeeder extends Seeder
             return;
         }
 
-        User::updateOrCreate(
+        AdminUser::updateOrCreate(
             ['email' => $email],
             [
                 'name' => 'Local Admin',
