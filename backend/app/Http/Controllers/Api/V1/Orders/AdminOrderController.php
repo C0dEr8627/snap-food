@@ -6,11 +6,12 @@ use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Models\Order;
 use App\Services\Orders\OrderStatusService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class AdminOrderController
 {
-    public function index(\Illuminate\Http\Request $request): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $query = Order::query()
             ->with([
@@ -29,11 +30,13 @@ class AdminOrderController
                             ->orWhere('email', 'like', '%'.$term.'%'));
                 });
             })
-            ->when($request->filled('status') && $request->query('status') !== 'ALL', fn ($builder) =>
-                $builder->where('status', $request->query('status'))
+            ->when(
+                $request->filled('status') && $request->query('status') !== 'ALL',
+                fn ($builder) => $builder->where('status', $request->query('status'))
             );
 
-        $orders = $query->paginate(min(max((int) $request->integer('per_page', 20), 1), 100))
+        $orders = $query
+            ->paginate(min(max((int) $request->integer('per_page', 20), 1), 100))
             ->withQueryString();
 
         return response()->json(['data' => $orders]);
