@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../tokens/app_colors.dart';
 import '../tokens/app_radii.dart';
+import '../tokens/app_typography.dart';
 
 abstract final class SnapFoodTheme {
-  static const _fontFamily = 'Plus Jakarta Sans';
+  static const _fontFamily = SnapFoodTypography.fontFamily;
 
   static ThemeData get light {
     final scheme = ColorScheme(
@@ -123,9 +124,27 @@ abstract final class SnapFoodTheme {
         color: SnapFoodColors.surfaceContainerLowest,
         elevation: 0,
         margin: EdgeInsets.zero,
+        shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
           side: const BorderSide(color: SnapFoodColors.softBorder),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size(48, 48),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size(48, 48),
+          side: const BorderSide(color: SnapFoodColors.outlineVariant),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SnapFoodRadii.md),
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
