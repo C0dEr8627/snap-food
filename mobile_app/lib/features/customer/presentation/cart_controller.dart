@@ -28,6 +28,21 @@ final cartRepositoryProvider = Provider<RemoteCartRepository>((ref) => RemoteCar
 
 final cartControllerProvider = NotifierProvider<CartController, CartSnapshot>(CartController.new);
 
+
+final directCheckoutItemsProvider =
+    NotifierProvider<DirectCheckoutItemsController, List<CartItem>?>(
+  DirectCheckoutItemsController.new,
+);
+
+class DirectCheckoutItemsController extends Notifier<List<CartItem>?> {
+  @override
+  List<CartItem>? build() => null;
+
+  void setItems(List<CartItem>? items) {
+    state = items;
+  }
+}
+
 class CartController extends Notifier<CartSnapshot> {
   RemoteCartRepository get _repository => ref.read(cartRepositoryProvider);
 
