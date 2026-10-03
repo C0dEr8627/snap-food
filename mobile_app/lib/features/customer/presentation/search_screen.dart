@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../design_system/components/snap_food_inputs.dart';
+import '../../../design_system/components/snap_food_button.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import 'catalogue_controller.dart';
 import 'catalogue_state_message.dart';
@@ -49,27 +51,23 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               child: Row(
                 children: [
                   Expanded(
-                    child: TextField(
+                    child: SnapSearchField(
                       controller: controller,
                       autofocus: true,
                       onChanged: (value) => setState(() => query = value),
-                      decoration: InputDecoration(
-                        hintText: 'Search dishes, restaurants...',
-                        prefixIcon: const Icon(Icons.search),
-                        suffixIcon: query.isEmpty
-                            ? null
-                            : IconButton(
-                                onPressed: () {
-                                  controller.clear();
-                                  setState(() => query = '');
-                                },
-                                icon: const Icon(Icons.close),
-                              ),
-                      ),
+                      onClear: () {
+                        controller.clear();
+                        setState(() => query = '');
+                      },
                     ),
                   ),
                   const SizedBox(width: 8),
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.tune)),
+                  const SnapIconButton(
+                    icon: Icons.tune_rounded,
+                    tooltip: 'Filters',
+                    semanticLabel: 'Open filters',
+                    onPressed: _noop,
+                  ),
                 ],
               ),
             ),
