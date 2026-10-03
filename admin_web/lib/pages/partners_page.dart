@@ -7,10 +7,10 @@ class PartnersPage extends flutter.StatefulWidget {
   final String searchQuery;
 
   @override
-  State<PartnersPage> createState() => _PartnersPageState();
+  flutter.State<PartnersPage> createState() => _PartnersPageState();
 }
 
-class _PartnersPageState extends State<PartnersPage> {
+class _PartnersPageState extends flutter.State<PartnersPage> {
   final _api = const _DeliveryPartnerApi();
   final _search = TextEditingController();
   List<_DeliveryPartnerRecord> _partners = [];
