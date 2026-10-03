@@ -348,7 +348,7 @@ Potential contextual badges:
 Only show badges supported by real data or clearly defined product rules.
 
 ### Task 8 — Introduce restaurant-first discovery
-**Status:** 🟡 In Progress
+**Status:** 🔴 Blocked
 
 **Current blocker:** The current `frontend` backend exposes consumer catalogue endpoints only for categories/products. There is no consumer restaurant endpoint, restaurant model, or restaurant data contract available to the customer app. Restaurant metadata such as rating, ETA and delivery information therefore cannot be populated truthfully yet. Do not fabricate restaurant records or hard-code restaurant discovery data.
 
@@ -362,7 +362,16 @@ Only show badges supported by real data or clearly defined product rules.
 - Avoid forcing every discovery surface into a product-card pattern.
 
 ### Task 9 — Redesign Search / Discover
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
+
+- Refined the customer search surface around the existing catalogue contract.
+- Replaced hard-coded craving categories with API-backed catalogue categories.
+- Added reusable selected/inactive category filtering with `SnapFilterChip`.
+- Preserved local text search across product names and category names.
+- Added clear-filter affordance when a category is selected.
+- Improved result-state hierarchy for all/category/query result modes.
+- Preserved product-detail navigation and catalogue retry behavior.
+- Did not add unsupported recent-search or popularity data.
 
 - Strong search entry point.
 - Recent/popular searches where supported.
@@ -575,7 +584,8 @@ Before marking any task complete, verify:
 | 2026-10-03 | Task 4 — Build commerce primitives | ✅ Complete | Added reusable `SnapPrice`, `SnapRatingBadge`, `SnapQuantityStepper`, `SnapAddToCartButton`, and `SnapSectionHeader` commerce primitives, then adopted the price/quantity/add-to-cart/section-header patterns across customer Home, Food Details, Restaurant Menu, and Cart surfaces. Existing cart/catalogue state, navigation, quantity bounds, and server-authoritative pricing behavior were preserved. Validation: source-level review completed; implementation commit CI status returned no exposed checks through the connector, and local Flutter commands remain unavailable. |
 | 2026-10-03 | Task 5 — Build branded feedback surfaces | ✅ Complete | Added reusable `SnapBottomSheet`, `SnapEmptyState`, `SnapErrorState`, `SnapSkeleton`, `SnapLoadingState`, and `SnapAlertDialog` feedback surfaces. Adopted them across catalogue loading/empty/error states, Home filtering/empty/loading, cart empty state, address loading/empty/error, checkout errors, and live tracking loading/unavailable/error states. Skeleton animation respects the platform reduced-motion setting. Existing API, Riverpod state, navigation, filtering, cart, address, checkout, and tracking behavior were preserved. Validation: source-level review completed including delimiter/brace checks on changed Dart files; local Flutter/Dart commands remain unavailable through the GitHub connector, and no connector-exposed CI result was available for the implementation commits. |
 | 2026-10-03 | Task 6 — Redesign customer Home screen hierarchy | ✅ Complete | Reworked the customer Home into a clearer food-first hierarchy: delivery destination, craving-led search, categories, a catalogue-backed discovery hero, popular dishes, and lightweight bottom navigation. Reduced secondary chrome, tightened vertical rhythm, reused Tasks 1–5 components/tokens, and preserved catalogue filtering, favorites, cart, routing, and authentication behavior. The current consumer catalogue contract does not expose restaurant discovery data, so the Home does not fabricate a Top Restaurants feed; the plan documents that constraint for the later restaurant-first discovery task. Validation: source-level delimiter checks passed and the implementation commit exposed no CI status through the connector; local Flutter/Dart commands remain unavailable through the GitHub connector. |
-| 2026-10-03 | Task 8 — Introduce restaurant-first discovery | 🟡 In Progress | Added the reusable `SnapRestaurantCard` primitive with image-led restaurant presentation and optional rating/review count, ETA, delivery metadata, category and open/closed state slots. During API inspection, the current `frontend` backend was confirmed to expose only consumer categories/products for catalogue discovery; no consumer restaurant endpoint/model/contract is currently available. Restaurant discovery is therefore not adopted with fabricated data. Validation: changed Dart source passed brace/parenthesis/bracket balance checks; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
+| 2026-10-03 | Task 8 — Introduce restaurant-first discovery | 🔴 Blocked | Added the reusable `SnapRestaurantCard` primitive with image-led restaurant presentation and optional rating/review count, ETA, delivery metadata, category and open/closed state slots. API inspection confirmed that the current `frontend` backend has no consumer restaurant endpoint/model/contract, so restaurant discovery cannot be truthfully adopted without fabricated data. The task remains blocked pending a backend consumer restaurant discovery contract. Validation: changed Dart source passed brace/parenthesis/bracket balance checks; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
+| 2026-10-03 | Task 9 — Redesign Search / Discover | ✅ Complete | Refined customer search using the existing catalogue contract: API-backed categories replaced hard-coded category data, reusable `SnapFilterChip` controls now filter by category, text search remains local and covers product/category names, and the result hierarchy distinguishes browse, category, and query states. Existing product navigation and catalogue retry behavior were preserved. Validation: source-level brace/parenthesis/bracket checks passed; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 7 — Redesign product cards | ✅ Complete | Added the reusable `SnapProductCard` editorial card and adopted it on the customer Home catalogue. Product imagery now leads the composition with consistent cropping, stronger name/price hierarchy, category metadata when available, 40px favorite and 44px action targets, explicit availability semantics, restrained borders, and no fabricated rating/popularity badges. Existing favourite toggling and product-detail navigation remain feature-owned and unchanged. Validation: source-level brace/parenthesis/bracket checks passed for the changed component and Home screen; implementation commits exposed no CI status through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 
 ---
@@ -593,7 +603,9 @@ Before marking any task complete, verify:
 - Completed Task 5: built branded loading, skeleton, empty, error, bottom-sheet and dialog feedback surfaces and adopted them across customer flows.
 - Completed Task 6: redesigned the customer Home hierarchy with food-first discovery, craving-led search, categories, popular dishes, and lighter navigation chrome.
 - Completed Task 7: built and adopted the editorial SnapProductCard with image-led hierarchy, meaningful metadata, favorite/action affordances, availability semantics, and restrained visual treatment.
-- Started Task 8: added the reusable SnapRestaurantCard primitive, then documented the missing consumer restaurant API/data contract that currently blocks truthful restaurant-first discovery adoption.
+- Started Task 8: added the reusable SnapRestaurantCard primitive and documented the missing consumer restaurant API/data contract.
+- Marked Task 8 blocked because the required consumer restaurant discovery contract is not present.
+- Completed Task 9: refined Search/Discover with API-backed categories, reusable filter chips, clearer result states, and preserved catalogue/product navigation behavior.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
