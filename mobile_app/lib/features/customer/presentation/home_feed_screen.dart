@@ -127,6 +127,7 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
       ),
       ),
     );
+    );
   }
 
   Future<void> _confirmExit(BuildContext context) async {
