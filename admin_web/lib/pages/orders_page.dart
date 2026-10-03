@@ -139,72 +139,179 @@ class _DeliveryPartnerOption{
 class _OrdersPageState extends State<OrdersPage>{
   final api=const _AdminOrderApi(),search=TextEditingController();
   final orders=< _AdminOrder>[];
-  String filter='ALL';String? selectedId;int page=1;bool busy=false;bool loading=true;String? loadError;
-  @override void initState(){super.initState();search.text=widget.searchQuery;search.addListener(()=>setState(()=>page=1));_loadOrders();}
-  @override void didUpdateWidget(covariant OrdersPage oldWidget){super.didUpdateWidget(oldWidget);if(oldWidget.searchQuery!=widget.searchQuery && search.text!=widget.searchQuery){search.text=widget.searchQuery;_loadOrders();}}
-  Future<void> _loadOrders() async {
+  String filter='ACTION_REQUIRED';String? selectedId;bool busy=false;bool loading=true;String? loadError;
+
+  @override void initState(){super.initState();search.text=widget.searchQuery;search.addListener(_refresh);_loadOrders();}
+  @override void didUpdateWidget(covariant OrdersPage oldWidget){super.didUpdateWidget(oldWidget);if(oldWidget.searchQuery!=widget.searchQuery&&search.text!=widget.searchQuery){search.text=widget.searchQuery;_loadOrders();}}
+  @override void dispose(){search.removeListener(_refresh);search.dispose();super.dispose();}
+  void _refresh(){if(mounted)setState((){});}
+
+  Future<void> _loadOrders()async{
     setState(()=>loading=true);
-    try {
-      final live=await api.list(search:search.text,status:filter);
+    try{
+      final live=await api.list(search:search.text);
       if(!mounted)return;
-      setState(() { orders..clear()..addAll(live); selectedId=live.isNotEmpty?live.first.id:null; loading=false; loadError=null; });
-    } catch(e) {
+      setState((){orders..clear()..addAll(live);final view=filtered;selectedId=view.isNotEmpty?view.first.id:null;loading=false;loadError=null;});
+    }catch(e){
       if(!mounted)return;
-      setState(() { loading=false; loadError=e.toString(); });
+      setState((){loading=false;loadError=e.toString().replaceFirst('Bad state: ','');});
     }
   }
-  @override void dispose(){search.dispose();super.dispose();}
-  List<_AdminOrder> get filtered=>orders.where((o){final q=search.text.trim().toLowerCase();final qok=q.isEmpty||o.id.toLowerCase().contains(q)||o.customer.toLowerCase().contains(q)||o.phone.contains(q);return qok&&(filter=='ALL'||_orderFilter(o.status)==filter);}).toList();
-  _AdminOrder? get selected{for(final o in orders){if(o.id==selectedId)return o;}return filtered.isEmpty?null:filtered.first;}
-  int count(String f)=>orders.where((o)=>f=='ALL'||_orderFilter(o.status)==f).length;
 
-  @override Widget build(BuildContext context){
-    if(loading) return const Center(
-      child: Padding(
-        padding: EdgeInsets.all(AdminSpacing.xl),
-        child: SfLoadingState(
-          title: 'Loading orders',
-          message: 'Fetching the latest order queue and delivery assignment data.',
+  List<_AdminOrder> get filtered=>orders.where((o){
+    final q=search.text.trim().toLowerCase();
+    final matchesSearch=q.isEmpty||o.id.toLowerCase().contains(q)||o.customer.toLowerCase().contains(q)||o.phone.contains(q);
+    return matchesSearch&&_matchesFilter(o.status);
+  }).toList();
+
+  bool _matchesFilter(String status){
+    switch(filter){
+      case 'ACTION_REQUIRED':return ['PLACED','ACCEPTED','PREPARING','READY_FOR_PICKUP'].contains(status);
+      case 'DELIVERY':return ['ASSIGNED','PICKED_UP','OUT_FOR_DELIVERY'].contains(status);
+      case 'COMPLETED':return status=='DELIVERED';
+      case 'REJECTED':return status=='CANCELLED';
+      default:return true;
+    }
+  }
+
+  int count(String value){
+    return orders.where((o){
+      if(value=='ALL')return true;
+      if(value=='ACTION_REQUIRED')return ['PLACED','ACCEPTED','PREPARING','READY_FOR_PICKUP'].contains(o.status);
+      if(value=='DELIVERY')return ['ASSIGNED','PICKED_UP','OUT_FOR_DELIVERY'].contains(o.status);
+      if(value=='COMPLETED')return o.status=='DELIVERED';
+      if(value=='REJECTED')return o.status=='CANCELLED';
+      return false;
+    }).length;
+  }
+
+  _AdminOrder? get selected{for(final o in orders){if(o.id==selectedId)return o;}return filtered.isEmpty?null:filtered.first;}
+
+  Future<void> _transition(_AdminOrder order,String next)async{
+    setState(()=>busy=true);
+    try{
+      await api.status(order.id,next);
+      await _loadOrders();
+      if(mounted){setState(()=>busy=false);SfFeedback.showSuccess(context,order.id+' moved to '+_prettyStatus(next)+'.');}
+    }catch(e){if(mounted){setState(()=>busy=false);SfFeedback.showError(context,e.toString().replaceFirst('Bad state: ',''));}}
+  }
+
+  Future<void> _reject(_AdminOrder order)async{
+    final reasonController=TextEditingController();
+    final reasons=['Item out of stock','Kitchen capacity unavailable','Delivery service unavailable','Unable to fulfil requested items','Other'];
+    String reason=reasons.first;
+    final confirmed=await shad.showOverlay<bool>(
+      context,shad.DialogConfiguration(),
+      builder:(dialogContext)=>Material(
+        color:Colors.transparent,
+        child:shad.AlertDialog(
+          title:const Text('Reject order'),
+          content:StatefulBuilder(builder:(context,setDialogState)=>SizedBox(
+            width:440,
+            child:Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.start,children:[
+              Text('Record why '+order.id+' cannot be fulfilled. This reason is saved with the cancelled order.',style:AdminTypography.body.copyWith(color:AdminDesignColors.secondaryText)),
+              const SizedBox(height:AdminSpacing.md),
+              Wrap(spacing:8,runSpacing:8,children:reasons.map((item)=>(item==reason?shad.Button.secondary:shad.Button.ghost)(onPressed:()=>setDialogState(()=>reason=item),child:Text(item))).toList()),
+              const SizedBox(height:AdminSpacing.md),
+              Material(color:Colors.transparent,child:TextField(controller:reasonController,maxLines:3,decoration:const InputDecoration(labelText:'Additional note (optional)',border:OutlineInputBorder()))),
+            ]),
+          )),
+          actions:[
+            shad.OutlineButton(onPressed:()=>Navigator.pop(dialogContext,false),child:const Text('Keep order')),
+            shad.PrimaryButton(onPressed:()=>Navigator.pop(dialogContext,true),child:const Text('Reject order')),
+          ],
         ),
       ),
-    );
-    if(loadError!=null) return Padding(
-      padding: const EdgeInsets.all(AdminSpacing.xl),
-      child: SfErrorState(
-        title: 'Unable to load orders',
-        message: loadError!,
-        onRetry: _loadOrders,
-      ),
-    );
-    final list=filtered,order=selected,desktop=MediaQuery.sizeOf(context).width>=1120;
-    final pages=list.isEmpty?1:((list.length-1)~/10)+1;if(page>pages)page=pages;
-    final queue=_OrderQueue(orders:list,selectedId:order?.id,page:page,onPage:(v)=>setState(()=>page=v),onSelect:(v)=>setState(()=>selectedId=v));
-    final details=_OrderDetails(order:order,busy:busy,apiConfigured:api.configured,onAdvance:order==null?null:()=>advance(order),onInvoice:order==null?null:()=>invoice(order),onCancel:order==null?null:()=>cancel(order));
+    ).future;
+    final note=reasonController.text.trim();reasonController.dispose();
+    if(confirmed!=true||!mounted)return;
+    final finalReason=note.isEmpty?reason:reason+' — '+note;
+    setState(()=>busy=true);
+    try{
+      await api.status(order.id,'CANCELLED',cancellationReason:finalReason);
+      await _loadOrders();
+      if(mounted){setState(()=>busy=false);SfFeedback.showSuccess(context,order.id+' was rejected.');}
+    }catch(e){if(mounted){setState(()=>busy=false);SfFeedback.showError(context,e.toString().replaceFirst('Bad state: ',''));}}
+  }
+
+  Future<void> _assign(_AdminOrder order)async{
+    setState(()=>busy=true);
+    try{
+      final partners=await api.availablePartners();
+      if(!mounted)return;
+      setState(()=>busy=false);
+      if(partners.isEmpty){SfFeedback.showError(context,'No approved, active and available delivery partners are currently available.');return;}
+      final partner=await shad.showOverlay<_DeliveryPartnerOption>(
+        context,shad.DialogConfiguration(),
+        builder:(dialogContext)=>Material(
+          color:Colors.transparent,
+          child:shad.AlertDialog(
+            title:const Text('Assign delivery partner'),
+            content:SizedBox(
+              width:460,
+              child:Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.start,children:[
+                Text('Select an available partner. Assignment will move the order to ASSIGNED.',style:AdminTypography.small.copyWith(color:AdminDesignColors.secondaryText)),
+                const SizedBox(height:AdminSpacing.md),
+                ...partners.map((p)=>Padding(
+                  padding:const EdgeInsets.only(bottom:8),
+                  child:shad.Button.ghost(
+                    onPressed:()=>Navigator.pop(dialogContext,p),
+                    child:Row(children:[
+                      Container(width:36,height:36,alignment:Alignment.center,decoration:const BoxDecoration(color:AdminDesignColors.yellowSoft,shape:BoxShape.circle),child:Text(p.name.isEmpty?'?':p.name.characters.first.toUpperCase(),style:AdminTypography.small.copyWith(fontWeight:FontWeight.w800))),
+                      const SizedBox(width:10),
+                      Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(p.name,style:AdminTypography.body.copyWith(fontWeight:FontWeight.w700)),if(p.email.isNotEmpty)Text(p.email,style:AdminTypography.small)])),
+                      const AdminIcon(HugeIcons.strokeRoundedArrowRight01,size:17),
+                    ]),
+                  ),
+                )),
+              ]),
+            ),
+            actions:[shad.OutlineButton(onPressed:()=>Navigator.pop(dialogContext),child:const Text('Cancel'))],
+          ),
+        ),
+      ).future;
+      if(partner==null||!mounted)return;
+      setState(()=>busy=true);
+      final assignedName=await api.assign(order.id,partner.id);
+      await _loadOrders();
+      if(mounted){setState(()=>busy=false);SfFeedback.showSuccess(context,order.id+' assigned to '+assignedName+'.');}
+    }catch(e){if(mounted){setState(()=>busy=false);SfFeedback.showError(context,e.toString().replaceFirst('Bad state: ',''));}}
+  }
+
+  Future<void> _invoice(_AdminOrder order)async{
+    setState(()=>busy=true);
+    try{final ref=await api.invoice(order.id);if(mounted){setState(()=>busy=false);SfFeedback.showInfo(context,ref==null?'Invoice endpoint returned no file reference.':'Invoice reference: '+ref);}}
+    catch(e){if(mounted){setState(()=>busy=false);SfFeedback.showError(context,e.toString().replaceFirst('Bad state: ',''));}}
+  }
+
+  @override Widget build(BuildContext context){
+    if(loading)return const Center(child:Padding(padding:EdgeInsets.all(AdminSpacing.xl),child:SfLoadingState(title:'Loading orders',message:'Preparing the operational order queue.')));
+    if(loadError!=null)return Padding(padding:const EdgeInsets.all(AdminSpacing.xl),child:SfErrorState(title:'Unable to load orders',message:loadError!,onRetry:_loadOrders));
+    final list=filtered,order=selected;
     return Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-      _OrdersHeader(apiConfigured:api.configured,onExport:()=>exportCsv(list)),
-      const SizedBox(height:AdminSpacing.xxl),
-      _OrderFilters(controller:search,active:filter,count:count,onChange:(v)=>setState((){filter=v;page=1;if(filtered.isNotEmpty)selectedId=filtered.first.id;})),
+      _OrdersHeader(apiConfigured:api.configured,onExport:()=>exportCsv(orders),onRefresh:_loadOrders),
+      const SizedBox(height:AdminSpacing.xl),
+      _OrderFilters(controller:search,active:filter,count:count,onChange:(v)=>setState((){filter=v;selectedId=filtered.isNotEmpty?filtered.first.id:null;})),
       const SizedBox(height:AdminSpacing.lg),
-      if(list.isEmpty)_EmptyOrders(onClear:()=>setState((){search.clear();filter='ALL';page=1;}))
-      else if(desktop)Row(crossAxisAlignment:CrossAxisAlignment.start,children:[Expanded(flex:62,child:queue),const SizedBox(width:AdminSpacing.lg),Expanded(flex:38,child:details)])
-      else Column(children:[queue,const SizedBox(height:AdminSpacing.lg),details]),
+      _OrderQueue(orders:list,selectedId:selectedId,onSelect:(v)=>setState(()=>selectedId=v)),
+      if(order!=null)...[
+        const SizedBox(height:AdminSpacing.lg),
+        _OrderWorkspace(
+          order:order,busy:busy,apiConfigured:api.configured,
+          onAccept:()=>_transition(order,'ACCEPTED'),onReject:()=>_reject(order),
+          onPreparing:()=>_transition(order,'PREPARING'),onReady:()=>_transition(order,'READY_FOR_PICKUP'),
+          onAssign:()=>_assign(order),onPickedUp:()=>_transition(order,'PICKED_UP'),
+          onOut:()=>_transition(order,'OUT_FOR_DELIVERY'),onDelivered:()=>_transition(order,'DELIVERED'),
+          onInvoice:()=>_invoice(order),
+        ),
+      ],
+      if(list.isEmpty)const Padding(padding:EdgeInsets.only(top:AdminSpacing.lg),child:SfEmptyState(title:'No orders in this workflow stage',message:'Change the operational filter or clear the search.')),
     ]);
   }
 
-  Future<void> advance(_AdminOrder order)async{
-    final next=_nextStatus(order.status);if(next==null){_notice(context,'No valid next transition for '+order.status);return;}
-    setState(()=>busy=true);try{await api.status(order.id,next);final i=orders.indexWhere((o)=>o.id==order.id);if(i>=0)orders[i]=order.withStatus(next);if(mounted)setState(()=>busy=false);if(mounted)SfFeedback.showSuccess(context,order.id+' advanced to '+next);}catch(e){if(mounted){setState(()=>busy=false);SfFeedback.showError(context,api.configured?e.toString():'No authenticated admin session is available for this status transition.');}}
-  }
-  Future<void> invoice(_AdminOrder order)async{
-    setState(()=>busy=true);try{final ref=await api.invoice(order.id);if(mounted)setState(()=>busy=false);if(mounted)SfFeedback.showInfo(context,ref==null?'Invoice endpoint returned no file reference.':'Invoice reference: '+ref);}catch(e){if(mounted){setState(()=>busy=false);SfFeedback.showError(context,e.toString());}}
-  }
-  Future<void> cancel(_AdminOrder order)async{
-    final ok=await SfConfirmDialog.show(context,title:'Cancel order?',message:'Confirm cancellation for '+order.id+'.',confirmLabel:'Confirm cancel',destructive:true);if(!ok)return;
-    setState(()=>busy=true);try{await api.status(order.id,'CANCELLED');final i=orders.indexWhere((o)=>o.id==order.id);if(i>=0)orders[i]=order.withStatus('CANCELLED');if(mounted)setState(()=>busy=false);if(mounted)SfFeedback.showSuccess(context,order.id+' cancelled.');}catch(e){if(mounted){setState(()=>busy=false);_notice(context,api.configured?e.toString():'Preview Data Mode: configure API_TOKEN for cancellation requests.');}}
-  }
   void exportCsv(List<_AdminOrder> list){
-    final rows=<List<String>>[['Order ID','Customer','Phone','Address','Items','Total','Payment','Time','Status'],...list.map((o)=>[o.id,o.customer,o.phone,o.address,o.items.toString(),o.total.toStringAsFixed(2),o.payment,o.time,o.status])];
-    String cell(String s)=>'"'+s.replaceAll('"','""')+'"';final csv=rows.map((r)=>r.map(cell).join(',')).join('\n');
+    final rows=<List<String>>[['Order ID','Customer','Phone','Address','Items','Total','Payment','Time','Status','Cancellation reason'],...list.map((o)=>[o.id,o.customer,o.phone,o.address,o.items.toString(),o.total.toStringAsFixed(2),o.payment,o.time,o.status,o.cancellationReason??''])];
+    String cell(String s)=>'"'+s.replaceAll('"','""')+'"';final csv=rows.map((r)=>r.map(cell).join(',')).join('\\n');
     final blob=html.Blob([utf8.encode(csv)],'text/csv;charset=utf-8');final url=html.Url.createObjectUrlFromBlob(blob);final a=html.AnchorElement(href:url)..download='snap-foodd-orders.csv'..style.display='none';html.document.body?.children.add(a);a.click();a.remove();html.Url.revokeObjectUrl(url);
   }
 }
