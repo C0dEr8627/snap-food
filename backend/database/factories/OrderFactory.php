@@ -17,7 +17,7 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'customer_id' => User::factory(),
+            'customer_id' => CustomerUser::factory(),
             'delivery_address_snapshot' => [
                 'line1' => '10 Test Street',
                 'city' => 'Mumbai',
