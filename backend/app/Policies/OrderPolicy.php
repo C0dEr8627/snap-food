@@ -16,29 +16,29 @@ class OrderPolicy
         return null;
     }
 
-    public function viewAny(User $user): bool
+    public function viewAny(Authenticatable $user): bool
     {
         return $user->hasRole('CUSTOMER');
     }
 
-    public function view(User $user, Order $order): bool
+    public function view(Authenticatable $user, Order $order): bool
     {
-        return $user->hasRole(User::ROLE_CUSTOMER)
-            && $order->customer_id === $user->id;
+        return $user->hasRole('CUSTOMER')
+            && (int) $order->customer_id === (int) $user->id;
     }
 
-    public function create(User $user): bool
+    public function create(Authenticatable $user): bool
     {
-        return $user->hasRole(User::ROLE_CUSTOMER);
+        return $user->hasRole('CUSTOMER');
     }
 
-    public function updateStatus(User $user, Order $order): bool
+    public function updateStatus(Authenticatable $user, Order $order): bool
     {
         return $user->hasRole('ADMIN');
     }
 
-    public function viewAdmin(User $user, Order $order): bool
+    public function viewAdmin(Authenticatable $user, Order $order): bool
     {
-        return $user->hasRole(User::ROLE_ADMIN);
+        return $user->hasRole('ADMIN');
     }
 }
