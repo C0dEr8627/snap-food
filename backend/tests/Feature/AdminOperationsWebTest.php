@@ -18,9 +18,9 @@ class AdminOperationsWebTest extends TestCase
 
     public function test_admin_can_search_customers_and_filter_delivery_partners(): void
     {
-        $admin = AdminCustomerUser::factory()->create();
+        $admin = AdminUser::factory()->create();
         $customer = CustomerUser::factory()->create(['name' => 'Mira Customer', 'email' => 'mira@example.test']);
-        $partnerUser = DeliveryPartnerCustomerUser::factory()->create(['name' => 'Ravi Rider']);
+        $partnerUser = DeliveryPartnerUser::factory()->create(['name' => 'Ravi Rider']);
         $partner = DeliveryPartner::create([
             'user_id' => $partnerUser->id,
             'is_approved' => true,
@@ -44,9 +44,9 @@ class AdminOperationsWebTest extends TestCase
 
     public function test_admin_can_review_assignments_and_existing_invoices(): void
     {
-        $admin = AdminCustomerUser::factory()->create();
+        $admin = AdminUser::factory()->create();
         $customer = CustomerUser::factory()->create(['name' => 'Invoice Customer']);
-        $partnerUser = DeliveryPartnerCustomerUser::factory()->create(['name' => 'Assigned Rider']);
+        $partnerUser = DeliveryPartnerUser::factory()->create(['name' => 'Assigned Rider']);
         $partner = DeliveryPartner::create([
             'user_id' => $partnerUser->id,
             'is_approved' => true,
@@ -92,8 +92,8 @@ class AdminOperationsWebTest extends TestCase
 
     public function test_admin_can_approve_revoke_and_change_delivery_partner_state(): void
     {
-        $admin = AdminCustomerUser::factory()->create();
-        $partnerUser = DeliveryPartnerCustomerUser::factory()->create();
+        $admin = AdminUser::factory()->create();
+        $partnerUser = DeliveryPartnerUser::factory()->create();
         $partner = DeliveryPartner::create([
             'user_id' => $partnerUser->id,
             'is_approved' => false,
@@ -137,8 +137,8 @@ class AdminOperationsWebTest extends TestCase
 
     public function test_unapproved_partner_cannot_be_marked_available(): void
     {
-        $admin = AdminCustomerUser::factory()->create();
-        $partnerUser = DeliveryPartnerCustomerUser::factory()->create();
+        $admin = AdminUser::factory()->create();
+        $partnerUser = DeliveryPartnerUser::factory()->create();
         $partner = DeliveryPartner::create([
             'user_id' => $partnerUser->id,
             'is_approved' => false,
@@ -156,7 +156,7 @@ class AdminOperationsWebTest extends TestCase
 
     public function test_customer_cannot_access_admin_operations_pages(): void
     {
-        $customer = CustomerCustomerUser::factory()->create();
+        $customer = CustomerUser::factory()->create();
 
         foreach (['/admin/customers', '/admin/delivery-partners', '/admin/assignments', '/admin/invoices'] as $path) {
             $this->actingAs($customer, 'web')->get($path)->assertForbidden();
