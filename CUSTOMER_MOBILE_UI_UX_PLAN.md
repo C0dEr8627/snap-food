@@ -531,14 +531,15 @@ This should become a signature Snap Foodd experience:
 ## Phase 5 — Onboarding & Delight
 
 ### Task 19 — Improve onboarding and welcome experience
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- Food-first visual storytelling.
-- Reduce generic marketing-copy feel.
-- Use mascot/illustrations selectively.
-- Clear primary CTA.
-- Smooth but restrained transitions.
-- Preserve authentication/navigation behavior.
+- Added a dedicated product-first welcome experience with a warm editorial food illustration, branded wordmark, concise benefit copy, and clear account-creation/sign-in actions.
+- Replaced generic local-favourites/neighbourhood/restaurant discovery messaging with truthful catalogue-first wording that reflects the current product experience.
+- Used existing Snap Foodd color, spacing, radius, typography theme, and button tokens; no new dependency or restaurant concept was introduced.
+- Added compact/mobile and wide-screen layouts with a scrollable safe-area-aware canvas so smaller screens and larger text have room to adapt.
+- Connected the initial splash experience to `/welcome` instead of bypassing the welcome screen and sending first-time users directly to `/login`.
+- Preserved the existing `/register` and `/login` destinations, GoRouter auth redirects, password authentication, Google authentication, session restoration, and protected routes.
+- The welcome experience is static and restrained, respecting the task's motion guidance without adding unnecessary animation; the existing splash animation continues to honor reduced-motion preferences.
 
 ### Task 20 — Add motion and tactile feedback
 **Status:** ⬜ Not Started
@@ -623,6 +624,7 @@ Before marking any task complete, verify:
 | 2026-10-03 | Task 16 — Redesign Order Details | ✅ Complete | Reworked Order Details around order identity, status, items, delivery snapshot, payment/total information and supported actions. Reused Snap Foodd order/status/price/buttons/feedback components, preserved existing order-detail loading, live-tracking navigation and delivered-order invoice behavior, and intentionally did not fabricate restaurant identity, reorder or support actions because the current product/API contract does not expose them. Validation: changed Dart source has balanced braces/parentheses/brackets; implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 17 — Redesign live order tracking | ✅ Complete | Reworked live tracking into a status-first experience with a prominent current-status hero, reusable SnapOrderStatus, accessible progress timeline, safe-area-aware layout, pull-to-refresh, preserved 10-second polling, explicit stale/unavailable states, and API-backed location details. Removed restaurant-specific wording because Snap Foodd has no restaurant concept. ETA, rider identity/contact, map and support actions were not fabricated because the current tracking contract does not expose them; no map abstraction is currently available. Validation: changed Dart source has balanced braces/parentheses/brackets; implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 18 — Redesign Profile and Favorites | ✅ Complete | Reworked Profile around authenticated account identity, order/favorite/address counts, supported account navigation and branded list rows. Reworked Favorites around image-led saved dishes with responsive layouts, stronger food imagery, Snap price/remove controls, browse action and branded loading/error/empty states. Preserved existing auth/logout, favorites controller/API, address/order routes and product-detail navigation. Removed unsupported/fabricated payment, coupon, notification, language, support and privacy controls from the profile. Validation: changed Dart source files have balanced braces/parentheses/brackets; implementation commits exposed no GitHub status checks/workflow runs through the connector; local Flutter/Dart formatter, analyzer and tests remain unavailable through the GitHub connector. |
+| 2026-10-03 | Task 19 — Improve onboarding and welcome experience | ✅ Complete | Added a food-first welcome screen with warm editorial illustration, concise catalogue-first copy, clear create-account/sign-in actions, compact and wide layouts, safe-area-aware scrolling, and existing design-system components/tokens. Updated the splash route to lead into /welcome rather than bypassing it for /login. Preserved login/register destinations, Google/password auth, session restoration, and GoRouter auth guards. Validation: reviewed route wiring and source structure; local Flutter/Dart formatter, analyzer and tests remain unavailable through the GitHub connector. |
 
 ---
 
@@ -652,6 +654,7 @@ Before marking any task complete, verify:
 - Completed Task 16: redesigned Order Details around status-first order identity, item/totals hierarchy, delivery snapshot, payment information and supported tracking/invoice actions while preserving the existing order API and avoiding unsupported restaurant/reorder/support concepts.
 - Completed Task 17: redesigned live order tracking around current status, progress, stale/live location state and accessible tracking feedback while preserving the existing tracking API, polling and refresh behavior; documented that ETA, rider, map and support data are not currently available.
 - Completed Task 18: redesigned Profile and Favorites around supported account data, branded account navigation, food-first saved dishes, responsive layouts and useful feedback states while preserving authentication, favorites and existing customer routes.
+- Completed Task 19: refreshed the onboarding welcome experience with food-first visual storytelling, catalogue-accurate copy, clear account actions and responsive layouts; connected the splash screen to the welcome route while preserving existing authentication and navigation behavior.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
