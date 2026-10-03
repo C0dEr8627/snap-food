@@ -268,7 +268,7 @@ Requirements:
 - Minimum comfortable touch targets.
 
 ### Task 3 — Build search, category and filter controls
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
 - Custom search field.
 - Category chips.
@@ -565,6 +565,7 @@ Before marking any task complete, verify:
 | 2026-10-03 | Planning reset | ✅ Complete | Removed legacy AIDLC planning files and established this document as the new customer mobile UI/UX development source of truth. |
 | 2026-10-03 | Task 1 — Audit and stabilize the design-token foundation | ✅ Complete | Audited the existing mobile design system, aligned core brand colors with the plan, added centralized typography and elevation tokens, and tightened Material 3 theme defaults without changing product behavior. Validation: source-level review completed; repository Flutter CI is configured to run `dart format`, `flutter analyze`, `flutter test`, and Android debug build on frontend PRs. Local command execution was not available through the GitHub connector. |
 | 2026-10-03 | Task 2 — Build Snap Foodd buttons and icon controls | ✅ Complete | Reworked the existing button component into reusable `SnapPrimaryButton`, `SnapSecondaryButton`, and `SnapIconButton` controls with branded colors, 48px+ touch targets, loading/disabled/selected states, semantics, tooltips, and token-based radii/spacing. Existing `SnapFoodPrimaryButton`/`SnapFoodSecondaryButton` names remain as compatibility aliases. Validation: source-level review completed; no business logic or navigation changes. Local Flutter commands were unavailable through the GitHub connector. |
+| 2026-10-03 | Task 3 — Build search, category and filter controls | ✅ Complete | Added reusable `SnapSearchField`, `SnapCategoryChip`, and `SnapFilterChip` controls and adopted them in the customer Home and Search surfaces, including branded focus/selected/inactive states, clear-search behavior, accessible labels, and comfortable touch targets. Existing catalogue filtering/search state and navigation behavior were preserved. Validation: source-level review completed; repository CI status was not available for the implementation commits through the connector, and local Flutter commands remain unavailable. |
 
 ---
 
@@ -576,6 +577,7 @@ Before marking any task complete, verify:
 - Established **Warm Editorial Food Commerce** as the target design direction.
 - Completed Task 1: stabilized customer mobile design tokens and Material 3 theme foundation.
 - Completed Task 2: built reusable branded buttons and icon controls.
+- Completed Task 3: built and adopted branded search, category and filter controls.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
