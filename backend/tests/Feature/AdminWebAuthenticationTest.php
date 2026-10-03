@@ -27,8 +27,7 @@ class AdminWebAuthenticationTest extends TestCase
             'google_subject' => 'google-admin',
             'name' => 'Admin User',
             'email' => 'admin@example.test',
-            'role' => 'ADMIN',
-            'is_active' => true,
+                        'is_active' => true,
         ]);
 
         $this->mock(GoogleCredentialVerifier::class, function ($mock): void {
@@ -49,12 +48,11 @@ class AdminWebAuthenticationTest extends TestCase
 
     public function test_customer_cannot_create_an_admin_web_session(): void
     {
-        AdminUser::create([
+        CustomerUser::create([
             'google_subject' => 'google-customer',
             'name' => 'Customer User',
             'email' => 'customer@example.test',
-            'role' => 'CUSTOMER',
-            'is_active' => true,
+                        'is_active' => true,
         ]);
 
         $this->mock(GoogleCredentialVerifier::class, function ($mock): void {
@@ -74,7 +72,7 @@ class AdminWebAuthenticationTest extends TestCase
 
     public function test_inactive_admin_cannot_create_an_admin_web_session(): void
     {
-        CustomerUser::create([
+        AdminUser::create([
             'google_subject' => 'google-inactive-admin',
             'name' => 'Inactive Admin',
             'email' => 'inactive-admin@example.test',
@@ -99,7 +97,7 @@ class AdminWebAuthenticationTest extends TestCase
 
     public function test_authenticated_non_admin_is_denied_from_dashboard(): void
     {
-        $customer = AdminUser::create([
+        $customer = CustomerUser::create([
             'google_subject' => 'google-customer',
             'name' => 'Customer User',
             'email' => 'customer@example.test',
@@ -114,7 +112,7 @@ class AdminWebAuthenticationTest extends TestCase
 
     public function test_admin_can_access_dashboard_and_logout_invalidates_session(): void
     {
-        $admin = __ACCOUNT_CREATE__([
+        $admin = AdminUser::create([
             'google_subject' => 'google-admin',
             'name' => 'Admin User',
             'email' => 'admin@example.test',
