@@ -283,7 +283,6 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     context,
   ).showSnackBar(SnackBar(content: Text(message)));
 }
-}
 
 class _SelectedAddressCard extends StatelessWidget {
   const _SelectedAddressCard({required this.address, this.onChange});
@@ -540,6 +539,7 @@ class _CheckoutNotice extends StatelessWidget {
           ),
         ),
       );
+}
 
 class _ErrorBox extends StatelessWidget {
   const _ErrorBox({required this.error});
