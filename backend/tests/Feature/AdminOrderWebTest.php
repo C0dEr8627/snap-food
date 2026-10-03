@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use App\Models\DeliveryPartner;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\User;
+use App\Models\AdminUser;
+use App\Models\CustomerUser;
+use App\Models\DeliveryPartnerUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -15,7 +17,7 @@ class AdminOrderWebTest extends TestCase
 
     public function test_admin_can_search_filter_and_open_order_details(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = AdminCustomerUser::factory()->create();
         $customer = User::factory()->create([
             'name' => 'Asha Customer',
             'email' => 'asha@example.test',
@@ -54,7 +56,7 @@ class AdminOrderWebTest extends TestCase
 
     public function test_admin_can_update_order_status_and_history_records_actor(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = AdminCustomerUser::factory()->create();
         $order = Order::factory()->create([
             'status' => Order::STATUS_PLACED,
         ]);
@@ -80,7 +82,7 @@ class AdminOrderWebTest extends TestCase
 
     public function test_admin_status_action_rejects_invalid_transition(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = AdminCustomerUser::factory()->create();
         $order = Order::factory()->create([
             'status' => Order::STATUS_DELIVERED,
         ]);
@@ -99,9 +101,9 @@ class AdminOrderWebTest extends TestCase
 
     public function test_admin_can_assign_eligible_partner_from_order_detail(): void
     {
-        $admin = User::factory()->admin()->create();
-        $customer = User::factory()->create();
-        $partnerUser = User::factory()->deliveryPartner()->create(['name' => 'Available Rider']);
+        $admin = AdminCustomerUser::factory()->create();
+        $customer = CustomerUser::factory()->create();
+        $partnerUser = DeliveryPartnerUser::factory()->create(['name' => 'Available Rider']);
         $partner = DeliveryPartner::create([
             'user_id' => $partnerUser->id,
             'is_approved' => true,
@@ -145,8 +147,8 @@ class AdminOrderWebTest extends TestCase
 
     public function test_admin_web_assignment_rejects_ineligible_partner(): void
     {
-        $admin = User::factory()->admin()->create();
-        $partnerUser = User::factory()->deliveryPartner()->create();
+        $admin = AdminCustomerUser::factory()->create();
+        $partnerUser = DeliveryPartnerCustomerUser::factory()->create();
         $partner = DeliveryPartner::create([
             'user_id' => $partnerUser->id,
             'is_approved' => false,
@@ -167,7 +169,7 @@ class AdminOrderWebTest extends TestCase
 
     public function test_non_admin_cannot_access_admin_orders(): void
     {
-        $customer = User::factory()->create();
+        $customer = CustomerUser::factory()->create();
 
         $this->actingAs($customer, 'web')
             ->get('/admin/orders')
