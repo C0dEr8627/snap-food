@@ -43,7 +43,7 @@ class _DashboardPageState extends State<DashboardPage> {
             _KpiCard("TODAY'S REVENUE", _money(d.todayRevenue), d.deliveredToday.toString() + ' delivered orders', HugeIcons.strokeRoundedWallet01, AdminColors.amberSoft),
             _KpiCard('ACTIVE ORDERS', d.activeOrders.toString(), d.placed.toString() + ' new • ' + d.preparing.toString() + ' preparing • ' + d.out.toString() + ' out', HugeIcons.strokeRoundedShoppingBag01, AdminColors.redSoft, alert: d.placed > 0),
             _KpiCard('DELIVERY FLEET', d.onlinePartners.toString(), d.approvedPartners.toString() + ' approved • ' + d.pendingPartners.toString() + ' pending approval', HugeIcons.strokeRoundedMotorbike02, AdminColors.greenSoft),
-            _KpiCard('WEEKLY REVENUE', _money(d.weekRevenue), d.weekOrders.toString() + ' orders • ' + _change(d.weekRevenue, d.previousWeekRevenue) + ' vs previous week', HugeIcons.strokeRoundedChart02, AdminColors.blueSoft),
+            _KpiCard('WEEKLY REVENUE', _money(d.weekRevenue), d.weekOrders.toString() + ' orders • ' + _change(d.weekRevenue, d.previousWeekRevenue) + ' vs previous week', HugeIcons.strokeRoundedTimer02, AdminColors.blueSoft),
           ],
         );
       }),
@@ -220,7 +220,7 @@ class _RecentOrdersCard extends StatelessWidget {
     const SizedBox(height:8),
     if(orders.isEmpty)const Padding(padding:EdgeInsets.all(24),child:Center(child:Text('No orders yet.',style:TextStyle(fontSize:12,color:AdminColors.muted))))
     else ...orders.map((o){final s=_dashboardStatusStyle(o.status);return Container(padding:const EdgeInsets.symmetric(vertical:11),decoration:const BoxDecoration(border:Border(bottom:BorderSide(color:AdminColors.line))),child:Row(children:[
-      Container(width:36,height:36,decoration:BoxDecoration(color:AdminColors.canvas,borderRadius:BorderRadius.circular(9)),child:const AdminIcon(HugeIcons.strokeRoundedReceiptDollar,size:17,color:AdminColors.ink)),const SizedBox(width:9),
+      Container(width:36,height:36,decoration:BoxDecoration(color:AdminColors.canvas,borderRadius:BorderRadius.circular(9)),child:const AdminIcon(HugeIcons.strokeRoundedShoppingBag01,size:17,color:AdminColors.ink)),const SizedBox(width:9),
       Expanded(flex:3,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('#'+o.id,style:const TextStyle(fontSize:12,fontWeight:FontWeight.w900)),const SizedBox(height:2),Text(o.customer,style:const TextStyle(fontSize:11,color:AdminColors.muted))])),
       Expanded(flex:2,child:Text(o.partner??'Unassigned',maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:11,color:AdminColors.muted))),
       Expanded(flex:2,child:Text(o.payment,style:const TextStyle(fontSize:11,color:AdminColors.muted))),
@@ -244,7 +244,7 @@ class _DashboardLoading extends StatelessWidget {
 }
 class _DashboardError extends StatelessWidget {
   const _DashboardError({required this.message,required this.onRetry}); final String message; final VoidCallback onRetry;
-  @override Widget build(BuildContext context)=>AdminCard(child:Padding(padding:const EdgeInsets.all(32),child:Center(child:Column(mainAxisSize:MainAxisSize.min,children:[const AdminIcon(HugeIcons.strokeRoundedCloudOff,size:34,color:AdminColors.red),const SizedBox(height:10),const Text('Dashboard unavailable',style:TextStyle(fontSize:15,fontWeight:FontWeight.w900)),const SizedBox(height:5),Text(message,textAlign:TextAlign.center,style:const TextStyle(fontSize:11,color:AdminColors.muted)),const SizedBox(height:14),shad.OutlineButton(onPressed:onRetry,child:const Text('Try again'))]))));
+  @override Widget build(BuildContext context)=>AdminCard(child:Padding(padding:const EdgeInsets.all(32),child:Center(child:Column(mainAxisSize:MainAxisSize.min,children:[const AdminIcon(HugeIcons.strokeRoundedAlert02,size:34,color:AdminColors.red),const SizedBox(height:10),const Text('Dashboard unavailable',style:TextStyle(fontSize:15,fontWeight:FontWeight.w900)),const SizedBox(height:5),Text(message,textAlign:TextAlign.center,style:const TextStyle(fontSize:11,color:AdminColors.muted)),const SizedBox(height:14),shad.OutlineButton(onPressed:onRetry,child:const Text('Try again'))]))));
 }
 
 String _money(double v)=>'₹'+v.toStringAsFixed(0).replaceAllMapped(RegExp(r'(?<=\d)(?=(\d{3})+$)'),(m)=>',');
