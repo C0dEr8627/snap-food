@@ -70,14 +70,47 @@ class _AdminOrderApi{
     return rows.whereType<Map>().map((e)=>_AdminOrder.fromJson(Map<String,dynamic>.from(e))).toList();
   }
 
-  Future<void> status(String id,String next)async{
+  Future<void> status(String id,String next,{String? cancellationReason})async{
     if(!configured)throw StateError('No authenticated admin session. Please sign in again.');
     final r=await http.patch(
       Uri.parse(base+'/admin/orders/'+Uri.encodeComponent(id)+'/status'),
       headers:headers,
-      body:jsonEncode({'status':next}),
+      body:jsonEncode({'status':next,if(cancellationReason!=null)'cancellation_reason':cancellationReason}),
     );
     if(r.statusCode<200||r.statusCode>=300)throw StateError('Order status update failed ('+r.statusCode.toString()+').');
+  }
+
+  Future<List<_DeliveryPartnerOption>> availablePartners() async {
+    if(!configured) throw StateError('No authenticated admin session.');
+    final r=await http.get(Uri.parse(base+'/admin/delivery-partners?page=1'),headers:headers);
+    if(r.statusCode<200||r.statusCode>=300) throw StateError('Delivery partner request failed ('+r.statusCode.toString()+').');
+    final body=jsonDecode(r.body);
+    final page=body is Map&&body['data'] is Map?body['data'] as Map:null;
+    final rows=page!=null&&page['data'] is List?page['data'] as List:const [];
+    return rows.whereType<Map>().map((x)=>_DeliveryPartnerOption.fromJson(x)).where((p)=>p.available).toList();
+  }
+
+  Future<String> assign(String orderId,int partnerId) async {
+    if(!configured) throw StateError('No authenticated admin session.');
+    final r=await http.post(
+      Uri.parse(base+'/admin/orders/'+Uri.encodeComponent(orderId)+'/assignment'),
+      headers:headers,
+      body:jsonEncode({'delivery_partner_id':partnerId}),
+    );
+    if(r.statusCode<200||r.statusCode>=300) throw StateError(_orderApiMessage(r.body,'Delivery assignment failed'));
+    final body=jsonDecode(r.body);
+    final data=body is Map&&body['data'] is Map?body['data'] as Map:{};
+    final partner=data['delivery_partner'] is Map?data['delivery_partner'] as Map:{};
+    final user=partner['user'] is Map?partner['user'] as Map:{};
+    return (user['name']??'Delivery partner').toString();
+  }
+
+  static String _orderApiMessage(String body,String fallback){
+    try{
+      final value=jsonDecode(body);
+      if(value is Map&&value['message']!=null)return value['message'].toString();
+    }catch(_){}
+    return fallback;
   }
 
   Future<String?> invoice(String id)async{
@@ -87,6 +120,20 @@ class _AdminOrderApi{
     final body=jsonDecode(r.body);
     return body is Map&&body['data'] is Map?body['data']['file_reference']?.toString():null;
   }
+}
+
+class _DeliveryPartnerOption{
+  const _DeliveryPartnerOption({required this.id,required this.name,required this.email,required this.available});
+  factory _DeliveryPartnerOption.fromJson(Map json){
+    final user=json['user'] is Map?json['user'] as Map:{};
+    return _DeliveryPartnerOption(
+      id:_toInt(json['id']),
+      name:(user['name']??'Unnamed partner').toString(),
+      email:(user['email']??'').toString(),
+      available:json['is_available']==true&&json['is_approved']==true&&json['is_active']==true,
+    );
+  }
+  final int id;final String name,email;final bool available;
 }
 
 class _OrdersPageState extends State<OrdersPage>{
