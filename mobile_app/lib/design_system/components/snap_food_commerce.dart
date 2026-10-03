@@ -693,9 +693,17 @@ class SnapRestaurantCard extends StatelessWidget {
       ));
     }
 
+    final semanticParts = <String>[
+      name,
+      if (rating != null)
+        'rated ' + rating!.clamp(0, 5).toStringAsFixed(1),
+      if (eta != null && eta!.trim().isNotEmpty) eta!,
+      if (!isOpen) 'currently closed',
+    ];
+
     return Semantics(
       container: true,
-      label: '\$name\${rating == null ? '' : ', rated \${rating!.clamp(0, 5).toStringAsFixed(1)}'}\${eta == null ? '' : ', \$eta'}\${isOpen ? '' : ', currently closed'}',
+      label: semanticParts.join(', '),
       child: SizedBox(
         width: width,
         child: Material(
