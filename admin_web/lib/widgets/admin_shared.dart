@@ -3,6 +3,35 @@ part of '../main.dart';
 /// Snap Foodd's official brand palette. Keep admin UI accents within these
 /// five brand colors; semantic colors below are aliases of the same palette.
 abstract final class AdminColors {
+  static const yellow = AdminDesignColors.brandYellow;
+  static const amber = AdminDesignColors.brandAmber;
+  static const redDark = AdminDesignColors.deepRed;
+  static const red = AdminDesignColors.foodRed;
+  static const ink = AdminDesignColors.ink;
+
+  static const muted = AdminDesignColors.secondaryText;
+  static const canvas = AdminDesignColors.canvas;
+  static const surface = AdminDesignColors.surface;
+  static const line = AdminDesignColors.border;
+
+  static const success = AdminDesignColors.success;
+  static const warning = AdminDesignColors.warning;
+  static const error = AdminDesignColors.error;
+  static const info = AdminDesignColors.info;
+
+  static const redSoft = AdminDesignColors.redSoft;
+  static const amberSoft = AdminDesignColors.amberSoft;
+  static const yellowSoft = AdminDesignColors.yellowSoft;
+  static const green = AdminDesignColors.success;
+  static const greenSoft = AdminDesignColors.successSoft;
+  static const blue = AdminDesignColors.info;
+  static const blueSoft = AdminDesignColors.infoSoft;
+  static const peach = AdminDesignColors.amberSoft;
+}art of '../main.dart';
+
+/// Snap Foodd's official brand palette. Keep admin UI accents within these
+/// five brand colors; semantic colors below are aliases of the same palette.
+abstract final class AdminColors {
   static const yellow = Color(0xFFF2D022);
   static const amber = Color(0xFFF2AE2E);
   static const redDark = Color(0xFFA61C1C);
