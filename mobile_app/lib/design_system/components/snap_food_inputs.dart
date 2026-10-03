@@ -74,7 +74,7 @@ class SnapSearchField extends StatelessWidget {
                     )
                   : null,
           filled: true,
-          fillColor: SnapFoodColors.white,
+          fillColor: SnapFoodColors.surfaceContainerLowest,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: SnapFoodSpacing.md,
             vertical: SnapFoodSpacing.md,
@@ -130,7 +130,7 @@ class SnapFilterChip extends StatelessWidget {
       child: Material(
         color: selected
             ? SnapFoodColors.softYellow
-            : SnapFoodColors.white,
+            : SnapFoodColors.surfaceContainerLowest,
         shape: StadiumBorder(
           side: BorderSide(
             color: selected
@@ -210,7 +210,7 @@ class SnapCategoryChip extends StatelessWidget {
       child: Material(
         color: selected
             ? SnapFoodColors.primaryContainer
-            : SnapFoodColors.white,
+            : SnapFoodColors.surfaceContainerLowest,
         shape: StadiumBorder(
           side: BorderSide(
             color: selected
