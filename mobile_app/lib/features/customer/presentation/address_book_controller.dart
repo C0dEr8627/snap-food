@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_exception.dart';
+import '../../auth/presentation/auth_controller.dart';
 import '../data/order_models.dart';
 import 'order_controller.dart';
 
@@ -82,6 +83,11 @@ class AddressBookController extends AsyncNotifier<AddressBookState> {
   Future<AddressBookState> build() => _fetch();
 
   Future<AddressBookState> _fetch() async {
+    // Address state is account-scoped. Watching the authenticated customer id
+    // forces this provider to rebuild when one customer signs out and another
+    // signs in, preventing the previous customer's in-memory address list
+    // from being rendered for the new account.
+    ref.watch(authUserIdProvider);
     final response = await ref.read(orderApiClientProvider).get('/addresses');
     final raw = response is Map ? response['data'] : null;
     final addresses = raw is List
