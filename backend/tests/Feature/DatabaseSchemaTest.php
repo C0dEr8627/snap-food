@@ -9,13 +9,13 @@ class DatabaseSchemaTest extends TestCase
 {
     public function test_initial_business_schema_is_present(): void
     {
-        foreach (['users', 'addresses', 'categories', 'products'] as $table) {
+        foreach (['customer_users', 'delivery_partner_users', 'admin_users', 'addresses', 'categories', 'products'] as $table) {
             $this->assertTrue(Schema::hasTable($table), "Missing table: {$table}");
         }
 
-        $this->assertTrue(Schema::hasColumn('users', 'google_subject'));
-        $this->assertTrue(Schema::hasColumn('users', 'role'));
-        $this->assertTrue(Schema::hasColumn('users', 'is_active'));
+        $this->assertTrue(Schema::hasColumn('customer_users', 'google_subject') && Schema::hasColumn('delivery_partner_users', 'google_subject') && Schema::hasColumn('admin_users', 'google_subject'));
+        $this->assertTrue(Schema::hasColumn('customer_users', 'is_active'));
+        $this->assertTrue(Schema::hasColumn('delivery_partner_users', 'is_active') && Schema::hasColumn('admin_users', 'is_active'));
 
         $this->assertTrue(Schema::hasColumn('addresses', 'user_id'));
         $this->assertTrue(Schema::hasColumn('addresses', 'latitude'));
