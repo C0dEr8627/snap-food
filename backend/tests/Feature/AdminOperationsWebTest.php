@@ -18,7 +18,7 @@ class AdminOperationsWebTest extends TestCase
 
     public function test_admin_can_search_customers_and_filter_delivery_partners(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = AdminUser::factory()->create();
         $customer = User::factory()->create(['name' => 'Mira Customer', 'email' => 'mira@example.test']);
         $partnerUser = User::factory()->deliveryPartner()->create(['name' => 'Ravi Rider']);
         $partner = DeliveryPartner::create([
@@ -44,7 +44,7 @@ class AdminOperationsWebTest extends TestCase
 
     public function test_admin_can_review_assignments_and_existing_invoices(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = AdminUser::factory()->create();
         $customer = User::factory()->create(['name' => 'Invoice Customer']);
         $partnerUser = User::factory()->deliveryPartner()->create(['name' => 'Assigned Rider']);
         $partner = DeliveryPartner::create([
@@ -92,7 +92,7 @@ class AdminOperationsWebTest extends TestCase
 
     public function test_admin_can_approve_revoke_and_change_delivery_partner_state(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = AdminUser::factory()->create();
         $partnerUser = User::factory()->deliveryPartner()->create();
         $partner = DeliveryPartner::create([
             'user_id' => $partnerUser->id,
@@ -137,7 +137,7 @@ class AdminOperationsWebTest extends TestCase
 
     public function test_unapproved_partner_cannot_be_marked_available(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = AdminUser::factory()->create();
         $partnerUser = User::factory()->deliveryPartner()->create();
         $partner = DeliveryPartner::create([
             'user_id' => $partnerUser->id,
