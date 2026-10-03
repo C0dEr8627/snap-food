@@ -5,10 +5,10 @@ class UsersPage extends StatefulWidget {
   final String searchQuery;
 
   @override
-  State<UsersPage> createState() => _UsersPageState();
+  flutter.State<UsersPage> createState() => _UsersPageState();
 }
 
-class _UsersPageState extends State<UsersPage> {
+class _UsersPageState extends flutter.State<UsersPage> {
   final _api = const _UsersApi();
   final _search = TextEditingController();
   List<_PlatformUser> _users = [];
@@ -70,7 +70,7 @@ class _UsersPageState extends State<UsersPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  flutter.Widget build(BuildContext context) {
     final users = _filtered;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,7 +245,7 @@ class _UsersTable extends StatelessWidget {
   final ValueChanged<_PlatformUser> onView;
 
   @override
-  Widget build(BuildContext context) => SfDataTable(
+  flutter.Widget build(BuildContext context) => SfDataTable(
     minWidth: 1180,
     columns: const [
       SfDataTableColumn(label: 'ID', width: 80),
@@ -280,7 +280,7 @@ class _UsersLoading extends StatelessWidget {
   const _UsersLoading();
 
   @override
-  Widget build(BuildContext context) => SfCard(
+  flutter.Widget build(BuildContext context) => SfCard(
         padding: const EdgeInsets.all(AdminSpacing.xl),
         child: Column(
           children: [
@@ -306,7 +306,7 @@ class _UserDetails extends StatelessWidget {
   final _PlatformUser user;
 
   @override
-  Widget build(BuildContext context) => Column(
+  flutter.Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -359,10 +359,10 @@ class _UserDetails extends StatelessWidget {
 class _UserDetailSection extends StatelessWidget {
   const _UserDetailSection({required this.title, required this.children});
   final String title;
-  final List<Widget> children;
+  final List<flutter.flutter.Widget> children;
 
   @override
-  Widget build(BuildContext context) => Column(
+  flutter.Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title, style: AdminTypography.cardTitle),
@@ -378,7 +378,7 @@ class _UserDetailLine extends StatelessWidget {
   final String value;
 
   @override
-  Widget build(BuildContext context) => Padding(
+  flutter.Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(vertical: AdminSpacing.sm),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -395,7 +395,7 @@ class _AddressCard extends StatelessWidget {
   final _UserAddress address;
 
   @override
-  Widget build(BuildContext context) {
+  flutter.Widget build(BuildContext context) {
     final lines = [
       if (address.recipientName.isNotEmpty) address.recipientName,
       if (address.line1.isNotEmpty) address.line1,
