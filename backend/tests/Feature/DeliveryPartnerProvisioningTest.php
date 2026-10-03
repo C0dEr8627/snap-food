@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\DeliveryPartner;
 use App\Models\AdminUser;
 use App\Models\CustomerUser;
+use App\Models\DeliveryPartnerUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -53,7 +54,7 @@ class DeliveryPartnerProvisioningTest extends TestCase
 
         $this->assertDatabaseHas('delivery_partners', [
             'id' => $partner->id,
-            'user_id' => $candidate->id,
+            'user_id' => $partner->user_id,
             'is_approved' => true,
             'is_available' => false,
             'approved_by' => $admin->id,
@@ -65,8 +66,16 @@ class DeliveryPartnerProvisioningTest extends TestCase
         $admin = $this->admin('revoke-admin');
         $candidate = $this->customer('revoke-candidate');
 
+        $partnerUser = DeliveryPartnerUser::create([
+            'name' => $candidate->name,
+            'email' => $candidate->email,
+            'phone' => $candidate->phone,
+            'password' => $candidate->password,
+            'is_active' => true,
+        ]);
+
         $partner = DeliveryPartner::create([
-            'user_id' => $candidate->id,
+            'user_id' => $partnerUser->id,
             'is_approved' => true,
             'is_active' => true,
             'is_available' => true,
