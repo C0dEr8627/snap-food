@@ -16,18 +16,18 @@ class AdminOperationsWebTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_admin_can_search_customers_and_filter_delivery_partners(): void
+    public function test_admin_can_search_customers_and_filter_delivery_partner_users(): void
     {
         $admin = AdminUser::factory()->create();
         $customer = CustomerUser::factory()->create(['name' => 'Mira Customer', 'email' => 'mira@example.test']);
         $partnerUser = DeliveryPartnerUser::factory()->create(['name' => 'Ravi Rider']);
-        $partner = DeliveryPartner::create([
-            'user_id' => $partnerUser->id,
+        $partner = $partnerUser->forceFill([
             'is_approved' => true,
             'is_active' => true,
             'is_available' => true,
             'approved_at' => now(),
         ]);
+        $partner->save();
 
         $this->actingAs($admin, 'web')
             ->get('/admin/customers?q=mira')
@@ -47,13 +47,13 @@ class AdminOperationsWebTest extends TestCase
         $admin = AdminUser::factory()->create();
         $customer = CustomerUser::factory()->create(['name' => 'Invoice Customer']);
         $partnerUser = DeliveryPartnerUser::factory()->create(['name' => 'Assigned Rider']);
-        $partner = DeliveryPartner::create([
-            'user_id' => $partnerUser->id,
+        $partner = $partnerUser->forceFill([
             'is_approved' => true,
             'is_active' => true,
             'is_available' => false,
             'approved_at' => now(),
         ]);
+        $partner->save();
         $order = Order::factory()->create(['customer_id' => $customer->id, 'status' => Order::STATUS_DELIVERED]);
         OrderAssignment::create([
             'order_id' => $order->id,
@@ -94,18 +94,18 @@ class AdminOperationsWebTest extends TestCase
     {
         $admin = AdminUser::factory()->create();
         $partnerUser = DeliveryPartnerUser::factory()->create();
-        $partner = DeliveryPartner::create([
-            'user_id' => $partnerUser->id,
+        $partner = $partnerUser->forceFill([
             'is_approved' => false,
             'is_active' => true,
             'is_available' => false,
         ]);
+        $partner->save();
 
         $this->actingAs($admin, 'web')
             ->post('/admin/delivery-partners/'.$partner->id.'/approval', ['approved' => '1'])
             ->assertRedirect('/admin/delivery-partners');
 
-        $this->assertDatabaseHas('delivery_partners', [
+        $this->assertDatabaseHas('delivery_partner_users', [
             'id' => $partner->id,
             'is_approved' => true,
             'approved_by' => $admin->id,
@@ -115,13 +115,13 @@ class AdminOperationsWebTest extends TestCase
             ->post('/admin/delivery-partners/'.$partner->id.'/state', ['action' => 'available'])
             ->assertRedirect('/admin/delivery-partners');
 
-        $this->assertDatabaseHas('delivery_partners', ['id' => $partner->id, 'is_available' => true]);
+        $this->assertDatabaseHas('delivery_partner_users', ['id' => $partner->id, 'is_available' => true]);
 
         $this->actingAs($admin, 'web')
             ->post('/admin/delivery-partners/'.$partner->id.'/approval', ['approved' => '0'])
             ->assertRedirect('/admin/delivery-partners');
 
-        $this->assertDatabaseHas('delivery_partners', [
+        $this->assertDatabaseHas('delivery_partner_users', [
             'id' => $partner->id,
             'is_approved' => false,
             'is_available' => false,
@@ -132,7 +132,7 @@ class AdminOperationsWebTest extends TestCase
             ->post('/admin/delivery-partners/'.$partner->id.'/state', ['action' => 'deactivate'])
             ->assertRedirect('/admin/delivery-partners');
 
-        $this->assertDatabaseHas('delivery_partners', ['id' => $partner->id, 'is_active' => false, 'is_available' => false]);
+        $this->assertDatabaseHas('delivery_partner_users', ['id' => $partner->id, 'is_active' => false, 'is_available' => false]);
     }
 
     public function test_unapproved_partner_cannot_be_marked_available(): void
@@ -151,7 +151,7 @@ class AdminOperationsWebTest extends TestCase
             ->post('/admin/delivery-partners/'.$partner->id.'/state', ['action' => 'available'])
             ->assertConflict();
 
-        $this->assertDatabaseHas('delivery_partners', ['id' => $partner->id, 'is_available' => false]);
+        $this->assertDatabaseHas('delivery_partner_users', ['id' => $partner->id, 'is_available' => false]);
     }
 
     public function test_customer_cannot_access_admin_operations_pages(): void
