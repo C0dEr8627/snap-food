@@ -41,6 +41,12 @@ return new class extends Migration
             $table->foreign('approved_by')->references('id')->on('admin_users')->nullOnDelete();
         });
 
+        // Actor IDs can now refer to any of the dedicated account tables.
+        // Keep the historical integer value without enforcing a single-table FK.
+        Schema::table('order_status_histories', function (Blueprint $table): void {
+            $table->dropForeign(['actor_id']);
+        });
+
         Schema::table('order_assignments', function (Blueprint $table): void {
             $table->dropForeign(['assigned_by']);
             $table->foreign('assigned_by')->references('id')->on('admin_users')->restrictOnDelete();
