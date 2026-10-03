@@ -3,10 +3,10 @@ part of '../main.dart';
 class InvoicesPage extends StatefulWidget {
   const InvoicesPage({super.key, this.searchQuery = ''});
   final String searchQuery;
-  @override State<InvoicesPage> createState() => _InvoicesPageState();
+  @override flutter.State<InvoicesPage> createState() => _InvoicesPageState();
 }
 
-class _InvoicesPageState extends State<InvoicesPage> {
+class _InvoicesPageState extends flutter.State<InvoicesPage> {
   final _api = const _InvoiceLedgerApi();
   final _search = TextEditingController();
   List<_LedgerInvoice> _items = [];
@@ -73,7 +73,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
     finally { if (mounted) setState(() => _exporting = false); }
   }
 
-  @override Widget build(BuildContext context) {
+  @override flutter.Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final mobile = width < 760;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -95,10 +95,10 @@ class _InvoicesPageState extends State<InvoicesPage> {
       const SizedBox(height: AdminSpacing.xl),Page extends StatefulWidget {
   const InvoicesPage({super.key, this.searchQuery = ''});
   final String searchQuery;
-  @override State<InvoicesPage> createState() => _InvoicesPageState();
+  @override flutter.State<InvoicesPage> createState() => _InvoicesPageState();
 }
 
-class _InvoicesPageState extends State<InvoicesPage> {
+class _InvoicesPageState extends flutter.State<InvoicesPage> {
   final _api = const _InvoiceLedgerApi();
   final _search = TextEditingController();
   List<_LedgerInvoice> _items = [];
@@ -165,7 +165,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
     finally { if (mounted) setState(() => _exporting = false); }
   }
 
-  @override Widget build(BuildContext context) {
+  @override flutter.Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final mobile = width < 760;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -268,7 +268,7 @@ class _InvoiceDetail extends StatelessWidget {
   final _LedgerInvoice invoice;
 
   @override
-  Widget build(BuildContext context) => Column(
+  flutter.Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Row(children: [
@@ -311,7 +311,7 @@ class _InvoiceDetailLine extends StatelessWidget {
   final String label, value;
   final bool strong;
   @override
-  Widget build(BuildContext context) => Padding(
+  flutter.Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.symmetric(vertical: AdminSpacing.xs),
     child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       SizedBox(width: 126, child: Text(label, style: AdminTypography.small.copyWith(color: AdminDesignColors.secondaryText))),
@@ -363,7 +363,7 @@ class _LedgerInvoice {
 
 class _InvoiceBreadcrumb extends StatelessWidget {
   const _InvoiceBreadcrumb();
-  @override Widget build(BuildContext context) => const Wrap(spacing: 7, crossAxisAlignment: WrapCrossAlignment.center, children: [
+  @override flutter.Widget build(BuildContext context) => const Wrap(spacing: 7, crossAxisAlignment: WrapCrossAlignment.center, children: [
     Text('ACCOUNTING & COMPLIANCE', style: TextStyle(fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w900, color: AdminColors.muted)),
     AdminIcon(HugeIcons.strokeRoundedCircle, size: 4, color: AdminColors.warning),
     Text('INVOICE LEDGER', style: TextStyle(fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w900, color: AdminColors.warning)),
@@ -373,7 +373,7 @@ class _InvoiceBreadcrumb extends StatelessWidget {
 class _InvoiceKpi extends StatelessWidget {
   const _InvoiceKpi({required this.title, required this.value, required this.caption, required this.icon, required this.accent});
   final String title, value, caption; final AdminIconData icon; final Color accent;
-  @override Widget build(BuildContext context) => Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: AdminColors.line)),
+  @override flutter.Widget build(BuildContext context) => Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: AdminColors.line)),
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
       Row(children: [Expanded(child: Text(title, style: const TextStyle(fontSize: 11, letterSpacing: .7, fontWeight: FontWeight.w900, color: AdminColors.muted))), AdminIcon(icon, size: 18, color: accent)]),
       const SizedBox(height: 12), Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: value == 'Not available' ? 16 : 22, fontWeight: FontWeight.w900, color: AdminColors.ink, letterSpacing: -.5)),
@@ -384,7 +384,7 @@ class _InvoiceKpi extends StatelessWidget {
 class _InvoiceFilterPill extends StatelessWidget {
   const _InvoiceFilterPill(this.label, this.active, this.onTap);
   final String label; final bool active; final VoidCallback onTap;
-  @override Widget build(BuildContext context) => (active ? shad.Button.secondary : shad.Button.ghost)(
+  @override flutter.Widget build(BuildContext context) => (active ? shad.Button.secondary : shad.Button.ghost)(
     onPressed: onTap,
     child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: active ? AdminColors.ink : AdminColors.muted)),
   );
@@ -393,7 +393,7 @@ class _InvoiceFilterPill extends StatelessWidget {
 class _InvoiceLedgerCard extends StatelessWidget {
   const _InvoiceLedgerCard({required this.invoices, required this.mobile, required this.page, required this.total, required this.lastPage, required this.onPage, required this.onView});
   final List<_LedgerInvoice> invoices; final bool mobile; final int page, total, lastPage; final ValueChanged<int> onPage; final ValueChanged<_LedgerInvoice> onView;
-  @override Widget build(BuildContext context) => Column(children: [
+  @override flutter.Widget build(BuildContext context) => Column(children: [
     SfDataTable(
       minWidth: 980,
       columns: const [
@@ -426,7 +426,7 @@ class _InvoiceLedgerCard extends StatelessWidget {
 class _InvoiceMobileCard extends StatelessWidget {
   const _InvoiceMobileCard({required this.invoice, required this.onView});
   final _LedgerInvoice invoice; final VoidCallback onView;
-  @override Widget build(BuildContext context) => InkWell(onTap: onView, child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+  @override flutter.Widget build(BuildContext context) => InkWell(onTap: onView, child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
     Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(invoice.number, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)), const SizedBox(height: 3), Text('#ORDER-' + invoice.orderId.toString() + ' · ' + invoice.customer, style: const TextStyle(fontSize: 11, color: AdminColors.muted))])), _InvoiceStatus(invoice.paymentStatus)]),
     const SizedBox(height: 12), Row(children: [Expanded(child: Text(invoice.email.isEmpty ? 'No email recorded' : invoice.email, style: const TextStyle(fontSize: 11, color: AdminColors.muted))), Text(_inr(invoice.total), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900))]),
     const SizedBox(height: 7), Text('Items ' + _inr(invoice.subtotal) + ' · Delivery ' + _inr(invoice.deliveryFee), style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
@@ -436,7 +436,7 @@ class _InvoiceMobileCard extends StatelessWidget {
 
 class _InvoiceStatus extends StatelessWidget {
   const _InvoiceStatus(this.status); final String status;
-  @override Widget build(BuildContext context) {
+  @override flutter.Widget build(BuildContext context) {
     final paid = status == 'PAID', pending = status == 'PENDING';
     final bg = paid ? AdminColors.greenSoft : pending ? AdminColors.amberSoft : AdminColors.redSoft;
     final fg = paid ? AdminColors.green : pending ? AdminColors.amber : AdminColors.red;
@@ -447,7 +447,7 @@ class _InvoiceStatus extends StatelessWidget {
 class _InvoiceDetailLine extends StatelessWidget {
   const _InvoiceDetailLine(this.label, this.value, {this.strong = false});
   final String label, value; final bool strong;
-  @override Widget build(BuildContext context) => Padding(padding: const EdgeInsets.symmetric(vertical: 5), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [SizedBox(width: 125, child: Text(label, style: const TextStyle(fontSize: 11, color: AdminColors.muted))), Expanded(child: Text(value, style: TextStyle(fontSize: 11.5, fontWeight: strong ? FontWeight.w900 : FontWeight.w700, color: AdminColors.ink)))]));
+  @override flutter.Widget build(BuildContext context) => Padding(padding: const EdgeInsets.symmetric(vertical: 5), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [SizedBox(width: 125, child: Text(label, style: const TextStyle(fontSize: 11, color: AdminColors.muted))), Expanded(child: Text(value, style: TextStyle(fontSize: 11.5, fontWeight: strong ? FontWeight.w900 : FontWeight.w700, color: AdminColors.ink)))]));
 }
 
 int _int(dynamic v, [int fallback = 0]) => v is int ? v : int.tryParse(v?.toString() ?? '') ?? fallback;
