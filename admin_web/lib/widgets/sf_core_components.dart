@@ -51,7 +51,7 @@ class SfButton extends StatelessWidget {
             color: enabled ? background : AdminDesignColors.canvas,
             borderRadius: BorderRadius.circular(AdminRadii.control),
             border: variant == SfButtonVariant.outline
-                ? const BorderSide(color: AdminDesignColors.border).toBoxDecorationBorder()
+                ? const Border.fromBorderSide(BorderSide(color: AdminDesignColors.border))
                 : null,
           ),
           child: DefaultTextStyle(
