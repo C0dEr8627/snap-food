@@ -49,6 +49,6 @@ class CustomerUser extends Authenticatable
 
     public function hasAnyRole(array $roles): bool
     {
-        return $this->hasRole(in_array('CUSTOMER', $roles, true) ? 'CUSTOMER' : (in_array('DELIVERY_PARTNER', $roles, true) ? 'DELIVERY_PARTNER' : 'ADMIN'));
+        return in_array('CUSTOMER', $roles, true);
     }
 }
