@@ -16,14 +16,14 @@ class SfButton extends StatelessWidget {
   });
 
   final VoidCallback? onPressed;
-  final Widget child;
+  final flutter.Widget child;
   final SfButtonVariant variant;
   final AdminIconData? icon;
   final bool loading;
   final bool expand;
 
   @override
-  Widget build(BuildContext context) {
+  flutter.Widget build(BuildContext context) {
     final enabled = onPressed != null && !loading;
     final background = switch (variant) {
       SfButtonVariant.primary => AdminDesignColors.ink,
@@ -40,7 +40,7 @@ class SfButton extends StatelessWidget {
       SfButtonVariant.destructive => Colors.white,
     };
 
-    Widget button = Material(
+    flutter.Widget button = Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: enabled ? onPressed : null,
@@ -109,7 +109,7 @@ class SfIconButton extends StatelessWidget {
   final bool selected;
 
   @override
-  Widget build(BuildContext context) {
+  flutter.Widget build(BuildContext context) {
     final button = Semantics(
       button: true,
       enabled: onPressed != null,
@@ -144,11 +144,11 @@ class SfAnimatedSwitcher extends StatelessWidget {
     this.duration = AdminMotion.dataUpdate,
   });
 
-  final Widget child;
+  final flutter.Widget child;
   final Duration duration;
 
   @override
-  Widget build(BuildContext context) => AnimatedSwitcher(
+  flutter.Widget build(BuildContext context) => AnimatedSwitcher(
     duration: duration,
     switchInCurve: AdminMotion.curve,
     switchOutCurve: AdminMotion.curve,
@@ -178,14 +178,14 @@ class SfInput extends StatelessWidget {
   final String? helperText;
   final String? errorText;
   final AdminIconData? prefixIcon;
-  final Widget? suffixIcon;
+  final flutter.flutter.Widget? suffixIcon;
   final ValueChanged<String>? onChanged;
   final bool obscureText;
   final bool enabled;
   final FocusNode? focusNode;
 
   @override
-  Widget build(BuildContext context) => TextFormField(
+  flutter.Widget build(BuildContext context) => TextFormField(
     controller: controller,
     focusNode: focusNode,
     enabled: enabled,
@@ -225,7 +225,7 @@ class SfSearchField extends StatelessWidget {
   final bool autofocus;
 
   @override
-  Widget build(BuildContext context) => TextField(
+  flutter.Widget build(BuildContext context) => TextField(
     controller: controller,
     autofocus: autofocus,
     onChanged: onChanged,
@@ -253,10 +253,10 @@ class SfFormSection extends StatelessWidget {
 
   final String title;
   final String? description;
-  final Widget child;
+  final flutter.Widget child;
 
   @override
-  Widget build(BuildContext context) => Column(
+  flutter.Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(title, style: AdminTypography.cardTitle),
@@ -299,7 +299,7 @@ class SfFormField extends StatelessWidget {
   final bool obscureText;
 
   @override
-  Widget build(BuildContext context) => TextFormField(
+  flutter.Widget build(BuildContext context) => TextFormField(
     controller: controller,
     enabled: enabled,
     obscureText: obscureText,
@@ -334,7 +334,7 @@ class SfBadge extends StatelessWidget {
   final Color? foregroundColor;
 
   @override
-  Widget build(BuildContext context) => Container(
+  flutter.Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
     decoration: BoxDecoration(
       color: backgroundColor ?? AdminDesignColors.canvas,
@@ -360,7 +360,7 @@ class SfStatusBadge extends StatelessWidget {
   final String? status;
 
   @override
-  Widget build(BuildContext context) {
+  flutter.Widget build(BuildContext context) {
     final value = (status ?? label).toLowerCase();
     final (Color, Color) colors = switch (value) {
       final s when s.contains('success') ||
@@ -391,11 +391,11 @@ class SfStatusBadge extends StatelessWidget {
 class SfCard extends StatelessWidget {
   const SfCard({super.key, required this.child, this.padding = const EdgeInsets.all(AdminSpacing.lg)});
 
-  final Widget child;
+  final flutter.Widget child;
   final EdgeInsetsGeometry padding;
 
   @override
-  Widget build(BuildContext context) => Container(
+  flutter.Widget build(BuildContext context) => Container(
     width: double.infinity,
     padding: padding,
     decoration: BoxDecoration(
@@ -424,7 +424,7 @@ class SfStat extends StatelessWidget {
   final SfStatusBadge? status;
 
   @override
-  Widget build(BuildContext context) => SfCard(
+  flutter.Widget build(BuildContext context) => SfCard(
     padding: const EdgeInsets.all(AdminSpacing.lg),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -474,11 +474,11 @@ class SfPageHeader extends StatelessWidget {
 
   final String title;
   final String? description;
-  final Widget? leading;
-  final List<Widget> actions;
+  final flutter.flutter.Widget? leading;
+  final List<flutter.flutter.Widget> actions;
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
+  flutter.Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final stacked = constraints.maxWidth < 720;
       final titleBlock = Column(
@@ -507,12 +507,12 @@ class SfPageHeader extends StatelessWidget {
 class SfFilterBar extends StatelessWidget {
   const SfFilterBar({super.key, this.leading, this.filters = const [], this.trailing = const []});
 
-  final Widget? leading;
-  final List<Widget> filters;
-  final List<Widget> trailing;
+  final flutter.flutter.Widget? leading;
+  final List<flutter.flutter.Widget> filters;
+  final List<flutter.flutter.Widget> trailing;
 
   @override
-  Widget build(BuildContext context) => SfCard(
+  flutter.Widget build(BuildContext context) => SfCard(
     padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.md, vertical: AdminSpacing.sm),
     child: Wrap(
       spacing: AdminSpacing.sm,
@@ -539,10 +539,10 @@ class SfEmptyState extends StatelessWidget {
   final String title;
   final String message;
   final AdminIconData icon;
-  final Widget? action;
+  final flutter.flutter.Widget? action;
 
   @override
-  Widget build(BuildContext context) => SfCard(
+  flutter.Widget build(BuildContext context) => SfCard(
     padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.xl, vertical: AdminSpacing.huge),
     child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -578,7 +578,7 @@ class SfErrorState extends StatelessWidget {
   final VoidCallback? onRetry;
 
   @override
-  Widget build(BuildContext context) => SfCard(
+  flutter.Widget build(BuildContext context) => SfCard(
     padding: const EdgeInsets.all(AdminSpacing.xl),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -612,7 +612,7 @@ class SfLoadingState extends StatelessWidget {
   final String message;
   final bool compact;
   @override
-  Widget build(BuildContext context) => SfCard(
+  flutter.Widget build(BuildContext context) => SfCard(
     padding: EdgeInsets.all(compact ? AdminSpacing.lg : AdminSpacing.xl),
     child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -640,10 +640,10 @@ class SfSkeleton extends StatefulWidget {
   final double radius;
 
   @override
-  State<SfSkeleton> createState() => _SfSkeletonState();
+  flutter.State<SfSkeleton> createState() => _SfSkeletonState();
 }
 
-class _SfSkeletonState extends State<SfSkeleton> with SingleTickerProviderStateMixin {
+class _SfSkeletonState extends flutter.State<SfSkeleton> with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))..repeat(reverse: true);
 
   @override
@@ -653,7 +653,7 @@ class _SfSkeletonState extends State<SfSkeleton> with SingleTickerProviderStateM
   }
 
   @override
-  Widget build(BuildContext context) => AnimatedBuilder(
+  flutter.Widget build(BuildContext context) => AnimatedBuilder(
     animation: _controller,
     builder: (context, child) => Opacity(
       opacity: 0.45 + (_controller.value * 0.25),
@@ -677,7 +677,7 @@ class SfAvatar extends StatelessWidget {
   final double size;
 
   @override
-  Widget build(BuildContext context) {
+  flutter.Widget build(BuildContext context) {
     final initials = _avatarInitials(name);
     return Semantics(
       label: name == null ? 'Avatar' : 'Avatar for $name',
