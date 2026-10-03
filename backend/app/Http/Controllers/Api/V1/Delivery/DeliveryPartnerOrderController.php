@@ -69,6 +69,11 @@ class DeliveryPartnerOrderController
             $order->status = $target;
             $order->save();
 
+            if ($target === Order::STATUS_DELIVERED) {
+                $lockedPartner = $lockedAssignment->deliveryPartner()->lockForUpdate()->first();
+                $lockedPartner?->update(['is_available' => true]);
+            }
+
             $order->statusHistory()->create([
                 'from_status' => $from,
                 'to_status' => $target,
