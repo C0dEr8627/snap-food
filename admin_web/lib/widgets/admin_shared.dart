@@ -47,7 +47,13 @@ class AdminIcon extends StatelessWidget {
   );
 }
 
-void _notice(BuildContext context, String message, {bool error = false}) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: error ? AdminColors.red : null, behavior: SnackBarBehavior.floating));
+void _notice(BuildContext context, String message, {bool error = false}) {
+  if (error) {
+    SfFeedback.showError(context, message);
+  } else {
+    SfFeedback.showInfo(context, message);
+  }
+}
 
 class AdminCard extends StatelessWidget {
   const AdminCard({super.key, required this.child, this.padding = const EdgeInsets.all(AdminSpacing.lg)});
