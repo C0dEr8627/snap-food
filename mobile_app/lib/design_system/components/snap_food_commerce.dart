@@ -365,3 +365,204 @@ class SnapSectionHeader extends StatelessWidget {
         ],
       );
 }
+
+
+/// Editorial food card with image-led hierarchy and feature-owned actions.
+class SnapProductCard extends StatelessWidget {
+  const SnapProductCard({
+    required this.name,
+    required this.price,
+    required this.image,
+    this.category,
+    this.isAvailable = true,
+    this.isFavorite = false,
+    this.onTap,
+    this.onFavorite,
+    this.onAction,
+    this.actionLabel = 'View',
+    this.badgeLabel,
+    this.width = 216,
+    this.imageHeight = 150,
+    super.key,
+  });
+
+  final String name;
+  final String price;
+  final Widget image;
+  final String? category;
+  final bool isAvailable;
+  final bool isFavorite;
+  final VoidCallback? onTap;
+  final VoidCallback? onFavorite;
+  final VoidCallback? onAction;
+  final String actionLabel;
+  final String? badgeLabel;
+  final double width;
+  final double imageHeight;
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = SnapFoodRadii.lg;
+    final actionEnabled = isAvailable && onAction != null;
+
+    return Semantics(
+      container: true,
+      label: '$name, price ₹$price${category == null ? '' : ', $category'}${isAvailable ? '' : ', unavailable'}',
+      child: SizedBox(
+        width: width,
+        child: Material(
+          color: SnapFoodColors.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(radius),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(radius),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(radius),
+                border: Border.all(color: SnapFoodColors.softBorder),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    height: imageHeight,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        image,
+                        if (badgeLabel != null)
+                          Positioned(
+                            top: SnapFoodSpacing.sm,
+                            left: SnapFoodSpacing.sm,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: SnapFoodColors.surfaceContainerLowest.withAlpha(235),
+                                borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: SnapFoodSpacing.sm,
+                                  vertical: SnapFoodSpacing.xs,
+                                ),
+                                child: Text(
+                                  badgeLabel!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                    color: SnapFoodColors.warmBlack,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        if (onFavorite != null)
+                          Positioned(
+                            top: SnapFoodSpacing.sm,
+                            right: SnapFoodSpacing.sm,
+                            child: Semantics(
+                              button: true,
+                              label: isFavorite
+                                  ? 'Remove $name from favorites'
+                                  : 'Add $name to favorites',
+                              child: Material(
+                                color: SnapFoodColors.surfaceContainerLowest.withAlpha(235),
+                                shape: const CircleBorder(),
+                                child: InkWell(
+                                  customBorder: const CircleBorder(),
+                                  onTap: onFavorite,
+                                  child: SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                    child: Icon(
+                                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                                      size: 18,
+                                      color: SnapFoodColors.secondary,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        if (onAction != null)
+                          Positioned(
+                            right: SnapFoodSpacing.sm,
+                            bottom: SnapFoodSpacing.sm,
+                            child: Semantics(
+                              button: true,
+                              enabled: actionEnabled,
+                              label: actionEnabled ? actionLabel : '$name unavailable',
+                              child: Material(
+                                color: actionEnabled
+                                    ? SnapFoodColors.primaryContainer
+                                    : SnapFoodColors.outlineVariant,
+                                shape: const CircleBorder(),
+                                child: InkWell(
+                                  onTap: actionEnabled ? onAction : null,
+                                  customBorder: const CircleBorder(),
+                                  child: const SizedBox(
+                                    width: 44,
+                                    height: 44,
+                                    child: Icon(
+                                      Icons.add_rounded,
+                                      color: SnapFoodColors.warmBlack,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      SnapFoodSpacing.md,
+                      SnapFoodSpacing.sm + SnapFoodSpacing.xs,
+                      SnapFoodSpacing.md,
+                      SnapFoodSpacing.sm + 2,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (category != null) ...[
+                          Text(
+                            category!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: SnapFoodColors.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: SnapFoodSpacing.xs),
+                        ],
+                        Text(
+                          name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            height: 1.25,
+                            fontWeight: FontWeight.w800,
+                            color: SnapFoodColors.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: SnapFoodSpacing.sm),
+                        SnapPrice(value: price, fontSize: 17),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
