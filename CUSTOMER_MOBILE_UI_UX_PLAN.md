@@ -411,25 +411,24 @@ Requirements:
 - Preserve all existing product customization/business logic.
 
 ### Task 11 — Redesign restaurant menu
-**Status:** ⬜ Not Started
+**Status:** ⏭️ Not Applicable — no restaurant concept
 
-- Strong restaurant header.
-- Restaurant metadata.
-- Menu categories.
-- Dish rows/cards with image, name, description, price and add action.
-- Clear scrolling hierarchy.
-- Persistent cart affordance when appropriate.
+**Product decision:** Snap Foodd does not have a restaurant concept in the customer product model. There is no restaurant-to-product relationship, so restaurant menu headers, restaurant metadata, restaurant menu categories, restaurant navigation and restaurant-specific cart behavior are not intended customer product behavior.
+
+**Roadmap action:** Skip Task 11 and continue with product/catalogue-first commerce tasks. Do not reintroduce restaurant concepts into later customer UI work.
 
 ### Task 12 — Redesign Cart
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- Tactile quantity controls.
-- Strong item/price hierarchy.
-- Clear subtotal/fees/total.
-- Useful empty-cart state.
-- Sticky checkout CTA.
-- Subtle add/remove feedback rather than oversized generic snackbars.
-
+- Reworked the cart around the existing `CartController` and remote cart repository without changing cart APIs or quantity behavior.
+- Strengthened item/name/description/price hierarchy with the reusable Snap Foodd typography and commerce primitives.
+- Kept tactile `SnapQuantityStepper` controls for optimistic add/remove quantity changes.
+- Added a clearer bill-details hierarchy for the preview item total and explicitly preserved the current server-authoritative final-charge behavior.
+- Kept the empty-cart experience branded with `SnapEmptyState` and added a lightweight browse-dishes action.
+- Replaced the generic checkout button with the reusable `SnapPrimaryButton` and kept it safe-area aware and sticky.
+- Replaced the raw back control with `SnapIconButton` and retained existing navigation.
+- Avoided generic add/remove snackbars; quantity changes continue through the existing optimistic cart controller flow with server reconciliation on failure.
+- Preserved product imagery fallback behavior, checkout routing, cart state, and server-authoritative pricing.
 ### Task 13 — Redesign Checkout
 **Status:** ⬜ Not Started
 
@@ -594,6 +593,8 @@ Before marking any task complete, verify:
 | 2026-10-03 | Task 10 — Redesign food item details | ✅ Complete | Reworked Food Details around the real catalogue product contract: removed obsolete hard-coded product fallbacks, strengthened image/name/price hierarchy, added branded availability/category metadata, preserved quantity/cart/navigation behavior, and kept the sticky add-to-cart control safe-area aware. Validation: changed Dart source was reviewed for structural correctness; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 9 — Redesign Search / Discover | ✅ Complete | Refined customer search using the existing catalogue contract: API-backed categories replaced hard-coded category data, reusable `SnapFilterChip` controls now filter by category, text search remains local and covers product/category names, and the result hierarchy distinguishes browse, category, and query states. Existing product navigation and catalogue retry behavior were preserved. Validation: source-level brace/parenthesis/bracket checks passed; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 7 — Redesign product cards | ✅ Complete | Added the reusable `SnapProductCard` editorial card and adopted it on the customer Home catalogue. Product imagery now leads the composition with consistent cropping, stronger name/price hierarchy, category metadata when available, 40px favorite and 44px action targets, explicit availability semantics, restrained borders, and no fabricated rating/popularity badges. Existing favourite toggling and product-detail navigation remain feature-owned and unchanged. Validation: source-level brace/parenthesis/bracket checks passed for the changed component and Home screen; implementation commits exposed no CI status through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
+| 2026-10-03 | Task 11 — Restaurant menu | ⏭️ Not Applicable | Confirmed that Snap Foodd has no customer-facing restaurant concept or product-to-restaurant relationship. Restaurant menu work is intentionally skipped; future customer UI work remains product/catalogue-first. |
+| 2026-10-03 | Task 12 — Redesign Cart | ✅ Complete | Reworked the customer Cart with stronger item/price hierarchy, token-based spacing/typography, tactile quantity controls, branded empty state, clearer bill details, and a safe-area-aware sticky checkout CTA using reusable Snap components. The existing CartController, remote repository synchronization, optimistic quantity changes, checkout route, image fallback, and server-authoritative final pricing behavior were preserved. Validation: changed Dart source was structurally reviewed; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector; no connector-exposed CI result was available for the implementation commit. |
 
 ---
 
@@ -615,6 +616,8 @@ Before marking any task complete, verify:
 - Completed Task 9: refined Search/Discover with API-backed categories, reusable filter chips, clearer result states, and preserved catalogue/product navigation behavior.
 - Product decision: removed restaurant discovery from the roadmap because Snap Foodd has no restaurant concept or product-to-restaurant relationship.
 - Completed Task 10: polished Food Details using the real catalogue contract, stronger visual hierarchy, branded metadata, and preserved commerce behavior.
+- Confirmed Task 11 is not applicable because Snap Foodd has no restaurant concept.
+- Completed Task 12: redesigned Cart with stronger commerce hierarchy, branded empty state, reusable quantity/CTA controls, clearer bill details, and preserved server-authoritative cart behavior.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
