@@ -45,7 +45,13 @@ class CartReviewScreen extends ConsumerWidget {
                         icon: Icons.arrow_back_rounded,
                         tooltip: 'Back',
                         semanticLabel: 'Back',
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () {
+                        if (context.canPop()) {
+                          context.pop();
+                        } else {
+                          context.go('/home');
+                        }
+                      },
                       ),
                       title: const Text(
                         'Your Cart',
@@ -113,7 +119,13 @@ class CartReviewScreen extends ConsumerWidget {
                                     title: '${itemCount} ${itemCount == 1 ? 'item' : 'items'} in your cart',
                                     subtitle: 'Review your dishes before checkout.',
                                     actionLabel: 'Add more',
-                                    onAction: () => Navigator.of(context).pop(),
+                                    onAction: () {
+                                      if (context.canPop()) {
+                                        context.pop();
+                                      } else {
+                                        context.go('/home');
+                                      }
+                                    },
                                   ),
                                   const SizedBox(height: SnapFoodSpacing.md),
                                   ...items.map(
@@ -161,7 +173,13 @@ class CartReviewScreen extends ConsumerWidget {
               ? SnapSecondaryButton(
                   label: 'Browse dishes',
                   icon: Icons.restaurant_menu_rounded,
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () {
+                    if (context.canPop()) {
+                      context.pop();
+                    } else {
+                      context.go('/home');
+                    }
+                  },
                 )
               : SnapPrimaryButton(
                   label: 'Continue to checkout',
