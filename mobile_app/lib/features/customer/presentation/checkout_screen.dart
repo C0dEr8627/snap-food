@@ -278,22 +278,16 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 class _ErrorBox extends StatelessWidget {
   const _ErrorBox({required this.error});
   final Object error;
+
   @override
   Widget build(BuildContext context) {
     final api = error is ApiException ? error as ApiException : null;
-    final message =
-        api?.message ?? 'We could not place the order. Please try again.';
+    final message = api?.message ?? 'We could not place the order. Please try again.';
     final code = api?.code;
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: SnapFoodColors.softRed,
-        borderRadius: BorderRadius.circular(SnapFoodRadii.md),
-      ),
-      child: Text(
-        code == null || code.isEmpty ? message : '$message ($code)',
-        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
-      ),
+    return SnapErrorState(
+      title: 'Could not place order',
+      message: code == null || code.isEmpty ? message : message + ' (' + code + ')',
+      compact: true,
     );
   }
 }
