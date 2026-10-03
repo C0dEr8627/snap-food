@@ -81,7 +81,13 @@ class _AddressBookScreenState extends ConsumerState<AddressBookScreen> {
                   padding: const EdgeInsets.only(left: SnapFoodSpacing.sm),
                   child: SnapIconButton(
                     icon: Icons.arrow_back,
-                    onPressed: saving ? null : () => context.pop(),
+                    onPressed: saving ? null : () {
+                      if (context.canPop()) {
+                        context.pop();
+                      } else {
+                        context.go('/home');
+                      }
+                    },
                     tooltip: 'Back',
                     semanticLabel: 'Back',
                   ),
