@@ -57,6 +57,13 @@ abstract final class SnapFoodTypography {
     fontWeight: FontWeight.w600,
   );
 
+  static const titleSmall = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    height: 20 / 14,
+    fontWeight: FontWeight.w600,
+  );
+
   static const bodyLarge = TextStyle(
     fontFamily: fontFamily,
     fontSize: 16,
