@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\AdminUser;
+use App\Models\CustomerUser;
 use App\Models\DeliveryPartnerUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -82,6 +83,21 @@ class DeliveryPartnerProvisioningTest extends TestCase
 
     public function test_customer_cannot_provision_delivery_partner(): void
     {
+        $customer = CustomerUser::create([
+            'name' => 'Customer',
+            'email' => 'customer@example.test',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($customer, 'sanctum')
+            ->postJson('/api/v1/admin/delivery-partners', [
+                'name' => 'Blocked Rider',
+                'email' => 'blocked@example.test',
+                'password' => 'secret123',
+                'password_confirmation' => 'secret123',
+            ])
+            ->assertForbidden();
+
         $this->assertDatabaseCount('delivery_partner_users', 0);
     }
 
