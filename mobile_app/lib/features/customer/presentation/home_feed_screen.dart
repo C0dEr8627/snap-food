@@ -4,6 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../design_system/components/snap_food_inputs.dart';
+import '../../../design_system/components/snap_food_button.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../../../design_system/tokens/app_spacing.dart';
@@ -170,25 +172,13 @@ class CategoryPills extends ConsumerWidget {
               final isAll = index == 0;
               final category = isAll ? null : categories[index - 1];
               final selected = isAll ? selectedCategoryId == null : selectedCategoryId == category!.id;
-              return ChoiceChip(
+              return SnapCategoryChip(
                 selected: selected,
-                showCheckmark: false,
-                onSelected: (_) => onSelected(isAll ? null : category!.id),
-                label: Text(isAll ? 'All' : category!.name),
-                avatar: Icon(
-                  isAll ? Icons.grid_view_rounded : Icons.restaurant_rounded,
-                  size: 16,
-                ),
-                labelStyle: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: selected ? SnapFoodColors.warmBlack : SnapFoodColors.onSurfaceVariant,
-                ),
-                backgroundColor: SnapFoodColors.surfaceContainerLowest,
-                selectedColor: SnapFoodColors.primaryContainer,
-                side: BorderSide(color: selected ? SnapFoodColors.primary.withAlpha(90) : SnapFoodColors.outline.withAlpha(28)),
-                shape: const StadiumBorder(),
-                padding: const EdgeInsets.symmetric(horizontal: 5),
+                onSelected: () => onSelected(isAll ? null : category!.id),
+                label: isAll ? 'All' : category!.name,
+                icon: isAll
+                    ? Icons.grid_view_rounded
+                    : Icons.restaurant_rounded,
               );
             },
           ),
@@ -730,57 +720,42 @@ class _SearchFiltersState extends State<SearchFilters> {
   Widget build(BuildContext context) => Row(
         children: [
           Expanded(
-            child: TextField(
+            child: SnapSearchField(
               controller: _controller,
               onChanged: widget.onSearchChanged,
-              decoration: const InputDecoration(
-                hintText: 'Search dishes, restaurants...',
-                prefixIcon: Icon(Icons.search),
-                suffixIcon: Icon(Icons.mic_none),
-                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              ),
+              showMic: true,
+              onClear: () {
+                _controller.clear();
+                widget.onSearchChanged('');
+              },
             ),
           ),
           const SizedBox(width: 8),
-          SizedBox(
-            width: 48,
-            height: 48,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Positioned.fill(
-                  child: FilledButton(
-                    onPressed: widget.onOpenFilters,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: widget.hasActiveFilters
-                          ? SnapFoodColors.secondary
-                          : SnapFoodColors.primaryContainer,
-                      foregroundColor: widget.hasActiveFilters
-                          ? Colors.white
-                          : SnapFoodColors.warmBlack,
-                      padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(SnapFoodRadii.md),
-                      ),
-                    ),
-                    child: const Icon(Icons.tune),
-                  ),
-                ),
-                if (widget.hasActiveFilters)
-                  Positioned(
-                    right: -2,
-                    top: -2,
-                    child: Container(
-                      width: 10,
-                      height: 10,
-                      decoration: const BoxDecoration(
-                        color: SnapFoodColors.primary,
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              SnapIconButton(
+                icon: Icons.tune_rounded,
+                tooltip: 'Filters',
+                semanticLabel: 'Open filters',
+                selected: widget.hasActiveFilters,
+                onPressed: widget.onOpenFilters,
+              ),
+              if (widget.hasActiveFilters)
+                const Positioned(
+                  right: -1,
+                  top: -1,
+                  child: IgnorePointer(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: SnapFoodColors.foodRed,
                         shape: BoxShape.circle,
                       ),
+                      child: SizedBox(width: 10, height: 10),
                     ),
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
         ],
       );
@@ -836,16 +811,17 @@ class _HomeFilterSheetState extends State<_HomeFilterSheet> {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  ChoiceChip(
-                    label: const Text('All'),
+                  SnapFilterChip(
+                    label: 'All',
                     selected: categoryId == null,
                     onSelected: (_) => setState(() => categoryId = null),
                   ),
                   for (final category in widget.categories)
-                    ChoiceChip(
-                      label: Text(category.name),
+                    SnapFilterChip(
+                      label: category.name,
                       selected: categoryId == category.id,
-                      onSelected: (_) => setState(() => categoryId = category.id),
+                      onSelected: (_) =>
+                          setState(() => categoryId = category.id),
                     ),
                 ],
               ),
