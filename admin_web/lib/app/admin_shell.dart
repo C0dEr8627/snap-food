@@ -685,6 +685,12 @@ class _Header extends StatelessWidget {
           ),
         ],
         const SizedBox(width: AdminSpacing.sm),
+        if (!desktop)
+          SfIconButton(
+            icon: HugeIcons.strokeRoundedSearch01,
+            onPressed: onOpenCommandPalette,
+            tooltip: 'Search',
+          ),
         SfIconButton(
           icon: HugeIcons.strokeRoundedNotification01,
           onPressed: () => _notice(
