@@ -29,7 +29,7 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
 
   void _orderNow(CatalogueProduct product) {
     final previewPrice = int.tryParse(product.price.split('.').first) ?? 0;
-    ref.read(directCheckoutItemsProvider.notifier).state = [
+    ref.read(directCheckoutItemsProvider.notifier).setItems([
       CartItem(
         productId: product.id.toString(),
         name: product.name,
@@ -39,7 +39,7 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
         vegetarian: product.category?.name.toLowerCase().contains('veg') == true,
         imageUrl: product.imageUrl,
       ),
-    ];
+    ]);
     context.push('/checkout');
   }
 
