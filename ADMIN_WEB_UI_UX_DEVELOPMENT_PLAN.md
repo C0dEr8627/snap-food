@@ -893,7 +893,7 @@ The admin UI/UX modernization is complete when:
 | Task 13 — Invoices / Billing | 🟢 Complete | 2026-10-03 | Refined finance workspace with shared header/filter/table/status/drawer language, supported current-page export and backend-truthful invoice detail presentation. |
 | Task 14 — Premium Form UX | 🟢 Complete | 2026-10-03 | Added shared form sections/fields with inline validation and required markers; upgraded Catalogue product editing with structured sections, field-level validation and destructive-action confirmation. |
 | Task 15 — Loading / Empty / Error / Success | 🟢 Complete | 2026-10-03 | Standardized reusable loading/error/empty presentation and routed legacy generic admin notices through the branded feedback system; audited all current admin page state patterns. |
-| Task 16 — Responsive Admin Web | ⬜ Not Started | 2026-10-03 | |
+| Task 16 — Responsive Admin Web | 🟢 Complete | 2026-10-03 | Added an explicit 4-tier admin shell strategy: full sidebar ≥1200px, compact sidebar rail at 900–1199px, drawer navigation at 600–899px, and narrow mobile fallback below 600px; audited page breakpoints, table overflow and responsive grids. |
 | Task 17 — Accessibility / Keyboard UX | ⬜ Not Started | 2026-10-03 | |
 | Task 18 — Motion & Micro-interactions | ⬜ Not Started | 2026-10-03 | |
 | Task 19 — Final Visual QA & Cleanup | ⬜ Not Started | 2026-10-03 | |
@@ -1299,6 +1299,29 @@ The admin UI/UX modernization is complete when:
   - Full Flutter Web compile, formatter, analyzer, automated tests and browser visual/overflow QA still require a runnable local or CI execution environment.
   - Existing invoice helper classes with legacy styling remain in the file where they are not part of the active rendered path; they can be cleaned up during the later final visual QA/cleanup pass.
   - Task 14 — Premium Form UX is the next implementation target.
+
+### 2026-10-03 — Task 16
+- Status: 🟢 Complete
+- Implemented:
+  - Updated the admin shell breakpoint model to match the plan: ≥1200px full sidebar, 900–1199px compact icon rail, 600–899px drawer navigation, and <600px narrow mobile fallback.
+  - Added a dedicated 76px sidebar rail for 900–1199px layouts so tablet-width desktop browsers retain persistent navigation without consuming full content width.
+  - Made the rail intentionally icon-only while preserving semantic labels/tooltips and active-state feedback.
+  - Hid secondary sidebar status/profile text in rail mode to prevent clipping and preserve comfortable content width.
+  - Kept the existing drawer navigation for narrower layouts and preserved the full sidebar at wide desktop widths.
+  - Audited the current Overview, Orders, Catalogue, Categories, Users, Delivery Partners and Invoices layouts. Existing responsive grids, Wrap-based filter/action layouts, constrained page width, table overflow patterns and drawer usage were retained rather than duplicated with another responsive system.
+  - Preserved API contracts, routing, authentication and existing business behavior.
+- Files/components changed:
+  - `admin_web/lib/app/admin_shell.dart`
+  - `ADMIN_WEB_UI_UX_DEVELOPMENT_PLAN.md`
+- Validation:
+  - Re-fetched the modified shell after implementation.
+  - Verified the four responsive shell width tiers and 76px rail behavior in source.
+  - Verified rail navigation passes semantic labels through `Semantics` while visually reducing navigation to icons.
+  - Audited page-level responsive constructs including LayoutBuilder breakpoints, Wrap-based controls, constrained content widths and intentionally scrollable data surfaces.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful local validation run is being claimed.
+- Limitations/follow-up:
+  - Browser-level screenshot, pixel overflow and real-device touch QA still require a runnable Flutter Web environment.
+  - Task 17 — Accessibility / Keyboard UX is the next implementation target.
 
 ### 2026-10-03 — Task 15
 - Status: 🟢 Complete
