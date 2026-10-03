@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../design_system/components/snap_food_commerce.dart';
 import '../../../design_system/components/snap_food_feedback.dart';
-import '../../../design_system/components/snap_food_feedback.dart';
 import '../../../design_system/components/snap_food_inputs.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
@@ -46,11 +45,11 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
         title: 'Filter dishes',
         subtitle: 'Tune the catalogue to what you want right now.',
         child: _HomeFilterSheet(
-        categories: catalogue.categories,
+          categories: catalogue.categories,
         selectedCategoryId: selectedCategoryId,
         onlyAvailable: onlyAvailable,
-        sortLowToHigh: sortLowToHigh,
-      ),
+          sortLowToHigh: sortLowToHigh,
+        ),
       ),
     );
 
