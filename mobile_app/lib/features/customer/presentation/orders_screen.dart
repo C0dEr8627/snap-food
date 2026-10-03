@@ -8,9 +8,16 @@ import 'home_feed_screen.dart';
 import 'order_controller.dart';
 import '../data/order_models.dart';
 import '../../../core/network/api_exception.dart';
+import '../../../design_system/components/snap_food_button.dart';
+import '../../../design_system/components/snap_food_commerce.dart';
+import '../../../design_system/components/snap_food_feedback.dart';
+import '../../../design_system/components/snap_order_status.dart';
+import '../../../design_system/tokens/app_spacing.dart';
+import '../../../design_system/tokens/app_typography.dart';
 
 class OrdersScreen extends ConsumerWidget {
   const OrdersScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(orderHistoryControllerProvider);
@@ -27,107 +34,120 @@ class OrdersScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Padding(
-                      padding: EdgeInsets.fromLTRB(16, 4, 16, 12),
-                      child: Text('Your Orders', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
-                    ),
-                    Expanded(child: state.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.cloud_off_outlined, size: 44, color: SnapFoodColors.outline),
-                const SizedBox(height: 12),
-                const Text('We couldn’t load your orders', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 6),
-                Text(
-                  error is ApiException ? error.message : 'Check your connection and try again.',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: SnapFoodColors.onSurfaceVariant, fontSize: 12),
-                ),
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: () => ref.read(orderHistoryControllerProvider.notifier).refresh(),
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Retry'),
-                ),
-              ],
-            ),
-          ),
-        ),
-        data: (orders) {
-          if (orders.orders.isEmpty)
-            return RefreshIndicator(
-              onRefresh: () =>
-                  ref.read(orderHistoryControllerProvider.notifier).refresh(),
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(16, 48, 16, 92),
-                children: const [
-                  Icon(
-                    Icons.receipt_long_outlined,
-                    size: 52,
-                    color: SnapFoodColors.outline,
-                  ),
-                  SizedBox(height: 12),
-                  Center(
-                    child: Text(
-                      'No orders yet',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
+                      padding: EdgeInsets.fromLTRB(
+                        SnapFoodSpacing.mobileMargin,
+                        SnapFoodSpacing.xs,
+                        SnapFoodSpacing.mobileMargin,
+                        SnapFoodSpacing.md,
+                      ),
+                      child: Text(
+                        'Your Orders',
+                        style: SnapFoodTypography.headlineSmall,
                       ),
                     ),
-                  ),
-                  SizedBox(height: 6),
-                  Center(
-                    child: Text(
-                      'Your completed and active orders will appear here.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: SnapFoodColors.onSurfaceVariant,
+                    Expanded(
+                      child: state.when(
+                        loading: () => const SnapLoadingState(
+                          message: 'Loading your orders…',
+                        ),
+                        error: (error, _) => SnapErrorState(
+                          title: 'We couldn’t load your orders',
+                          message: error is ApiException
+                              ? error.message
+                              : 'Check your connection and try again.',
+                          onRetry: () => ref
+                              .read(orderHistoryControllerProvider.notifier)
+                              .refresh(),
+                        ),
+                        data: (orders) {
+                          if (orders.orders.isEmpty) {
+                            return RefreshIndicator(
+                              onRefresh: () => ref
+                                  .read(orderHistoryControllerProvider.notifier)
+                                  .refresh(),
+                              child: ListView(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                padding: const EdgeInsets.fromLTRB(
+                                  SnapFoodSpacing.mobileMargin,
+                                  SnapFoodSpacing.xxl,
+                                  SnapFoodSpacing.mobileMargin,
+                                  104,
+                                ),
+                                children: const [
+                                  SnapEmptyState(
+                                    title: 'No orders yet',
+                                    message:
+                                        'Your active and past orders will appear here after you place your first order.',
+                                    icon: Icons.receipt_long_outlined,
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
+                          final active = orders.orders
+                              .where(_isActiveOrder)
+                              .toList(growable: false);
+                          final past = orders.orders
+                              .where((order) => !_isActiveOrder(order))
+                              .toList(growable: false);
+
+                          return RefreshIndicator(
+                            onRefresh: () => ref
+                                .read(orderHistoryControllerProvider.notifier)
+                                .refresh(),
+                            child: ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.fromLTRB(
+                                SnapFoodSpacing.mobileMargin,
+                                SnapFoodSpacing.xs,
+                                SnapFoodSpacing.mobileMargin,
+                                104,
+                              ),
+                              children: [
+                                if (active.isNotEmpty) ...[
+                                  _OrderSectionHeader(
+                                    title: 'Active orders',
+                                    count: active.length,
+                                  ),
+                                  const SizedBox(height: SnapFoodSpacing.sm),
+                                  for (final order in active) ...[
+                                    _OrderCard(
+                                      order: order,
+                                      onTap: () => context.push('/orders/' + order.id),
+                                    ),
+                                    const SizedBox(height: SnapFoodSpacing.sm),
+                                  ],
+                                ],
+                                if (past.isNotEmpty) ...[
+                                  _OrderSectionHeader(
+                                    title: 'Past orders',
+                                    count: past.length,
+                                  ),
+                                  const SizedBox(height: SnapFoodSpacing.sm),
+                                  for (final order in past) ...[
+                                    _OrderCard(
+                                      order: order,
+                                      onTap: () => context.push('/orders/' + order.id),
+                                    ),
+                                    const SizedBox(height: SnapFoodSpacing.sm),
+                                  ],
+                                ],
+                                if (orders.hasNextPage) ...[
+                                  const SizedBox(height: SnapFoodSpacing.xs),
+                                  SnapSecondaryButton(
+                                    label: 'Load more orders',
+                                    onPressed: () => ref
+                                        .read(orderHistoryControllerProvider.notifier)
+                                        .loadNextPage(),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          return RefreshIndicator(
-            onRefresh: () =>
-                ref.read(orderHistoryControllerProvider.notifier).refresh(),
-            child: ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 92),
-              itemCount: orders.orders.length + (orders.hasNextPage ? 1 : 0),
-              separatorBuilder: (_, index) =>
-                  SizedBox(height: index == orders.orders.length - 1 ? 0 : 12),
-              itemBuilder: (context, index) {
-                if (index == orders.orders.length)
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 12),
-                    child: OutlinedButton(
-                      onPressed: () => ref
-                          .read(orderHistoryControllerProvider.notifier)
-                          .loadNextPage(),
-                      child: const Text('Load more orders'),
-                    ),
-                  );
-                final order = orders.orders[index];
-                return _OrderCard(
-                  orderId: order.id,
-                  status: order.status,
-                  paymentStatus: order.paymentStatus,
-                  total: order.total,
-                  itemCount: order.items.length,
-                  onTap: () => context.push('/orders/' + order.id),
-                );
-              },
-            ),
-          );
-                },
-                    )),
                   ],
                 ),
               ),
@@ -145,115 +165,145 @@ class OrdersScreen extends ConsumerWidget {
     );
   }
 
+  static bool _isActiveOrder(Order order) => switch (order.status) {
+        OrderStatus.placed ||
+        OrderStatus.accepted ||
+        OrderStatus.preparing ||
+        OrderStatus.readyForPickup ||
+        OrderStatus.assigned ||
+        OrderStatus.pickedUp ||
+        OrderStatus.outForDelivery => true,
+        OrderStatus.delivered ||
+        OrderStatus.cancelled ||
+        OrderStatus.unknown => false,
+      };
+
   static void _noop(int _) {}
 }
 
-class _OrderCard extends StatelessWidget {
-  const _OrderCard({
-    required this.orderId,
-    required this.status,
-    required this.paymentStatus,
-    required this.total,
-    required this.itemCount,
-    required this.onTap,
-  });
-  final String orderId;
-  final OrderStatus status;
-  final String paymentStatus;
-  final String total;
-  final int itemCount;
-  final VoidCallback onTap;
+class _OrderSectionHeader extends StatelessWidget {
+  const _OrderSectionHeader({required this.title, required this.count});
+
+  final String title;
+  final int count;
+
   @override
-  Widget build(BuildContext context) => Material(
-    color: SnapFoodColors.surfaceContainerLowest,
-    borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-    child: InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: status == OrderStatus.delivered
-                    ? SnapFoodColors.softRed
-                    : SnapFoodColors.primaryContainer,
-                borderRadius: BorderRadius.circular(SnapFoodRadii.md),
-              ),
-              child: Icon(
-                status == OrderStatus.delivered
-                    ? Icons.check_circle_outline
-                    : Icons.delivery_dining,
-                color: SnapFoodColors.secondary,
+  Widget build(BuildContext context) => Row(
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: SnapFoodTypography.titleLarge.copyWith(
+                fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Order #' + orderId,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
+          ),
+          Text(
+            count.toString(),
+            style: SnapFoodTypography.labelMedium.copyWith(
+              color: SnapFoodColors.onSurfaceVariant,
+            ),
+          ),
+        ],
+      );
+}
+
+class _OrderCard extends StatelessWidget {
+  const _OrderCard({required this.order, required this.onTap});
+
+  final Order order;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final itemCount = order.items.fold<int>(0, (sum, item) => sum + item.quantity);
+    final itemLabel = itemCount == 1 ? '1 item' : itemCount.toString() + ' items';
+
+    return Semantics(
+      button: true,
+      container: true,
+      label: 'Order #' + order.id + ', ' + _statusLabel(order.status) +
+          ', ' + itemLabel + ', total ' + _priceLabel(order.total),
+      child: Material(
+        color: SnapFoodColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+          child: Padding(
+            padding: const EdgeInsets.all(SnapFoodSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Order #' + order.id,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: SnapFoodTypography.titleMedium.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    itemCount.toString() +
-                        ' item' +
-                        (itemCount == 1 ? '' : 's') +
-                        ' • ' +
-                        _statusLabel(status),
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: SnapFoodColors.onSurfaceVariant,
+                    const SizedBox(width: SnapFoodSpacing.sm),
+                    SnapOrderStatus(status: order.status),
+                  ],
+                ),
+                const SizedBox(height: SnapFoodSpacing.sm),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        itemLabel,
+                        style: SnapFoodTypography.bodySmall.copyWith(
+                          color: SnapFoodColors.onSurfaceVariant,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 3),
+                    SnapPrice(value: order.total, fontSize: 16),
+                    const SizedBox(width: SnapFoodSpacing.sm),
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      size: 20,
+                      color: SnapFoodColors.outline,
+                    ),
+                  ],
+                ),
+                if (order.paymentStatus.isNotEmpty) ...[
+                  const SizedBox(height: SnapFoodSpacing.sm),
                   Text(
-                    'Payment: ' + (paymentStatus.isEmpty ? '—' : paymentStatus),
-                    style: const TextStyle(
-                      fontSize: 10,
+                    'Payment: ' + order.paymentStatus,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: SnapFoodTypography.labelSmall.copyWith(
                       color: SnapFoodColors.outline,
                     ),
                   ),
                 ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  total.isEmpty ? '—' : '₹' + total,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Icon(Icons.chevron_right, size: 18),
               ],
             ),
-          ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
+
+  static String _priceLabel(String value) =>
+      value.isEmpty ? 'amount unavailable' : '₹' + value;
+
   static String _statusLabel(OrderStatus status) => switch (status) {
-    OrderStatus.placed => 'Placed',
-    OrderStatus.accepted => 'Accepted',
-    OrderStatus.preparing => 'Preparing',
-    OrderStatus.readyForPickup => 'Ready for pickup',
-    OrderStatus.assigned => 'Assigned',
-    OrderStatus.pickedUp => 'Picked up',
-    OrderStatus.outForDelivery => 'Out for delivery',
-    OrderStatus.delivered => 'Delivered',
-    OrderStatus.cancelled => 'Cancelled',
-    OrderStatus.unknown => 'Status unavailable',
-  };
+        OrderStatus.placed => 'Placed',
+        OrderStatus.accepted => 'Accepted',
+        OrderStatus.preparing => 'Preparing',
+        OrderStatus.readyForPickup => 'Ready for pickup',
+        OrderStatus.assigned => 'Assigned',
+        OrderStatus.pickedUp => 'Picked up',
+        OrderStatus.outForDelivery => 'Out for delivery',
+        OrderStatus.delivered => 'Delivered',
+        OrderStatus.cancelled => 'Cancelled',
+        OrderStatus.unknown => 'Status unavailable',
+      };
 }
