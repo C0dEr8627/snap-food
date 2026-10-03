@@ -888,8 +888,8 @@ The admin UI/UX modernization is complete when:
 | Task 8 — Orders | 🟢 Complete | 2026-10-03 | Refined the operational order queue/detail experience with centralized design tokens, responsive hierarchy, truthful API-state messaging, shared confirmation/feedback primitives, cleaner status progression and removal of unsupported POS/node/sync/KOT/charge metadata. |
 | Task 9 — Catalogue / Products | 🟢 Complete | 2026-10-03 | Refined the product catalogue and category-management experience with centralized tokens, readable hierarchy, responsive editor sizing, shared feedback and truthful item/category workflows while preserving existing API behavior. |
 | Task 10 — Categories | 🟢 Complete | 2026-10-03 | Added a dedicated Categories admin area with searchable shared-table presentation, active/inactive state management, create/edit/delete workflows, confirmation for destructive actions, preview/live data clarity and responsive empty/error/loading states. |
-| Task 11 — Users | ⬜ Not Started | 2026-10-03 | **NEXT** — redesign the Users experience using the shared table/drawer language while preserving existing user APIs and detail flows. |
-| Task 12 — Delivery Partners | ⬜ Not Started | 2026-10-03 | |
+| Task 11 — Users | 🟢 Complete | 2026-10-03 | Redesigned the Users workspace around the shared table/filter/drawer/state components, preserved the customer-users API contract and moved user details into a responsive right-side drawer. |
+| Task 12 — Delivery Partners | ⬜ Not Started | 2026-10-03 | **NEXT** — redesign Delivery Partners as an operations-focused availability/approval workspace using only supported backend states and actions. |
 | Task 13 — Invoices / Billing | ⬜ Not Started | 2026-10-03 | |
 | Task 14 — Premium Form UX | ⬜ Not Started | 2026-10-03 | |
 | Task 15 — Loading / Empty / Error / Success | ⬜ Not Started | 2026-10-03 | |
@@ -1087,7 +1087,7 @@ The admin UI/UX modernization is complete when:
   - Refined the Overview page into a clearer operational hierarchy: environment notice → KPI summary → sales/operations split → recent orders.
   - Replaced arbitrary spacing in the primary overview layout with centralized admin spacing tokens.
   - Improved responsive KPI and content-column behavior for wide, medium and narrow admin widths.
-  - Reused the shared `SfDataTable`, `SfBadge`, `SfStatusBadge` and design-system typography language for the recent-orders surface.
+  - Kept the existing specialized recent-orders surface and operational data behavior intact while applying the shared design-system spacing and typography language.
   - Reframed the dashboard connection banner so preview mode is explicit and live aggregates are not implied.
   - Removed restaurant/cloud-kitchen terminology and replaced it with Snap Foodd operational concepts such as orders, preparation, dispatch and delivery partners.
   - Preserved the existing preview dataset rather than inventing new backend metrics or API capabilities.
@@ -1148,7 +1148,7 @@ The admin UI/UX modernization is complete when:
   - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful validation run is being claimed.
 - Limitations/follow-up:
   - Full Flutter Web compile, browser interaction, visual overflow QA and focus behavior still require a runnable Flutter Web environment.
-  - Task 10 is complete; Task 11 — Users is the next implementation target.
+  - Task 10 is complete and Task 11 has now been completed; Task 12 — Delivery Partners is the next implementation target.
 
 ### 2026-10-03 — Task 10
 - Status: 🟢 Complete
@@ -1178,7 +1178,33 @@ The admin UI/UX modernization is complete when:
 - Limitations/follow-up:
   - Browser screenshot/interactive visual QA and actual Flutter Web compile validation remain dependent on a runnable environment or CI execution path.
   - The existing Catalogue embedded category manager remains for compatibility and is not removed in this task.
-  - Task 11 — Users is now the next implementation target.
+  - Task 11 — Users is now complete; Task 12 — Delivery Partners is the next implementation target.
+
+### 2026-10-03 — Task 11
+- Status: 🟢 Complete
+- Implemented:
+  - Redesigned the Users workspace around the shared `SfFilterBar`, `SfSearchField`, `SfDataTable`, `SfTablePagination`, `SfSkeleton`, `SfEmptyState`, `SfErrorState`, `SfAvatar` and status-badge language.
+  - Preserved the existing `/admin/users` API contract and its server-side search/pagination behavior.
+  - Removed the previous role filter controls because the authoritative admin users endpoint queries `CustomerUser` records and exposes `CUSTOMER` as the role; the old Delivery/Admin filters were not backed by the endpoint and were therefore misleading.
+  - Moved user details from a centered modal into the shared right-side `SfSideDrawer` pattern, with account, activity and saved-address sections.
+  - Preserved the existing supported user detail fields: identity, email, role, active state, joined timestamp, order count and saved addresses.
+  - Added intentional horizontal table overflow with readable column widths and retained whole-row detail access plus a compact trailing action.
+  - Added shared loading skeletons, empty/search-empty states, API error/retry treatment and shared pagination.
+  - Removed legacy `AdminColors`/page-specific visual styling from the Users page and kept the page free of restaurant concepts or fabricated user capabilities.
+- Files/components changed:
+  - `admin_web/lib/pages/users_page.dart`
+  - `ADMIN_WEB_UI_UX_DEVELOPMENT_PLAN.md`
+- Validation:
+  - Re-fetched the final Users page after implementation and the follow-up drawer/pagination correction.
+  - Verified the Users page uses the shared table, filter/search, drawer, pagination, avatar, status, skeleton, empty and error components.
+  - Verified the final Users source no longer contains the unsupported role-filter request or legacy `AdminColors` references.
+  - Inspected the authoritative backend `UserController` and `CustomerUser` model to confirm the endpoint is customer-user scoped and that `CUSTOMER` is the exposed role.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful validation run is being claimed.
+- Limitations/follow-up:
+  - Browser screenshot/interactive visual QA and actual Flutter Web compile validation remain dependent on a runnable environment or CI execution path.
+  - The Users backend currently exposes list/search/pagination/detail data only; no user mutation action was invented.
+  - Task 12 — Delivery Partners is the next implementation target.
+
 ### Future entries
 
 After every task, append an entry containing:
