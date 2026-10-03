@@ -273,51 +273,6 @@ class _CartProductImage extends StatelessWidget {
   }
 }
 
-class _MiniQuantity extends StatelessWidget {
-  const _MiniQuantity({
-    required this.quantity,
-    required this.onRemove,
-    required this.onAdd,
-  });
-  final int quantity;
-  final VoidCallback onRemove;
-  final VoidCallback onAdd;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    height: 32,
-    decoration: BoxDecoration(
-      color: SnapFoodColors.secondary,
-      borderRadius: BorderRadius.circular(SnapFoodRadii.full),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          onPressed: onRemove,
-          icon: const Icon(Icons.remove, color: Colors.white, size: 14),
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(minWidth: 30, minHeight: 32),
-        ),
-        Text(
-          quantity.toString(),
-          style: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-          ),
-        ),
-        IconButton(
-          onPressed: onAdd,
-          icon: const Icon(Icons.add, color: Colors.white, size: 14),
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(minWidth: 30, minHeight: 32),
-        ),
-      ],
-    ),
-  );
-}
-
 class _BillCard extends StatelessWidget {
   const _BillCard({required this.itemTotal});
   final int itemTotal;
@@ -332,7 +287,7 @@ class _BillCard extends StatelessWidget {
     ),
     child: Column(
       children: [
-        _BillRow('Item total', itemTotal.toString()),
+        _BillRow('Item total', '₹' + itemTotal.toString()),
         const Padding(
           padding: EdgeInsets.symmetric(vertical: 11),
           child: Divider(color: SnapFoodColors.softBorder, height: 1),
