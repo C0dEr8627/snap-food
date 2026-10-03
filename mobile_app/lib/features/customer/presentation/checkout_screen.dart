@@ -31,18 +31,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   final _state = TextEditingController(text: 'Maharashtra');
   final _postal = TextEditingController();
   final _country = TextEditingController(text: 'India');
-  late final DirectCheckoutItemsController _directCheckoutItemsController;
-
-  @override
-  void initState() {
-    super.initState();
-    _directCheckoutItemsController = ref.read(directCheckoutItemsProvider.notifier);
-  }
-
   @override
   void dispose() {
-    // A direct-order draft must not leak into a later cart checkout.
-    _directCheckoutItemsController.setItems(null);
     for (final controller in [
       _label,
       _recipient,
@@ -94,7 +84,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                     children: [
                       SnapIconButton(
                         icon: Icons.arrow_back,
-                        onPressed: isSubmitting ? null : () => context.pop(),
+                        onPressed: isSubmitting ? null : () {
+                        if (context.canPop()) {
+                          context.pop();
+                        } else {
+                          context.go('/cart');
+                        }
+                      },
                         tooltip: 'Back',
                         semanticLabel: 'Back to cart',
                       ),
@@ -290,7 +286,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         .submit(CreateOrderRequest(items: lines, deliveryAddress: deliveryAddress));
     if (!mounted || order == null) return;
     if (directItems != null) {
-      ref.read(directCheckoutItemsProvider.notifier).state = null;
+      ref.read(directCheckoutItemsProvider.notifier).setItems(null);
     } else {
       ref.read(cartControllerProvider.notifier).clear();
     }
