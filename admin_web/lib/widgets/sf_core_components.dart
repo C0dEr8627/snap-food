@@ -4,7 +4,7 @@ enum SfButtonVariant { primary, secondary, outline, ghost, destructive }
 
 const _adminMotion = AdminMotion.hover;
 
-class SfButton extends flutter.StatelessWidget {
+class SfButton extends StatelessWidget {
   const SfButton({
     super.key,
     required this.onPressed,
@@ -94,7 +94,7 @@ class SfButton extends flutter.StatelessWidget {
 }
 
 
-class SfIconButton extends flutter.StatelessWidget {
+class SfIconButton extends StatelessWidget {
   const SfIconButton({
     super.key,
     required this.icon,
@@ -137,7 +137,7 @@ class SfIconButton extends flutter.StatelessWidget {
 }
 
 
-class SfAnimatedSwitcher extends flutter.StatelessWidget {
+class SfAnimatedSwitcher extends StatelessWidget {
   const SfAnimatedSwitcher({
     super.key,
     required this.child,
@@ -156,7 +156,7 @@ class SfAnimatedSwitcher extends flutter.StatelessWidget {
   );
 }
 
-class SfInput extends flutter.StatelessWidget {
+class SfInput extends StatelessWidget {
   const SfInput({
     super.key,
     this.controller,
@@ -208,7 +208,7 @@ class SfInput extends flutter.StatelessWidget {
   );
 }
 
-class SfSearchField extends flutter.StatelessWidget {
+class SfSearchField extends StatelessWidget {
   const SfSearchField({
     super.key,
     this.controller,
@@ -243,7 +243,7 @@ class SfSearchField extends flutter.StatelessWidget {
   );
 }
 
-class SfFormSection extends flutter.StatelessWidget {
+class SfFormSection extends StatelessWidget {
   const SfFormSection({
     super.key,
     required this.title,
@@ -270,7 +270,7 @@ class SfFormSection extends flutter.StatelessWidget {
   );
 }
 
-class SfFormField extends flutter.StatelessWidget {
+class SfFormField extends StatelessWidget {
   const SfFormField({
     super.key,
     required this.controller,
@@ -326,7 +326,7 @@ class SfFormField extends flutter.StatelessWidget {
   );
 }
 
-class SfBadge extends flutter.StatelessWidget {
+class SfBadge extends StatelessWidget {
   const SfBadge({super.key, required this.label, this.backgroundColor, this.foregroundColor});
 
   final String label;
@@ -353,7 +353,7 @@ class SfBadge extends flutter.StatelessWidget {
   );
 }
 
-class SfStatusBadge extends flutter.StatelessWidget {
+class SfStatusBadge extends StatelessWidget {
   const SfStatusBadge({super.key, required this.label, this.status});
 
   final String label;
@@ -388,7 +388,7 @@ class SfStatusBadge extends flutter.StatelessWidget {
   }
 }
 
-class SfCard extends flutter.StatelessWidget {
+class SfCard extends StatelessWidget {
   const SfCard({super.key, required this.child, this.padding = const EdgeInsets.all(AdminSpacing.lg)});
 
   final flutter.Widget child;
@@ -407,7 +407,7 @@ class SfCard extends flutter.StatelessWidget {
   );
 }
 
-class SfStat extends flutter.StatelessWidget {
+class SfStat extends StatelessWidget {
   const SfStat({
     super.key,
     required this.label,
@@ -463,7 +463,7 @@ class SfStat extends flutter.StatelessWidget {
   );
 }
 
-class SfPageHeader extends flutter.StatelessWidget {
+class SfPageHeader extends StatelessWidget {
   const SfPageHeader({
     super.key,
     required this.title,
@@ -504,7 +504,7 @@ class SfPageHeader extends flutter.StatelessWidget {
   );
 }
 
-class SfFilterBar extends flutter.StatelessWidget {
+class SfFilterBar extends StatelessWidget {
   const SfFilterBar({super.key, this.leading, this.filters = const [], this.trailing = const []});
 
   final flutter.Widget? leading;
@@ -527,7 +527,7 @@ class SfFilterBar extends flutter.StatelessWidget {
   );
 }
 
-class SfEmptyState extends flutter.StatelessWidget {
+class SfEmptyState extends StatelessWidget {
   const SfEmptyState({
     super.key,
     required this.title,
@@ -570,7 +570,7 @@ class SfEmptyState extends flutter.StatelessWidget {
   );
 }
 
-class SfErrorState extends flutter.StatelessWidget {
+class SfErrorState extends StatelessWidget {
   const SfErrorState({super.key, required this.title, required this.message, this.onRetry});
 
   final String title;
@@ -601,7 +601,7 @@ class SfErrorState extends flutter.StatelessWidget {
   );
 }
 
-class SfLoadingState extends flutter.StatelessWidget {
+class SfLoadingState extends StatelessWidget {
   const SfLoadingState({
     super.key,
     this.title = 'Loading…',
@@ -632,7 +632,7 @@ class SfLoadingState extends flutter.StatelessWidget {
   );
 }
 
-class SfSkeleton extends flutter.StatefulWidget {
+class SfSkeleton extends StatefulWidget {
   const SfSkeleton({super.key, this.width, this.height = 16, this.radius = AdminRadii.control});
 
   final double? width;
@@ -640,10 +640,10 @@ class SfSkeleton extends flutter.StatefulWidget {
   final double radius;
 
   @override
-  flutter.State<SfSkeleton> createState() => _SfSkeletonState();
+  State<SfSkeleton> createState() => _SfSkeletonState();
 }
 
-class _SfSkeletonState extends flutter.State<SfSkeleton> with flutter.SingleTickerProviderStateMixin {
+class _SfSkeletonState extends State<SfSkeleton> with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))..repeat(reverse: true);
 
   @override
@@ -669,7 +669,7 @@ class _SfSkeletonState extends flutter.State<SfSkeleton> with flutter.SingleTick
   );
 }
 
-class SfAvatar extends flutter.StatelessWidget {
+class SfAvatar extends StatelessWidget {
   const SfAvatar({super.key, this.name, this.imageUrl, this.size = 40});
 
   final String? name;
