@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\Delivery\DeliveryLocationController;
 use App\Http\Controllers\Api\V1\Delivery\DeliveryPartnerOrderController;
 use App\Http\Controllers\Api\V1\FavoriteController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\Orders\AdminInvoiceController;
 use App\Http\Controllers\Api\V1\Orders\AdminOrderAssignmentController;
 use App\Http\Controllers\Api\V1\Orders\AdminOrderController;
@@ -48,7 +49,8 @@ Route::post('/admin/auth/google', [AuthController::class, 'adminGoogle'])
     ->name('api.v1.admin.auth.google');
 
 Route::middleware('auth:sanctum')->group(function (): void {
-    Route::get('/me', [AuthController::class, 'me'])->name('api.v1.me');\n    Route::patch('/me', [ProfileController::class, 'update'])->middleware('role:CUSTOMER')->name('api.v1.me.update');
+    Route::get('/me', [AuthController::class, 'me'])->name('api.v1.me');
+    Route::patch('/me', [ProfileController::class, 'update'])->middleware('role:CUSTOMER')->name('api.v1.me.update');
     Route::get('/addresses', [AddressController::class, 'index'])->middleware('role:CUSTOMER')->name('api.v1.addresses.index');
     Route::post('/addresses', [AddressController::class, 'store'])->middleware('role:CUSTOMER')->name('api.v1.addresses.store');
     Route::delete('/addresses/{address}', [AddressController::class, 'destroy'])->middleware('role:CUSTOMER')->name('api.v1.addresses.destroy');
