@@ -187,7 +187,9 @@ class OrderTrackingController extends AsyncNotifier<OrderTracking?> {
       // On refresh errors, keep the last successful tracking response visible
       // instead of replacing the entire screen with an error state.
       if (next.hasError && previous.hasValue) {
-        state = next.copyWithPrevious(previous);
+        // Keep the last successful tracking response visible during transient
+        // refresh/poll failures instead of surfacing a full-page error.
+        state = AsyncData(previous.value);
       } else {
         state = next;
       }
