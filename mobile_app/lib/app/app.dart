@@ -27,11 +27,13 @@ import '../features/restaurant/presentation/restaurant_order_detail_screen.dart'
 import '../features/restaurant/presentation/restaurant_menu_stock_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authControllerProvider);
-
-  return GoRouter(
+  // Keep a single router instance alive. Watching auth state here recreates
+  // GoRouter on every login attempt (including AsyncLoading), which can
+  // dispose LoginScreen before its error dialog is shown and reset navigation.
+  final router = GoRouter(
     initialLocation: '/',
     redirect: (context, state) {
+      final authState = ref.read(authControllerProvider);
       final location = state.matchedLocation;
       const publicRoutes = {'/', '/welcome', '/home', '/login', '/register'};
 
@@ -179,6 +181,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+
+  // Refresh redirects when authentication changes without rebuilding the router.
+  ref.listen<AsyncValue<AuthStatus>>(authControllerProvider, (_, __) {
+    router.refresh();
+  });
+  ref.onDispose(router.dispose);
+  return router;
 });
 
 class SnapFoodApp extends ConsumerWidget {
