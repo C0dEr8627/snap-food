@@ -67,7 +67,7 @@ class AdminCatalogueWebTest extends TestCase
 
     public function test_customer_cannot_access_catalogue_management_or_write_actions(): void
     {
-        $customer = CustomerUser::factory()->create();
+        $customer = CustomerCustomerUser::factory()->create();
         $category = Category::create(['name' => 'Meals', 'slug' => 'meals', 'sort_order' => 0, 'is_active' => true]);
 
         $this->actingAs($customer, 'web')
