@@ -151,52 +151,59 @@ class SnapQuantityStepper extends StatelessWidget {
   Widget build(BuildContext context) {
     final decrementEnabled = quantity > min && onDecrement != null;
     final incrementEnabled = quantity < max && onIncrement != null;
-    final height = 48.0;
-    final buttonSize = 48.0;
-    final semanticParts = <String>[
-      name,
-      if (rating != null)
-        'rated ' + rating!.clamp(0, 5).toStringAsFixed(1),
-      if (eta != null && eta!.trim().isNotEmpty) eta!,
-      if (!isOpen) 'currently closed',
-    ];
+    final buttonSize = compact ? 40.0 : 48.0;
 
     return Semantics(
       container: true,
-      label: semanticParts.join(', '),
-      child: SizedBox(
-        height: 52,
-        child: FilledButton(
-          onPressed: active
-              ? () {
-                  HapticFeedback.lightImpact();
-                  onPressed?.call();
-                }
-              : null,
-          style: FilledButton.styleFrom(
-            backgroundColor: SnapFoodColors.foodRed,
-            foregroundColor: SnapFoodColors.onPrimary,
-            disabledBackgroundColor: SnapFoodColors.outlineVariant,
-            disabledForegroundColor: SnapFoodColors.onSurfaceVariant,
-            minimumSize: const Size(48, 48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+      label: 'Quantity $quantity',
+      child: Container(
+        height: buttonSize,
+        decoration: BoxDecoration(
+          color: SnapFoodColors.surfaceContainer,
+          borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+          border: Border.all(color: SnapFoodColors.softBorder),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: decrementEnabled ? onDecrement : null,
+              tooltip: 'Decrease quantity',
+              icon: const Icon(Icons.remove_rounded),
+              iconSize: compact ? 17 : 20,
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints.tightFor(
+                width: buttonSize,
+                height: buttonSize,
+              ),
             ),
-            padding: const EdgeInsets.symmetric(
-              horizontal: SnapFoodSpacing.lg,
-            ),
-          ),
-          child: loading
-              ? const SizedBox.square(
-                  dimension: 21,
-                  child: CircularProgressIndicator(strokeWidth: 2.4),
-                )
-              : Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.w800),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: compact ? 24 : 30,
+                maxWidth: compact ? 42 : 52,
+              ),
+              child: Text(
+                quantity.toString(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: compact ? 13 : 15,
+                  fontWeight: FontWeight.w800,
+                  color: SnapFoodColors.warmBlack,
                 ),
+              ),
+            ),
+            IconButton(
+              onPressed: incrementEnabled ? onIncrement : null,
+              tooltip: 'Increase quantity',
+              icon: const Icon(Icons.add_rounded),
+              iconSize: compact ? 17 : 20,
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints.tightFor(
+                width: buttonSize,
+                height: buttonSize,
+              ),
+            ),
+          ],
         ),
       ),
     );
