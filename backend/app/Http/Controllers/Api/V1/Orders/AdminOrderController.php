@@ -17,7 +17,7 @@ class AdminOrderController
             ->with([
                 'customer:id,name,email',
                 'items:id,order_id,product_id,product_name,unit_price,quantity,line_total',
-                'assignment.deliveryPartner.user:id,name,email',
+                'assignment.deliveryPartner:id,name,email,is_active,is_approved,is_available',
             ])
             ->latest('id')
             ->when($request->filled('search'), function ($builder) use ($request): void {
