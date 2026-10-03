@@ -66,7 +66,6 @@ class CustomerProfileScreen extends ConsumerWidget {
                                     child: _ProfileSections(
                                       selectedAddress: selectedAddress,
                                       onLogout: () => _confirmLogout(context, ref),
-                                    onEdit: () => _editProfile(context, ref, displayName, phone),
                                       onEdit: () => _editProfile(context, ref, displayName, phone),
                                     ),
                                   ),
@@ -79,6 +78,7 @@ class CustomerProfileScreen extends ConsumerWidget {
                                   _ProfileSections(
                                     selectedAddress: selectedAddress,
                                     onLogout: () => _confirmLogout(context, ref),
+                                    onEdit: () => _editProfile(context, ref, displayName, phone),
                                   ),
                                 ],
                               ),
