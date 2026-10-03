@@ -607,7 +607,7 @@ class _CategoryManagerState extends State<_CategoryManager> {
                   Text(
                     (c.slug.isEmpty ? 'No slug' : c.slug) +
                         (inactive ? ' • ${c.count} product(s) • inactive' : ''),
-                    style: const AdminTypography.small,
+                    style: AdminTypography.small,
                   ),
                 ],
               ),
@@ -730,7 +730,7 @@ class _CategoryTabs extends StatelessWidget {
               Text(label, style: AdminTypography.small.copyWith(fontWeight: active ? FontWeight.w700 : FontWeight.w500)),
               if (count > 0) ...[
                 const SizedBox(width: AdminSpacing.xs),
-                Text(count.toString(), style: const AdminTypography.small),
+                Text(count.toString(), style: AdminTypography.small),
               ],
             ],
           ),
@@ -814,7 +814,7 @@ class _CatalogueList extends StatelessWidget {
         ],
         const SizedBox(height: AdminSpacing.sm),
         Row(children: [
-          Expanded(child: Text('Showing ' + (total == 0 ? '0' : '1') + '–' + products.length.toString() + ' of ' + total.toString(), style: const AdminTypography.small)),
+          Expanded(child: Text('Showing ' + (total == 0 ? '0' : '1') + '–' + products.length.toString() + ' of ' + total.toString(), style: AdminTypography.small)),
           shad.IconButton.ghost(onPressed: page > 1 ? () => onPage(page - 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowLeft01, size: 18)),
           Text(page.toString(), style: AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),
           shad.IconButton.ghost(onPressed: page < lastPage ? () => onPage(page + 1) : null, icon: const AdminIcon(HugeIcons.strokeRoundedArrowRight01, size: 18)),
@@ -848,24 +848,24 @@ class _ProductTile extends StatelessWidget {
           child: Container(
             color: AdminDesignColors.canvas,
             child: product.image != null && product.image!.isNotEmpty
-                ? Image.network(product.image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Center(child: AdminIcon(HugeIcons.strokeRoundedItem01, size: 28, color: AdminDesignColors.brandAmber)))
-                : const Center(child: AdminIcon(HugeIcons.strokeRoundedItem01, size: 28, color: AdminDesignColors.brandAmber)),
+                ? Image.network(product.image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Center(child: AdminIcon(HugeIcons.strokeRoundedPackage01, size: 28, color: AdminDesignColors.brandAmber)))
+                : const Center(child: AdminIcon(HugeIcons.strokeRoundedPackage01, size: 28, color: AdminDesignColors.brandAmber)),
           ),
         ),
         Expanded(child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              Expanded(child: Text(product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const AdminTypography.body.copyWith(fontWeight: FontWeight.w700))),
+              Expanded(child: Text(product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w700))),
               if (product.badge.isNotEmpty) _Badge(product.badge),
             ]),
             const SizedBox(height: AdminSpacing.xs),
             Text(product.categoryName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AdminDesignColors.secondaryText)),
             const SizedBox(height: AdminSpacing.xs),
-            Expanded(child: Text(product.description, maxLines: 3, overflow: TextOverflow.ellipsis, style: const AdminTypography.small)),
+            Expanded(child: Text(product.description, maxLines: 3, overflow: TextOverflow.ellipsis, style: AdminTypography.small)),
             const SizedBox(height: AdminSpacing.sm),
             Row(children: [
-              Expanded(child: Text('₹' + product.price.toStringAsFixed(0), style: const AdminTypography.body.copyWith(fontWeight: FontWeight.w700))),
+              Expanded(child: Text('₹' + product.price.toStringAsFixed(0), style: AdminTypography.body.copyWith(fontWeight: FontWeight.w700))),
               Text(product.outOfStock ? 'Sold out' : product.stock.toString() + ' units', style: AdminTypography.small.copyWith(fontWeight: FontWeight.w600, color: product.outOfStock ? AdminDesignColors.error : product.lowStock ? AdminDesignColors.warning : AdminDesignColors.primaryText)),
             ]),
           ]),
@@ -1049,7 +1049,7 @@ class _ProductRow extends StatelessWidget {
 class _Thumb extends StatelessWidget {
   const _Thumb({this.image, required this.name}); final String? image; final String name;
   @override Widget build(BuildContext context) => ClipRRect(borderRadius: BorderRadius.circular(10), child: Container(width: 50, height: 50, color: AdminDesignColors.canvas, child: image != null && image!.isNotEmpty ? Image.network(image!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _placeholder()) : _placeholder()));
-  Widget _placeholder() => const AdminIcon(HugeIcons.strokeRoundedItem01, size: 22, color: AdminDesignColors.brandAmber);
+  Widget _placeholder() => const AdminIcon(HugeIcons.strokeRoundedPackage01, size: 22, color: AdminDesignColors.brandAmber);
 }
 
 class _Badge extends StatelessWidget {
@@ -1522,7 +1522,7 @@ Widget _label(String text, String? trailing) => Padding(
         const SizedBox(width: AdminSpacing.xs),
         Text(
           trailing!,
-          style: const AdminTypography.small,
+          style: AdminTypography.small,
         ),
       ],
     ],
