@@ -31,9 +31,9 @@ class DashboardPage extends StatelessWidget {
           ? const Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Expanded(flex: 7, child: _WeeklySalesCard()),
               SizedBox(width: 16),
-              Expanded(flex: 4, child: _KitchenPulseCard()),
+              Expanded(flex: 4, child: _OperationsPulseCard()),
             ])
-          : const Column(children: [_WeeklySalesCard(), SizedBox(height: 16), _KitchenPulseCard()]),
+          : const Column(children: [_WeeklySalesCard(), SizedBox(height: 16), _OperationsPulseCard()]),
       ),
       const SizedBox(height: AdminSpacing.xxl),
       const _LiveOrdersCard(),
@@ -86,7 +86,7 @@ class _ActiveOrdersKpi extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const _DashboardKpi(
     label: 'ACTIVE ORDERS', value: '64', secondary: 'In-flight',
-    footer: '18 New   •   26 Kitchen   •   20 Out', icon: HugeIcons.strokeRoundedShoppingBag01, iconTone: AdminColors.redSoft, progress: .72,
+    footer: '18 New   •   26 Preparation   •   20 Out', icon: HugeIcons.strokeRoundedShoppingBag01, iconTone: AdminColors.redSoft, progress: .72,
   );
 }
 
@@ -166,7 +166,7 @@ class _AttentionSection extends StatelessWidget {
             children: const [
               _AttentionItem(title: '3 Orders Need Courier...', detail: 'DriverIdle > 8 mins HR...', action: 'Reassign', danger: true),
               _AttentionItem(title: '4 Pending Partner KYC Ap...', detail: 'Aadhaar & RC uploads verificat...', action: 'Verify'),
-              _AttentionItem(title: '2 Low Stock Menu Items', detail: 'Dum Biryani (Truffle Feast), Pa...', action: 'Adjust'),
+              _AttentionItem(title: '2 Catalogue Items Need Review', detail: 'Existing catalogue records require review...', action: 'Adjust'),
             ],
           );
         }),
@@ -320,8 +320,8 @@ class _SalesChartPainter extends CustomPainter {
   bool shouldRepaint(covariant _SalesChartPainter oldDelegate) => oldDelegate.values != values;
 }
 
-class _KitchenPulseCard extends StatelessWidget {
-  const _KitchenPulseCard();
+class _OperationsPulseCard extends StatelessWidget {
+  const _OperationsPulseCard();
 
   @override
   Widget build(BuildContext context) => AdminCard(
@@ -333,11 +333,11 @@ class _KitchenPulseCard extends StatelessWidget {
           Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6), decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(7)), child: const Text('Current order flow', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800))),
         ]),
         const SizedBox(height: 12),
-        const _KitchenItem(name: 'New orders', tickets: '18 active orders', prep: 'Awaiting processing', capacity: .98, icon: HugeIcons.strokeRoundedRiceBowl01),
+        const _OperationsItem(name: 'New orders', tickets: '18 active orders', prep: 'Awaiting processing', capacity: .98, icon: HugeIcons.strokeRoundedShoppingBag01),
         const SizedBox(height: 9),
-        const _KitchenItem(name: 'Preparing orders', tickets: '26 active orders', prep: 'In preparation', capacity: .72, icon: HugeIcons.strokeRoundedRestaurant01),
+        const _OperationsItem(name: 'Preparing orders', tickets: '26 active orders', prep: 'In preparation', capacity: .72, icon: HugeIcons.strokeRoundedTask01),
         const SizedBox(height: 9),
-        const _KitchenItem(name: 'Dispatched orders', tickets: '20 active orders', prep: 'With delivery partners', capacity: .64, icon: HugeIcons.strokeRoundedPizza01),
+        const _OperationsItem(name: 'Dispatched orders', tickets: '20 active orders', prep: 'With delivery partners', capacity: .64, icon: HugeIcons.strokeRoundedDeliveryTruck01),
         const SizedBox(height: 13),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 10),
@@ -377,8 +377,8 @@ class _DashboardProgress extends StatelessWidget {
   );
 }
 
-class _KitchenItem extends StatelessWidget {
-  const _KitchenItem({required this.name, required this.tickets, required this.prep, required this.capacity, required this.icon});
+class _OperationsItem extends StatelessWidget {
+  const _OperationsItem({required this.name, required this.tickets, required this.prep, required this.capacity, required this.icon});
   final String name, tickets, prep;
   final double capacity;
   final AdminIconData icon;
@@ -429,7 +429,7 @@ class _LiveOrdersCard extends StatelessWidget {
         ]),
         const SizedBox(height: 13),
         const SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: [
-          _OrderTab(text: 'All Orders (64)', active: true), SizedBox(width: 6), _OrderTab(text: 'New (18)'), SizedBox(width: 6), _OrderTab(text: 'In Kitchen (26)'), SizedBox(width: 6), _OrderTab(text: 'Dispatched (20)'),
+          _OrderTab(text: 'All Orders (64)', active: true), SizedBox(width: 6), _OrderTab(text: 'New (18)'), SizedBox(width: 6), _OrderTab(text: 'Preparing (26)'), SizedBox(width: 6), _OrderTab(text: 'Dispatched (20)'),
         ])),
         const SizedBox(height: 13),
         SingleChildScrollView(
