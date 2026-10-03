@@ -565,6 +565,11 @@ Respect reduced-motion preferences.
 ### Task 21 — Final accessibility and responsive UX pass
 **Status:** ✅ Complete
 
+### Task 22 — Add widget regression tests for shared customer controls
+**Status:** ✅ Complete
+
+Added Flutter widget tests for the shared filter/category chips and quantity stepper. The tests cover selection callbacks, quantity bounds, and minimum 48px control targets. Test execution remains a required local/CI validation step; the GitHub connector does not provide a Flutter runtime.
+
 Audit:
 
 - Text scaling
@@ -627,6 +632,7 @@ Before marking any task complete, verify:
 | 2026-10-03 | Task 19 — Improve onboarding and welcome experience | ✅ Complete | Added a food-first welcome screen with warm editorial illustration, concise catalogue-first copy, clear create-account/sign-in actions, compact and wide layouts, safe-area-aware scrolling, and existing design-system components/tokens. Updated the splash route to lead into /welcome rather than bypassing it for /login. Preserved login/register destinations, Google/password auth, session restoration, and GoRouter auth guards. Validation: reviewed route wiring and source structure; local Flutter/Dart formatter, analyzer and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 20 — Add motion and tactile feedback | ✅ Complete | Added restrained haptic feedback for filter/category selection, quantity changes, add-to-cart, icon actions and bottom navigation; added short selection/status transitions that respect the reduced-motion preference. Preserved native pressed feedback, routes, API/state behavior and all business logic; no dependency added. Validation: changed source files have balanced brace/parenthesis/bracket counts and interactions were reviewed at source level. Local Flutter/Dart formatter, analyzer and tests, physical-device haptic checks, and visual UI testing were unavailable through the GitHub connector. |
 | 2026-10-03 | Task 21 — Final accessibility and responsive UX pass | ✅ Complete | Audited shared controls and the customer Home navigation/location header. Raised category/filter chip minimum height to 48px, ensured compact quantity steppers retain 48px button targets, added accessible profile and delivery-address labels, and exposed bottom-navigation labels and selected state through semantics. Preserved routes, state, APIs and business logic. Validation: changed Dart sources have balanced brace/parenthesis/bracket counts and source-level behavior was reviewed. Local formatter/analyzer/tests, screen-reader testing, text-scaling device checks and visual responsive testing were unavailable through the GitHub connector. |
+| 2026-10-03 | Task 22 — Add widget regression tests for shared customer controls | ✅ Complete | Added `mobile_app/test/design_system_components_test.dart` with widget coverage for filter selection callbacks, category selection, quantity bounds, and 48px touch targets. The new test source has balanced delimiters. Flutter tests, formatter and analyzer were not executable through the GitHub connector, so test pass status remains unverified pending CI/local execution. |
 
 ---
 
@@ -659,6 +665,7 @@ Before marking any task complete, verify:
 - Completed Task 19: refreshed the onboarding welcome experience with food-first visual storytelling, catalogue-accurate copy, clear account actions and responsive layouts; connected the splash screen to the welcome route while preserving existing authentication and navigation behavior.
 - Completed Task 20: added restrained tactile feedback for meaningful selection, quantity, add-to-cart, icon and navigation actions; introduced reduced-motion-aware bottom-navigation and order-status transitions without adding dependencies or changing business behavior.
 - Completed Task 21: completed a targeted accessibility/responsive pass on shared chips, quantity steppers and Home header/navigation; improved touch targets and semantics while preserving existing product behavior. Source-level delimiter checks passed; device-level accessibility and Flutter tooling validation remain outstanding.
+- Completed Task 22: added shared-control widget regression tests for chip callbacks, quantity bounds and minimum touch-target dimensions. Test source structure was checked; execution remains unverified until Flutter CI or a local Flutter environment runs the suite.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
