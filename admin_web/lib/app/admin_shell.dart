@@ -87,70 +87,103 @@ class _AdminShellState extends State<AdminShell> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    final desktop = width >= 1050;
+    final desktop = width >= 1100;
     final tablet = width >= 720;
+
     return Scaffold(
       backgroundColor: AdminDesignColors.canvas,
-      body: Row(children: [
-        if (desktop) SizedBox(width: 248, height: double.infinity, child: _Sidebar(selected: section, onSelect: _select)),
-        Expanded(child: Column(children: [
-          _Header(
-            desktop: desktop,
-            user: widget.user,
-            onLogout: widget.onLogout,
-            searchController: _globalSearch,
-            searchQuery: _searchQuery,
-            onSearch: _applyGlobalSearch,
-          ),
-          Expanded(child: LayoutBuilder(builder: (context, constraints) => Scrollbar(
-          controller: _contentScrollController,
-          thumbVisibility: desktop,
-          child: SingleChildScrollView(
-            controller: _contentScrollController,
-            padding: EdgeInsets.fromLTRB(desktop ? 24 : 16, 24, desktop ? 24 : 16, 32),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1200),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  if (!desktop) Padding(
-                    padding: const EdgeInsets.only(bottom: 18),
-                    child: Row(children: [
-                      shad.IconButton.secondary(
-                        onPressed: () => _openMobileNav(context, tablet ? 300 : width * .84),
-                        icon: const AdminIcon(HugeIcons.strokeRoundedMenu01),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(child: Text(section.label, style: Theme.of(context).textTheme.headlineSmall)),
-                    ]),
-                  ),
-                  if (section != AdminSection.partners && section != AdminSection.invoices)
-                    _PageHeading(
-                      section: section,
-                      desktop: desktop,
-                      onAddProduct: section == AdminSection.catalogue
-                          ? () => _catalogueKey.currentState?._newProduct()
-                          : null,
-                      onManageCategories: section == AdminSection.catalogue
-                          ? () => _catalogueKey.currentState?._manageCategories()
-                          : null,
-                    ),
-                  const SizedBox(height: AdminSpacing.xxl),
-                  switch (section) {
-                    AdminSection.dashboard => const DashboardPage(),
-                    AdminSection.orders => OrdersPage(searchQuery: _searchQuery),
-                    AdminSection.catalogue => CataloguePage(key: _catalogueKey, searchQuery: _searchQuery),
-                    AdminSection.users => UsersPage(searchQuery: _searchQuery),
-                    AdminSection.partners => PartnersPage(searchQuery: _searchQuery),
-                    AdminSection.invoices => InvoicesPage(searchQuery: _searchQuery),
-                  },
-                  const SizedBox(height: 28),
-                  const Center(child: Text('Snap Foodd Admin  •  Preview data • Laravel API v1', style: TextStyle(fontSize: 11, color: AdminColors.muted))),
-                ]),
+      body: Row(
+        children: [
+          if (desktop)
+            SizedBox(
+              width: 248,
+              height: double.infinity,
+              child: _Sidebar(
+                selected: section,
+                onSelect: _select,
+                user: widget.user,
+                onLogout: widget.onLogout,
               ),
             ),
-          )))),
-        ])),
-      ]),
+          Expanded(
+            child: Column(
+              children: [
+                _Header(
+                  desktop: desktop,
+                  user: widget.user,
+                  section: section,
+                  onLogout: widget.onLogout,
+                  searchController: _globalSearch,
+                  onSearch: _applyGlobalSearch,
+                  onOpenNavigation: () => _openMobileNav(
+                    context,
+                    tablet ? 320 : width * .88,
+                  ),
+                ),
+                Expanded(
+                  child: Scrollbar(
+                    controller: _contentScrollController,
+                    thumbVisibility: desktop,
+                    child: SingleChildScrollView(
+                      controller: _contentScrollController,
+                      padding: EdgeInsets.fromLTRB(
+                        desktop ? AdminSpacing.xl : AdminSpacing.md,
+                        desktop ? AdminSpacing.xl : AdminSpacing.lg,
+                        desktop ? AdminSpacing.xl : AdminSpacing.md,
+                        AdminSpacing.xxxl,
+                      ),
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 1280),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _PageHeading(
+                                section: section,
+                                desktop: desktop,
+                                onAddProduct: section == AdminSection.catalogue
+                                    ? () => _catalogueKey.currentState?._newProduct()
+                                    : null,
+                                onManageCategories:
+                                    section == AdminSection.catalogue
+                                        ? () => _catalogueKey.currentState?._manageCategories()
+                                        : null,
+                              ),
+                              const SizedBox(height: AdminSpacing.xxl),
+                              switch (section) {
+                                AdminSection.dashboard => const DashboardPage(),
+                                AdminSection.orders =>
+                                  OrdersPage(searchQuery: _searchQuery),
+                                AdminSection.catalogue => CataloguePage(
+                                    key: _catalogueKey,
+                                    searchQuery: _searchQuery,
+                                  ),
+                                AdminSection.users =>
+                                  UsersPage(searchQuery: _searchQuery),
+                                AdminSection.partners =>
+                                  PartnersPage(searchQuery: _searchQuery),
+                                AdminSection.invoices =>
+                                  InvoicesPage(searchQuery: _searchQuery),
+                              },
+                              const SizedBox(height: AdminSpacing.xxxl),
+                              const Center(
+                                child: Text(
+                                  'Snap Foodd Admin  •  Preview data •  Laravel API v1',
+                                  style: AdminTypography.caption,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
