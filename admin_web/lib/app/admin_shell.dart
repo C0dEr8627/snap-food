@@ -211,7 +211,7 @@ class _AdminShellState extends State<AdminShell> {
                               const SizedBox(height: AdminSpacing.xxxl),
                               const Center(
                                 child: Text(
-                                  'Snap Foodd Admin  •  Preview data •  Laravel API v1',
+                                  'Snap Foodd Admin',
                                   style: AdminTypography.caption,
                                 ),
                               ),
@@ -382,7 +382,6 @@ class _Sidebar extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    if (!rail) const _SystemStatus(),
                     const SizedBox(height: AdminSpacing.sm),
                     _SidebarProfile(user: user!, onLogout: onLogout!, compact: rail),
                   ],
@@ -517,44 +516,6 @@ class _NavItem extends StatelessWidget {
           ),
         ),
       ),
-    ),
-  );
-}
-
-class _SystemStatus extends StatelessWidget {
-  const _SystemStatus();
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(
-      horizontal: AdminSpacing.sm,
-      vertical: AdminSpacing.sm,
-    ),
-    decoration: BoxDecoration(
-      color: AdminDesignColors.subtleSurface,
-      borderRadius: BorderRadius.circular(AdminRadii.control),
-      border: Border.all(color: AdminDesignColors.border),
-    ),
-    child: Row(
-      children: [
-        const _StatusDot(color: AdminDesignColors.success),
-        const SizedBox(width: AdminSpacing.xs),
-        Expanded(
-          child: Text(
-            'System operational',
-            style: AdminTypography.small.copyWith(
-              color: AdminDesignColors.primaryText,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        Text(
-          'API v1',
-          style: AdminTypography.caption.copyWith(
-            color: AdminDesignColors.secondaryText,
-          ),
-        ),
-      ],
     ),
   );
 }
