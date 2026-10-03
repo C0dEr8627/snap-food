@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CustomerUser;
 use App\Models\DeliveryPartner;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\OrderAssignment;
-use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -71,7 +71,7 @@ class OperationsController extends Controller
     public function customers(Request $request): View
     {
         $validated = $request->validate(['q' => ['nullable', 'string', 'max:120']]);
-        $query = User::query()->where('role', User::ROLE_CUSTOMER)->latest('id');
+        $query = CustomerUser::query()->latest('id');
 
         if (! empty($validated['q'])) {
             $term = $validated['q'];
