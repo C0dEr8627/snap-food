@@ -200,6 +200,92 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     );
   }
 
+
+
+  Widget _field(
+    TextEditingController controller,
+    String label, {
+    bool requiredField = true,
+  }) => Padding(
+    padding: const EdgeInsets.only(bottom: 9),
+    child: TextFormField(
+      controller: controller,
+      textInputAction: TextInputAction.next,
+      validator: requiredField
+          ? (value) => value == null || value.trim().isEmpty
+                ? '\$label is required'
+                : null
+          : null,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+      ),
+    ),
+  );
+
+  Future<void> _submit() async {
+    final savedAddress = ref.read(addressBookControllerProvider).value?.selectedAddress;
+    if (savedAddress == null && !_formKey.currentState!.validate()) return;
+    final cart = ref.read(cartControllerProvider);
+    final lines = <OrderLineRequest>[];
+    for (final item in cart.items) {
+      final productId = int.tryParse(item.productId);
+      if (productId == null || productId <= 0) {
+        _showMessage(
+          'Cart item ${item.name} has no valid catalogue product ID yet.',
+        );
+        return;
+      }
+      if (item.quantity < 1 || item.quantity > 99) {
+        _showMessage('Each item quantity must be between 1 and 99.');
+        return;
+      }
+      lines.add(
+        OrderLineRequest(productId: productId, quantity: item.quantity),
+      );
+    }
+
+    DeliveryAddress deliveryAddress;
+    if (savedAddress != null) {
+      deliveryAddress = savedAddress.toDeliveryAddress();
+    } else {
+      try {
+        final created = await ref.read(addressBookControllerProvider.notifier).addAddress({
+          'label': _label.text.trim(),
+          'recipient_name': _recipient.text.trim(),
+          'address_line1': _line1.text.trim(),
+          'address_line2': _line2.text.trim().isEmpty ? null : _line2.text.trim(),
+          'city': _city.text.trim(),
+          'state': _state.text.trim(),
+          'postal_code': _postal.text.trim(),
+          'country': _country.text.trim().isEmpty ? 'India' : _country.text.trim(),
+        });
+        if (created == null) {
+          _showMessage('Could not save the delivery address.');
+          return;
+        }
+        deliveryAddress = created.toDeliveryAddress();
+      } catch (error) {
+        _showMessage(error is ApiException ? error.message : 'Could not save the delivery address.');
+        return;
+      }
+    }
+
+    final order = await ref
+        .read(orderCheckoutControllerProvider.notifier)
+        .submit(CreateOrderRequest(items: lines, deliveryAddress: deliveryAddress));
+    if (!mounted || order == null) return;
+    ref.read(cartControllerProvider.notifier).clear();
+    context.go('/orders/${Uri.encodeComponent(order.id)}');
+  }
+
+  void _showMessage(String message) => ScaffoldMessenger.of(
+    context,
+  ).showSnackBar(SnackBar(content: Text(message)));
+}
+
+
+
 class _SelectedAddressCard extends StatelessWidget {
   const _SelectedAddressCard({required this.address, this.onChange});
 
@@ -455,89 +541,6 @@ class _CheckoutNotice extends StatelessWidget {
           ),
         ),
       );
-
-
-  Widget _field(
-    TextEditingController controller,
-    String label, {
-    bool requiredField = true,
-  }) => Padding(
-    padding: const EdgeInsets.only(bottom: 9),
-    child: TextFormField(
-      controller: controller,
-      textInputAction: TextInputAction.next,
-      validator: requiredField
-          ? (value) => value == null || value.trim().isEmpty
-                ? '\$label is required'
-                : null
-          : null,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-      ),
-    ),
-  );
-
-  Future<void> _submit() async {
-    final savedAddress = ref.read(addressBookControllerProvider).value?.selectedAddress;
-    if (savedAddress == null && !_formKey.currentState!.validate()) return;
-    final cart = ref.read(cartControllerProvider);
-    final lines = <OrderLineRequest>[];
-    for (final item in cart.items) {
-      final productId = int.tryParse(item.productId);
-      if (productId == null || productId <= 0) {
-        _showMessage(
-          'Cart item ${item.name} has no valid catalogue product ID yet.',
-        );
-        return;
-      }
-      if (item.quantity < 1 || item.quantity > 99) {
-        _showMessage('Each item quantity must be between 1 and 99.');
-        return;
-      }
-      lines.add(
-        OrderLineRequest(productId: productId, quantity: item.quantity),
-      );
-    }
-
-    DeliveryAddress deliveryAddress;
-    if (savedAddress != null) {
-      deliveryAddress = savedAddress.toDeliveryAddress();
-    } else {
-      try {
-        final created = await ref.read(addressBookControllerProvider.notifier).addAddress({
-          'label': _label.text.trim(),
-          'recipient_name': _recipient.text.trim(),
-          'address_line1': _line1.text.trim(),
-          'address_line2': _line2.text.trim().isEmpty ? null : _line2.text.trim(),
-          'city': _city.text.trim(),
-          'state': _state.text.trim(),
-          'postal_code': _postal.text.trim(),
-          'country': _country.text.trim().isEmpty ? 'India' : _country.text.trim(),
-        });
-        if (created == null) {
-          _showMessage('Could not save the delivery address.');
-          return;
-        }
-        deliveryAddress = created.toDeliveryAddress();
-      } catch (error) {
-        _showMessage(error is ApiException ? error.message : 'Could not save the delivery address.');
-        return;
-      }
-    }
-
-    final order = await ref
-        .read(orderCheckoutControllerProvider.notifier)
-        .submit(CreateOrderRequest(items: lines, deliveryAddress: deliveryAddress));
-    if (!mounted || order == null) return;
-    ref.read(cartControllerProvider.notifier).clear();
-    context.go('/orders/${Uri.encodeComponent(order.id)}');
-  }
-
-  void _showMessage(String message) => ScaffoldMessenger.of(
-    context,
-  ).showSnackBar(SnackBar(content: Text(message)));
-}
 
 class _ErrorBox extends StatelessWidget {
   const _ErrorBox({required this.error});
