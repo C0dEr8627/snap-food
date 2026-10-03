@@ -542,7 +542,7 @@ This should become a signature Snap Foodd experience:
 - The welcome experience is static and restrained, respecting the task's motion guidance without adding unnecessary animation; the existing splash animation continues to honor reduced-motion preferences.
 
 ### Task 20 — Add motion and tactile feedback
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
 Motion guidance:
 
@@ -625,6 +625,7 @@ Before marking any task complete, verify:
 | 2026-10-03 | Task 17 — Redesign live order tracking | ✅ Complete | Reworked live tracking into a status-first experience with a prominent current-status hero, reusable SnapOrderStatus, accessible progress timeline, safe-area-aware layout, pull-to-refresh, preserved 10-second polling, explicit stale/unavailable states, and API-backed location details. Removed restaurant-specific wording because Snap Foodd has no restaurant concept. ETA, rider identity/contact, map and support actions were not fabricated because the current tracking contract does not expose them; no map abstraction is currently available. Validation: changed Dart source has balanced braces/parentheses/brackets; implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 18 — Redesign Profile and Favorites | ✅ Complete | Reworked Profile around authenticated account identity, order/favorite/address counts, supported account navigation and branded list rows. Reworked Favorites around image-led saved dishes with responsive layouts, stronger food imagery, Snap price/remove controls, browse action and branded loading/error/empty states. Preserved existing auth/logout, favorites controller/API, address/order routes and product-detail navigation. Removed unsupported/fabricated payment, coupon, notification, language, support and privacy controls from the profile. Validation: changed Dart source files have balanced braces/parentheses/brackets; implementation commits exposed no GitHub status checks/workflow runs through the connector; local Flutter/Dart formatter, analyzer and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 19 — Improve onboarding and welcome experience | ✅ Complete | Added a food-first welcome screen with warm editorial illustration, concise catalogue-first copy, clear create-account/sign-in actions, compact and wide layouts, safe-area-aware scrolling, and existing design-system components/tokens. Updated the splash route to lead into /welcome rather than bypassing it for /login. Preserved login/register destinations, Google/password auth, session restoration, and GoRouter auth guards. Validation: reviewed route wiring and source structure; local Flutter/Dart formatter, analyzer and tests remain unavailable through the GitHub connector. |
+| 2026-10-03 | Task 20 — Add motion and tactile feedback | ✅ Complete | Added restrained haptic feedback for filter/category selection, quantity changes, add-to-cart, icon actions and bottom navigation; added short selection/status transitions that respect the reduced-motion preference. Preserved native pressed feedback, routes, API/state behavior and all business logic; no dependency added. Validation: changed source files have balanced brace/parenthesis/bracket counts and interactions were reviewed at source level. Local Flutter/Dart formatter, analyzer and tests, physical-device haptic checks, and visual UI testing were unavailable through the GitHub connector. |
 
 ---
 
@@ -655,6 +656,7 @@ Before marking any task complete, verify:
 - Completed Task 17: redesigned live order tracking around current status, progress, stale/live location state and accessible tracking feedback while preserving the existing tracking API, polling and refresh behavior; documented that ETA, rider, map and support data are not currently available.
 - Completed Task 18: redesigned Profile and Favorites around supported account data, branded account navigation, food-first saved dishes, responsive layouts and useful feedback states while preserving authentication, favorites and existing customer routes.
 - Completed Task 19: refreshed the onboarding welcome experience with food-first visual storytelling, catalogue-accurate copy, clear account actions and responsive layouts; connected the splash screen to the welcome route while preserving existing authentication and navigation behavior.
+- Completed Task 20: added restrained tactile feedback for meaningful selection, quantity, add-to-cart, icon and navigation actions; introduced reduced-motion-aware bottom-navigation and order-status transitions without adding dependencies or changing business behavior.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
