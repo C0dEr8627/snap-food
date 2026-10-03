@@ -636,7 +636,7 @@ Do not fabricate live-location or telemetry data if the backend does not provide
 ## Phase 9 — Finance
 
 ### Task 13 — Redesign Invoices / Billing
-**Status:** ⬜ Not Started
+**Status:** 🟢 Complete
 
 The finance surface should feel precise and quieter than operations screens.
 
@@ -1231,6 +1231,32 @@ The admin UI/UX modernization is complete when:
   - Browser screenshot/interactive visual QA and actual Flutter Web compile validation remain dependent on a runnable environment or CI execution path.
   - Search/filter counts are derived from the currently loaded API page; the existing backend list endpoint was preserved rather than inventing server-side filter parameters.
   - Task 13 — Invoices / Billing is the next implementation target.
+
+
+### 2026-10-03 — Task 13
+- Status: 🟢 Complete
+- Implemented:
+  - Reworked the Invoices / Billing workspace around the shared admin page-header, filter-bar, stat, data-table, status-badge and feedback language.
+  - Kept the authoritative `GET /admin/invoices` contract, including search, date range, payment-status filters, pagination and server-provided summary totals.
+  - Replaced the unsupported GSTR-1 action with the existing supported current-page CSV export only.
+  - Added a finance-focused summary for invoice count, billed total, paid total and calculated unpaid amount.
+  - Moved invoice inspection from a centered modal into the shared right-side `SfSideDrawer` pattern.
+  - Preserved invoice/customer/order/item snapshot fields exposed by the API and explicitly avoided inventing tax, gateway, reconciliation or payout data.
+  - Kept responsive horizontal table behavior and pagination through `SfDataTable`.
+  - No restaurant concept or unrelated business workflow was introduced.
+- Files/components changed:
+  - admin_web/lib/pages/invoices_page.dart
+  - ADMIN_WEB_UI_UX_DEVELOPMENT_PLAN.md
+- Validation:
+  - Re-fetched and inspected the final invoice page after the implementation commits.
+  - Inspected the authoritative `AdminInvoiceController`, `Invoice` model and `routes/api.php` contract to verify the page uses supported invoice fields, filters and endpoint behavior.
+  - Verified the final page uses shared `SfPageHeader`, `SfFilterBar`, `SfStat`, `SfDataTable`, `SfStatusBadge` and `SfSideDrawer`.
+  - Verified the unsupported GSTR-1 action was removed.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful local validation run is being claimed.
+- Limitations/follow-up:
+  - Full Flutter Web compile, formatter, analyzer, automated tests and browser visual/overflow QA still require a runnable local or CI execution environment.
+  - Existing invoice helper classes with legacy styling remain in the file where they are not part of the active rendered path; they can be cleaned up during the later final visual QA/cleanup pass.
+  - Task 14 — Premium Form UX is the next implementation target.
 
 ### Future entries
 
