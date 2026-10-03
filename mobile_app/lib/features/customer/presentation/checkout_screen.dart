@@ -36,6 +36,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   @override
   void dispose() {
+    // A direct-order draft must not leak into a later cart checkout.
+    ref.read(directCheckoutItemsProvider.notifier).state = null;
     for (final controller in [
       _label,
       _recipient,
