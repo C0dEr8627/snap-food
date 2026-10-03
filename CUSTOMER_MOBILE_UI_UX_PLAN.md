@@ -565,11 +565,6 @@ Respect reduced-motion preferences.
 ### Task 21 — Final accessibility and responsive UX pass
 **Status:** ✅ Complete
 
-### Task 22 — Add widget regression tests for shared customer controls
-**Status:** ✅ Complete
-
-Added Flutter widget tests for the shared filter/category chips and quantity stepper. The tests cover selection callbacks, quantity bounds, and minimum 48px control targets. Test execution remains a required local/CI validation step; the GitHub connector does not provide a Flutter runtime.
-
 Audit:
 
 - Text scaling
@@ -583,6 +578,11 @@ Audit:
 - Small-screen layouts
 - Larger-screen layouts
 - Color-independent status communication
+
+### Task 22 — Add widget regression tests for shared customer controls
+**Status:** ✅ Complete
+
+Added Flutter widget tests for the shared filter/category chips and quantity stepper. The tests cover selection callbacks, quantity bounds, and minimum 48px control targets. Test execution remains a required local/CI validation step; the GitHub connector does not provide a Flutter runtime.
 
 ---
 
