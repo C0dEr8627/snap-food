@@ -124,22 +124,24 @@ class _AdminShellState extends State<AdminShell> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    final desktop = width >= 1100;
-    final tablet = width >= 720;
+    final desktop = width >= 1200;
+    final rail = width >= 900 && width < 1200;
+    final tablet = width >= 600;
 
     return Scaffold(
       backgroundColor: AdminDesignColors.canvas,
       body: Row(
         children: [
-          if (desktop)
+          if (desktop || rail)
             SizedBox(
-              width: 248,
+              width: rail ? 76 : 248,
               height: double.infinity,
               child: _Sidebar(
                 selected: section,
                 onSelect: _select,
                 user: widget.user,
                 onLogout: widget.onLogout,
+                rail: rail,
               ),
             ),
           Expanded(
@@ -161,7 +163,7 @@ class _AdminShellState extends State<AdminShell> {
                 Expanded(
                   child: Scrollbar(
                     controller: _contentScrollController,
-                    thumbVisibility: desktop,
+                    thumbVisibility: desktop || rail,
                     child: SingleChildScrollView(
                       controller: _contentScrollController,
                       padding: EdgeInsets.fromLTRB(
@@ -254,6 +256,7 @@ class _Sidebar extends StatelessWidget {
     required this.selected,
     required this.onSelect,
     this.compact = false,
+    this.rail = false,
     this.user,
     this.onLogout,
   });
@@ -261,6 +264,7 @@ class _Sidebar extends StatelessWidget {
   final AdminSection selected;
   final ValueChanged<AdminSection> onSelect;
   final bool compact;
+  final bool rail;
   final AdminUser? user;
   final Future<void> Function()? onLogout;
 
@@ -277,14 +281,15 @@ class _Sidebar extends StatelessWidget {
           children: [
             Padding(
               padding: EdgeInsets.fromLTRB(
-                compact ? AdminSpacing.lg : AdminSpacing.xl,
+                rail ? AdminSpacing.sm : compact ? AdminSpacing.lg : AdminSpacing.xl,
                 AdminSpacing.xl,
-                AdminSpacing.lg,
+                rail ? AdminSpacing.sm : AdminSpacing.lg,
                 AdminSpacing.lg,
               ),
-              child: const Row(
+              child: Row(
+                mainAxisAlignment: rail ? MainAxisAlignment.center : MainAxisAlignment.start,
                 children: [
-                  _BrandMark(),
+                  const _BrandMark(),
                   SizedBox(width: AdminSpacing.sm),
                   Expanded(
                     child: Column(
@@ -312,13 +317,13 @@ class _Sidebar extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.sm),
+                padding: EdgeInsets.symmetric(horizontal: rail ? 0 : AdminSpacing.sm),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -327,6 +332,7 @@ class _Sidebar extends StatelessWidget {
                       items: const [AdminSection.dashboard],
                       selected: selected,
                       onSelect: onSelect,
+                      rail: rail,
                     ),
                     const SizedBox(height: AdminSpacing.lg),
                     _NavGroup(
@@ -334,6 +340,7 @@ class _Sidebar extends StatelessWidget {
                       items: const [AdminSection.orders, AdminSection.partners],
                       selected: selected,
                       onSelect: onSelect,
+                      rail: rail,
                     ),
                     const SizedBox(height: AdminSpacing.lg),
                     _NavGroup(
@@ -341,6 +348,7 @@ class _Sidebar extends StatelessWidget {
                       items: const [AdminSection.catalogue],
                       selected: selected,
                       onSelect: onSelect,
+                      rail: rail,
                     ),
                     const SizedBox(height: AdminSpacing.lg),
                     _NavGroup(
@@ -348,6 +356,7 @@ class _Sidebar extends StatelessWidget {
                       items: const [AdminSection.users],
                       selected: selected,
                       onSelect: onSelect,
+                      rail: rail,
                     ),
                     const SizedBox(height: AdminSpacing.lg),
                     _NavGroup(
@@ -355,6 +364,7 @@ class _Sidebar extends StatelessWidget {
                       items: const [AdminSection.invoices],
                       selected: selected,
                       onSelect: onSelect,
+                      rail: rail,
                     ),
                   ],
                 ),
@@ -370,9 +380,9 @@ class _Sidebar extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    const _SystemStatus(),
+                    if (!rail) const _SystemStatus(),
                     const SizedBox(height: AdminSpacing.sm),
-                    _SidebarProfile(user: user!, onLogout: onLogout!),
+                    _SidebarProfile(user: user!, onLogout: onLogout!, compact: rail),
                   ],
                 ),
               ),
@@ -389,12 +399,14 @@ class _NavGroup extends StatelessWidget {
     required this.items,
     required this.selected,
     required this.onSelect,
+    this.rail = false,
   });
 
   final String label;
   final List<AdminSection> items;
   final AdminSection selected;
   final ValueChanged<AdminSection> onSelect;
+  final bool rail;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -402,7 +414,7 @@ class _NavGroup extends StatelessWidget {
     children: [
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.sm),
-        child: Text(
+        child: rail ? const SizedBox.shrink() : Text(
           label,
           style: AdminTypography.caption.copyWith(
             fontSize: 10,
@@ -428,11 +440,13 @@ class _NavItem extends StatelessWidget {
     required this.item,
     required this.active,
     required this.onTap,
+    this.rail = false,
   });
 
   final AdminSection item;
   final bool active;
   final VoidCallback onTap;
+  final bool rail;
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -464,6 +478,7 @@ class _NavItem extends StatelessWidget {
                   : null,
             ),
             child: Row(
+              mainAxisAlignment: rail ? MainAxisAlignment.center : MainAxisAlignment.start,
               children: [
                 AdminIcon(
                   item.icon,
@@ -472,10 +487,11 @@ class _NavItem extends StatelessWidget {
                       ? AdminDesignColors.primaryText
                       : AdminDesignColors.secondaryText,
                 ),
-                const SizedBox(width: AdminSpacing.sm),
-                Expanded(
-                  child: Text(
-                    item.label,
+                if (!rail) ...[
+                  const SizedBox(width: AdminSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      item.label,
                     overflow: TextOverflow.ellipsis,
                     style: AdminTypography.body.copyWith(
                       fontSize: 13,
@@ -485,8 +501,9 @@ class _NavItem extends StatelessWidget {
                           : AdminDesignColors.secondaryText,
                     ),
                   ),
-                ),
-                if (active)
+                  ),
+                ],
+                if (active && !rail)
                   const AdminIcon(
                     HugeIcons.strokeRoundedArrowRight01,
                     size: 16,
@@ -540,10 +557,11 @@ class _SystemStatus extends StatelessWidget {
 }
 
 class _SidebarProfile extends StatelessWidget {
-  const _SidebarProfile({required this.user, required this.onLogout});
+  const _SidebarProfile({required this.user, required this.onLogout, this.compact = false});
 
   final AdminUser user;
   final Future<void> Function() onLogout;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) => Container(
