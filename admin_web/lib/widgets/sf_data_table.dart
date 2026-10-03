@@ -51,10 +51,13 @@ class SfDataTable extends StatelessWidget {
                 constraints.maxWidth.isFinite ? constraints.maxWidth : minWidth,
               ),
             );
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SizedBox(
-                width: width,
+            final viewportWidth = constraints.maxWidth.isFinite ? constraints.maxWidth : minWidth;
+            return SizedBox(
+              width: viewportWidth,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: width,
                 child: Column(
                   children: [
                     Container(
