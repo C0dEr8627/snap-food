@@ -20,7 +20,7 @@ import '../features/customer/presentation/customer_profile_screen.dart';
 import '../features/customer/presentation/address_book_screen.dart';
 import '../features/customer/presentation/restaurant_menu_screen.dart';
 import '../features/customer/presentation/splash_welcome_screen.dart';
-import '../features/customer/presentation/welcome_screen.dart';
+import '../features/customer/presentation/onboarding_welcome_screen.dart';
 import '../features/restaurant/presentation/restaurant_dashboard_screen.dart';
 import '../features/restaurant/presentation/restaurant_kds_screen.dart';
 import '../features/restaurant/presentation/restaurant_order_detail_screen.dart';
@@ -53,7 +53,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       }
 
       if (isAuthenticated &&
-          (location == '/' || location == '/welcome' || location == '/login' || location == '/register')) {
+          (location == '/' ||
+              location == '/welcome' ||
+              location == '/login' ||
+              location == '/register')) {
         return '/home';
       }
 
@@ -68,7 +71,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/welcome',
         name: 'welcome',
-        builder: (context, state) => const WelcomeScreen(),
+        builder: (context, state) => const OnboardingWelcomeScreen(),
       ),
       GoRoute(
         path: '/login',
@@ -195,9 +198,9 @@ class SnapFoodApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
-    title: 'Snap Foodd',
-    debugShowCheckedModeBanner: false,
-    theme: SnapFoodTheme.light,
-    routerConfig: ref.watch(appRouterProvider),
-  );
+        title: 'Snap Foodd',
+        debugShowCheckedModeBanner: false,
+        theme: SnapFoodTheme.light,
+        routerConfig: ref.watch(appRouterProvider),
+      );
 }
