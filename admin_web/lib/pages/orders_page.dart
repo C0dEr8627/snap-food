@@ -116,7 +116,7 @@ class _AdminOrderApi{
     final r=await http.get(Uri.parse(base+'/admin/orders/'+Uri.encodeComponent(id)+'/invoice'),headers:headers);
     if(r.statusCode<200||r.statusCode>=300)throw StateError('Invoice request failed ('+r.statusCode.toString()+').');
     final body=jsonDecode(r.body);
-    return body is Map&&body['data'] is Map?body['data']['file_reference']?.toString():null;
+    if(body is Map&&body['data'] is Map){final data=body['data'] as Map;return (data['file_reference']??data['invoice_number'])?.toString();}return null;
   }
 }
 
