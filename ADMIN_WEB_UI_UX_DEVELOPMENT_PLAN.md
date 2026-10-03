@@ -1482,3 +1482,34 @@ Use this structure in the change log:
 ```
 
 Never claim tests, builds, screenshots or visual checks were performed unless they were actually performed.
+
+
+## 2026-10-03 — Admin Web Flutter inheritance/lifecycle compile repair follow-up
+
+**Status:** Complete — source-level repair committed; local Flutter compile verification remains the final environment-dependent check.
+
+### Problem addressed
+The next Chrome compile exposed that unqualified State, StatelessWidget, and StatefulWidget were resolving against the combined main.dart part-library imports rather than being unambiguously bound to Flutter framework types. This caused lifecycle APIs such as setState, mounted, context, widget, initState, dispose, and didUpdateWidget to disappear, and made shared widgets such as SfSkeleton incompatible with Flutter's Widget type.
+
+### Implementation
+Explicitly qualified Flutter framework inheritance and lifecycle mixins with the flutter namespace in:
+- admin_web/lib/widgets/sf_core_components.dart
+- admin_web/lib/pages/partners_page.dart
+- admin_web/lib/pages/invoices_page.dart
+- admin_web/lib/pages/users_page.dart
+- admin_web/lib/pages/categories_page.dart
+
+Also removed an invalid const from the partner onboarding explanatory Text, because its AdminTypography.body.copyWith(...) style is not a constant expression.
+
+### Commits
+- 94fbcd19e0a7be9238c247db1ba7658b6b24a6a0 — shared Flutter widget/state inheritance repair
+- f8c36f6abeb7549bc035d5186ff77cef00836f9f — partners lifecycle/type repair
+- 0bb400976cd277b44b6368c4d8eb81ab0d14e4e7 — invoices lifecycle/type repair
+- 44d1b07a309057e81405a9e42b7855de106c4933 — users lifecycle/type repair
+- 120063add2f979654d40397ab9d460dea45670e5 — categories inheritance alignment
+
+### Validation
+Audited the affected declarations so page states and shared widgets now explicitly extend Flutter framework classes. The reported lifecycle and SfSkeleton widget-assignment errors are addressed at their common type-resolution source. A local flutter clean && flutter pub get && flutter run -d chrome remains required to confirm the complete compiler output in the user's Flutter environment.
+
+### Next
+If the local compiler reports additional errors after this repair, address only the remaining concrete diagnostics before continuing with Task 17 (Accessibility / Keyboard UX).
