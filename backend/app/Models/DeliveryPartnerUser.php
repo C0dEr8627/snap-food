@@ -13,6 +13,11 @@ class DeliveryPartnerUser extends Authenticatable
 
     protected $table = 'delivery_partner_users';
 
+    protected static function newFactory()
+    {
+        return \Database\Factories\RiderUserFactory::new();
+    }
+
     protected $fillable = ['name', 'email', 'phone', 'password', 'is_active'];
 
     protected $hidden = ['password', 'remember_token'];
