@@ -23,9 +23,9 @@ abstract final class SnapFoodColors {
   static const goldenYellow = Color(0xFFE4B935);
   static const foodRed = Color(0xFFD54126);
   static const accentYellow = Color(0xFFFBE929);
-  static const warmBlack = Color(0xFF1E1915);
+  static const warmBlack = Color(0xFF201B17);
   static const cream = Color(0xFFFFFDF7);
-  static const softBorder = Color(0xFFE9E4D8);
+  static const softBorder = Color(0xFFD1C5AE);
   static const softYellow = Color(0xFFFFF3C4);
   static const softRed = Color(0xFFFBE3DC);
 }
