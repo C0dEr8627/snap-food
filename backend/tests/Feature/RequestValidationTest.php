@@ -6,7 +6,8 @@ use App\Http\Requests\StoreAddressRequest;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\StoreProductRequest;
 use App\Models\Category;
-use App\Models\User;
+use App\Models\AdminUser;
+use App\Models\CustomerUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Validator;
 use Tests\TestCase;
@@ -107,8 +108,8 @@ class RequestValidationTest extends TestCase
 
     public function test_admin_write_requests_are_not_authorized_for_customers(): void
     {
-        $customer = new User(['role' => 'CUSTOMER']);
-        $admin = new User(['role' => 'ADMIN']);
+        $customer = new CustomerUser;
+        $admin = new AdminUser;
 
         foreach ([new StoreCategoryRequest, new StoreProductRequest] as $request) {
             $request->setUserResolver(fn () => $customer);
