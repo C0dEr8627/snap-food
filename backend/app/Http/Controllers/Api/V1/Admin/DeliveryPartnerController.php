@@ -6,11 +6,11 @@ use App\Exceptions\ConflictException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProvisionDeliveryPartnerRequest;
 use App\Http\Requests\UpdateDeliveryPartnerApprovalRequest;
-use App\Models\CustomerUser;
 use App\Models\DeliveryPartner;
 use App\Models\DeliveryPartnerUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
 
 class DeliveryPartnerController extends Controller
@@ -28,27 +28,12 @@ class DeliveryPartnerController extends Controller
     public function store(ProvisionDeliveryPartnerRequest $request): JsonResponse
     {
         $partner = DB::transaction(function () use ($request): DeliveryPartner {
-            $customer = CustomerUser::query()
-                ->lockForUpdate()
-                ->findOrFail($request->integer('user_id'));
-
-            if (! $customer->is_active) {
-                abort(
-                    Response::HTTP_UNPROCESSABLE_ENTITY,
-                    'Inactive customers cannot be provisioned as delivery partners.'
-                );
-            }
-
-            if (DeliveryPartnerUser::query()->where('email', $customer->email)->exists()) {
-                throw new ConflictException('A delivery partner account already exists for this email.');
-            }
-
             $partnerUser = DeliveryPartnerUser::create([
-                'name' => $customer->name,
-                'email' => $customer->email,
-                'phone' => $customer->phone,
-                'password' => $customer->password,
-                'is_active' => $customer->is_active,
+                'name' => $request->string('name')->toString(),
+                'email' => strtolower(trim($request->string('email')->toString())),
+                'phone' => $request->filled('phone') ? trim($request->string('phone')->toString()) : null,
+                'password' => Hash::make($request->string('password')->toString()),
+                'is_active' => true,
             ]);
 
             return DeliveryPartner::create([
@@ -76,10 +61,7 @@ class DeliveryPartnerController extends Controller
             $partner->is_approved = $approved;
             $partner->approved_at = $approved ? now() : null;
             $partner->approved_by = $approved ? $request->user()->id : null;
-
-            if (! $approved) {
-                $partner->is_available = false;
-            }
+            $partner->is_available = $approved && $partner->is_active;
 
             $partner->save();
 
