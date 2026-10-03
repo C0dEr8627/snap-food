@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\\Feature;
+namespace Tests\Feature;
 
-use App\\Models\\AdminUser;
-use App\\Models\\CustomerUser;
-use App\\Models\\DeliveryPartnerUser;
-use Illuminate\\Foundation\\Testing\\RefreshDatabase;
-use Tests\\TestCase;
+use App\Models\AdminUser;
+use App\Models\CustomerUser;
+use App\Models\DeliveryPartnerUser;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class AdminUsersApiTest extends TestCase
 {
