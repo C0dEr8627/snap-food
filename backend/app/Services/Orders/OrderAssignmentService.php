@@ -7,12 +7,12 @@ use App\Models\DeliveryPartner;
 use App\Models\Order;
 use App\Models\OrderAssignment;
 use App\Models\OrderStatusHistory;
-use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\DB;
 
 class OrderAssignmentService
 {
-    public function assign(Order $order, DeliveryPartner $deliveryPartner, User $actor): OrderAssignment
+    public function assign(Order $order, DeliveryPartner $deliveryPartner, Authenticatable $actor): OrderAssignment
     {
         return DB::transaction(function () use ($order, $deliveryPartner, $actor): OrderAssignment {
             $lockedOrder = Order::query()->lockForUpdate()->findOrFail($order->id);
