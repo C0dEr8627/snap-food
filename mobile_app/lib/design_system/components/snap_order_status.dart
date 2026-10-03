@@ -24,7 +24,11 @@ class SnapOrderStatus extends StatelessWidget {
     return Semantics(
       label: 'Order status: $label',
       container: true,
-      child: DecoratedBox(
+      child: AnimatedContainer(
+        duration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 180),
+        curve: Curves.easeOutCubic,
         decoration: BoxDecoration(
           color: tone.background,
           borderRadius: BorderRadius.circular(SnapFoodRadii.full),
