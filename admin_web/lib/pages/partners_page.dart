@@ -804,7 +804,7 @@ class _PartnerDetailDrawer extends flutter.StatelessWidget {
 class _PartnerDetailSection extends flutter.StatelessWidget {
   const _PartnerDetailSection({required this.title, required this.children});
   final String title;
-  final List<Widget> children;
+  final List<flutter.Widget> children;
 
   @override
   flutter.Widget build(BuildContext context) => Column(
