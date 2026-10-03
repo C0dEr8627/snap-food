@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class OrderStatusHistory extends Model
 {
@@ -14,6 +15,7 @@ class OrderStatusHistory extends Model
         'from_status',
         'to_status',
         'actor_id',
+        'actor_type',
     ];
 
     protected function casts(): array
@@ -28,8 +30,8 @@ class OrderStatusHistory extends Model
         return $this->belongsTo(Order::class);
     }
 
-    public function actor(): BelongsTo
+    public function actor(): MorphTo
     {
-        return $this->belongsTo(User::class, 'actor_id');
+        return $this->morphTo();
     }
 }
