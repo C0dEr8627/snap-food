@@ -1,12 +1,12 @@
 part of '../main.dart';
 
-class InvoicesPage extends flutter.StatefulWidget {
+class InvoicesPage extends StatefulWidget {
   const InvoicesPage({super.key, this.searchQuery = ''});
   final String searchQuery;
-  @override flutter.State<InvoicesPage> createState() => _InvoicesPageState();
+  @override State<InvoicesPage> createState() => _InvoicesPageState();
 }
 
-class _InvoicesPageState extends flutter.State<InvoicesPage> {
+class _InvoicesPageState extends State<InvoicesPage> {
   final _api = const _InvoiceLedgerApi();
   final _search = TextEditingController();
   List<_LedgerInvoice> _items = [];
@@ -171,7 +171,7 @@ class _InvoicesPageState extends flutter.State<InvoicesPage> {
   }
 }
 
-class _InvoiceDetail extends flutter.StatelessWidget {
+class _InvoiceDetail extends StatelessWidget {
   const _InvoiceDetail({required this.invoice});
   final _LedgerInvoice invoice;
 
@@ -214,7 +214,7 @@ class _InvoiceDetail extends flutter.StatelessWidget {
   );
 }
 
-class _InvoiceDetailLine extends flutter.StatelessWidget {
+class _InvoiceDetailLine extends StatelessWidget {
   const _InvoiceDetailLine(this.label, this.value, {this.strong = false});
   final String label, value;
   final bool strong;
@@ -229,7 +229,7 @@ class _InvoiceDetailLine extends flutter.StatelessWidget {
 }
 
 
-class _InvoiceFilterPill extends flutter.StatelessWidget {
+class _InvoiceFilterPill extends StatelessWidget {
   const _InvoiceFilterPill(this.label, this.active, this.onTap);
   final String label;
   final bool active;
@@ -243,7 +243,7 @@ class _InvoiceFilterPill extends flutter.StatelessWidget {
   );
 }
 
-class _InvoiceLedgerCard extends flutter.StatelessWidget {
+class _InvoiceLedgerCard extends StatelessWidget {
   const _InvoiceLedgerCard({
     required this.invoices,
     required this.mobile,
@@ -306,7 +306,7 @@ class _InvoiceLedgerCard extends flutter.StatelessWidget {
   );
 }
 
-class _InvoiceMobileCard extends flutter.StatelessWidget {
+class _InvoiceMobileCard extends StatelessWidget {
   const _InvoiceMobileCard({required this.invoice, required this.onView});
   final _LedgerInvoice invoice;
   final VoidCallback onView;
@@ -386,7 +386,7 @@ class _LedgerInvoice {
   }
 }
 
-class _InvoiceBreadcrumb extends flutter.StatelessWidget {
+class _InvoiceBreadcrumb extends StatelessWidget {
   const _InvoiceBreadcrumb();
   @override flutter.Widget build(BuildContext context) => const Wrap(spacing: 7, crossAxisAlignment: WrapCrossAlignment.center, children: [
     Text('ACCOUNTING & COMPLIANCE', style: TextStyle(fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w900, color: AdminColors.muted)),
