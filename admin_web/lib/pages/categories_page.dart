@@ -51,7 +51,9 @@ class _CategoriesPageState extends flutter.State<CategoriesPage> {
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setDialogState) => AlertDialog(
+        builder: (dialogContext, setDialogState) => Material(
+          color: Colors.transparent,
+          child: AlertDialog(
           title: Text(category == null ? 'Add category' : 'Edit category'),
           content: SizedBox(width: 440, child: Column(mainAxisSize: MainAxisSize.min, children: [
             SfInput(controller: name, label: 'Category name', hintText: 'e.g. Breakfast'),
@@ -71,6 +73,7 @@ class _CategoriesPageState extends flutter.State<CategoriesPage> {
               await _saveCategory(id: category?.id, name: name.text.trim(), slug: slug.text.trim(), sortOrder: int.parse(order.text.trim()), active: active);
             }, child: Text(category == null ? 'Create category' : 'Save changes')),
           ],
+          ),
         ),
       ),
     );
