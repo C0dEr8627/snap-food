@@ -255,7 +255,10 @@ class _CataloguePageState extends State<CataloguePage> {
           ),
         ),
       ),
-    ).future;
+    ),
+  ),
+),
+).future;
   }
   Future<bool> _save() async {
     final validationError = _validateProductForm();
