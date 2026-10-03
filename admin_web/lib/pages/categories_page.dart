@@ -55,7 +55,7 @@ class _CategoriesPageState extends flutter.State<CategoriesPage> {
           color: Colors.transparent,
           child: AlertDialog(
           title: Text(category == null ? 'Add category' : 'Edit category'),
-          content: SizedBox(width: 440, child: Column(mainAxisSize: MainAxisSize.min, children: [
+          content: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 440), child: Column(mainAxisSize: MainAxisSize.min, children: [
             SfInput(controller: name, label: 'Category name', hintText: 'e.g. Breakfast'),
             const SizedBox(height: AdminSpacing.md),
             SfInput(controller: slug, label: 'Slug', hintText: 'breakfast'),
