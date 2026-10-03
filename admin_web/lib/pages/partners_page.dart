@@ -2,7 +2,7 @@ part of '../main.dart';
 
 /// Delivery partner operations view. This page intentionally uses the existing
 /// AdminShell section and the authenticated Laravel admin API.
-class PartnersPage extends StatefulWidget {
+class PartnersPage extends flutter.StatefulWidget {
   const PartnersPage({super.key, this.searchQuery = ''});
   final String searchQuery;
 
@@ -10,7 +10,7 @@ class PartnersPage extends StatefulWidget {
   State<PartnersPage> createState() => _PartnersPageState();
 }
 
-class _PartnersPageState extends State<PartnersPage> {
+class _PartnersPageState extends flutter.State<PartnersPage> {
   final _api = const _DeliveryPartnerApi();
   final _search = TextEditingController();
   List<_DeliveryPartnerRecord> _partners = [];
@@ -150,7 +150,7 @@ class _PartnersPageState extends State<PartnersPage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'The existing backend provisions an existing active user by ID. '
                 'It does not create a user account; it links an existing active user to a delivery-partner record.',
                 style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText, height: 1.5),
@@ -415,7 +415,7 @@ class _DeliveryPartnerRecord {
 int _partnersAsInt(dynamic value, int fallback) =>
     value is int ? value : int.tryParse(value?.toString() ?? '') ?? fallback;
 
-class _PartnerCommandHeader extends StatelessWidget {
+class _PartnerCommandHeader extends flutter.StatelessWidget {
   const _PartnerCommandHeader({
     required this.apiConfigured,
     required this.onExport,
@@ -477,7 +477,7 @@ class _PartnerCommandHeader extends StatelessWidget {
       );
 }
 
-class _FleetSummary extends StatelessWidget {
+class _FleetSummary extends flutter.StatelessWidget {
   const _FleetSummary({
     required this.partners,
     required this.total,
@@ -527,7 +527,7 @@ class _FleetSummary extends StatelessWidget {
   }
 }
 
-class _PartnerFilterBar extends StatelessWidget {
+class _PartnerFilterBar extends flutter.StatelessWidget {
   const _PartnerFilterBar({
     required this.controller,
     required this.filter,
@@ -578,7 +578,7 @@ class _PartnerFilterBar extends StatelessWidget {
       );
 }
 
-class _PartnerRoster extends StatelessWidget {
+class _PartnerRoster extends flutter.StatelessWidget {
   const _PartnerRoster({
     required this.partners,
     required this.busy,
@@ -648,7 +648,7 @@ class _PartnerRoster extends StatelessWidget {
       );
 }
 
-class _PartnerPagination extends StatelessWidget {
+class _PartnerPagination extends flutter.StatelessWidget {
   const _PartnerPagination({
     required this.currentPage,
     required this.lastPage,
@@ -671,7 +671,7 @@ class _PartnerPagination extends StatelessWidget {
       );
 }
 
-class _PartnerLoadingState extends StatelessWidget {
+class _PartnerLoadingState extends flutter.StatelessWidget {
   const _PartnerLoadingState();
 
   @override
@@ -696,7 +696,7 @@ class _PartnerLoadingState extends StatelessWidget {
       );
 }
 
-class _PartnerErrorBanner extends StatelessWidget {
+class _PartnerErrorBanner extends flutter.StatelessWidget {
   const _PartnerErrorBanner({required this.message, required this.onRetry});
   final String message;
   final VoidCallback onRetry;
@@ -709,7 +709,7 @@ class _PartnerErrorBanner extends StatelessWidget {
       );
 }
 
-class _PartnerEmptyState extends StatelessWidget {
+class _PartnerEmptyState extends flutter.StatelessWidget {
   const _PartnerEmptyState({required this.hasQuery, required this.onClear});
   final bool hasQuery;
   final VoidCallback onClear;
@@ -731,7 +731,7 @@ class _PartnerEmptyState extends StatelessWidget {
       );
 }
 
-class _PartnerDetailDrawer extends StatelessWidget {
+class _PartnerDetailDrawer extends flutter.StatelessWidget {
   const _PartnerDetailDrawer({
     required this.partner,
     required this.busy,
@@ -801,7 +801,7 @@ class _PartnerDetailDrawer extends StatelessWidget {
       );
 }
 
-class _PartnerDetailSection extends StatelessWidget {
+class _PartnerDetailSection extends flutter.StatelessWidget {
   const _PartnerDetailSection({required this.title, required this.children});
   final String title;
   final List<flutter.Widget> children;
@@ -820,7 +820,7 @@ class _PartnerDetailSection extends StatelessWidget {
       );
 }
 
-class _PartnerDetailLine extends StatelessWidget {
+class _PartnerDetailLine extends flutter.StatelessWidget {
   const _PartnerDetailLine(this.label, this.value);
   final String label;
   final String value;
