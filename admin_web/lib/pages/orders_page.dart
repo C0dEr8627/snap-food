@@ -200,7 +200,7 @@ class _OrderFilters extends StatelessWidget {
                 child: shad.TextField(
                   controller: controller,
                   placeholder: const Text('Search by Order ID'),
-                  style: const TextStyle(fontSize: 11),
+                  style: AdminTypography.small,
                   filled: true,
                   border: const Border.fromBorderSide(BorderSide(color: AdminDesignColors.border)),
                   borderRadius: BorderRadius.circular(9),
@@ -241,7 +241,7 @@ class _FilterChip extends StatelessWidget{
     child:(active ? shad.Button.secondary : shad.Button.ghost)(
       onPressed:onTap,
       child: Row(mainAxisSize:MainAxisSize.min,children:[
-        Text(label,style:TextStyle(fontSize:12,fontWeight:FontWeight.w900,color:active?AdminDesignColors.primaryText:AdminDesignColors.secondaryText)),
+        Text(label,style:AdminTypography.small.copyWith(fontWeight:FontWeight.w700,color:active?AdminDesignColors.primaryText:AdminDesignColors.secondaryText)),
         const SizedBox(width:AdminSpacing.xs),
         Container(
           padding:const EdgeInsets.symmetric(horizontal:6,vertical:3),
@@ -276,12 +276,12 @@ class _OrderQueue extends StatelessWidget{
           ),
         ),
       ),
-      Row(children:[const Text('10 rows per page',style:TextStyle(fontSize: 11,color:AdminDesignColors.secondaryText,fontWeight:FontWeight.w700)),const Spacer(),Text((start+1).toString()+'–'+(start+visible.length).toString()+' of '+orders.length.toString(),style:const TextStyle(fontSize: 11,color:AdminDesignColors.secondaryText,fontWeight:FontWeight.w800)),shad.IconButton.ghost(onPressed:page>1?()=>onPage(page-1):null,icon:const AdminIcon(HugeIcons.strokeRoundedArrowLeft01,size:18)),shad.IconButton.ghost(onPressed:page<pages?()=>onPage(page+1):null,icon:const AdminIcon(HugeIcons.strokeRoundedArrowRight01,size:18))]),
+      Row(children:[const Text('10 rows per page',style:AdminTypography.small),const Spacer(),Text((start+1).toString()+'–'+(start+visible.length).toString()+' of '+orders.length.toString(),style:AdminTypography.small.copyWith(fontWeight:FontWeight.w700)),shad.IconButton.ghost(onPressed:page>1?()=>onPage(page-1):null,icon:const AdminIcon(HugeIcons.strokeRoundedArrowLeft01,size:18)),shad.IconButton.ghost(onPressed:page<pages?()=>onPage(page+1):null,icon:const AdminIcon(HugeIcons.strokeRoundedArrowRight01,size:18))]),
     ])));
   }
 }
 
-class _OrderTableHeader extends StatelessWidget{const _OrderTableHeader();@override Widget build(BuildContext context)=>const Padding(padding:EdgeInsets.fromLTRB(10,8,10,8),child:Row(children:[SizedBox(width:30),Expanded(flex:13,child:Text('ORDER ID & TIME',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText))),Expanded(flex:17,child:Text('CUSTOMER & PHONE',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText))),Expanded(flex:20,child:Text('ADDRESS',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText))),Expanded(flex:12,child:Text('ITEMS / TOTAL',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText))),Expanded(flex:12,child:Text('STATUS',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText)))]));}
+class _OrderTableHeader extends StatelessWidget{const _OrderTableHeader();@override Widget build(BuildContext context)=>const Padding(padding:EdgeInsets.fromLTRB(10,8,10,8),child:Row(children:[SizedBox(width:30),Expanded(flex:13,child:Text('ORDER ID & TIME',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700))),Expanded(flex:17,child:Text('CUSTOMER & PHONE',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700))),Expanded(flex:20,child:Text('ADDRESS',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700))),Expanded(flex:12,child:Text('ITEMS / TOTAL',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700))),Expanded(flex:12,child:Text('STATUS',style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700)))]));}
 
 class _OrderRow extends StatelessWidget{
   const _OrderRow({required this.order,required this.selected,required this.onTap});
@@ -292,7 +292,7 @@ class _OrderRow extends StatelessWidget{
       SizedBox(width:44,height:44,child:Center(child:shad.Checkbox(state:selected?shad.CheckboxState.checked:shad.CheckboxState.unchecked,onChanged:(_)=>onTap()))),
       Expanded(flex:13,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(order.id,style:const AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),const SizedBox(height:3),Text(order.time,style:const AdminTypography.small)])),
       Expanded(flex:17,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(order.customer,maxLines:1,overflow:TextOverflow.ellipsis,style:const AdminTypography.small.copyWith(fontWeight: FontWeight.w600)),const SizedBox(height:3),Text(order.phone,maxLines:1,overflow:TextOverflow.ellipsis,style:const AdminTypography.small)])),
-      Expanded(flex:20,child:Text(order.address,maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:11,color:AdminDesignColors.secondaryText,height:1.35))),
+      Expanded(flex:20,child:Text(order.address,maxLines:2,overflow:TextOverflow.ellipsis,style:AdminTypography.small.copyWith(height:1.35))),
       Expanded(flex:12,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('₹'+order.total.toStringAsFixed(2),style:const AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),const SizedBox(height:3),Text(order.items.toString()+' items • '+order.payment,style:const AdminTypography.small)])),
       Expanded(flex:12,child:Align(alignment:Alignment.topLeft,child:_OrderStatusBadge(order.status))),
     ]),
@@ -301,17 +301,17 @@ class _OrderRow extends StatelessWidget{
 
 class _OrderStatusBadge extends StatelessWidget{
   const _OrderStatusBadge(this.status);final String status;
-  @override Widget build(BuildContext context){final s=_statusStyle(status);return Container(padding:const EdgeInsets.symmetric(horizontal:7,vertical:6),decoration:BoxDecoration(color:s.$1,borderRadius:BorderRadius.circular(7)),child:Row(mainAxisSize:MainAxisSize.min,children:[_StatusDot(color:s.$2),const SizedBox(width:5),Text(_prettyStatus(status),style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:s.$2))]));}
+  @override Widget build(BuildContext context){final s=_statusStyle(status);return Container(padding:const EdgeInsets.symmetric(horizontal:7,vertical:6),decoration:BoxDecoration(color:s.$1,borderRadius:BorderRadius.circular(7)),child:Row(mainAxisSize:MainAxisSize.min,children:[_StatusDot(color:s.$2),const SizedBox(width:5),Text(_prettyStatus(status),style:AdminTypography.small.copyWith(fontWeight:FontWeight.w700,color:s.$2))]));}
 }
 
 class _OrderDetails extends StatelessWidget{
   const _OrderDetails({required this.order,required this.busy,required this.apiConfigured,required this.onAdvance,required this.onInvoice,required this.onCancel});
   final _AdminOrder? order;final bool busy,apiConfigured;final VoidCallback? onAdvance,onInvoice,onCancel;
   @override Widget build(BuildContext context){
-    final o=order;if(o==null)return const AdminCard(child:Padding(padding:EdgeInsets.all(30),child:Center(child:Text('Select an order to view details',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)))));
+    final o=order;if(o==null)return const AdminCard(child:Padding(padding:EdgeInsets.all(30),child:Center(child:Text('Select an order to view details',style:AdminTypography.body.copyWith(fontWeight:FontWeight.w700)))));
     final next=_nextStatus(o.status);
     return AdminCard(child:Padding(padding:const EdgeInsets.all(16),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-      Row(children:[Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(o.id,style:const AdminTypography.sectionTitle),const SizedBox(height:5),Row(children:[_OrderStatusBadge(o.status),const SizedBox(width:AdminSpacing.xs),if(apiConfigured)const Text('LIVE ACTIVE',style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.success))])])),const SizedBox.shrink()]),
+      Row(children:[Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(o.id,style:AdminTypography.sectionTitle),const SizedBox(height:AdminSpacing.xs),Row(children:[_OrderStatusBadge(o.status),const SizedBox(width:AdminSpacing.xs),if(apiConfigured)Text('LIVE ACTIVE',style:AdminTypography.small.copyWith(color:AdminDesignColors.success,fontWeight:FontWeight.w700))]))])]),
       const SizedBox(height:5),Text('Placed at '+o.time,style:const AdminTypography.small),const SizedBox(height:AdminSpacing.lg),
       _Panel(title:'Order status progression',trailing:'Step '+_progressStep(o.status).toString()+' of 5',child:_Progression(o.status)),const SizedBox(height:AdminSpacing.md),
       LayoutBuilder(builder:(context,c)=>c.maxWidth>=500?Row(children:[Expanded(child:_PersonCard('CUSTOMER',o.customer,[o.phone,o.address],HugeIcons.strokeRoundedUser)),const SizedBox(width:AdminSpacing.sm),Expanded(child:_PersonCard('DELIVERY PARTNER',o.partner??'Unassigned',[o.vehicle??'Awaiting partner assignment'],HugeIcons.strokeRoundedDeliveryTruck01,badge:o.partner==null?'UNASSIGNED':'ON DUTY'))]):Column(children:[_PersonCard('CUSTOMER',o.customer,[o.phone,o.address],HugeIcons.strokeRoundedUser),const SizedBox(height:10),_PersonCard('DELIVERY PARTNER',o.partner??'Unassigned',[o.vehicle??'Awaiting partner assignment'],HugeIcons.strokeRoundedDeliveryTruck01,badge:o.partner==null?'UNASSIGNED':'ON DUTY')])),
@@ -326,7 +326,7 @@ class _OrderDetails extends StatelessWidget{
 
 class _Panel extends StatelessWidget{
   const _Panel({required this.title,required this.child,required this.trailing});final String title,trailing;final Widget child;
-  @override Widget build(BuildContext context)=>Container(width:double.infinity,padding:const EdgeInsets.all(12),decoration:BoxDecoration(color:AdminDesignColors.canvas,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminDesignColors.border)),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Row(children:[Expanded(child:Text(title,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900,letterSpacing:.5))),Text(trailing,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText))]),const SizedBox(height:9),child]));
+  @override Widget build(BuildContext context)=>Container(width:double.infinity,padding:const EdgeInsets.all(12),decoration:BoxDecoration(color:AdminDesignColors.canvas,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminDesignColors.border)),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Row(children:[Expanded(child:Text(title,style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700,letterSpacing:.5))),Text(trailing,style:AdminTypography.caption.copyWith(fontWeight:FontWeight.w700))]),const SizedBox(height:9),child]));
 }
 
 class _Progression extends StatelessWidget {
@@ -419,7 +419,7 @@ class _PersonCard extends StatelessWidget{
   const _PersonCard(this.title,this.name,this.lines,this.icon,{this.badge});final String title,name;final List<String> lines;final AdminIconData icon;final String? badge;
   @override Widget build(BuildContext context)=>Container(padding:const EdgeInsets.all(11),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(11),border:Border.all(color:AdminDesignColors.border)),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
     Row(children:[AdminIcon(icon,size:16,color:AdminDesignColors.warning),const SizedBox(width:6),Text(title,style:const TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:AdminDesignColors.secondaryText)),const Spacer(),if(badge!=null)Container(padding:const EdgeInsets.symmetric(horizontal:6,vertical:4),decoration:BoxDecoration(color:badge=='ON DUTY'?AdminDesignColors.successSoft:AdminDesignColors.errorSoft,borderRadius:BorderRadius.circular(6)),child:Text(badge!,style:TextStyle(fontSize: 12, fontWeight: FontWeight.w900,color:badge=='ON DUTY'?AdminDesignColors.success:AdminDesignColors.error)))]),
-    const SizedBox(height:AdminSpacing.sm),Text(name,style:const AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),const SizedBox(height:4),...lines.map((l)=>Padding(padding:const EdgeInsets.only(top:2),child:Text(l,maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize: 11,color:AdminDesignColors.secondaryText,height:1.3)))),
+    const SizedBox(height:AdminSpacing.sm),Text(name,style:AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),const SizedBox(height:4),...lines.map((l)=>Padding(padding:const EdgeInsets.only(top:2),child:Text(l,maxLines:2,overflow:TextOverflow.ellipsis,style:AdminTypography.small.copyWith(height:1.3)))),
   ]));
 }
 
@@ -450,7 +450,7 @@ class _Bill extends StatelessWidget{
   );
 }
 
-class _EmptyOrders extends StatelessWidget{const _EmptyOrders({required this.onClear});final VoidCallback onClear;@override Widget build(BuildContext context)=>AdminCard(child:Padding(padding:const EdgeInsets.all(34),child:Center(child:Column(children:[const AdminIcon(HugeIcons.strokeRoundedInbox,size:34,color:AdminDesignColors.secondaryText),const SizedBox(height:9),const Text('No orders match this view',style:TextStyle(fontSize:13,fontWeight:FontWeight.w900)),const SizedBox(height:5),const Text('Try another status filter or clear the order search.',style:AdminTypography.small),const SizedBox(height:AdminSpacing.md),shad.OutlineButton(onPressed:onClear,child:const Text('Clear filters'))]))));}
+class _EmptyOrders extends StatelessWidget{const _EmptyOrders({required this.onClear});final VoidCallback onClear;@override Widget build(BuildContext context)=>AdminCard(child:Padding(padding:const EdgeInsets.all(34),child:Center(child:Column(children:[const AdminIcon(HugeIcons.strokeRoundedInbox,size:34,color:AdminDesignColors.secondaryText),const SizedBox(height:9),const Text('No orders match this view',style:AdminTypography.body),const SizedBox(height:5),const Text('Try another status filter or clear the order search.',style:AdminTypography.small),const SizedBox(height:AdminSpacing.md),shad.OutlineButton(onPressed:onClear,child:const Text('Clear filters'))]))));}
 
 const _previewOrders=<_AdminOrder>[
   _AdminOrder(id:'#SFD-9042',customer:'Aarav Mehra',phone:'+919820144521',address:'Flat 402 Wing B, Sea Green Apts, Juhu Beach Ext.',total:849,items:3,payment:'UPI',time:'14:32 (4m ago)',status:'PREPARING',partner:'Ramesh Patil',vehicle:'Ather 450X (MH-02-EH-4819)',lines:[_OrderLine(1,'Truffle Melt Burger','Extra Cheese',480),_OrderLine(1,'Peri Peri Crinkle Fries','Jalapeño Dip',160),_OrderLine(1,'Alphonso Mango Shake','No Sugar Added',140)]),
