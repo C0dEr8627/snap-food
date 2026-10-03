@@ -347,19 +347,14 @@ Potential contextual badges:
 
 Only show badges supported by real data or clearly defined product rules.
 
-### Task 8 — Introduce restaurant-first discovery
-**Status:** 🔴 Blocked
+### Task 8 — Restaurant-first discovery
+**Status:** ⏭️ Not Applicable — Product model has no restaurants
 
-**Current blocker:** The current `frontend` backend exposes consumer catalogue endpoints only for categories/products. There is no consumer restaurant endpoint, restaurant model, or restaurant data contract available to the customer app. Restaurant metadata such as rating, ETA and delivery information therefore cannot be populated truthfully yet. Do not fabricate restaurant records or hard-code restaurant discovery data.
+**Product decision:** Snap Foodd does not have a restaurant concept in the customer product model. Products are not associated with restaurants, and restaurant-specific discovery, metadata, navigation, menus or tagging are not part of the intended product behavior.
 
-**Completed within this task:** Added the reusable `SnapRestaurantCard` design-system primitive with image-led composition and optional API-backed rating/review count, ETA, delivery metadata, category and open/closed state slots. Feature-owned navigation/data remain outside the component.
+**Completed/retained:** The previously added `SnapRestaurantCard` primitive is no longer part of the customer roadmap and should not be adopted or extended for restaurant discovery. Restaurant-specific work is intentionally skipped.
 
-**Next required dependency:** Add/confirm a backend consumer restaurant discovery contract (endpoint + response model) before adopting the card into Home discovery.
-
-- Build/rework restaurant cards.
-- Show restaurant name, rating, ETA/delivery metadata and imagery clearly.
-- Balance restaurant discovery with dish discovery.
-- Avoid forcing every discovery surface into a product-card pattern.
+**Roadmap action:** Treat Task 8 as skipped/not applicable and continue with product/catalogue-first discovery tasks.
 
 ### Task 9 — Redesign Search / Discover
 **Status:** ✅ Complete
@@ -385,7 +380,17 @@ Only show badges supported by real data or clearly defined product rules.
 ## Phase 3 — Food Detail & Commerce
 
 ### Task 10 — Redesign food item details
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
+
+- Reworked the food detail screen around the existing catalogue product as the single source of truth.
+- Removed obsolete hard-coded item-name, description and price fallbacks.
+- Strengthened the hero-image-first hierarchy.
+- Promoted product name and catalogue price for faster scanning.
+- Added branded availability/category metadata treatment.
+- Preserved the existing quantity stepper, server-authoritative cart behavior and add-to-cart navigation.
+- Added safe-area-aware sticky commerce controls and accessible back/availability semantics.
+- Preserved catalogue loading/error handling and product lookup behavior.
+
 
 Target hierarchy:
 
@@ -585,6 +590,8 @@ Before marking any task complete, verify:
 | 2026-10-03 | Task 5 — Build branded feedback surfaces | ✅ Complete | Added reusable `SnapBottomSheet`, `SnapEmptyState`, `SnapErrorState`, `SnapSkeleton`, `SnapLoadingState`, and `SnapAlertDialog` feedback surfaces. Adopted them across catalogue loading/empty/error states, Home filtering/empty/loading, cart empty state, address loading/empty/error, checkout errors, and live tracking loading/unavailable/error states. Skeleton animation respects the platform reduced-motion setting. Existing API, Riverpod state, navigation, filtering, cart, address, checkout, and tracking behavior were preserved. Validation: source-level review completed including delimiter/brace checks on changed Dart files; local Flutter/Dart commands remain unavailable through the GitHub connector, and no connector-exposed CI result was available for the implementation commits. |
 | 2026-10-03 | Task 6 — Redesign customer Home screen hierarchy | ✅ Complete | Reworked the customer Home into a clearer food-first hierarchy: delivery destination, craving-led search, categories, a catalogue-backed discovery hero, popular dishes, and lightweight bottom navigation. Reduced secondary chrome, tightened vertical rhythm, reused Tasks 1–5 components/tokens, and preserved catalogue filtering, favorites, cart, routing, and authentication behavior. The current consumer catalogue contract does not expose restaurant discovery data, so the Home does not fabricate a Top Restaurants feed; the plan documents that constraint for the later restaurant-first discovery task. Validation: source-level delimiter checks passed and the implementation commit exposed no CI status through the connector; local Flutter/Dart commands remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 8 — Introduce restaurant-first discovery | 🔴 Blocked | Added the reusable `SnapRestaurantCard` primitive with image-led restaurant presentation and optional rating/review count, ETA, delivery metadata, category and open/closed state slots. API inspection confirmed that the current `frontend` backend has no consumer restaurant endpoint/model/contract, so restaurant discovery cannot be truthfully adopted without fabricated data. The task remains blocked pending a backend consumer restaurant discovery contract. Validation: changed Dart source passed brace/parenthesis/bracket balance checks; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
+| 2026-10-03 | Product decision — Restaurant concept | ✅ Complete | Confirmed that Snap Foodd does not have a restaurant concept and products are not tagged to restaurants. Task 8 is therefore treated as not applicable rather than blocked; restaurant-specific discovery/card work will not be continued. |
+| 2026-10-03 | Task 10 — Redesign food item details | ✅ Complete | Reworked Food Details around the real catalogue product contract: removed obsolete hard-coded product fallbacks, strengthened image/name/price hierarchy, added branded availability/category metadata, preserved quantity/cart/navigation behavior, and kept the sticky add-to-cart control safe-area aware. Validation: changed Dart source was reviewed for structural correctness; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 9 — Redesign Search / Discover | ✅ Complete | Refined customer search using the existing catalogue contract: API-backed categories replaced hard-coded category data, reusable `SnapFilterChip` controls now filter by category, text search remains local and covers product/category names, and the result hierarchy distinguishes browse, category, and query states. Existing product navigation and catalogue retry behavior were preserved. Validation: source-level brace/parenthesis/bracket checks passed; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 7 — Redesign product cards | ✅ Complete | Added the reusable `SnapProductCard` editorial card and adopted it on the customer Home catalogue. Product imagery now leads the composition with consistent cropping, stronger name/price hierarchy, category metadata when available, 40px favorite and 44px action targets, explicit availability semantics, restrained borders, and no fabricated rating/popularity badges. Existing favourite toggling and product-detail navigation remain feature-owned and unchanged. Validation: source-level brace/parenthesis/bracket checks passed for the changed component and Home screen; implementation commits exposed no CI status through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 
@@ -606,6 +613,8 @@ Before marking any task complete, verify:
 - Started Task 8: added the reusable SnapRestaurantCard primitive and documented the missing consumer restaurant API/data contract.
 - Marked Task 8 blocked because the required consumer restaurant discovery contract is not present.
 - Completed Task 9: refined Search/Discover with API-backed categories, reusable filter chips, clearer result states, and preserved catalogue/product navigation behavior.
+- Product decision: removed restaurant discovery from the roadmap because Snap Foodd has no restaurant concept or product-to-restaurant relationship.
+- Completed Task 10: polished Food Details using the real catalogue contract, stronger visual hierarchy, branded metadata, and preserved commerce behavior.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
