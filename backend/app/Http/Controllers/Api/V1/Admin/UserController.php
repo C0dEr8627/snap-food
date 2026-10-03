@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
-use App\Models\User;
+use App\Models\CustomerUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -23,9 +23,6 @@ class UserController
                         ->orWhere('name', 'like', '%'.$term.'%')
                         ->orWhere('email', 'like', '%'.$term.'%');
                 });
-            })
-            ->when($request->filled('role') && $request->query('role') !== 'ALL', function ($builder) use ($request): void {
-                $builder->where('role', (string) $request->query('role'));
             });
 
         return response()->json([
