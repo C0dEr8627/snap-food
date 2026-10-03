@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Delivery;
 
 use App\Exceptions\ConflictException;
 use App\Models\DeliveryLocation;
+use App\Models\DeliveryPartnerUser;
 use App\Models\Order;
 use App\Models\OrderAssignment;
 use Carbon\CarbonImmutable;
@@ -25,9 +26,9 @@ class DeliveryLocationController
             'recorded_at' => ['required', 'date'],
         ]);
 
-        $partner = $request->user()->deliveryPartner;
+        $partner = $request->user();
 
-        if (! $partner || ! $partner->is_active || ! $partner->is_approved) {
+        if (! $partner instanceof DeliveryPartnerUser || ! $partner->is_active || ! $partner->is_approved) {
             throw new AccessDeniedHttpException('Delivery partner access is not active.');
         }
 
