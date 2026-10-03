@@ -7,7 +7,7 @@ class OrdersPage extends StatefulWidget{
 }
 
 class _AdminOrder {
-  const _AdminOrder({required this.id,required this.customer,required this.phone,required this.customerEmail,required this.address,required this.total,required this.items,required this.payment,required this.time,required this.status,required this.lines,this.partner,this.partnerPhone,this.partnerEmail,this.vehicle,this.cancellationReason});
+  const _AdminOrder({required this.id,required this.customer,required this.phone,this.customerEmail='',required this.address,required this.total,required this.items,required this.payment,required this.time,required this.status,required this.lines,this.partner,this.partnerPhone,this.partnerEmail,this.vehicle,this.cancellationReason});
   factory _AdminOrder.fromJson(Map<String,dynamic> j){
     final customer=j['customer'] is Map?Map<String,dynamic>.from(j['customer'] as Map):<String,dynamic>{};
     final address=j['delivery_address_snapshot'] is Map?Map<String,dynamic>.from(j['delivery_address_snapshot'] as Map):<String,dynamic>{};
