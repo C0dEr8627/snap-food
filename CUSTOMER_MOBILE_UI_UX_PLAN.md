@@ -518,15 +518,15 @@ This should become a signature Snap Foodd experience:
 - Preserve tracking logic and API behavior.
 
 ### Task 18 — Redesign Profile and Favorites
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- Cleaner account hierarchy.
-- Favorites with strong food imagery.
-- Addresses/orders/settings grouped logically.
-- Consistent branded list rows.
-- Useful empty states.
-
----
+- Reworked the customer profile around authenticated account identity, compact account stats, and a clear hierarchy for orders, favorites and saved addresses.
+- Replaced generic profile chrome with Snap Foodd icon controls, typography, spacing and branded account rows.
+- Preserved existing auth/logout behavior and existing /orders, /favorites and /addresses routes.
+- Removed unsupported/fabricated payment-method, coupon, notification, language, support and privacy controls from the customer profile because the current customer API/UI contract does not expose those settings as working operations.
+- Reworked Favorites into an image-led saved-dishes surface with stronger food imagery, product name/category/price hierarchy, accessible remove controls, browse-dishes action, responsive one/two/three-column layouts, and branded loading/error/empty states.
+- Preserved favoriteControllerProvider, server-backed refresh/toggle behavior and product-detail navigation.
+- Kept the experience product/catalogue-first; no restaurant identity or restaurant-specific favorite behavior was introduced.
 
 ## Phase 5 — Onboarding & Delight
 
@@ -622,6 +622,7 @@ Before marking any task complete, verify:
 | 2026-10-03 | Task 15 — Redesign Orders | ✅ Complete | Reworked Orders into clear Active orders and Past orders sections with scan-friendly cards, reusable SnapOrderStatus semantics, prominent totals and item counts, branded loading/error/empty states, refresh and pagination preservation, and existing order-detail navigation. Reorder was not fabricated because the current customer order contract/controller exposes no reorder operation. Validation: changed Dart source files have balanced braces/parentheses/brackets; implementation commits exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 16 — Redesign Order Details | ✅ Complete | Reworked Order Details around order identity, status, items, delivery snapshot, payment/total information and supported actions. Reused Snap Foodd order/status/price/buttons/feedback components, preserved existing order-detail loading, live-tracking navigation and delivered-order invoice behavior, and intentionally did not fabricate restaurant identity, reorder or support actions because the current product/API contract does not expose them. Validation: changed Dart source has balanced braces/parentheses/brackets; implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
 | 2026-10-03 | Task 17 — Redesign live order tracking | ✅ Complete | Reworked live tracking into a status-first experience with a prominent current-status hero, reusable SnapOrderStatus, accessible progress timeline, safe-area-aware layout, pull-to-refresh, preserved 10-second polling, explicit stale/unavailable states, and API-backed location details. Removed restaurant-specific wording because Snap Foodd has no restaurant concept. ETA, rider identity/contact, map and support actions were not fabricated because the current tracking contract does not expose them; no map abstraction is currently available. Validation: changed Dart source has balanced braces/parentheses/brackets; implementation commit exposed no GitHub status checks through the connector; local Flutter/Dart formatter, analyzer, and tests remain unavailable through the GitHub connector. |
+| 2026-10-03 | Task 18 — Redesign Profile and Favorites | ✅ Complete | Reworked Profile around authenticated account identity, order/favorite/address counts, supported account navigation and branded list rows. Reworked Favorites around image-led saved dishes with responsive layouts, stronger food imagery, Snap price/remove controls, browse action and branded loading/error/empty states. Preserved existing auth/logout, favorites controller/API, address/order routes and product-detail navigation. Removed unsupported/fabricated payment, coupon, notification, language, support and privacy controls from the profile. Validation: changed Dart source files have balanced braces/parentheses/brackets; implementation commits exposed no GitHub status checks/workflow runs through the connector; local Flutter/Dart formatter, analyzer and tests remain unavailable through the GitHub connector. |
 
 ---
 
@@ -650,6 +651,7 @@ Before marking any task complete, verify:
 - Completed Task 15: redesigned Orders with active/past grouping, scan-first order cards, reusable status semantics, branded states, and preserved pagination/detail navigation; documented that reorder is not supported by the current order contract.
 - Completed Task 16: redesigned Order Details around status-first order identity, item/totals hierarchy, delivery snapshot, payment information and supported tracking/invoice actions while preserving the existing order API and avoiding unsupported restaurant/reorder/support concepts.
 - Completed Task 17: redesigned live order tracking around current status, progress, stale/live location state and accessible tracking feedback while preserving the existing tracking API, polling and refresh behavior; documented that ETA, rider, map and support data are not currently available.
+- Completed Task 18: redesigned Profile and Favorites around supported account data, branded account navigation, food-first saved dishes, responsive layouts and useful feedback states while preserving authentication, favorites and existing customer routes.
 - Defined phased implementation tasks.
 - Defined reusable component strategy.
 - Defined quality gates and progress tracking.
