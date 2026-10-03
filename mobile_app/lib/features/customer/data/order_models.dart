@@ -145,6 +145,7 @@ class Order {
     required this.status,
     required this.paymentMethod,
     required this.paymentStatus,
+    required this.cancellationReason,
     required this.subtotal,
     required this.deliveryFee,
     required this.total,
@@ -157,6 +158,7 @@ class Order {
   final OrderStatus status;
   final String paymentMethod;
   final String paymentStatus;
+  final String? cancellationReason;
   final String subtotal;
   final String deliveryFee;
   final String total;
@@ -181,6 +183,7 @@ class Order {
       status: OrderStatus.fromWire(json['status']),
       paymentMethod: json['payment_method']?.toString() ?? '',
       paymentStatus: json['payment_status']?.toString() ?? '',
+      cancellationReason: json['cancellation_reason']?.toString(),
       subtotal: json['subtotal']?.toString() ?? '',
       deliveryFee: json['delivery_fee']?.toString() ?? '',
       total: json['total']?.toString() ?? '',
