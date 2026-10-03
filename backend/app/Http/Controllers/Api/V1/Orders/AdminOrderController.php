@@ -52,7 +52,8 @@ class AdminOrderController
         $updated = $statusService->transition(
             $order,
             $request->validated('status'),
-            $request->user()
+            $request->user(),
+            $request->validated('cancellation_reason')
         );
 
         return response()->json(['data' => $updated]);
