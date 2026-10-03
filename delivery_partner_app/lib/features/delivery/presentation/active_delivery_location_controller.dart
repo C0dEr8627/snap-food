@@ -99,9 +99,11 @@ class ActiveDeliveryLocationController
 
 final deliveryLocationAdapterProvider =
     Provider<ForegroundDeliveryLocationAdapter>((ref) {
-      return ForegroundDeliveryLocationAdapter(
-        source: UnavailableDeliveryLocationSource(),
+      final adapter = ForegroundDeliveryLocationAdapter(
+        source: GeolocatorDeliveryLocationSource(),
       );
+      ref.onDispose(adapter.dispose);
+      return adapter;
     });
 
 final activeDeliveryLocationControllerProvider =
@@ -110,15 +112,3 @@ final activeDeliveryLocationControllerProvider =
       ActiveDeliveryLocationState
     >(ActiveDeliveryLocationController.new);
 
-class UnavailableDeliveryLocationSource implements DeliveryLocationSource {
-  @override
-  Future<DeliveryLocationPermission> requestPermission() async =>
-      DeliveryLocationPermission.unavailable;
-
-  @override
-  Stream<DeliveryPosition> get positions =>
-      const Stream<DeliveryPosition>.empty();
-
-  @override
-  Future<void> dispose() async {}
-}
