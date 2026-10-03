@@ -2,7 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
+use App\Models\AdminUser;
+use App\Models\CustomerUser;
 use App\Services\Auth\GoogleCredentialVerifier;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
@@ -41,9 +42,8 @@ class AuthenticationTest extends TestCase
                 ],
             ]);
 
-        $this->assertDatabaseHas('users', [
+        $this->assertDatabaseHas('customer_users', [
             'google_subject' => 'google-sub-123',
-            'role' => 'CUSTOMER',
             'is_active' => 1,
         ]);
         $this->assertDatabaseCount('personal_access_tokens', 1);
@@ -51,11 +51,10 @@ class AuthenticationTest extends TestCase
 
     public function test_google_login_updates_identity_fields_but_does_not_escalate_existing_role(): void
     {
-        $user = User::create([
+        $user = AdminUser::create([
             'google_subject' => 'google-sub-456',
             'name' => 'Old Name',
             'email' => 'old@example.test',
-            'role' => 'ADMIN',
             'is_active' => true,
         ]);
 
@@ -93,16 +92,16 @@ class AuthenticationTest extends TestCase
         ])->assertUnauthorized()
             ->assertJsonPath('code', 'INVALID_GOOGLE_CREDENTIAL');
 
-        $this->assertDatabaseCount('users', 0);
+        $this->assertDatabaseCount('customer_users', 0);
+        $this->assertDatabaseCount('admin_users', 0);
     }
 
     public function test_inactive_account_cannot_login(): void
     {
-        User::create([
+        CustomerUser::create([
             'google_subject' => 'google-sub-inactive',
             'name' => 'Inactive User',
             'email' => 'inactive@example.test',
-            'role' => 'CUSTOMER',
             'is_active' => false,
         ]);
 
@@ -126,11 +125,10 @@ class AuthenticationTest extends TestCase
 
     public function test_authenticated_user_can_read_me_and_logout_revokes_current_token(): void
     {
-        $user = User::create([
+        $user = CustomerUser::create([
             'google_subject' => 'google-sub-me',
             'name' => 'Me User',
             'email' => 'me@example.test',
-            'role' => 'CUSTOMER',
             'is_active' => true,
         ]);
 
@@ -168,11 +166,10 @@ class AuthenticationTest extends TestCase
 
     public function test_inactive_authenticated_user_is_blocked_and_current_token_is_revoked(): void
     {
-        $user = User::create([
+        $user = CustomerUser::create([
             'google_subject' => 'google-sub-blocked',
             'name' => 'Blocked User',
             'email' => 'blocked@example.test',
-            'role' => 'CUSTOMER',
             'is_active' => false,
         ]);
 
@@ -251,12 +248,11 @@ class AuthenticationTest extends TestCase
 
     public function test_admin_password_login_returns_a_token_only_for_an_active_admin(): void
     {
-        $admin = User::create([
+        $admin = AdminUser::create([
             'google_subject' => null,
             'name' => 'Admin User',
             'email' => 'admin@example.test',
             'password' => password_hash('CorrectHorseBatteryStaple!', PASSWORD_BCRYPT),
-            'role' => User::ROLE_ADMIN,
             'is_active' => true,
         ]);
 
@@ -273,12 +269,11 @@ class AuthenticationTest extends TestCase
 
     public function test_admin_password_login_rejects_non_admin_and_invalid_password(): void
     {
-        User::create([
+        CustomerUser::create([
             'google_subject' => null,
             'name' => 'Customer User',
             'email' => 'customer@example.test',
             'password' => password_hash('CorrectHorseBatteryStaple!', PASSWORD_BCRYPT),
-            'role' => User::ROLE_CUSTOMER,
             'is_active' => true,
         ]);
 
@@ -299,11 +294,10 @@ class AuthenticationTest extends TestCase
 
     public function test_admin_google_login_requires_an_existing_admin_identity(): void
     {
-        $admin = User::create([
+        $admin = AdminUser::create([
             'google_subject' => 'admin-google-sub',
             'name' => 'Admin User',
             'email' => 'admin@example.test',
-            'role' => User::ROLE_ADMIN,
             'is_active' => true,
         ]);
 
@@ -344,10 +338,10 @@ class AuthenticationTest extends TestCase
         ])->assertForbidden()
             ->assertJsonPath('code', 'ADMIN_ACCESS_REQUIRED');
 
-        $this->assertDatabaseCount('users', 0);
+        $this->assertDatabaseCount('customer_users', 0);
+        $this->assertDatabaseCount('admin_users', 0);
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
-
 
     public function test_customer_can_register_with_email_and_password(): void
     {
@@ -364,9 +358,8 @@ class AuthenticationTest extends TestCase
             ->assertJsonPath('data.user.role', 'CUSTOMER')
             ->assertJsonStructure(['data' => ['token', 'user' => ['id', 'name', 'email', 'role']]]);
 
-        $this->assertDatabaseHas('users', [
+        $this->assertDatabaseHas('customer_users', [
             'email' => 'new.customer@example.test',
-            'role' => 'CUSTOMER',
             'is_active' => 1,
         ]);
         $this->assertDatabaseCount('personal_access_tokens', 1);
@@ -378,11 +371,10 @@ class AuthenticationTest extends TestCase
 
     public function test_customer_registration_validates_duplicate_email_and_password_confirmation(): void
     {
-        User::create([
+        CustomerUser::create([
             'name' => 'Existing Customer',
             'email' => 'existing@example.test',
             'password' => password_hash('CorrectHorseBatteryStaple!', PASSWORD_BCRYPT),
-            'role' => User::ROLE_CUSTOMER,
             'is_active' => true,
         ]);
 
@@ -403,16 +395,15 @@ class AuthenticationTest extends TestCase
         ])->assertUnprocessable()
             ->assertJsonStructure(['errors' => ['password']]);
 
-        $this->assertDatabaseCount('users', 1);
+        $this->assertDatabaseCount('customer_users', 1);
     }
 
     public function test_customer_can_login_with_password_but_admin_and_inactive_users_cannot(): void
     {
-        $customer = User::create([
+        $customer = CustomerUser::create([
             'name' => 'Password Customer',
             'email' => 'password.customer@example.test',
             'password' => password_hash('CorrectHorseBatteryStaple!', PASSWORD_BCRYPT),
-            'role' => User::ROLE_CUSTOMER,
             'is_active' => true,
         ]);
 
@@ -424,11 +415,10 @@ class AuthenticationTest extends TestCase
             ->assertJsonPath('data.user.role', 'CUSTOMER')
             ->assertJsonStructure(['data' => ['token', 'user']]);
 
-        $admin = User::create([
+        $admin = AdminUser::create([
             'name' => 'Admin',
             'email' => 'password.admin@example.test',
             'password' => password_hash('CorrectHorseBatteryStaple!', PASSWORD_BCRYPT),
-            'role' => User::ROLE_ADMIN,
             'is_active' => true,
         ]);
 
@@ -437,11 +427,10 @@ class AuthenticationTest extends TestCase
             'password' => 'CorrectHorseBatteryStaple!',
         ])->assertUnauthorized()->assertJsonPath('code', 'INVALID_CREDENTIALS');
 
-        User::create([
+        CustomerUser::create([
             'name' => 'Inactive Customer',
             'email' => 'inactive.password@example.test',
             'password' => password_hash('CorrectHorseBatteryStaple!', PASSWORD_BCRYPT),
-            'role' => User::ROLE_CUSTOMER,
             'is_active' => false,
         ]);
 
@@ -455,5 +444,4 @@ class AuthenticationTest extends TestCase
             'password' => 'incorrect-password',
         ])->assertUnauthorized()->assertJsonPath('code', 'INVALID_CREDENTIALS');
     }
-
 }
