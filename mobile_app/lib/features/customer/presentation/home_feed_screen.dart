@@ -935,6 +935,9 @@ class BottomNav extends StatelessWidget {
                   Expanded(
                     child: InkWell(
                       onTap: () {
+                        if (i != selected) {
+                          HapticFeedback.selectionClick();
+                        }
                         switch (i) {
                           case 0:
                             context.go('/home');
@@ -953,7 +956,11 @@ class BottomNav extends StatelessWidget {
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 7),
-                        child: DecoratedBox(
+                        child: AnimatedContainer(
+                          duration: MediaQuery.disableAnimationsOf(context)
+                              ? Duration.zero
+                              : const Duration(milliseconds: 110),
+                          curve: Curves.easeOutCubic,
                           decoration: BoxDecoration(
                             color: i == selected
                                 ? SnapFoodColors.softYellow
