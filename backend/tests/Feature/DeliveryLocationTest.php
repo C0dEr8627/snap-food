@@ -54,7 +54,11 @@ class DeliveryLocationTest extends TestCase
     {
         $order = Order::create([
             'customer_id' => $customer->id,
-            'delivery_address_snapshot' => ['line1' => 'Test'],
+            'delivery_address_snapshot' => [
+                'line1' => 'Test',
+                'latitude' => 19.0822,
+                'longitude' => 72.8811,
+            ],
             'subtotal' => 100,
             'delivery_fee' => 20,
             'total' => 120,
@@ -158,6 +162,8 @@ class DeliveryLocationTest extends TestCase
             ->getJson('/api/v1/consumer/orders/'.$assignment->order_id.'/tracking')
             ->assertOk()
             ->assertJsonPath('data.location.latitude', '19.0760900')
+            ->assertJsonPath('data.destination.latitude', 19.0822)
+            ->assertJsonPath('data.destination.longitude', 72.8811)
             ->assertJsonPath('data.is_stale', true);
     }
 
