@@ -18,7 +18,7 @@ class AdminOrderWebTest extends TestCase
     public function test_admin_can_search_filter_and_open_order_details(): void
     {
         $admin = AdminCustomerUser::factory()->create();
-        $customer = User::factory()->create([
+        $customer = CustomerUser::factory()->create([
             'name' => 'Asha Customer',
             'email' => 'asha@example.test',
         ]);
@@ -102,8 +102,8 @@ class AdminOrderWebTest extends TestCase
     public function test_admin_can_assign_eligible_partner_from_order_detail(): void
     {
         $admin = AdminCustomerUser::factory()->create();
-        $customer = CustomerUser::factory()->create();
-        $partnerUser = DeliveryPartnerUser::factory()->create(['name' => 'Available Rider']);
+        $customer = CustomerCustomerUser::factory()->create();
+        $partnerUser = DeliveryPartnerCustomerUser::factory()->create(['name' => 'Available Rider']);
         $partner = DeliveryPartner::create([
             'user_id' => $partnerUser->id,
             'is_approved' => true,
@@ -169,7 +169,7 @@ class AdminOrderWebTest extends TestCase
 
     public function test_non_admin_cannot_access_admin_orders(): void
     {
-        $customer = CustomerUser::factory()->create();
+        $customer = CustomerCustomerUser::factory()->create();
 
         $this->actingAs($customer, 'web')
             ->get('/admin/orders')
