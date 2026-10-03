@@ -835,7 +835,7 @@ class _PartnerDetailLine extends flutter.StatelessWidget {
               width: 110,
               child: Text(label, style: AdminTypography.small.copyWith(color: AdminDesignColors.secondaryText)),
             ),
-            Expanded(child: Text(value, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w600)),
+            Expanded(child: Text(value, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w600))),
           ],
         ),
       );
