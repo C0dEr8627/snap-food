@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../design_system/components/snap_food_button.dart';
 import '../../../design_system/components/snap_food_commerce.dart';
@@ -483,10 +484,11 @@ class _ProfileSections extends StatelessWidget {
           subtitle: 'Edit your name and phone number',
           onTap: onEdit,
         ),
-        const _AccountRow(
+        _AccountRow(
           icon: Icons.info_outline_rounded,
           title: 'About Snap Foodd',
-          subtitle: 'Customer food commerce experience',
+          subtitle: 'Learn more at snapfoodd.com',
+          onTap: _openSnapFooddWebsite,
         ),
         const SizedBox(height: 24),
         SizedBox(
@@ -499,6 +501,22 @@ class _ProfileSections extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+Future<void> _openSnapFooddWebsite() async {
+  final uri = Uri.parse('https://snapfoodd.com');
+  try {
+    final opened = await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    );
+    if (!opened) {
+      // The profile page remains usable even when the device has no browser
+      // handler available for external links.
+    }
+  } catch (_) {
+    // Keep this action non-blocking; browser availability is platform-specific.
   }
 }
 
