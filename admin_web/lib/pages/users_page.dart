@@ -1,14 +1,14 @@
 part of '../main.dart';
 
-class UsersPage extends flutter.StatefulWidget {
+class UsersPage extends StatefulWidget {
   const UsersPage({super.key, this.searchQuery = ''});
   final String searchQuery;
 
   @override
-  flutter.State<UsersPage> createState() => _UsersPageState();
+  State<UsersPage> createState() => _UsersPageState();
 }
 
-class _UsersPageState extends flutter.State<UsersPage> {
+class _UsersPageState extends State<UsersPage> {
   final _api = const _UsersApi();
   final _search = TextEditingController();
   List<_PlatformUser> _users = [];
@@ -240,7 +240,7 @@ class _UserAddress {
 }
 
 
-class _UsersToolbar extends flutter.StatelessWidget {
+class _UsersToolbar extends StatelessWidget {
   const _UsersToolbar({
     required this.controller,
     required this.filter,
@@ -286,7 +286,7 @@ class _UsersToolbar extends flutter.StatelessWidget {
   );
 }
 
-class _UsersFilterPill extends flutter.StatelessWidget {
+class _UsersFilterPill extends StatelessWidget {
   const _UsersFilterPill(this.label, this.active, this.onTap);
   final String label;
   final bool active;
@@ -300,7 +300,7 @@ class _UsersFilterPill extends flutter.StatelessWidget {
   );
 }
 
-class _UsersError extends flutter.StatelessWidget {
+class _UsersError extends StatelessWidget {
   const _UsersError({required this.message, required this.onRetry});
   final String message;
   final VoidCallback onRetry;
@@ -313,7 +313,7 @@ class _UsersError extends flutter.StatelessWidget {
   );
 }
 
-class _UsersPagination extends flutter.StatelessWidget {
+class _UsersPagination extends StatelessWidget {
   const _UsersPagination({
     required this.page,
     required this.lastPage,
@@ -337,7 +337,7 @@ class _UsersPagination extends flutter.StatelessWidget {
   );
 }
 
-class _UsersTable extends flutter.StatelessWidget {
+class _UsersTable extends StatelessWidget {
   const _UsersTable({required this.users, required this.onView});
   final List<_PlatformUser> users;
   final ValueChanged<_PlatformUser> onView;
@@ -374,7 +374,7 @@ class _UsersTable extends flutter.StatelessWidget {
     onRowTap: (index) => onView(users[index]),
   );
 }
-class _UsersLoading extends flutter.StatelessWidget {
+class _UsersLoading extends StatelessWidget {
   const _UsersLoading();
 
   @override
@@ -399,7 +399,7 @@ class _UsersLoading extends flutter.StatelessWidget {
       );
 }
 
-class _UserDetails extends flutter.StatelessWidget {
+class _UserDetails extends StatelessWidget {
   const _UserDetails({required this.user});
   final _PlatformUser user;
 
@@ -454,7 +454,7 @@ class _UserDetails extends flutter.StatelessWidget {
       );
 }
 
-class _UserDetailSection extends flutter.StatelessWidget {
+class _UserDetailSection extends StatelessWidget {
   const _UserDetailSection({required this.title, required this.children});
   final String title;
   final List<flutter.Widget> children;
@@ -470,7 +470,7 @@ class _UserDetailSection extends flutter.StatelessWidget {
       );
 }
 
-class _UserDetailLine extends flutter.StatelessWidget {
+class _UserDetailLine extends StatelessWidget {
   const _UserDetailLine(this.label, this.value);
   final String label;
   final String value;
@@ -488,7 +488,7 @@ class _UserDetailLine extends flutter.StatelessWidget {
       );
 }
 
-class _AddressCard extends flutter.StatelessWidget {
+class _AddressCard extends StatelessWidget {
   const _AddressCard({required this.address});
   final _UserAddress address;
 
