@@ -27,7 +27,7 @@ class AdminWebAuthenticationTest extends TestCase
             'google_subject' => 'google-admin',
             'name' => 'Admin User',
             'email' => 'admin@example.test',
-                        'is_active' => true,
+            'is_active' => true,
         ]);
 
         $this->mock(GoogleCredentialVerifier::class, function ($mock): void {
@@ -52,7 +52,7 @@ class AdminWebAuthenticationTest extends TestCase
             'google_subject' => 'google-customer',
             'name' => 'Customer User',
             'email' => 'customer@example.test',
-                        'is_active' => true,
+            'is_active' => true,
         ]);
 
         $this->mock(GoogleCredentialVerifier::class, function ($mock): void {
@@ -76,7 +76,6 @@ class AdminWebAuthenticationTest extends TestCase
             'google_subject' => 'google-inactive-admin',
             'name' => 'Inactive Admin',
             'email' => 'inactive-admin@example.test',
-            'role' => 'ADMIN',
             'is_active' => false,
         ]);
 
@@ -101,7 +100,6 @@ class AdminWebAuthenticationTest extends TestCase
             'google_subject' => 'google-customer',
             'name' => 'Customer User',
             'email' => 'customer@example.test',
-            'role' => 'CUSTOMER',
             'is_active' => true,
         ]);
 
@@ -116,7 +114,6 @@ class AdminWebAuthenticationTest extends TestCase
             'google_subject' => 'google-admin',
             'name' => 'Admin User',
             'email' => 'admin@example.test',
-            'role' => 'ADMIN',
             'is_active' => true,
         ]);
 
