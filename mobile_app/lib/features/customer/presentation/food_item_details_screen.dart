@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../design_system/components/snap_food_commerce.dart';
 import '../../../design_system/tokens/app_colors.dart';
+import '../../../design_system/tokens/app_spacing.dart';
 import 'catalogue_controller.dart';
 import 'catalogue_state_message.dart';
 import '../../../design_system/tokens/app_radii.dart';
@@ -52,24 +53,6 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
     context.push('/cart');
   }
 
-  String get itemName => widget.itemId == 'butter'
-      ? 'Butter Chicken & 2 Butter Naan Combo'
-      : widget.itemId == 'paneer'
-      ? 'Pure Veg Paneer Butter Masala & Kulcha'
-      : 'Special Chicken Tikka Dum Biryani';
-
-  String get description => widget.itemId == 'butter'
-      ? 'Boneless roasted chicken in creamy makhani gravy served with soft butter naans.'
-      : widget.itemId == 'paneer'
-      ? 'Fresh cottage cheese cubes in rich tomato cashew gravy, served with warm kulcha.'
-      : 'Slow-cooked fragrant basmati rice with marinated chicken, aromatic saffron and whole spices.';
-
-  int get price => widget.itemId == 'butter'
-      ? 280
-      : widget.itemId == 'paneer'
-      ? 240
-      : 320;
-
   @override
   Widget build(BuildContext context) {
     final catalogue = ref.watch(catalogueControllerProvider);
@@ -80,7 +63,7 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
         child: catalogue.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, _) => Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(SnapFoodSpacing.mobileMargin),
             child: CatalogueStateMessage(
               value: catalogue,
               onRetry: () =>
@@ -109,9 +92,14 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
                         pinned: true,
                         backgroundColor: SnapFoodColors.surface,
                         surfaceTintColor: Colors.transparent,
-                        leading: IconButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          icon: const Icon(Icons.arrow_back),
+                        leading: Semantics(
+                          button: true,
+                          label: 'Go back',
+                          child: IconButton(
+                            tooltip: 'Back',
+                            onPressed: () => Navigator.of(context).pop(),
+                            icon: const Icon(Icons.arrow_back_rounded),
+                          ),
                         ),
                         title: const Text(
                           'Food Details',
@@ -123,7 +111,7 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
                       ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                          padding: const EdgeInsets.fromLTRB(SnapFoodSpacing.mobileMargin, SnapFoodSpacing.sm, SnapFoodSpacing.mobileMargin, 0),
                           child: _FoodHero(
                             itemId: product.id.toString(),
                             vegetarian: vegetarian,
@@ -134,7 +122,7 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
                       ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 18, 16, 120),
+                          padding: const EdgeInsets.fromLTRB(SnapFoodSpacing.mobileMargin, SnapFoodSpacing.md + SnapFoodSpacing.xs, SnapFoodSpacing.mobileMargin, 120),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -151,7 +139,7 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
+                                  const SizedBox(width: SnapFoodSpacing.sm),
                                   Text(
                                     '₹' + product.price,
                                     style: const TextStyle(
@@ -162,35 +150,16 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
                                 ],
                               ),
                               const SizedBox(height: 12),
-                              Row(
+                              Wrap(
+                                spacing: SnapFoodSpacing.sm,
+                                runSpacing: SnapFoodSpacing.xs,
                                 children: [
-                                  Icon(
-                                    product.isAvailable
-                                        ? Icons.check_circle
-                                        : Icons.remove_circle,
-                                    size: 17,
-                                    color: product.isAvailable
-                                        ? Colors.green
-                                        : SnapFoodColors.secondary,
-                                  ),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    product.isAvailable
-                                        ? 'Available now'
-                                        : 'Currently unavailable',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w800,
+                                  _AvailabilityBadge(isAvailable: product.isAvailable),
+                                  if (product.category?.name != null)
+                                    SnapCategoryChip(
+                                      label: product.category!.name,
+                                      selected: false,
                                     ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    product.category?.name ?? 'Food',
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      color: SnapFoodColors.onSurfaceVariant,
-                                    ),
-                                  ),
                                 ],
                               ),
                               const SizedBox(height: 16),
@@ -204,7 +173,7 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
                                   color: SnapFoodColors.onSurfaceVariant,
                                 ),
                               ),
-                              const SizedBox(height: 18),
+                              const SizedBox(height: SnapFoodSpacing.md),
                               const Divider(color: SnapFoodColors.softBorder),
                               const SizedBox(height: 16),
                               const Text(
@@ -214,7 +183,7 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: SnapFoodSpacing.sm),
                               const Wrap(
                                 spacing: 8,
                                 runSpacing: 8,
@@ -233,7 +202,7 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: SnapFoodSpacing.lg),
                               const Text(
                                 'The displayed price is a catalogue preview. The server remains authoritative during checkout.',
                                 style: TextStyle(
@@ -252,7 +221,7 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
                 SafeArea(
                   top: false,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                    padding: const EdgeInsets.fromLTRB(SnapFoodSpacing.mobileMargin, SnapFoodSpacing.sm, SnapFoodSpacing.mobileMargin, SnapFoodSpacing.md),
                     child: Row(
                       children: [
                         SnapQuantityStepper(
@@ -345,6 +314,33 @@ class _FoodHero extends StatelessWidget {
       ),
     );
   }
+}
+
+class _AvailabilityBadge extends StatelessWidget {
+  const _AvailabilityBadge({required this.isAvailable});
+  final bool isAvailable;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+        label: isAvailable ? 'Available now' : 'Currently unavailable',
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: isAvailable ? SnapFoodColors.softYellow : SnapFoodColors.softRed,
+            borderRadius: BorderRadius.circular(SnapFoodRadii.full),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: SnapFoodSpacing.sm, vertical: SnapFoodSpacing.xs),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(isAvailable ? Icons.check_circle : Icons.remove_circle, size: 15, color: SnapFoodColors.secondary),
+                const SizedBox(width: SnapFoodSpacing.xs),
+                Text(isAvailable ? 'Available now' : 'Currently unavailable', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
+              ],
+            ),
+          ),
+        ),
+      );
 }
 
 class _Tag extends StatelessWidget {
