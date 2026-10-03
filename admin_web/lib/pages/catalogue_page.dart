@@ -178,7 +178,9 @@ class _CataloguePageState extends State<CataloguePage> {
       builder: (dialogContext) => Center(
         child: SizedBox(
           width: dialogWidth,
-          child: shad.AlertDialog(
+          child: Material(
+            color: Colors.transparent,
+            child: shad.AlertDialog(
         title: Row(
           children: [
             Expanded(
@@ -252,6 +254,8 @@ class _CataloguePageState extends State<CataloguePage> {
             ),
           ),
         ),
+          ),
+            ),
           ),
         ),
       ),
