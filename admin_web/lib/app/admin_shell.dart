@@ -165,10 +165,9 @@ class _AdminShellState extends State<AdminShell> {
                 ),
                 Expanded(
                   child: Scrollbar(
-                    controller: _contentScrollController,
                     thumbVisibility: desktop || rail,
                     child: SingleChildScrollView(
-                      controller: _contentScrollController,
+                      primary: true,
                       padding: EdgeInsets.fromLTRB(
                         desktop ? AdminSpacing.xl : AdminSpacing.md,
                         desktop ? AdminSpacing.xl : AdminSpacing.lg,
@@ -177,7 +176,17 @@ class _AdminShellState extends State<AdminShell> {
                       ),
                       child: Center(
                         child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 1280),
+                          constraints: BoxConstraints(
+                            maxWidth: 1280,
+                            minWidth: math.min(
+                              1280,
+                              math.max(
+                                0,
+                                MediaQuery.sizeOf(context).width -
+                                    (desktop ? AdminSpacing.xl * 2 : AdminSpacing.md * 2),
+                              ),
+                            ),
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
