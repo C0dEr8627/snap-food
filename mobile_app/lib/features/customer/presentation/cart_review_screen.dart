@@ -89,6 +89,9 @@ class CartReviewScreen extends ConsumerWidget {
                                         onRemove: () => ref
                                             .read(cartControllerProvider.notifier)
                                             .changeQuantity(item.productId, -1),
+                                        onDelete: () => ref
+                                            .read(cartControllerProvider.notifier)
+                                            .removeItem(item.productId),
                                         onAdd: () => ref
                                             .read(cartControllerProvider.notifier)
                                             .changeQuantity(item.productId, 1),
@@ -139,11 +142,13 @@ class _CartItemCard extends StatelessWidget {
   const _CartItemCard({
     required this.item,
     required this.onRemove,
+    required this.onDelete,
     required this.onAdd,
   });
 
   final CartItem item;
   final VoidCallback onRemove;
+  final VoidCallback onDelete;
   final VoidCallback onAdd;
 
   @override
@@ -168,6 +173,15 @@ class _CartItemCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: SnapFoodTypography.titleMedium,
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(
+                      onPressed: onDelete,
+                      icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                      label: const Text('Remove item'),
+                      style: TextButton.styleFrom(foregroundColor: SnapFoodColors.error),
+                    ),
                   ),
                   const SizedBox(height: SnapFoodSpacing.xs),
                   Text(
