@@ -27,6 +27,22 @@ class FoodItemDetailsScreen extends ConsumerStatefulWidget {
 class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
   int quantity = 1;
 
+  void _orderNow(CatalogueProduct product) {
+    final previewPrice = int.tryParse(product.price.split('.').first) ?? 0;
+    ref.read(directCheckoutItemsProvider.notifier).state = [
+      CartItem(
+        productId: product.id.toString(),
+        name: product.name,
+        description: product.category?.name ?? 'Catalogue item',
+        previewPrice: previewPrice,
+        quantity: quantity,
+        vegetarian: product.category?.name.toLowerCase().contains('veg') == true,
+        imageUrl: product.imageUrl,
+      ),
+    ];
+    context.push('/checkout');
+  }
+
   CatalogueProduct? _findProduct(CatalogueSnapshot snapshot) {
     final id = int.tryParse(widget.itemId);
     if (id == null || id <= 0) return null;
@@ -238,14 +254,33 @@ class _FoodItemDetailsScreenState extends ConsumerState<FoodItemDetailsScreen> {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: SnapAddToCartButton(
-                            enabled: product.isActive && product.isAvailable,
-                            onPressed: () => _addToCart(product),
-                            label: 'Add ' +
-                                quantity.toString() +
-                                (quantity == 1 ? ' item' : ' items') +
-                                '  •  ₹' +
-                                (previewPrice * quantity).toString(),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: double.infinity,
+                                child: SnapAddToCartButton(
+                                  enabled: product.isActive && product.isAvailable,
+                                  onPressed: () => _addToCart(product),
+                                  label: 'Add to cart  •  ₹' + (previewPrice * quantity).toString(),
+                                ),
+                              ),
+                              const SizedBox(height: SnapFoodSpacing.xs),
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton.icon(
+                                  onPressed: product.isActive && product.isAvailable ? () => _orderNow(product) : null,
+                                  icon: const Icon(Icons.flash_on_rounded),
+                                  label: Text('Order now · ${quantity} ${quantity == 1 ? 'item' : 'items'}'),
+                                  style: OutlinedButton.styleFrom(
+                                    minimumSize: const Size.fromHeight(44),
+                                    foregroundColor: SnapFoodColors.secondary,
+                                    side: const BorderSide(color: SnapFoodColors.secondary),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SnapFoodRadii.md)),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
