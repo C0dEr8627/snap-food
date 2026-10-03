@@ -577,6 +577,37 @@ class SfErrorState extends StatelessWidget {
   );
 }
 
+class SfLoadingState extends StatelessWidget {
+  const SfLoadingState({
+    super.key,
+    this.title = 'Loading…',
+    this.message = 'Please wait while the latest data is loaded.',
+    this.compact = false,
+  });
+  final String title;
+  final String message;
+  final bool compact;
+  @override
+  Widget build(BuildContext context) => SfCard(
+    padding: EdgeInsets.all(compact ? AdminSpacing.lg : AdminSpacing.xl),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(width: 28, height: 28, child: CircularProgressIndicator(strokeWidth: 2.5)),
+        const SizedBox(height: AdminSpacing.md),
+        Text(title, textAlign: TextAlign.center, style: AdminTypography.cardTitle),
+        if (!compact) ...[
+          const SizedBox(height: AdminSpacing.xs),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 440),
+            child: Text(message, textAlign: TextAlign.center, style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText)),
+          ),
+        ],
+      ],
+    ),
+  );
+}
+
 class SfSkeleton extends StatefulWidget {
   const SfSkeleton({super.key, this.width, this.height = 16, this.radius = AdminRadii.control});
 
