@@ -879,7 +879,7 @@ The admin UI/UX modernization is complete when:
 | Task | Status | Last Updated | Notes |
 |---|---|---|---|
 | Task 1 — Admin Design System | 🟢 Complete | 2026-10-03 | Centralized admin color, typography, spacing, radius, elevation, motion and Material/shadcn theme tokens; legacy AdminColors now aliases the semantic token layer. Validation commands could not be executed through the available GitHub connector. |
-| Task 2 — Core Components | ⬜ Not Started | 2026-10-03 | |
+| Task 2 — Core Components | 🟢 Complete | 2026-10-03 | Added branded reusable buttons, icon buttons, inputs/search, badges/status badges, cards, stat blocks, page headers, filter bars, empty/error/skeleton states and avatars; legacy AdminCard now consumes SfCard. Validation commands could not be executed through the available GitHub connector. |
 | Task 3 — Admin Shell & Sidebar | ⬜ Not Started | 2026-10-03 | |
 | Task 4 — Global Search / Command Palette | ⬜ Not Started | 2026-10-03 | |
 | Task 5 — Premium Data Tables | ⬜ Not Started | 2026-10-03 | |
@@ -946,6 +946,32 @@ The admin UI/UX modernization is complete when:
 - Limitations/follow-up:
   - CI execution results were not available from the connector, so Task 1's validation remains dependent on the repository CI runner.
   - Existing page-level hard-coded styling remains intentionally untouched; migrating those values is deferred to the reusable component/page tasks.
+
+### 2026-10-03 — Task 2
+- Status: 🟢 Complete
+- Implemented:
+  - Added a reusable Snap Foodd admin core-component layer in `sf_core_components.dart`.
+  - Added `SfButton` with primary, secondary, outline, ghost and destructive variants plus loading/disabled behavior.
+  - Added `SfIconButton` with tooltip, selected, hover and focus feedback.
+  - Added `SfInput` and `SfSearchField` using the centralized typography and input theme.
+  - Added `SfBadge` and semantic `SfStatusBadge` so status meaning is not tied to brand colors.
+  - Added `SfCard` and `SfStat` for consistent surfaces and operational metrics.
+  - Added responsive `SfPageHeader` and `SfFilterBar`.
+  - Added reusable `SfEmptyState`, `SfErrorState` and animated `SfSkeleton`.
+  - Added accessible `SfAvatar` with image and initials fallback.
+  - Registered the component layer in the main admin library and migrated the existing `AdminCard` wrapper to consume `SfCard`.
+  - Kept HugeIcons as the admin icon system and avoided restaurant-specific UI or fabricated backend behavior.
+- Files/components changed:
+  - `admin_web/lib/widgets/sf_core_components.dart`
+  - `admin_web/lib/main.dart`
+  - `admin_web/lib/widgets/admin_shared.dart`
+- Validation:
+  - Inspected the existing shared admin widgets, shell, pubspec and design-system layer before implementation.
+  - Reviewed the new component source after correcting a border-construction issue.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful validation run is being claimed.
+- Limitations/follow-up:
+  - `SfDataTable`, `SfDrawer`, `SfEntityDrawer` and `SfCommandPalette` remain intentionally deferred to their dedicated tasks because they require broader interaction/API context.
+  - Existing page-specific widgets have not yet been migrated wholesale; that migration belongs to the table, drawer and individual page tasks.
 
 ### Future entries
 
