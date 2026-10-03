@@ -152,8 +152,8 @@ class _PartnersPageState extends State<PartnersPage> {
             children: [
               const Text(
                 'The existing backend provisions an existing active user by ID. '
-                'It does not create a user account or accept KYC documents here.',
-                style: TextStyle(fontSize: 12, color: AdminColors.muted, height: 1.5),
+                'It does not create a user account; it links an existing active user to a delivery-partner record.',
+                style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText, height: 1.5),
               ),
               const SizedBox(height: 14),
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
