@@ -587,6 +587,7 @@ class HomeHeader extends ConsumerWidget {
                 icon: Icons.notifications_none_rounded,
                 tooltip: 'Notifications',
                 semanticLabel: 'Notifications',
+                onPressed: null,
               ),
               Semantics(
                 button: true,
