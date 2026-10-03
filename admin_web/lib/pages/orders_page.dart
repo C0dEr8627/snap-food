@@ -344,7 +344,33 @@ class _OrderDetails extends StatelessWidget{
     }
     final next=_nextStatus(o.status);
     return AdminCard(child:Padding(padding:const EdgeInsets.all(16),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-      Row(children:[Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(o.id,style:AdminTypography.sectionTitle),const SizedBox(height:AdminSpacing.xs),Row(children:[_OrderStatusBadge(o.status),const SizedBox(width:AdminSpacing.xs),if(apiConfigured)Text('LIVE ACTIVE',style:AdminTypography.small.copyWith(color:AdminDesignColors.success,fontWeight:FontWeight.w700))]))])]),
+      Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(o.id, style: AdminTypography.sectionTitle),
+                const SizedBox(height: AdminSpacing.xs),
+                Row(
+                  children: [
+                    _OrderStatusBadge(o.status),
+                    const SizedBox(width: AdminSpacing.xs),
+                    if (apiConfigured)
+                      Text(
+                        'LIVE ACTIVE',
+                        style: AdminTypography.small.copyWith(
+                          color: AdminDesignColors.success,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
       const SizedBox(height:5),Text('Placed at '+o.time,style:AdminTypography.small),const SizedBox(height:AdminSpacing.lg),
       LayoutBuilder(builder:(context,c)=>c.maxWidth>=500?Row(children:[Expanded(child:_PersonCard('CUSTOMER',o.customer,[o.phone,o.address],HugeIcons.strokeRoundedUser)),const SizedBox(width:AdminSpacing.sm),Expanded(child:_PersonCard('DELIVERY PARTNER',o.partner??'Unassigned',[o.vehicle??'Awaiting partner assignment'],HugeIcons.strokeRoundedDeliveryTruck01,badge:o.partner==null?'UNASSIGNED':'ON DUTY'))]):Column(children:[_PersonCard('CUSTOMER',o.customer,[o.phone,o.address],HugeIcons.strokeRoundedUser),const SizedBox(height:10),_PersonCard('DELIVERY PARTNER',o.partner??'Unassigned',[o.vehicle??'Awaiting partner assignment'],HugeIcons.strokeRoundedDeliveryTruck01,badge:o.partner==null?'UNASSIGNED':'ON DUTY')])),
       const SizedBox(height:AdminSpacing.md),
