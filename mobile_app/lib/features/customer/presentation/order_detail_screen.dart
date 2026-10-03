@@ -59,7 +59,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                 ),
               ),
               title: Text(
-                'Order #\${widget.orderId}',
+                'Order #${widget.orderId}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: SnapFoodTypography.titleMedium.copyWith(fontWeight: FontWeight.w800),
@@ -94,7 +94,10 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                     delegate: SliverChildListDelegate([
                       _OrderHero(order: order),
                       const SizedBox(height: SnapFoodSpacing.lg),
-                      SnapSectionHeader(title: 'Items', trailing: '\${order.items.length}'),
+                      SnapSectionHeader(
+                        title: 'Items',
+                        subtitle: order.items.length.toString(),
+                      ),
                       const SizedBox(height: SnapFoodSpacing.sm),
                       _ItemsSection(items: order.items),
                       const SizedBox(height: SnapFoodSpacing.lg),
@@ -115,7 +118,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                         SnapPrimaryButton(
                           label: 'Open live tracking',
                           icon: Icons.location_searching_outlined,
-                          onPressed: () => context.push('/orders/\${Uri.encodeComponent(widget.orderId)}/tracking'),
+                          onPressed: () => context.push('/orders/${Uri.encodeComponent(widget.orderId)}/tracking'),
                         ),
                       ],
                       if (order.status == OrderStatus.delivered) ...[
@@ -123,7 +126,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                         SnapSecondaryButton(
                           label: 'View invoice',
                           icon: Icons.receipt_long_outlined,
-                          onPressed: () => context.push('/orders/\${Uri.encodeComponent(widget.orderId)}/invoice'),
+                          onPressed: () => context.push('/orders/${Uri.encodeComponent(widget.orderId)}/invoice'),
                         ),
                       ],
                     ]),
@@ -145,7 +148,7 @@ class _OrderHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
         container: true,
-        label: 'Order \${order.id}. \${_statusLabel(order.status)}.',
+        label: 'Order ${order.id}. ${_statusLabel(order.status)}.',
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: SnapFoodColors.surfaceContainerLowest,
@@ -162,7 +165,7 @@ class _OrderHero extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        'Order #\${order.id}',
+                        'Order #${order.id}',
                         style: SnapFoodTypography.headlineSmall.copyWith(fontWeight: FontWeight.w800),
                       ),
                     ),
@@ -242,12 +245,12 @@ class _OrderItemRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = _productName() ?? 'Product #\${item.productId}';
+    final name = _productName() ?? 'Product #${item.productId}';
     final lineTotal = _lineTotal();
 
     return Semantics(
       container: true,
-      label: '\$name, quantity \${item.quantity}\${lineTotal == null ? '' : ', \$lineTotal rupees'}',
+      label: '$name, quantity ${item.quantity}${lineTotal == null ? '' : ', $lineTotal rupees'}',
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -263,7 +266,7 @@ class _OrderItemRow extends StatelessWidget {
                 ),
                 const SizedBox(height: SnapFoodSpacing.xs),
                 Text(
-                  'Quantity \${item.quantity}',
+                  'Quantity ${item.quantity}',
                   style: SnapFoodTypography.bodySmall.copyWith(color: SnapFoodColors.onSurfaceVariant),
                 ),
               ],
@@ -274,7 +277,7 @@ class _OrderItemRow extends StatelessWidget {
             SnapPrice(value: lineTotal, fontSize: 15)
           else
             Text(
-              '×\${item.quantity}',
+              '×${item.quantity}',
               style: SnapFoodTypography.labelLarge.copyWith(color: SnapFoodColors.onSurfaceVariant),
             ),
         ],
@@ -315,7 +318,7 @@ class _DeliverySection extends StatelessWidget {
         children: [
           Text(
             parts.isEmpty ? 'Address snapshot unavailable.' : parts.first,
-            style: SnapFoodTypography.titleSmall.copyWith(fontWeight: FontWeight.w800),
+            style: SnapFoodTypography.titleMedium.copyWith(fontWeight: FontWeight.w800),
           ),
           if (parts.length > 1) ...[
             const SizedBox(height: SnapFoodSpacing.xs),
@@ -360,7 +363,7 @@ class _PaymentSection extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'Total',
-                    style: SnapFoodTypography.titleSmall.copyWith(fontWeight: FontWeight.w800),
+                    style: SnapFoodTypography.titleMedium.copyWith(fontWeight: FontWeight.w800),
                   ),
                 ),
                 if (order.total.isEmpty)
@@ -419,7 +422,7 @@ class _TrackingPreview extends StatelessWidget {
                     Expanded(
                       child: Text(
                         value.status.isEmpty ? 'Delivery status unavailable' : value.status,
-                        style: SnapFoodTypography.titleSmall.copyWith(fontWeight: FontWeight.w800),
+                        style: SnapFoodTypography.titleMedium.copyWith(fontWeight: FontWeight.w800),
                       ),
                     ),
                   ],
