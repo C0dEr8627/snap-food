@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\AdminUser;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,10 +22,9 @@ class LocalAdminSeeder extends Seeder
         }
 
         AdminUser::updateOrCreate(
-            ['email' => $email],
+            ['email' => strtolower(trim($email))],
             [
                 'name' => 'Local Admin',
-                'role' => User::ROLE_ADMIN,
                 'is_active' => true,
                 'password' => Hash::make($password),
             ],
