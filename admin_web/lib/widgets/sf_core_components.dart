@@ -178,7 +178,7 @@ class SfInput extends StatelessWidget {
   final String? helperText;
   final String? errorText;
   final AdminIconData? prefixIcon;
-  final flutter.flutter.Widget? suffixIcon;
+  final flutter.Widget? suffixIcon;
   final ValueChanged<String>? onChanged;
   final bool obscureText;
   final bool enabled;
@@ -474,8 +474,8 @@ class SfPageHeader extends StatelessWidget {
 
   final String title;
   final String? description;
-  final flutter.flutter.Widget? leading;
-  final List<flutter.flutter.Widget> actions;
+  final flutter.Widget? leading;
+  final List<flutter.Widget> actions;
 
   @override
   flutter.Widget build(BuildContext context) => LayoutBuilder(
@@ -507,9 +507,9 @@ class SfPageHeader extends StatelessWidget {
 class SfFilterBar extends StatelessWidget {
   const SfFilterBar({super.key, this.leading, this.filters = const [], this.trailing = const []});
 
-  final flutter.flutter.Widget? leading;
-  final List<flutter.flutter.Widget> filters;
-  final List<flutter.flutter.Widget> trailing;
+  final flutter.Widget? leading;
+  final List<flutter.Widget> filters;
+  final List<flutter.Widget> trailing;
 
   @override
   flutter.Widget build(BuildContext context) => SfCard(
@@ -539,7 +539,7 @@ class SfEmptyState extends StatelessWidget {
   final String title;
   final String message;
   final AdminIconData icon;
-  final flutter.flutter.Widget? action;
+  final flutter.Widget? action;
 
   @override
   flutter.Widget build(BuildContext context) => SfCard(
