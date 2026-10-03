@@ -33,11 +33,11 @@ class CategoryPolicy
 
     public function update(Authenticatable $user, Category $category): bool
     {
-        return $user->is_active && $user->hasRole(User::ROLE_ADMIN);
+        return $user->is_active && $user->hasRole('ADMIN');
     }
 
     public function delete(Authenticatable $user, Category $category): bool
     {
-        return $user->is_active && $user->hasRole(User::ROLE_ADMIN);
+        return $user->is_active && $user->hasRole('ADMIN');
     }
 }
