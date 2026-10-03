@@ -8,7 +8,7 @@ class DashboardPage extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       const _ConnectionBanner(),
-      const SizedBox(height: 18),
+      const SizedBox(height: AdminSpacing.xxl),
       LayoutBuilder(
         builder: (context, c) {
           final count = c.maxWidth >= 1000 ? 4 : c.maxWidth >= 650 ? 2 : 1;
@@ -16,16 +16,16 @@ class DashboardPage extends StatelessWidget {
             crossAxisCount: count,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
+            crossAxisSpacing: AdminSpacing.md,
+            mainAxisSpacing: AdminSpacing.md,
             childAspectRatio: count == 4 ? 1.35 : count == 2 ? 1.8 : 3.0,
             children: const [_RevenueKpi(), _ActiveOrdersKpi(), _FleetKpi(), _SlaKpi()],
           );
         },
       ),
-      const SizedBox(height: 20),
+      const SizedBox(height: AdminSpacing.xxl),
       const _AttentionSection(),
-      const SizedBox(height: 20),
+      const SizedBox(height: AdminSpacing.xxl),
       LayoutBuilder(
         builder: (context, c) => c.maxWidth >= 1050
           ? const Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -35,7 +35,7 @@ class DashboardPage extends StatelessWidget {
             ])
           : const Column(children: [_WeeklySalesCard(), SizedBox(height: 16), _KitchenPulseCard()]),
       ),
-      const SizedBox(height: 20),
+      const SizedBox(height: AdminSpacing.xxl),
       const _LiveOrdersCard(),
     ],
   );
@@ -52,19 +52,19 @@ class _ConnectionBanner extends StatelessWidget {
         Container(width: 34, height: 34, decoration: BoxDecoration(color: AdminColors.greenSoft, borderRadius: BorderRadius.circular(9)), child: const AdminIcon(HugeIcons.strokeRoundedCloudSavingDone01, size: 18, color: AdminColors.green)),
         const SizedBox(width: 11),
         const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Laravel API v1 Connected', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
+          Text('Laravel API v1', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
           SizedBox(height: 2),
-          Text('https://api.snapfoodd.in/api/v1', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
+          Text('Preview environment', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
           SizedBox(height: 2),
-          Text('Demo / Preview Data Mode Active (Phase 1 Baseline • Flutter Web Engine v3.22)', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
+          Text('Preview data mode is active; live dashboard aggregates are not fabricated.', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
         ])),
         if (MediaQuery.sizeOf(context).width >= 650) ...[
-          const Text('Ping: 34ms', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.muted)),
+          const Text('Preview', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AdminColors.muted)),
           const SizedBox(width: 12),
           OutlinedButton(
             onPressed: () => _notice(context, 'Sync state is ready for the live API connection.'),
             style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 9), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)), side: const BorderSide(color: AdminColors.line)),
-            child: const Text('Sync State', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
+            child: const Text('API status', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
           ),
         ],
       ]),
@@ -217,7 +217,7 @@ class _WeeklySalesCard extends StatelessWidget {
             SizedBox(height: 3),
             Text('Monday through Sunday aggregate revenue with peak order milestones', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
           ])),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6), decoration: BoxDecoration(color: AdminColors.greenSoft, borderRadius: BorderRadius.circular(8)), child: const Text('Live Cluster', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.green))),
+          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6), decoration: BoxDecoration(color: AdminColors.greenSoft, borderRadius: BorderRadius.circular(8)), child: const Text('Preview data', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.green))),
         ]),
         const SizedBox(height: 14),
         const Row(children: [
@@ -329,15 +329,15 @@ class _KitchenPulseCard extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          const Expanded(child: Text('Kitchen Hubs Pulse', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900))),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6), decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(7)), child: const Text('12 Cloud Kitchens', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800))),
+          const Expanded(child: Text('Operations Pulse', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900))),
+          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6), decoration: BoxDecoration(color: AdminColors.canvas, borderRadius: BorderRadius.circular(7)), child: const Text('Current order flow', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800))),
         ]),
         const SizedBox(height: 12),
-        const _KitchenItem(name: 'Biryani Central HQ', tickets: '24 live tickets', prep: '9 min avg prep', capacity: .98, icon: HugeIcons.strokeRoundedRiceBowl01),
+        const _KitchenItem(name: 'New orders', tickets: '18 active orders', prep: 'Awaiting processing', capacity: .98, icon: HugeIcons.strokeRoundedRiceBowl01),
         const SizedBox(height: 9),
-        const _KitchenItem(name: 'Burger Shack 5th Blo...', tickets: '16 live tickets', prep: '6 min avg prep', capacity: .72, icon: HugeIcons.strokeRoundedRestaurant01),
+        const _KitchenItem(name: 'Preparing orders', tickets: '26 active orders', prep: 'In preparation', capacity: .72, icon: HugeIcons.strokeRoundedRestaurant01),
         const SizedBox(height: 9),
-        const _KitchenItem(name: 'Crust & Co Pizzeria', tickets: '11 live tickets', prep: '14 min avg prep', capacity: .64, icon: HugeIcons.strokeRoundedPizza01),
+        const _KitchenItem(name: 'Dispatched orders', tickets: '20 active orders', prep: 'With delivery partners', capacity: .64, icon: HugeIcons.strokeRoundedPizza01),
         const SizedBox(height: 13),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 10),
@@ -346,9 +346,9 @@ class _KitchenPulseCard extends StatelessWidget {
             const AdminIcon(HugeIcons.strokeRoundedFlash, size: 17, color: AdminColors.amber),
             const SizedBox(width: 8),
             const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Express Auto-Dispatch', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
+              Text('Delivery operations', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
               SizedBox(height: 2),
-              Text('Batching window: 90 secs', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
+              Text('42 partners online', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
             ])),
             const shad.Switch(value: true, onChanged: null),
           ]),
@@ -572,7 +572,7 @@ class _OpsCard extends StatelessWidget {
     const Text('Live operations', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
     const SizedBox(height: 3),
     const Text('Current order queue', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
-    const SizedBox(height: 20),
+    const SizedBox(height: AdminSpacing.xxl),
     const _Progress(label: 'New orders', value: '12', fraction: .78, color: AdminColors.red),
     const SizedBox(height: 17),
     const _Progress(label: 'Preparing', value: '24', fraction: .62, color: AdminColors.amber),
