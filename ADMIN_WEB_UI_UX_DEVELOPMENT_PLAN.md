@@ -883,7 +883,7 @@ The admin UI/UX modernization is complete when:
 | Task 3 — Admin Shell & Sidebar | 🟢 Complete | 2026-10-03 | Redesigned the admin shell with grouped navigation, restrained active states, responsive drawer navigation, contextual header, section search, admin profile access and supported system-status treatment. Preserved routing/authentication and did not introduce restaurant concepts. Validation commands could not be executed through the available GitHub connector. |
 | Task 4 — Global Search / Command Palette | 🟢 Complete | 2026-10-03 | Added a reusable command palette with ⌘K/Ctrl+K access, section navigation, supported catalogue quick actions, Escape/Enter handling, focus management and query handoff into the existing section search APIs. No fabricated entity results were introduced. |
 | Task 5 — Premium Data Tables | 🟢 Complete | 2026-10-03 | Reusable SfDataTable/SfTablePagination added; Users, Delivery Partners and Invoices migrated to shared table language with intentional overflow, density, status badges, avatars and pagination. |
-| Task 6 — Drawers, Dialogs & Feedback | ⬜ Not Started | 2026-10-03 | |
+| Task 6 — Drawers, Dialogs & Feedback | 🟢 Complete | 2026-10-03 | Added shared side-drawer, confirmation-dialog and success/error/info feedback primitives; integrated shared feedback into Catalogue and Delivery Partner action flows while preserving existing supported dialogs and backend behavior. |
 | Task 7 — Overview | ⬜ Not Started | 2026-10-03 | |
 | Task 8 — Orders | ⬜ Not Started | 2026-10-03 | |
 | Task 9 — Catalogue / Products | ⬜ Not Started | 2026-10-03 | |
@@ -1055,6 +1055,31 @@ The admin UI/UX modernization is complete when:
   - Orders retain their existing specialized operational list/table implementation pending a safe migration pass.
   - Sticky headers, advanced sorting and multi-select are not added because current backend/page contracts do not require them.
   - Full browser visual/overflow QA remains dependent on a runnable Flutter Web environment.
+
+### 2026-10-03 — Task 6
+- Status: 🟢 Complete
+- Implemented:
+  - Added reusable `SfSideDrawer` with right-side slide transition, barrier dismissal, safe-area handling, close affordance and scrollable content.
+  - Added reusable `SfConfirmDialog` with destructive/non-destructive confirmation variants.
+  - Added `SfFeedback` success/error/info messaging with consistent floating feedback treatment and semantic icons.
+  - Integrated shared feedback into Catalogue save/deactivate/error flows.
+  - Integrated shared feedback into Delivery Partner approval/error flows.
+  - Preserved the existing Catalogue product editor dialog and other page-specific overlays rather than replacing working business flows unnecessarily.
+  - No fabricated backend operations, KYC capabilities or restaurant concepts introduced.
+- Files/components changed:
+  - `admin_web/lib/widgets/sf_feedback_components.dart`
+  - `admin_web/lib/main.dart`
+  - `admin_web/lib/pages/catalogue_page.dart`
+  - `admin_web/lib/pages/partners_page.dart`
+- Validation:
+  - Re-fetched final component and integration files.
+  - Verified the feedback component is registered in `main.dart`.
+  - Verified Catalogue and Delivery Partner flows reference shared feedback.
+  - Verified shared drawer/dialog primitives use centralized motion, spacing, typography and semantic color tokens.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful validation run is being claimed.
+- Limitations/follow-up:
+  - Existing page-specific dialogs remain in place where they encapsulate active form/business logic.
+  - Full browser interaction, focus-trap and visual QA remain dependent on a runnable Flutter Web environment.
 
 ### Future entries
 
