@@ -270,29 +270,106 @@ class _FilterChip extends StatelessWidget{
 
 class _OrderQueue extends StatelessWidget{
   const _OrderQueue({required this.orders,required this.selectedId,required this.page,required this.onPage,required this.onSelect});
-  final List<_AdminOrder> orders;final String? selectedId;final int page;final ValueChanged<int> onPage;final ValueChanged<String> onSelect;
-  @override Widget build(BuildContext context){
-    final start=(page-1)*10,visible=orders.skip(start).take(10).toList(),pages=orders.isEmpty?1:((orders.length-1)~/10)+1;
-    return AdminCard(child:Padding(padding:const EdgeInsets.fromLTRB(14,14,14,10),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-      Row(children:[Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('ORDER QUEUE',style:AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),const SizedBox(height:3)])),Text('Showing '+visible.length.toString()+' of '+orders.length.toString()+' active tickets',style:AdminTypography.small),const SizedBox(width:AdminSpacing.sm),Container(padding:const EdgeInsets.symmetric(horizontal:9,vertical:7),decoration:BoxDecoration(color:AdminDesignColors.canvas,borderRadius:BorderRadius.circular(8),border:Border.all(color:AdminDesignColors.border)),child:Row(children:[const AdminIcon(HugeIcons.strokeRoundedSortingUp,size:15,color:AdminDesignColors.secondaryText),const SizedBox(width:4),Text('Latest first',style: AdminTypography.small.copyWith(fontWeight: FontWeight.w600))]))]),
-      const SizedBox(height:AdminSpacing.md),
-      Scrollbar(
-        thumbVisibility:true,
-        child:SingleChildScrollView(
-          scrollDirection:Axis.horizontal,
-          child:ConstrainedBox(
-            constraints:const BoxConstraints(minWidth:720),
-            child:Column(children:[
-              const _OrderTableHeader(),
-              const Divider(height:1,color:AdminDesignColors.border),
-              ...visible.map((o)=>_OrderRow(order:o,selected:o.id==selectedId,onTap:()=>onSelect(o.id))),
-              const Divider(height:1,color:AdminDesignColors.border),
-            ]),
-          ),
+  final List<_AdminOrder> orders;
+  final String? selectedId;
+  final int page;
+  final ValueChanged<int> onPage;
+  final ValueChanged<String> onSelect;
+
+  @override
+  Widget build(BuildContext context){
+    final start=(page-1)*10;
+    final visible=orders.skip(start).take(10).toList();
+    final pages=orders.isEmpty?1:((orders.length-1)~/10)+1;
+
+    return AdminCard(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14,14,14,10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children:[
+            Row(
+              children:[
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment:CrossAxisAlignment.start,
+                    children:[
+                      Text('ORDER QUEUE',style:AdminTypography.small.copyWith(fontWeight: FontWeight.w700)),
+                      const SizedBox(height:3),
+                    ],
+                  ),
+                ),
+                Flexible(
+                  child: Text(
+                    'Showing '+visible.length.toString()+' of '+orders.length.toString()+' active tickets',
+                    maxLines:1,
+                    overflow:TextOverflow.ellipsis,
+                    style:AdminTypography.small,
+                  ),
+                ),
+                const SizedBox(width:AdminSpacing.sm),
+                Container(
+                  padding:const EdgeInsets.symmetric(horizontal:9,vertical:7),
+                  decoration:BoxDecoration(
+                    color:AdminDesignColors.canvas,
+                    borderRadius:BorderRadius.circular(8),
+                    border:Border.all(color:AdminDesignColors.border),
+                  ),
+                  child:Row(
+                    mainAxisSize:MainAxisSize.min,
+                    children:[
+                      const AdminIcon(HugeIcons.strokeRoundedSortingUp,size:15,color:AdminDesignColors.secondaryText),
+                      const SizedBox(width:4),
+                      Text('Latest first',style: AdminTypography.small.copyWith(fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height:AdminSpacing.md),
+            LayoutBuilder(
+              builder:(context,constraints){
+                final tableWidth=math.max(720.0,constraints.maxWidth.isFinite?constraints.maxWidth:720.0);
+                return ClipRect(
+                  child: SingleChildScrollView(
+                    scrollDirection:Axis.horizontal,
+                    child:SizedBox(
+                      width:tableWidth,
+                      child:Column(
+                        children:[
+                          const _OrderTableHeader(),
+                          const Divider(height:1,color:AdminDesignColors.border),
+                          ...visible.map((o)=>_OrderRow(order:o,selected:o.id==selectedId,onTap:()=>onSelect(o.id))),
+                          const Divider(height:1,color:AdminDesignColors.border),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            Row(
+              children:[
+                const Text('10 rows per page',style:AdminTypography.small),
+                const Spacer(),
+                Text(
+                  (visible.isEmpty ? 0 : start+1).toString()+'–'+(start+visible.length).toString()+' of '+orders.length.toString(),
+                  style:AdminTypography.small.copyWith(fontWeight:FontWeight.w700),
+                ),
+                shad.IconButton.ghost(
+                  onPressed:page>1?()=>onPage(page-1):null,
+                  icon:const AdminIcon(HugeIcons.strokeRoundedArrowLeft01,size:18),
+                ),
+                shad.IconButton.ghost(
+                  onPressed:page<pages?()=>onPage(page+1):null,
+                  icon:const AdminIcon(HugeIcons.strokeRoundedArrowRight01,size:18),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
-      Row(children:[const Text('10 rows per page',style:AdminTypography.small),const Spacer(),Text((start+1).toString()+'–'+(start+visible.length).toString()+' of '+orders.length.toString(),style:AdminTypography.small.copyWith(fontWeight:FontWeight.w700)),shad.IconButton.ghost(onPressed:page>1?()=>onPage(page-1):null,icon:const AdminIcon(HugeIcons.strokeRoundedArrowLeft01,size:18)),shad.IconButton.ghost(onPressed:page<pages?()=>onPage(page+1):null,icon:const AdminIcon(HugeIcons.strokeRoundedArrowRight01,size:18))]),
-    ])));
+    );
   }
 }
 
