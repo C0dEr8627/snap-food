@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends Controller
 {
@@ -20,17 +21,26 @@ class ProductController extends Controller
 
         $query = Product::query()
             ->with('category')
-            ->when(! $request->user()->hasRole('ADMIN'), fn ($query) => $query
-                ->where('is_active', true)
-                ->where('is_available', true)
-                ->whereHas('category', fn ($category) => $category->where('is_active', true)))
-            ->when($request->filled('category_id'), fn ($query) => $query->where('category_id', $request->integer('category_id')))
-            ->when($request->filled('search'), fn ($query) => $query->where(function ($query) use ($request): void {
-                $term = $request->string('search')->toString();
-                $query->where('name', 'like', "%{$term}%")
-                    ->orWhere('slug', 'like', "%{$term}%")
-                    ->orWhere('description', 'like', "%{$term}%");
-            }))
+            ->when(
+                ! $request->user()->hasRole('ADMIN'),
+                fn ($query) => $query
+                    ->where('is_active', true)
+                    ->where('is_available', true)
+                    ->whereHas('category', fn ($category) => $category->where('is_active', true))
+            )
+            ->when(
+                $request->filled('category_id'),
+                fn ($query) => $query->where('category_id', $request->integer('category_id'))
+            )
+            ->when(
+                $request->filled('search'),
+                fn ($query) => $query->where(function ($query) use ($request): void {
+                    $term = $request->string('search')->toString();
+                    $query->where('name', 'like', "%{$term}%")
+                        ->orWhere('slug', 'like', "%{$term}%")
+                        ->orWhere('description', 'like', "%{$term}%");
+                })
+            )
             ->orderBy('name');
 
         $perPage = min(max($request->integer('per_page', 20), 1), 100);
@@ -55,10 +65,10 @@ class ProductController extends Controller
     {
         $data = $request->validated();
 
-        // Keep creation compatible with older databases while migrations are deployed.
         if (! Schema::hasColumn('products', 'dietary')) {
             unset($data['dietary']);
         }
+
         if (! Schema::hasColumn('products', 'tags')) {
             unset($data['tags']);
         }
@@ -75,9 +85,10 @@ class ProductController extends Controller
         return response()->json(['data' => $product->refresh()->load('category')]);
     }
 
-    public function image(Product $product): \Symfony\Component\HttpFoundation\Response
+    public function image(Product $product): Response
     {
         $image = $product->image;
+
         if (! is_string($image) || ! str_starts_with($image, '/uploads/products/')) {
             abort(404);
         }
@@ -101,22 +112,24 @@ class ProductController extends Controller
 
         $file = $request->file('image');
         $directory = public_path('uploads/products');
+
         if (! is_dir($directory)) {
             mkdir($directory, 0755, true);
         }
 
         $oldImage = $product->image;
-        $filename = Str::uuid()->toString() . '.' . $file->extension();
+        $filename = Str::uuid()->toString().'.'.$file->extension();
         $file->move($directory, $filename);
 
         if (is_string($oldImage) && str_starts_with($oldImage, '/uploads/products/')) {
             $oldPath = public_path(ltrim($oldImage, '/'));
+
             if (is_file($oldPath)) {
                 @unlink($oldPath);
             }
         }
 
-        $product->update(['image' => '/uploads/products/' . $filename]);
+        $product->update(['image' => '/uploads/products/'.$filename]);
 
         return response()->json(['data' => $product->refresh()->load('category')]);
     }
