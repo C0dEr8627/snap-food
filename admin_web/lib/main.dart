@@ -21,6 +21,7 @@ part 'widgets/admin_shared.dart';
 part 'widgets/sf_core_components.dart';
 part 'widgets/sf_command_palette.dart';
 part 'widgets/sf_data_table.dart';
+part 'widgets/sf_feedback_components.dart';
 part 'widgets/catalogue_shared.dart';
 part 'pages/dashboard_page.dart';
 part 'pages/orders_page.dart';
