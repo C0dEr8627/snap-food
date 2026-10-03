@@ -228,9 +228,25 @@ class _InvoicesPageState extends State<InvoicesPage> {
         ],
       ),
       const SizedBox(height: AdminSpacing.lg),
-      if (_error != null) _InvoiceStateCard(icon: HugeIcons.strokeRoundedCloud, title: 'Unable to load invoices', message: _error!, action: 'Retry', onAction: () => _load(page: _page))
-      else if (_loading) const _InvoiceLoadingCard()
-      else if (_items.isEmpty) _InvoiceStateCard(icon: HugeIcons.strokeRoundedInvoice01, title: 'No invoices found', message: 'Try changing your search, date range, or payment status filter.', action: 'Reset filters', onAction: _reset)
+      if (_error != null) SfErrorState(
+        title: 'Unable to load invoices',
+        message: _error!,
+        onRetry: () => _load(page: _page),
+      )
+      else if (_loading) const SfLoadingState(
+        title: 'Loading invoice ledger',
+        message: 'Fetching the latest invoice snapshots and payment summary.',
+      )
+      else if (_items.isEmpty) SfEmptyState(
+        icon: HugeIcons.strokeRoundedInvoice01,
+        title: 'No invoices found',
+        message: 'Try changing your search, date range, or payment status filter.',
+        action: SfButton(
+          variant: SfButtonVariant.outline,
+          onPressed: _reset,
+          child: const Text('Reset filters'),
+        ),
+      )
       else _InvoiceLedgerCard(invoices: _items, mobile: mobile, page: _page, total: _total, lastPage: _lastPage, onPage: (p) => _load(page: p), onView: _showInvoice),
       const SizedBox(height: 12),
       const Text('Stored invoice snapshots only. GST splits, gateway references, refund/reconciliation events, and rider payouts are not currently exposed by the backend.', style: TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.5)),
