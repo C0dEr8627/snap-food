@@ -71,17 +71,46 @@ class _AdminShellState extends State<AdminShell> {
   final TextEditingController _globalSearch = TextEditingController();
   final ScrollController _contentScrollController = ScrollController();
   String _searchQuery = '';
+  late final StreamSubscription<html.KeyboardEvent> _keyboardSubscription;
 
   @override
   void dispose() {
+    _keyboardSubscription.cancel();
     _globalSearch.dispose();
     _contentScrollController.dispose();
     super.dispose();
   }
 
+  void _openCommandPalette() {
+    SfCommandPalette.show(
+      context,
+      sections: AdminSection.values,
+      selectedSection: section,
+      onSelectSection: _select,
+      onAddProduct: section == AdminSection.catalogue
+          ? () => _catalogueKey.currentState?._newProduct()
+          : null,
+      onManageCategories: section == AdminSection.catalogue
+          ? () => _catalogueKey.currentState?._manageCategories()
+          : null,
+    );
+  }
+
   void _applyGlobalSearch() {
     final value = _globalSearch.text.trim();
     setState(() => _searchQuery = value);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _keyboardSubscription = html.window.onKeyDown.listen((event) {
+      final key = event.key.toLowerCase();
+      if ((event.ctrlKey || event.metaKey) && key == 'k') {
+        event.preventDefault();
+        if (mounted) _openCommandPalette();
+      }
+    });
   }
 
   @override
@@ -115,6 +144,7 @@ class _AdminShellState extends State<AdminShell> {
                   onLogout: widget.onLogout,
                   searchController: _globalSearch,
                   onSearch: _applyGlobalSearch,
+                  onOpenCommandPalette: _openCommandPalette,
                   onOpenNavigation: () => _openMobileNav(
                     context,
                     tablet ? 320 : width * .88,
@@ -584,6 +614,7 @@ class _Header extends StatelessWidget {
     required this.onLogout,
     required this.searchController,
     required this.onSearch,
+    required this.onOpenCommandPalette,
     required this.onOpenNavigation,
   });
 
@@ -593,6 +624,7 @@ class _Header extends StatelessWidget {
   final Future<void> Function() onLogout;
   final TextEditingController searchController;
   final VoidCallback onSearch;
+  final VoidCallback onOpenCommandPalette;
   final VoidCallback onOpenNavigation;
 
   @override
@@ -647,13 +679,10 @@ class _Header extends StatelessWidget {
               ],
             ),
           ),
-          SfSearchField(
+          _CommandSearchTrigger(
             controller: searchController,
-            hintText: 'Search this section…',
-            onChanged: (_) => onSearch(),
-            onSubmitted: (_) => onSearch(),
-            autofocus: false,
-          ).constrained(maxWidth: 420, height: 42),
+            onOpenCommandPalette: onOpenCommandPalette,
+          ),
         ],
         const SizedBox(width: AdminSpacing.sm),
         SfIconButton(
@@ -764,6 +793,61 @@ class _Header extends StatelessWidget {
           ),
         ],
       ],
+    ),
+  );
+}
+
+class _CommandSearchTrigger extends StatelessWidget {
+  const _CommandSearchTrigger({
+    required this.controller,
+    required this.onOpenCommandPalette,
+  });
+
+  final TextEditingController controller;
+  final VoidCallback onOpenCommandPalette;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 420,
+    height: 42,
+    child: Material(
+      color: AdminDesignColors.canvas,
+      borderRadius: BorderRadius.circular(AdminRadii.input),
+      child: InkWell(
+        onTap: onOpenCommandPalette,
+        borderRadius: BorderRadius.circular(AdminRadii.input),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.sm),
+          decoration: BoxDecoration(
+            border: Border.all(color: AdminDesignColors.border),
+            borderRadius: BorderRadius.circular(AdminRadii.input),
+          ),
+          child: Row(
+            children: [
+              const AdminIcon(
+                HugeIcons.strokeRoundedSearch01,
+                size: 18,
+                color: AdminDesignColors.secondaryText,
+              ),
+              const SizedBox(width: AdminSpacing.sm),
+              Expanded(
+                child: Text(
+                  'Search orders, users, products…',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AdminTypography.body.copyWith(
+                    color: AdminDesignColors.tertiaryText,
+                  ),
+                ),
+              ),
+              const SfBadge(
+                label: '⌘ K',
+                backgroundColor: AdminDesignColors.surface,
+              ),
+            ],
+          ),
+        ),
+      ),
     ),
   );
 }
