@@ -7,7 +7,7 @@ class OrdersPage extends StatefulWidget{
 }
 
 class _AdminOrder {
-  const _AdminOrder({required this.id,required this.customer,required this.phone,required this.address,required this.total,required this.items,required this.payment,required this.time,required this.status,required this.lines,this.partner,this.vehicle,this.cancellationReason});
+  const _AdminOrder({required this.id,required this.customer,required this.phone,required this.customerEmail,required this.address,required this.total,required this.items,required this.payment,required this.time,required this.status,required this.lines,this.partner,this.partnerPhone,this.partnerEmail,this.vehicle,this.cancellationReason});
   factory _AdminOrder.fromJson(Map<String,dynamic> j){
     final customer=j['customer'] is Map?Map<String,dynamic>.from(j['customer'] as Map):<String,dynamic>{};
     final address=j['delivery_address_snapshot'] is Map?Map<String,dynamic>.from(j['delivery_address_snapshot'] as Map):<String,dynamic>{};
@@ -17,17 +17,17 @@ class _AdminOrder {
     final lines=rawItems.whereType<Map>().map((x)=>_OrderLine(_toInt(x['quantity']),x['product_name']?.toString()??'Item','',_toDouble(x['line_total']))).toList();
     return _AdminOrder(
       id:(j['id']??'').toString(),customer:customer['name']?.toString()??'Customer',
-      phone:customer['phone']?.toString()??'',address:[address['line1'],address['line2'],address['city'],address['state']].whereType<String>().where((v)=>v.isNotEmpty).join(', '),
+      phone:customer['phone']?.toString()??'',customerEmail:customer['email']?.toString()??'',address:[address['line1'],address['line2'],address['city'],address['state']].whereType<String>().where((v)=>v.isNotEmpty).join(', '),
       total:_toDouble(j['total']),items:lines.fold(0,(n,x)=>n+x.qty),payment:j['payment_method']?.toString()??'UNKNOWN',
       time:j['created_at']?.toString()??'',status:j['status']?.toString()??'PLACED',lines:lines,
-      partner:dp['name']?.toString(),cancellationReason:j['cancellation_reason']?.toString());
+      partner:dp['name']?.toString(),partnerPhone:dp['phone']?.toString(),partnerEmail:dp['email']?.toString(),cancellationReason:j['cancellation_reason']?.toString());
   }
-  final String id,customer,phone,address,payment,time,status;
+  final String id,customer,phone,customerEmail,address,payment,time,status;
   final double total;
   final int items;
   final List<_OrderLine> lines;
-  final String? partner,vehicle,cancellationReason;
-  _AdminOrder withStatus(String value)=>_AdminOrder(id:id,customer:customer,phone:phone,address:address,total:total,items:items,payment:payment,time:time,status:value,lines:lines,partner:partner,vehicle:vehicle,cancellationReason:cancellationReason);
+  final String? partner,partnerPhone,partnerEmail,vehicle,cancellationReason;
+  _AdminOrder withStatus(String value)=>_AdminOrder(id:id,customer:customer,phone:phone,customerEmail:customerEmail,address:address,total:total,items:items,payment:payment,time:time,status:value,lines:lines,partner:partner,partnerPhone:partnerPhone,partnerEmail:partnerEmail,vehicle:vehicle,cancellationReason:cancellationReason);
 }
 
 
@@ -136,7 +136,7 @@ class _DeliveryPartnerOption{
 class _OrdersPageState extends State<OrdersPage>{
   final api=const _AdminOrderApi(),search=TextEditingController();
   final orders=< _AdminOrder>[];
-  String filter='ACTION_REQUIRED';String? selectedId;bool busy=false;bool loading=true;String? loadError;
+  String filter='ALL';String? selectedId;bool busy=false;bool loading=true;String? loadError;
 
   @override void initState(){super.initState();search.text=widget.searchQuery;search.addListener(_refresh);_loadOrders();}
   @override void didUpdateWidget(covariant OrdersPage oldWidget){super.didUpdateWidget(oldWidget);if(oldWidget.searchQuery!=widget.searchQuery&&search.text!=widget.searchQuery){search.text=widget.searchQuery;_loadOrders();}}
@@ -275,6 +275,40 @@ class _OrdersPageState extends State<OrdersPage>{
     }catch(e){if(mounted){setState(()=>busy=false);SfFeedback.showError(context,e.toString().replaceFirst('Bad state: ',''));}}
   }
 
+  void _showCustomerDetails(_AdminOrder order){
+    showDialog<void>(context:context,builder:(dialogContext)=>AlertDialog(
+      title:const Text('Customer details'),
+      content:SizedBox(width:460,child:SingleChildScrollView(child:Column(crossAxisAlignment:CrossAxisAlignment.start,mainAxisSize:MainAxisSize.min,children:[
+        _detailLine('Name',order.customer),
+        _detailLine('Contact number',order.phone.isEmpty?'Not provided':order.phone),
+        _detailLine('Email',order.customerEmail.isEmpty?'Not provided':order.customerEmail),
+        const Divider(height:24),
+        _detailLine('Delivery address',order.address.isEmpty?'No delivery address on record':order.address),
+      ]))),
+      actions:[TextButton(onPressed:()=>Navigator.pop(dialogContext),child:const Text('Close'))],
+    ));
+  }
+
+  void _showPartnerDetails(_AdminOrder order){
+    showDialog<void>(context:context,builder:(dialogContext)=>AlertDialog(
+      title:const Text('Delivery partner details'),
+      content:SizedBox(width:460,child:Column(crossAxisAlignment:CrossAxisAlignment.start,mainAxisSize:MainAxisSize.min,children:[
+        _detailLine('Name',order.partner??'Not assigned'),
+        _detailLine('Contact number',(order.partnerPhone??'').isEmpty?'Not provided':order.partnerPhone!),
+        _detailLine('Email',(order.partnerEmail??'').isEmpty?'Not provided':order.partnerEmail!),
+      ])),
+      actions:[TextButton(onPressed:()=>Navigator.pop(dialogContext),child:const Text('Close'))],
+    ));
+  }
+
+  Widget _detailLine(String label,String value)=>Padding(
+    padding:const EdgeInsets.only(bottom:12),
+    child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+      Text(label,style:AdminTypography.caption.copyWith(color:AdminDesignColors.secondaryText,fontWeight:FontWeight.w700)),
+      const SizedBox(height:3),SelectableText(value,style:AdminTypography.body),
+    ]),
+  );
+
   Future<void> _invoice(_AdminOrder order)async{
     setState(()=>busy=true);
     try{final ref=await api.invoice(order.id);if(mounted){setState(()=>busy=false);SfFeedback.showInfo(context,ref==null?'Invoice endpoint returned no file reference.':'Invoice reference: '+ref);}}
@@ -300,6 +334,7 @@ class _OrdersPageState extends State<OrdersPage>{
           onAssign:()=>_assign(order),onPickedUp:()=>_transition(order,'PICKED_UP'),
           onOut:()=>_transition(order,'OUT_FOR_DELIVERY'),onDelivered:()=>_transition(order,'DELIVERED'),
           onInvoice:()=>_invoice(order),
+          onCustomerDetails:()=>_showCustomerDetails(order),onPartnerDetails:()=>_showPartnerDetails(order),
         ),
       ],
       if(list.isEmpty)const Padding(padding:EdgeInsets.only(top:AdminSpacing.lg),child:SfEmptyState(title:'No orders in this workflow stage',message:'Change the operational filter or clear the search.')),
@@ -487,10 +522,10 @@ class _OrderWorkspace extends StatelessWidget{
     required this.order,required this.busy,required this.apiConfigured,
     required this.onAccept,required this.onReject,required this.onPreparing,required this.onReady,
     required this.onAssign,required this.onPickedUp,required this.onOut,required this.onDelivered,
-    required this.onInvoice,
+    required this.onInvoice,required this.onCustomerDetails,required this.onPartnerDetails,
   });
   final _AdminOrder order;final bool busy,apiConfigured;
-  final VoidCallback onAccept,onReject,onPreparing,onReady,onAssign,onPickedUp,onOut,onDelivered,onInvoice;
+  final VoidCallback onAccept,onReject,onPreparing,onReady,onAssign,onPickedUp,onOut,onDelivered,onInvoice;final VoidCallback onCustomerDetails,onPartnerDetails;
 
   @override Widget build(BuildContext context){
     final action=_action(order.status);
@@ -509,19 +544,19 @@ class _OrderWorkspace extends StatelessWidget{
       LayoutBuilder(builder:(context,constraints){
         final wide=constraints.maxWidth>=820;
         final cards=[
-          _WorkspaceInfo(title:'CUSTOMER',icon:HugeIcons.strokeRoundedUser,children:[
+          InkWell(onTap:()=>onCustomerDetails(order),borderRadius:BorderRadius.circular(AdminRadii.control),child:_WorkspaceInfo(title:'CUSTOMER',icon:HugeIcons.strokeRoundedUser,children:[
             Text(order.customer,style:AdminTypography.body.copyWith(fontWeight:FontWeight.w800)),
             if(order.phone.isNotEmpty)Text(order.phone,style:AdminTypography.small),
             if(order.address.isNotEmpty)Text(order.address,style:AdminTypography.small),
-          ]),
+          ])),
           _WorkspaceInfo(title:'PAYMENT',icon:HugeIcons.strokeRoundedWallet01,children:[
             Text(order.payment,style:AdminTypography.body.copyWith(fontWeight:FontWeight.w800)),
             Text('₹'+order.total.toStringAsFixed(2)+' total',style:AdminTypography.small),
           ]),
-          _WorkspaceInfo(title:'DELIVERY',icon:HugeIcons.strokeRoundedDeliveryTruck01,children:[
+          InkWell(onTap:order.partner==null?null:()=>onPartnerDetails(order),borderRadius:BorderRadius.circular(AdminRadii.control),child:_WorkspaceInfo(title:'DELIVERY',icon:HugeIcons.strokeRoundedDeliveryTruck01,children:[
             Text(order.partner??'Not assigned yet',style:AdminTypography.body.copyWith(fontWeight:FontWeight.w800)),
             Text(order.partner==null?'Assignment is available after the order is ready for pickup.':'Partner assigned',style:AdminTypography.small),
-          ]),
+          ])),
         ];
         return wide?Row(crossAxisAlignment:CrossAxisAlignment.start,children:[
           Expanded(child:cards[0]),const SizedBox(width:10),Expanded(child:cards[1]),const SizedBox(width:10),Expanded(child:cards[2]),
