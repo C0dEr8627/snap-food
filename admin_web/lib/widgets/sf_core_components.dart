@@ -254,6 +254,7 @@ class SfFormField extends StatelessWidget {
     this.hintText,
     this.helperText,
     this.validator,
+    this.requiredField = false,
     this.keyboardType,
     this.maxLines = 1,
     this.maxLength,
@@ -266,6 +267,7 @@ class SfFormField extends StatelessWidget {
   final String? hintText;
   final String? helperText;
   final String? Function(String?)? validator;
+  final bool requiredField;
   final TextInputType? keyboardType;
   final int maxLines;
   final int? maxLength;
@@ -288,7 +290,7 @@ class SfFormField extends StatelessWidget {
           style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText),
           children: [
             TextSpan(text: label!),
-            const TextSpan(text: ' *', style: TextStyle(color: AdminDesignColors.error)),
+            if (requiredField) const TextSpan(text: ' *', style: TextStyle(color: AdminDesignColors.error)),
           ],
         ),
       ),
