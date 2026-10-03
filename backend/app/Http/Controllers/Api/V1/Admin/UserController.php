@@ -10,7 +10,7 @@ class UserController
 {
     public function index(Request $request): JsonResponse
     {
-        $query = User::query()
+        $query = CustomerUser::query()
             ->with([
                 'addresses:id,user_id,label,recipient_name,address_line1,address_line2,city,state,postal_code,country',
             ])
