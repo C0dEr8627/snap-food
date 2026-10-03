@@ -28,10 +28,7 @@ class DeliveryPartnerOrderController
                     Order::STATUS_PICKED_UP,
                     Order::STATUS_OUT_FOR_DELIVERY,
                 ]))
-                ->with([
-                    'order.customer:id,name,email',
-                    'order.items',
-                ])
+                ->with(['order.customer:id,name,email', 'order.items'])
                 ->orderByDesc('assigned_at')
                 ->paginate(20),
         ]);
@@ -47,16 +44,15 @@ class DeliveryPartnerOrderController
             ])],
         ]);
 
-        $partner = $request->user()->deliveryPartner;
+        $actor = $request->user();
+        $partner = $actor->deliveryPartner;
 
         if (! $partner || ! $partner->is_active || ! $partner->is_approved) {
             abort(403, 'Delivery partner access is not active.');
         }
 
-        $order = DB::transaction(function () use ($assignment, $partner, $validated, $request): Order {
-            $lockedAssignment = OrderAssignment::query()
-                ->lockForUpdate()
-                ->findOrFail($assignment->id);
+        $order = DB::transaction(function () use ($assignment, $partner, $validated, $actor): Order {
+            $lockedAssignment = OrderAssignment::query()->lockForUpdate()->findOrFail($assignment->id);
 
             if ((int) $lockedAssignment->delivery_partner_id !== (int) $partner->id) {
                 throw new AccessDeniedHttpException('This assignment does not belong to the authenticated delivery partner.');
@@ -76,7 +72,8 @@ class DeliveryPartnerOrderController
             $order->statusHistory()->create([
                 'from_status' => $from,
                 'to_status' => $target,
-                'actor_id' => $request->user()->id,
+                'actor_id' => $actor->id,
+                'actor_type' => $actor::class,
             ]);
 
             return $order->load('items');
