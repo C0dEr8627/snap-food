@@ -884,7 +884,7 @@ The admin UI/UX modernization is complete when:
 | Task 4 — Global Search / Command Palette | 🟢 Complete | 2026-10-03 | Added a reusable command palette with ⌘K/Ctrl+K access, section navigation, supported catalogue quick actions, Escape/Enter handling, focus management and query handoff into the existing section search APIs. No fabricated entity results were introduced. |
 | Task 5 — Premium Data Tables | 🟢 Complete | 2026-10-03 | Reusable SfDataTable/SfTablePagination added; Users, Delivery Partners and Invoices migrated to shared table language with intentional overflow, density, status badges, avatars and pagination. |
 | Task 6 — Drawers, Dialogs & Feedback | 🟢 Complete | 2026-10-03 | Added shared side-drawer, confirmation-dialog and success/error/info feedback primitives; integrated shared feedback into Catalogue and Delivery Partner action flows while preserving existing supported dialogs and backend behavior. |
-| Task 7 — Overview | ⬜ Not Started | 2026-10-03 | |
+| Task 7 — Overview | 🟢 Complete | 2026-10-03 | Reworked the admin overview hierarchy around shared design-system spacing, responsive KPI grouping, operational snapshot, preview sales trend and shared data-table language; removed restaurant/kitchen-specific terminology and clarified that the current aggregates are preview data rather than fabricated live metrics. |
 | Task 8 — Orders | ⬜ Not Started | 2026-10-03 | |
 | Task 9 — Catalogue / Products | ⬜ Not Started | 2026-10-03 | |
 | Task 10 — Categories | ⬜ Not Started | 2026-10-03 | |
@@ -1080,6 +1080,27 @@ The admin UI/UX modernization is complete when:
 - Limitations/follow-up:
   - Existing page-specific dialogs remain in place where they encapsulate active form/business logic.
   - Full browser interaction, focus-trap and visual QA remain dependent on a runnable Flutter Web environment.
+
+### 2026-10-03 — Task 7
+- Status: 🟢 Complete
+- Implemented:
+  - Refined the Overview page into a clearer operational hierarchy: environment notice → KPI summary → sales/operations split → recent orders.
+  - Replaced arbitrary spacing in the primary overview layout with centralized admin spacing tokens.
+  - Improved responsive KPI and content-column behavior for wide, medium and narrow admin widths.
+  - Reused the shared `SfDataTable`, `SfBadge`, `SfStatusBadge` and design-system typography language for the recent-orders surface.
+  - Reframed the dashboard connection banner so preview mode is explicit and live aggregates are not implied.
+  - Removed restaurant/cloud-kitchen terminology and replaced it with Snap Foodd operational concepts such as orders, preparation, dispatch and delivery partners.
+  - Preserved the existing preview dataset rather than inventing new backend metrics or API capabilities.
+- Files/components changed:
+  - `admin_web/lib/pages/dashboard_page.dart`
+- Validation:
+  - Re-fetched the final Overview source after both implementation commits.
+  - Verified the final source no longer contains restaurant, kitchen, cloud-kitchen or menu-item terminology.
+  - Verified the shared table/design-system components are used by the Overview.
+  - No local formatter/analyzer/test/build command was executed because the available GitHub connector exposes repository operations but no shell/CI execution action; no successful validation run is being claimed.
+- Limitations/follow-up:
+  - Overview figures remain the application's existing preview dataset and are explicitly presented as preview data.
+  - Live dashboard aggregation should be implemented only when the authoritative backend/API contract exposes those aggregates.
 
 ### Future entries
 
