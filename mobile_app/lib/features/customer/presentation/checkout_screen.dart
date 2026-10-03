@@ -15,8 +15,6 @@ import 'cart_controller.dart';
 import 'order_controller.dart';
 import 'address_book_controller.dart';
 
-final directCheckoutItemsProvider = StateProvider<List<CartItem>?>((ref) => null);
-
 class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
   @override
@@ -37,7 +35,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   @override
   void dispose() {
     // A direct-order draft must not leak into a later cart checkout.
-    ref.read(directCheckoutItemsProvider.notifier).state = null;
+    ref.read(directCheckoutItemsProvider.notifier).setItems(null);
     for (final controller in [
       _label,
       _recipient,
