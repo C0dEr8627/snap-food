@@ -104,8 +104,7 @@ class AuthController extends AsyncNotifier<AuthStatus> {
 
   String _friendlyAuthError(ApiException error) {
     if (error.statusCode == 401 || error.code == 'INVALID_CREDENTIALS') {
-      return 'That email and password combination is not valid for the consumer app. '
-          'If you are a delivery partner, please use the delivery partner sign-in.';
+      return 'The email or password is incorrect. Please try again.';
     }
     if (error.statusCode == 403 || error.code == 'FORBIDDEN') {
       return error.message.isNotEmpty
