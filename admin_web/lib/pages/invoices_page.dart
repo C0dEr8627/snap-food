@@ -270,72 +270,36 @@ class _InvoiceFilterPill extends StatelessWidget {
 class _InvoiceLedgerCard extends StatelessWidget {
   const _InvoiceLedgerCard({required this.invoices, required this.mobile, required this.page, required this.total, required this.lastPage, required this.onPage, required this.onView});
   final List<_LedgerInvoice> invoices; final bool mobile; final int page, total, lastPage; final ValueChanged<int> onPage; final ValueChanged<_LedgerInvoice> onView;
-  @override Widget build(BuildContext context) => Container(decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(16)),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Padding(padding: const EdgeInsets.all(16), child: Row(children: [const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Invoice ledger', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AdminColors.ink)), SizedBox(height: 3), Text('Stored invoice snapshots · newest first', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
-      ])), _Pill(total.toString() + ' records')])),
-      const Divider(height: 1, color: AdminColors.line),
-      if (mobile) ...invoices.map((i) => _InvoiceMobileCard(invoice: i, onView: () => onView(i)))
-      else SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minWidth: 990),
-          child: shad.Table(
-            rows: [
-              shad.TableHeader(cells: const [
-                shad.TableCell(child: Text('INVOICE & ORDER')),
-                shad.TableCell(child: Text('DATE & TIME')),
-                shad.TableCell(child: Text('CUSTOMER INFO')),
-                shad.TableCell(child: Text('ORDER TOTAL')),
-                shad.TableCell(child: Text('TAX BREAKDOWN')),
-                shad.TableCell(child: Text('STATUS')),
-                shad.TableCell(child: Text('ACTIONS')),
-              ]),
-              ...invoices.map((i) => shad.TableRow(cells: [
-                shad.TableCell(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(i.number, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
-                  Text('#ORDER-' + i.orderId.toString(), style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
-                ])),
-                shad.TableCell(child: Text(i.issuedAt == null ? 'Not recorded' : _formatTimestamp(i.issuedAt!), style: const TextStyle(fontSize: 11))),
-                shad.TableCell(child: SizedBox(width: 150, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(i.customer, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
-                  Text(i.email.isEmpty ? 'No email' : i.email, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
-                ]))),
-                shad.TableCell(child: Text(_inr(i.total), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900))),
-                shad.TableCell(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('Items ' + _inr(i.subtotal), style: const TextStyle(fontSize: 11)),
-                  Text('Delivery ' + _inr(i.deliveryFee), style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
-                  const Text('GST details unavailable', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
-                ])),
-                shad.TableCell(child: _InvoiceStatus(i.paymentStatus)),
-                shad.TableCell(child: shad.IconButton.ghost(onPressed: () => onView(i), icon: const AdminIcon(HugeIcons.strokeRoundedLinkSquare01, size: 17))),
-              ])),
-            ],
-            columnWidths: const {
-              0: shad.FlexTableSize(flex: 2),
-              1: shad.FlexTableSize(flex: 1),
-              2: shad.FlexTableSize(flex: 2),
-              3: shad.FixedTableSize(120),
-              4: shad.FlexTableSize(flex: 2),
-              5: shad.FixedTableSize(110),
-              6: shad.FixedTableSize(90),
-            },
-          ),
-        ),
-      ),
-      const Divider(height: 1, color: AdminColors.line),
-      Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), child: Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center, spacing: 12, runSpacing: 10, children: [
-        Text('Displaying ' + (((page - 1) * 10) + 1).toString() + '–' + ((page - 1) * 10 + invoices.length).toString() + ' of ' + total.toString() + ' invoices', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
-        Wrap(spacing: 5, children: [
-          shad.OutlineButton(onPressed: page > 1 ? () => onPage(page - 1) : null, child: const Text('Previous')),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9), decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(9)), child: Text(page.toString() + ' / ' + lastPage.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.amber))),
-          shad.OutlineButton(onPressed: page < lastPage ? () => onPage(page + 1) : null, child: const Text('Next')),
+  @override Widget build(BuildContext context) => Column(children: [
+    SfDataTable(
+      minWidth: 980,
+      columns: const [
+        SfDataTableColumn(label: 'Invoice / Order', width: 190),
+        SfDataTableColumn(label: 'Issued', width: 150),
+        SfDataTableColumn(label: 'Customer', width: 220),
+        SfDataTableColumn(label: 'Total', width: 130, alignment: Alignment.centerRight),
+        SfDataTableColumn(label: 'Payment', width: 150),
+        SfDataTableColumn(label: 'Status', width: 140),
+      ],
+      rows: invoices.map((item) => [
+        Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text(item.number, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w700)),
+          Text('Order #\${item.orderId}', style: AdminTypography.caption),
         ]),
-      ])),
-    ]));
+        Text(item.issuedAt ?? 'Not recorded', maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.small),
+        Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text(item.customer, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w600)),
+          if (item.email.isNotEmpty) Text(item.email, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.caption),
+        ]),
+        Text(_inr(item.total), style: AdminTypography.body.copyWith(fontWeight: FontWeight.w700)),
+        Text(item.paymentMethod, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.small),
+        SfStatusBadge(label: item.paymentStatus),
+      ]).toList(),
+      onRowTap: (index) => onView(invoices[index]),
+    ),
+    SfTablePagination(page: page, lastPage: lastPage, total: total, onPrevious: page > 1 ? () => onPage(page - 1) : null, onNext: page < lastPage ? () => onPage(page + 1) : null),
+  ]);
 }
-
 class _InvoiceMobileCard extends StatelessWidget {
   const _InvoiceMobileCard({required this.invoice, required this.onView});
   final _LedgerInvoice invoice; final VoidCallback onView;
