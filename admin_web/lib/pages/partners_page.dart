@@ -662,178 +662,31 @@ class _PartnerRoster extends StatelessWidget {
   final Future<void> Function(_DeliveryPartnerRecord, bool) onApproval;
 
   @override
-  Widget build(BuildContext context) => AdminCard(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(17, 16, 17, 12),
-            child: Row(children: [
-              const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('DELIVERY PARTNER ROSTER', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .3)),
-                SizedBox(height: 3),
-                Text('Partner identity and operational flags returned by the admin API.', style: TextStyle(fontSize: 11, color: AdminColors.muted)),
-              ])),
-              const _TelemetryBoundaryPill(),
-            ]),
-          ),
-          const Divider(height: 1, color: AdminColors.line),
-          LayoutBuilder(builder: (context, constraints) {
-            if (constraints.maxWidth < 700) {
-              return Column(
-                children: partners.map((partner) => _PartnerMobileCard(
-                  partner: partner,
-                  busy: busy,
-                  onApproval: onApproval,
-                )).toList(),
-              );
-            }
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: 780),
-                child: shad.Table(
-                  rows: [
-                    shad.TableHeader(cells: const [
-                      shad.TableCell(child: Text('PARTNER / IDENTITY')),
-                      shad.TableCell(child: Text('CONTACT')),
-                      shad.TableCell(child: Text('DUTY STATUS')),
-                      shad.TableCell(child: Text('APPROVAL')),
-                      shad.TableCell(child: Text('QUICK ACTIONS')),
-                    ]),
-                    ...partners.map((partner) => shad.TableRow(cells: [
-                      shad.TableCell(child: SizedBox(width: 175, child: _PartnerIdentity(partner: partner))),
-                      shad.TableCell(child: SizedBox(width: 185, child: Text(partner.email, style: const TextStyle(fontSize: 11)))),
-                      shad.TableCell(child: _PartnerDutyStatus(partner: partner)),
-                      shad.TableCell(child: _ApprovalPill(approved: partner.approved)),
-                      shad.TableCell(child: _PartnerActions(partner: partner, busy: busy, onApproval: onApproval)),
-                    ])),
-                  ],
-                  columnWidths: const {
-                    0: shad.FlexTableSize(flex: 2),
-                    1: shad.FlexTableSize(flex: 2),
-                    2: shad.FlexTableSize(flex: 1),
-                    3: shad.FixedTableSize(120),
-                    4: shad.FixedTableSize(150),
-                  },
-                ),
-              ),
-            );
-          }),
-        ]),
-      );
-}
-
-class _PartnerIdentity extends StatelessWidget {
-  const _PartnerIdentity({required this.partner});
-  final _DeliveryPartnerRecord partner;
-
-  @override
-  Widget build(BuildContext context) {
-    final initials = partner.name.trim().split(RegExp(r'\s+')).where((part) => part.isNotEmpty).take(2).map((part) => part[0]).join().toUpperCase();
-    return Row(children: [
-      Container(
-        width: 36,
-        height: 36,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(color: AdminColors.amberSoft, borderRadius: BorderRadius.circular(11)),
-        child: Text(initials.isEmpty ? 'DP' : initials, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AdminColors.amber)),
-      ),
-      const SizedBox(width: 10),
-      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-        Text(partner.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
-        const SizedBox(height: 3),
-        Text('Partner #${partner.id}', style: const TextStyle(fontSize: 11, color: AdminColors.muted)),
-      ])),
-    ]);
-  }
-}
-
-class _PartnerDutyStatus extends StatelessWidget {
-  const _PartnerDutyStatus({required this.partner});
-  final _DeliveryPartnerRecord partner;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = !partner.active ? 'Inactive' : !partner.approved ? 'Awaiting approval' : partner.available ? 'Available' : 'Not available';
-    final color = !partner.active || !partner.approved ? AdminColors.red : partner.available ? AdminColors.green : AdminColors.muted;
-    final background = !partner.active || !partner.approved ? AdminColors.redSoft : partner.available ? AdminColors.greenSoft : AdminColors.canvas;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-      decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(20)),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        _StatusDot(color: color),
-        const SizedBox(width: 6),
-        Text(text, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: color)),
+  Widget build(BuildContext context) => SfDataTable(
+    minWidth: 900,
+    columns: const [
+      SfDataTableColumn(label: 'Partner', width: 260),
+      SfDataTableColumn(label: 'Contact', width: 240),
+      SfDataTableColumn(label: 'Duty status', width: 150),
+      SfDataTableColumn(label: 'Approval', width: 140),
+      SfDataTableColumn(label: 'Action', width: 110, alignment: Alignment.centerRight),
+    ],
+    rows: partners.map((partner) => [
+      Row(children: [
+        SfAvatar(name: partner.name, size: 36),
+        const SizedBox(width: AdminSpacing.sm),
+        Expanded(child: Text(partner.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.body.copyWith(fontWeight: FontWeight.w600))),
       ]),
-    );
-  }
-}
-
-class _ApprovalPill extends StatelessWidget {
-  const _ApprovalPill({required this.approved});
-  final bool approved;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-        decoration: BoxDecoration(color: approved ? AdminColors.greenSoft : AdminColors.amberSoft, borderRadius: BorderRadius.circular(18)),
-        child: Text(approved ? 'APPROVED' : 'PENDING', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: approved ? AdminColors.green : AdminColors.amber)),
-      );
-}
-
-class _PartnerActions extends StatelessWidget {
-  const _PartnerActions({required this.partner, required this.busy, required this.onApproval});
-  final _DeliveryPartnerRecord partner;
-  final bool busy;
-  final Future<void> Function(_DeliveryPartnerRecord, bool) onApproval;
-
-  @override
-  Widget build(BuildContext context) => Wrap(spacing: 2, children: [
-        shad.IconButton.ghost(
-          onPressed: () {
-            shad.showOverlay<void>(
-              context,
-              shad.DialogConfiguration(),
-              builder: (dialogContext) => shad.AlertDialog(
-                title: Text(partner.name),
-                content: SizedBox(
-                  width: 360,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _DetailLine(label: 'Partner ID', value: partner.id.toString()),
-                      _DetailLine(label: 'Email', value: partner.email),
-                      _DetailLine(label: 'Approval', value: partner.approved ? 'Approved' : 'Pending approval'),
-                      _DetailLine(label: 'Account active', value: partner.active ? 'Yes' : 'No'),
-                      _DetailLine(label: 'Available', value: partner.available ? 'Yes' : 'No'),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Vehicle, trip history, live GPS, phone, and rating are not supplied by the current API.',
-                        style: TextStyle(fontSize: 11, color: AdminColors.muted, height: 1.5),
-                      ),
-                    ],
-                  ),
-                ),
-                actions: [
-                  shad.OutlineButton(
-                    onPressed: () => Navigator.pop(dialogContext),
-                    child: const Text('Close'),
-                  ),
-                ],
-              ),
-            );
-          },
-          icon: const AdminIcon(HugeIcons.strokeRoundedLinkSquare01, size: 17),
-        ),
-        shad.IconButton.ghost(
-          onPressed: busy ? null : () => onApproval(partner, !partner.approved),
-          icon: AdminIcon(
-            partner.approved ? HugeIcons.strokeRoundedSecurityCheck : HugeIcons.strokeRoundedCheckmarkCircle01,
-            size: 18,
-            color: partner.approved ? AdminColors.muted : AdminColors.green,
-          ),
-        ),
-      ]);
+      Text(partner.email, maxLines: 1, overflow: TextOverflow.ellipsis, style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText)),
+      SfStatusBadge(label: partner.available ? 'Available' : partner.active ? 'Active' : 'Offline'),
+      SfStatusBadge(label: partner.approved ? 'Approved' : 'Pending', status: partner.approved ? 'approved' : 'pending'),
+      SfIconButton(
+        icon: partner.approved ? HugeIcons.strokeRoundedTick01 : HugeIcons.strokeRoundedArrowRight01,
+        onPressed: busy ? null : () => onApproval(partner, !partner.approved),
+        tooltip: partner.approved ? 'Revoke approval' : 'Approve partner',
+      ),
+    ]).toList(),
+  );
 }
 
 class _PartnerMobileCard extends StatelessWidget {
