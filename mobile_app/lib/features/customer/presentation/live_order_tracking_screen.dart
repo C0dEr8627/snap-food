@@ -481,7 +481,7 @@ class _LocationSection extends StatelessWidget {
     return _SectionSurface(
       title: 'Delivery location',
       child: location == null
-          ? const Row(
+          ? Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
