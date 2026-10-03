@@ -166,7 +166,18 @@ class OrderTrackingController extends AsyncNotifier<OrderTracking?> {
   }
 
   Future<void> load(String orderId) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() => _repository.fetchTracking(orderId));
+    final previous = state;
+
+    // Keep the existing tracking data on screen while polling/refreshing.
+    // This prevents the whole page from flashing back to a loading state.
+    final next = await AsyncValue.guard(
+      () => _repository.fetchTracking(orderId),
+    );
+
+    if (next.hasError && previous.hasValue) {
+      state = next.copyWithPrevious(previous);
+    } else {
+      state = next;
+    }
   }
 }
