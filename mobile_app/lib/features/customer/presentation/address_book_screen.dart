@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/network/api_exception.dart';
@@ -9,6 +11,7 @@ import '../../../design_system/components/snap_food_feedback.dart';
 import '../../../design_system/tokens/app_colors.dart';
 import '../../../design_system/tokens/app_radii.dart';
 import '../../../design_system/tokens/app_spacing.dart';
+import '../../auth/presentation/auth_controller.dart';
 import 'address_book_controller.dart';
 
 class AddressBookScreen extends ConsumerStatefulWidget {
@@ -16,6 +19,11 @@ class AddressBookScreen extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<AddressBookScreen> createState() => _AddressBookScreenState();
+}
+
+class _LocationAddressException implements Exception {
+  const _LocationAddressException(this.message);
+  final String message;
 }
 
 class _AddressBookScreenState extends ConsumerState<AddressBookScreen> {
@@ -123,6 +131,8 @@ class _AddressBookScreenState extends ConsumerState<AddressBookScreen> {
                       onAction: () => _toggleAdding(true),
                     ),
                     const SizedBox(height: SnapFoodSpacing.md),
+                    _buildCurrentLocationAction(),
+                    const SizedBox(height: SnapFoodSpacing.md),
                     if (data.addresses.isEmpty && !adding)
                       const SnapEmptyState(
                         icon: Icons.location_on_outlined,
@@ -162,6 +172,174 @@ class _AddressBookScreenState extends ConsumerState<AddressBookScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildCurrentLocationAction() => DecoratedBox(
+        decoration: BoxDecoration(
+          color: SnapFoodColors.primaryContainer,
+          borderRadius: BorderRadius.circular(SnapFoodRadii.lg),
+          border: Border.all(color: SnapFoodColors.softBorder),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(SnapFoodSpacing.md),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.my_location_rounded,
+                color: SnapFoodColors.secondary,
+                size: 24,
+              ),
+              const SizedBox(width: SnapFoodSpacing.md),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Use current location',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: SnapFoodColors.warmBlack,
+                      ),
+                    ),
+                    SizedBox(height: 3),
+                    Text(
+                      'We’ll detect your location and save the delivery address automatically.',
+                      style: TextStyle(
+                        fontSize: 11,
+                        height: 1.35,
+                        color: SnapFoodColors.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: SnapFoodSpacing.sm),
+              FilledButton(
+                onPressed: saving ? null : _useCurrentLocation,
+                child: const Text('Use'),
+              ),
+            ],
+          ),
+        ),
+      );
+
+  Future<void> _useCurrentLocation() async {
+    if (saving) return;
+    setState(() {
+      saving = true;
+      formError = null;
+    });
+
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        throw const _LocationAddressException(
+          'Location services are turned off. Please enable location and try again.',
+        );
+      }
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied) {
+        throw const _LocationAddressException(
+          'Location permission is required to use your current location.',
+        );
+      }
+      if (permission == LocationPermission.deniedForever) {
+        throw const _LocationAddressException(
+          'Location permission is blocked. Enable it in your device settings and try again.',
+        );
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 15),
+        ),
+      );
+      final placemarks = await Geocoding().placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+      if (placemarks.isEmpty) {
+        throw const _LocationAddressException(
+          'We found your location, but could not turn it into a delivery address.',
+        );
+      }
+
+      final place = placemarks.first;
+      final line1Parts = <String>[
+        place.name ?? '',
+        place.street ?? '',
+      ]
+          .map((value) => value.trim())
+          .where((value) => value.isNotEmpty)
+          .toSet()
+          .toList();
+      final line2Parts = <String>[
+        place.subLocality ?? '',
+        place.subAdministrativeArea ?? '',
+      ]
+          .map((value) => value.trim())
+          .where((value) => value.isNotEmpty)
+          .toSet()
+          .toList();
+
+      final line1Value = line1Parts.isEmpty
+          ? (place.locality ?? place.administrativeArea ?? 'Current location')
+          : line1Parts.join(', ');
+      final cityValue = (place.locality ?? place.subAdministrativeArea ?? '').trim();
+      final stateValue = (place.administrativeArea ?? '').trim();
+      final postalValue = (place.postalCode ?? '').trim();
+      final countryValue = (place.country ?? 'India').trim();
+      final user = ref.read(authControllerProvider).value?.user?.payload ??
+          const <String, dynamic>{};
+      final recipientValue = (user['name'] ?? '').toString().trim();
+
+      if (cityValue.isEmpty || stateValue.isEmpty || postalValue.isEmpty) {
+        throw const _LocationAddressException(
+          'Your current location did not provide enough address details. Please add the address manually.',
+        );
+      }
+
+      final address = await ref
+          .read(addressBookControllerProvider.notifier)
+          .addAddress({
+        'label': 'Current location',
+        'recipient_name': recipientValue.isEmpty ? 'Customer' : recipientValue,
+        'address_line1': line1Value,
+        'address_line2':
+            line2Parts.isEmpty ? null : line2Parts.join(', '),
+        'city': cityValue,
+        'state': stateValue,
+        'postal_code': postalValue,
+        'country': countryValue.isEmpty ? 'India' : countryValue,
+        'latitude': position.latitude,
+        'longitude': position.longitude,
+      });
+
+      if (!mounted || address == null) return;
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        context.go('/home');
+      }
+    } on _LocationAddressException catch (error) {
+      if (mounted) setState(() => formError = error.message);
+    } on ApiException catch (error) {
+      if (mounted) setState(() => formError = error.message);
+    } catch (_) {
+      if (mounted) {
+        setState(
+          () => formError =
+              'Could not determine your current address. Please try again.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => saving = false);
+    }
   }
 
   Widget _buildForm() => DecoratedBox(
