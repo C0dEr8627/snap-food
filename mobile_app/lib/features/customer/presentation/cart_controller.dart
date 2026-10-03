@@ -67,6 +67,18 @@ class CartController extends Notifier<CartSnapshot> {
     }());
   }
 
+  void removeItem(String productId) {
+    final current = state;
+    state = CartSnapshot(current.items.where((item) => item.productId != productId).toList(growable: false));
+    unawaited(() async {
+      try {
+        state = await _repository.setQuantity(productId, 0);
+      } catch (_) {
+        await _loadFromServer();
+      }
+    }());
+  }
+
   void changeQuantity(String productId, int delta) {
     final current = state;
     final index = current.items.indexWhere((item) => item.productId == productId);
