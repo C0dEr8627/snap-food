@@ -195,27 +195,28 @@ class _InvoicesPageState extends State<InvoicesPage> {
         ]);
       }),
       const SizedBox(height: 18),
-      Container(padding: const EdgeInsets.all(14), decoration: BoxDecoration(color: Colors.white, border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(16)),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Wrap(spacing: 10, runSpacing: 10, crossAxisAlignment: WrapCrossAlignment.center, children: [
-            SizedBox(width: mobile ? width - 66 : 310, child: shad.TextField(controller: _search, onSubmitted: (_) => _load(page: 1),
-              hintText: 'Search invoice, order, customer, email…', filled: true,
-              border: Border.all(color: AdminColors.line), borderRadius: BorderRadius.circular(12),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              features: const [shad.InputClearFeature()])),
-            shad.OutlineButton(onPressed: () => _pickDate(true), leading: const AdminIcon(HugeIcons.strokeRoundedCalendar03, size: 15), child: Text(_from == null ? 'From date' : _date(_from!))),
-            shad.OutlineButton(onPressed: () => _pickDate(false), leading: const AdminIcon(HugeIcons.strokeRoundedCalendar03, size: 15), child: Text(_to == null ? 'To date' : _date(_to!))),
-            shad.PrimaryButton(onPressed: () => _load(page: 1), child: const Text('Apply')),
-            shad.OutlineButton(onPressed: _reset, child: const Text('Reset')),
-          ]),
-          const SizedBox(height: 12),
-          Wrap(spacing: 8, runSpacing: 8, children: [
-            _InvoiceFilterPill('All', _status == 'ALL', () { setState(() => _status = 'ALL'); _load(page: 1); }),
-            _InvoiceFilterPill('Paid', _status == 'PAID', () { setState(() => _status = 'PAID'); _load(page: 1); }),
-            _InvoiceFilterPill('Pending payment', _status == 'PENDING', () { setState(() => _status = 'PENDING'); _load(page: 1); }),
-          ]),
-        ])),
-      const SizedBox(height: 16),
+      SfFilterBar(
+        leading: SizedBox(
+          width: mobile ? width - 42 : 320,
+          child: SfSearchField(
+            controller: _search,
+            hintText: 'Search invoice, order, customer or email',
+            onSubmitted: (_) => _load(page: 1),
+          ),
+        ),
+        filters: [
+          SfButton(variant: SfButtonVariant.outline, icon: HugeIcons.strokeRoundedCalendar03, onPressed: () => _pickDate(true), child: Text(_from == null ? 'From date' : _date(_from!))),
+          SfButton(variant: SfButtonVariant.outline, icon: HugeIcons.strokeRoundedCalendar03, onPressed: () => _pickDate(false), child: Text(_to == null ? 'To date' : _date(_to!))),
+          _InvoiceFilterPill('All', _status == 'ALL', () { setState(() => _status = 'ALL'); _load(page: 1); }),
+          _InvoiceFilterPill('Paid', _status == 'PAID', () { setState(() => _status = 'PAID'); _load(page: 1); }),
+          _InvoiceFilterPill('Pending', _status == 'PENDING', () { setState(() => _status = 'PENDING'); _load(page: 1); }),
+        ],
+        trailing: [
+          SfButton(variant: SfButtonVariant.primary, onPressed: () => _load(page: 1), child: const Text('Apply')),
+          SfButton(variant: SfButtonVariant.ghost, onPressed: _reset, child: const Text('Reset')),
+        ],
+      ),
+      const SizedBox(height: AdminSpacing.lg),
       if (_error != null) _InvoiceStateCard(icon: HugeIcons.strokeRoundedCloud, title: 'Unable to load invoices', message: _error!, action: 'Retry', onAction: () => _load(page: _page))
       else if (_loading) const _InvoiceLoadingCard()
       else if (_items.isEmpty) _InvoiceStateCard(icon: HugeIcons.strokeRoundedInvoice01, title: 'No invoices found', message: 'Try changing your search, date range, or payment status filter.', action: 'Reset filters', onAction: _reset)
@@ -226,69 +227,70 @@ class _InvoicesPageState extends State<InvoicesPage> {
   }
 
   void _showInvoice(_LedgerInvoice i) {
-    shad.showOverlay<void>(
+    SfSideDrawer.show<void>(
       context,
-      shad.DialogConfiguration(),
-      builder: (ctx) => shad.AlertDialog(
-          title: Text(i.number, style: const TextStyle(fontWeight: FontWeight.w900)),
-          content: SizedBox(
-            width: 430,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _InvoiceDetailLine('Order', '#'+i.orderId.toString()),
-                  _InvoiceDetailLine('Customer', i.customer),
-                  _InvoiceDetailLine('Email', i.email.isEmpty ? 'Not provided' : i.email),
-                  _InvoiceDetailLine('Issued at', i.issuedAt ?? 'Not recorded'),
-                  const Divider(height: 24),
-                  _InvoiceDetailLine('Item subtotal', _inr(i.subtotal)),
-                  _InvoiceDetailLine('Delivery fee', _inr(i.deliveryFee)),
-                  _InvoiceDetailLine('Invoice total', _inr(i.total), strong: true),
-                  _InvoiceDetailLine('Payment method', i.paymentMethod),
-                  _InvoiceDetailLine('Payment status', i.paymentStatus),
-                  _InvoiceDetailLine('File reference', i.fileReference ?? 'No downloadable file reference stored'),
-                  if (i.items.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    const Text(
-                      'ITEM SNAPSHOT',
-                      style: TextStyle(fontSize: 11, letterSpacing: 1.1, fontWeight: FontWeight.w900, color: AdminColors.muted),
-                    ),
-                    const SizedBox(height: 8),
-                    ...i.items.map(
-                      (item) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                (item['product_name'] ?? 'Item').toString() + ' × ' + (item['quantity'] ?? 1).toString(),
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                            ),
-                            Text(
-                              _inr(_number(item['line_total'])),
-                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            shad.OutlineButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Close'),
-            ),
-          ],
-        ),
+      title: i.number,
+      width: 460,
+      child: _InvoiceDetail(invoice: i),
     );
   }
+}
+
+class _InvoiceDetail extends StatelessWidget {
+  const _InvoiceDetail({required this.invoice});
+  final _LedgerInvoice invoice;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(children: [
+        Expanded(child: Text('Invoice details', style: AdminTypography.cardTitle)),
+        SfStatusBadge(label: invoice.paymentStatus),
+      ]),
+      const SizedBox(height: AdminSpacing.lg),
+      _InvoiceDetailLine('Invoice number', invoice.number),
+      _InvoiceDetailLine('Order', '#' + invoice.orderId.toString()),
+      _InvoiceDetailLine('Issued at', invoice.issuedAt ?? 'Not recorded'),
+      _InvoiceDetailLine('Customer', invoice.customer),
+      _InvoiceDetailLine('Email', invoice.email.isEmpty ? 'Not provided' : invoice.email),
+      const Divider(height: 28),
+      _InvoiceDetailLine('Item subtotal', _inr(invoice.subtotal)),
+      _InvoiceDetailLine('Delivery fee', _inr(invoice.deliveryFee)),
+      _InvoiceDetailLine('Invoice total', _inr(invoice.total), strong: true),
+      _InvoiceDetailLine('Payment method', invoice.paymentMethod),
+      _InvoiceDetailLine('Payment status', invoice.paymentStatus),
+      if (invoice.items.isNotEmpty) ...[
+        const SizedBox(height: AdminSpacing.lg),
+        Text('ITEM SNAPSHOT', style: AdminTypography.caption.copyWith(fontWeight: FontWeight.w700, letterSpacing: .8)),
+        const SizedBox(height: AdminSpacing.sm),
+        ...invoice.items.map((item) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: AdminSpacing.xs),
+          child: Row(children: [
+            Expanded(child: Text((item['product_name'] ?? 'Item').toString() + ' × ' + (item['quantity'] ?? 1).toString(), style: AdminTypography.body)),
+            Text(_inr(_number(item['line_total'])), style: AdminTypography.body.copyWith(fontWeight: FontWeight.w700)),
+          ]),
+        )),
+      ],
+      const SizedBox(height: AdminSpacing.lg),
+      Text('Stored invoice snapshot returned by the admin API. Tax, gateway and reconciliation data are not inferred when unavailable.',
+        style: AdminTypography.caption.copyWith(color: AdminDesignColors.secondaryText)),
+    ],
+  );
+}
+
+class _InvoiceDetailLine extends StatelessWidget {
+  const _InvoiceDetailLine(this.label, this.value, {this.strong = false});
+  final String label, value;
+  final bool strong;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: AdminSpacing.xs),
+    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      SizedBox(width: 126, child: Text(label, style: AdminTypography.small.copyWith(color: AdminDesignColors.secondaryText))),
+      Expanded(child: Text(value, style: AdminTypography.body.copyWith(fontWeight: strong ? FontWeight.w800 : FontWeight.w600))),
+    ]),
+  );
 }
 
 class _InvoiceLedgerApi {
