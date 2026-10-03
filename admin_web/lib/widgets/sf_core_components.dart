@@ -113,7 +113,11 @@ class SfIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final button = Material(
+    final button = Semantics(
+      button: true,
+      enabled: onPressed != null,
+      label: tooltip,
+      child: Material(
       color: selected ? AdminDesignColors.yellowSoft : Colors.transparent,
       borderRadius: BorderRadius.circular(AdminRadii.control),
       child: InkWell(
@@ -128,6 +132,7 @@ class SfIconButton extends StatelessWidget {
             child: AdminIcon(icon, size: 18, color: AdminDesignColors.primaryText),
           ),
         ),
+      ),
       ),
     );
     return tooltip == null ? button : Tooltip(message: tooltip!, child: button);
