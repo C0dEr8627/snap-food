@@ -15,11 +15,11 @@ class AdminOrderController
     {
         $query = Order::query()
             ->with([
-                'customer:id,name,email',
+                'customer:id,name,email,phone',
                 'items:id,order_id,product_id,product_name,unit_price,quantity,line_total',
-                'assignment.deliveryPartner:id,name,email,is_active,is_approved,is_available',
+                'assignment.deliveryPartner:id,name,email,phone,is_active,is_approved,is_available',
             ])
-            ->latest('id')
+            ->orderBy('created_at')->orderBy('id')
             ->when($request->filled('search'), function ($builder) use ($request): void {
                 $term = trim((string) $request->query('search'));
                 $builder->where(function ($where) use ($term): void {
