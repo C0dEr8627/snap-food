@@ -145,7 +145,7 @@ class SnapFilterChip extends StatelessWidget {
           },
           borderRadius: BorderRadius.circular(SnapFoodRadii.full),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 40),
+            constraints: const BoxConstraints(minHeight: 48),
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: SnapFoodSpacing.md,
@@ -225,7 +225,7 @@ class SnapCategoryChip extends StatelessWidget {
           },
           borderRadius: BorderRadius.circular(SnapFoodRadii.full),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 40),
+            constraints: const BoxConstraints(minHeight: 48),
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: SnapFoodSpacing.md,
