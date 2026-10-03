@@ -185,25 +185,28 @@ class SfInput extends flutter.StatelessWidget {
   final FocusNode? focusNode;
 
   @override
-  flutter.Widget build(BuildContext context) => TextFormField(
-    controller: controller,
-    focusNode: focusNode,
-    enabled: enabled,
-    obscureText: obscureText,
-    onChanged: onChanged,
-    style: AdminTypography.body,
-    decoration: InputDecoration(
-      labelText: label,
-      hintText: hintText,
-      helperText: helperText,
-      errorText: errorText,
-      prefixIcon: prefixIcon == null
-          ? null
-          : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: AdminIcon(prefixIcon!, size: 18, color: AdminDesignColors.secondaryText),
-            ),
-      suffixIcon: suffixIcon,
+  flutter.Widget build(BuildContext context) => Material(
+    color: Colors.transparent,
+    child: TextFormField(
+      controller: controller,
+      focusNode: focusNode,
+      enabled: enabled,
+      obscureText: obscureText,
+      onChanged: onChanged,
+      style: AdminTypography.body,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hintText,
+        helperText: helperText,
+        errorText: errorText,
+        prefixIcon: prefixIcon == null
+            ? null
+            : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: AdminIcon(prefixIcon!, size: 18, color: AdminDesignColors.secondaryText),
+              ),
+        suffixIcon: suffixIcon,
+      ),
     ),
   );
 }
@@ -225,20 +228,23 @@ class SfSearchField extends flutter.StatelessWidget {
   final bool autofocus;
 
   @override
-  flutter.Widget build(BuildContext context) => TextField(
-    controller: controller,
-    autofocus: autofocus,
-    onChanged: onChanged,
-    onSubmitted: onSubmitted,
-    textInputAction: TextInputAction.search,
-    style: AdminTypography.body,
-    decoration: InputDecoration(
-      hintText: hintText,
-      prefixIcon: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12),
-        child: AdminIcon(HugeIcons.strokeRoundedSearch01, size: 18),
+  flutter.Widget build(BuildContext context) => Material(
+    color: Colors.transparent,
+    child: TextField(
+      controller: controller,
+      autofocus: autofocus,
+      onChanged: onChanged,
+      onSubmitted: onSubmitted,
+      textInputAction: TextInputAction.search,
+      style: AdminTypography.body,
+      decoration: InputDecoration(
+        hintText: hintText,
+        prefixIcon: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          child: AdminIcon(HugeIcons.strokeRoundedSearch01, size: 18),
+        ),
+        isDense: true,
       ),
-      isDense: true,
     ),
   );
 }
@@ -299,16 +305,18 @@ class SfFormField extends flutter.StatelessWidget {
   final bool obscureText;
 
   @override
-  flutter.Widget build(BuildContext context) => TextFormField(
-    controller: controller,
-    enabled: enabled,
-    obscureText: obscureText,
-    keyboardType: keyboardType,
-    maxLines: maxLines,
-    maxLength: maxLength,
-    validator: validator,
-    style: AdminTypography.body,
-    decoration: InputDecoration(
+  flutter.Widget build(BuildContext context) => Material(
+    color: Colors.transparent,
+    child: TextFormField(
+      controller: controller,
+      enabled: enabled,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      maxLength: maxLength,
+      validator: validator,
+      style: AdminTypography.body,
+      decoration: InputDecoration(
       label: label == null ? null : RichText(
         text: TextSpan(
           style: AdminTypography.body.copyWith(color: AdminDesignColors.secondaryText),
@@ -321,7 +329,8 @@ class SfFormField extends flutter.StatelessWidget {
       hintText: hintText,
       helperText: helperText,
       isDense: false,
-      contentPadding: const EdgeInsets.symmetric(horizontal: AdminSpacing.md, vertical: 13),
+        contentPadding: const EdgeInsets.symmetric(horizontal: AdminSpacing.md, vertical: 13),
+      ),
     ),
   );
 }
